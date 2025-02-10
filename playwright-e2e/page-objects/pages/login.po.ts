@@ -1,14 +1,12 @@
 import { Page } from "@playwright/test";
-import { UserCredentials } from "../../utils/";
+import { UserCredentials } from "../../utils";
 import { Base } from "../base";
 
-export class IdamPage extends Base {
-  readonly heading = this.page.getByRole("heading", {
-    name: "Sign in or create an account",
-  });
-  readonly usernameInput = this.page.locator("#username");
-  readonly passwordInput = this.page.locator("#password");
-  readonly submitBtn = this.page.locator('[name="save"]');
+export class LoginPage extends Base {
+  readonly logo = this.page.locator("#profile-img");
+  readonly usernameInput = this.page.getByLabel("Username");
+  readonly passwordInput = this.page.getByLabel("Password");
+  readonly submitBtn = this.page.locator('[name="submit"]');
 
   constructor(page: Page) {
     super(page);
