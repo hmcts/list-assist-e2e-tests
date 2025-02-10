@@ -5,7 +5,8 @@
 
 # Requires: Azure CLI & JQ (brew install azure-cli jq)
 
-KEY_VAULT_NAME="prl-aat"
+# TODO: This may be different
+KEY_VAULT_NAME="list-assist-trg"
 EXAMPLE_ENV_FILE=".env.example"
 ENV_FILE=".env"
 TEMP_ENV_FILE=$(mktemp)
