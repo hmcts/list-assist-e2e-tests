@@ -1,0 +1,29 @@
+#!groovy
+@Library("Infrastructure")
+
+// Need to replace these with TCoE team once available
+def type = "nodejs"
+def product = "dtsse"
+def component = "e2e-tests"
+def channel = "#tcoe-builds"
+
+def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
+
+
+/**
+* As this repo is not a part of any service or application, withNightlyPipeline is used
+* Typically, withPipeline would be used as it contains additional steps needed to release & deploy
+* See https://github.com/hmcts/cnp-jenkins-library for more info on the opinionated pipeline
+*/
+withNightlyPipeline(type, product, component) {
+  enableSlackNotifications(channel)
+  afterAlways('DependencyCheckNightly') {
+    stage('Lint') {
+        try {
+          yarnBuilder.yarn('lint')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        }
+      }
+  }
+}
