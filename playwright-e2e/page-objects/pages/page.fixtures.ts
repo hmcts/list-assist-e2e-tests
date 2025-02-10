@@ -1,13 +1,18 @@
 import { Page } from "@playwright/test";
-import { IdamPage } from "./idam.po";
+import { HomePage } from "./home.po";
+import { LoginPage } from "./login.po";
 
 export interface PageFixtures {
   determinePage: Page;
-  idamPage: IdamPage;
+  loginPage: LoginPage;
+  homePage: HomePage;
 }
 
 export const pageFixtures = {
-  idamPage: async ({ determinePage }, use) => {
-    await use(new IdamPage(determinePage));
+  loginPage: async ({ page }, use) => {
+    await use(new LoginPage(page));
+  },
+  homePage: async ({ page }, use) => {
+    await use(new HomePage(page));
   },
 };
