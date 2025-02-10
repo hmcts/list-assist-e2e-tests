@@ -1,0 +1,17 @@
+crash.log
+.swp
+.env
+.DS_Store
+*.lock.hcl
+.idea/
+*.iml
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+.pnp.*
+.yarn/*
+!.yarn/releases
+.vscode/*
+.sessions/

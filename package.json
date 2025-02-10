@@ -1,0 +1,40 @@
+{
+  "name": "tcoe-playwright-example",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=20.11.1"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@eslint/js": "^9.11.1",
+    "@playwright/test": "^1.48.2",
+    "@types/node": "^22.6.1",
+    "@typescript-eslint/eslint-plugin": "^8.8.0",
+    "dotenv": "^16.4.7",
+    "eslint": "^9.11.1",
+    "eslint-plugin-playwright": "^1.6.2",
+    "get-port": "^7.1.0",
+    "globals": "^15.10.0",
+    "lighthouse": "^12.2.1",
+    "playwright": "^1.48.2",
+    "playwright-core": "^1.48.2",
+    "playwright-lighthouse": "^4.0.0",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.8.0"
+  },
+  "scripts": {
+    "lint": "yarn tsc -p tsconfig.json && yarn eslint .",
+    "setup": "yarn playwright install",
+    "test:chrome": "yarn playwright test tests/ --project=chrome --grep-invert='(@a11y)|(@performance)'",
+    "test:firefox": "yarn playwright test tests/ --project=firefox --grep-invert='(@a11y)|(@performance)'",
+    "test:webkit": "yarn playwright test tests/ --project=webkit --grep-invert='(@a11y)|(@performance)'",
+    "test:edge": "yarn playwright test tests/ --project=edge --grep-invert='(@a11y)|(@performance)'",
+    "test:tabletchrome": "yarn playwright test tests/ --project=tabletchrome --grep-invert='(@a11y)|(@performance)'",
+    "test:tabletwebkit": "yarn playwright test tests/ --project=tabletwebkit --grep-invert='(@a11y)|(@performance)'",
+    "test:a11y": "yarn playwright test tests/ --grep @a11y --project=chrome",
+    "test:visual": "yarn playwright test tests/ --grep @visual --project=chrome",
+    "test:update-snapshots": "yarn playwright test tests/ --grep @visual --project=chrome --update-snapshots"
+  },
+  "packageManager": "yarn@4.6.0"
+}
