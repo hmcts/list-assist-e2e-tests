@@ -9,6 +9,6 @@ test("Accessibility example using custom fixture @a11y", async ({
   homePage,
   axeUtils,
 }) => {
-  await expect(homePage.sidebarComponent.sidebarLogo).toBeVisible();
+  await expect(homePage.sidebarComponent.sidebar).toBeVisible();
   await axeUtils.audit();
 });

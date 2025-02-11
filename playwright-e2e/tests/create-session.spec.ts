@@ -5,12 +5,12 @@ test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe("Case List Tests - Citizen @cui", () => {
+test.describe("Create a session @create-session", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(config.urls.baseUrl);
   });
 
-  test.only("View cases", async ({ homePage }) => {
+  test.only("Create session", async ({ homePage }) => {
     await homePage.page.pause();
     await expect(homePage.sidebarComponent.sidebar).toBeVisible();
   });
