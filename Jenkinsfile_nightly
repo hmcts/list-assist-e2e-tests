@@ -1,22 +1,9 @@
 #!groovy
 
 properties([
-  // Currently, we run this pipeline on the first monday of every month (for resources sake)
-  // If you want to run this nightly, uncomment the below line
-  // pipelineTriggers([cron('H 8 * * 1-5')]),
-  pipelineTriggers([cron('H 8 1-7 * 1')]),
+  pipelineTriggers([cron('H 8 * * 1-5')]),
   disableConcurrentBuilds(),
   parameters([
-    string(
-      name: 'CITIZEN_FRONTEND_BASE_URL',
-      defaultValue: 'https://privatelaw.aat.platform.hmcts.net/',
-      description: 'The Citizen URL to test against'
-    ),
-    string(
-      name: 'MANAGE_CASES_BASE_URL',
-      defaultValue: 'https://manage-case.aat.platform.hmcts.net/cases',
-      description: 'The Manage Cases URL to test against'
-    ),
     string(
       name: 'FUNCTIONAL_TESTS_WORKERS',
       defaultValue: '4',
@@ -32,11 +19,11 @@ properties([
 
 @Library("Infrastructure")
 
-// Replace these with your own teams info
+// Need to replace these with List Assist values
 def type = "nodejs"
 def product = "dtsse"
 def component = "e2e-tests"
-def channel = "#tcoe-builds"
+def channel = "#list-assist-qa-builds"
 
 static Map < String, Object > secret(String secretName, String envVariable) {
   [
@@ -47,17 +34,11 @@ static Map < String, Object > secret(String secretName, String envVariable) {
   ]
 }
 
-// Replace the key vault name with your own service
 def secrets = [
-  'prl-${env}': [
-    secret('solicitor-user', 'SOLICITOR_USERNAME'),
-    secret('solicitor-password', 'SOLICITOR_PASSWORD'),
-    secret('case-manager-swansea-username', 'CASEMANAGER_USERNAME'),
-    secret('case-manager-swansea-password', 'CASEMANAGER_PASSWORD'),
-    secret('judge-testuser-one', 'JUDGE_USERNAME'),
-    secret('judge-testpassword', 'JUDGE_PASSWORD'),
-    secret('citizen-user', 'CITIZEN_USERNAME'),
-    secret('citizen-password', 'CITIZEN_PASSWORD'),
+  'list-assist-trg': [
+    secret('test-password', 'TEST_USERNAME'),
+    secret('test-username', 'TEST_PASSWORD'),
+    secret('base-url', 'BASE_URL'),
   ]
 ]
 

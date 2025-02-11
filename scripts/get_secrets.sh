@@ -6,7 +6,7 @@
 # Requires: Azure CLI & JQ (brew install azure-cli jq)
 
 # TODO: This may be different
-KEY_VAULT_NAME="list-assist-trg"
+KEY_VAULT_NAME="list-assist-qa-trg"
 EXAMPLE_ENV_FILE=".env.example"
 ENV_FILE=".env"
 TEMP_ENV_FILE=$(mktemp)
