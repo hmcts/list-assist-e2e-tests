@@ -10,8 +10,7 @@ test.describe("Create a session @create-session", () => {
     await page.goto(config.urls.baseUrl);
   });
 
-  test.only("Create session", async ({ homePage }) => {
-    await homePage.page.pause();
+  test("Create session", async ({ homePage }) => {
     await expect(homePage.sidebarComponent.sidebar).toBeVisible();
   });
 });
