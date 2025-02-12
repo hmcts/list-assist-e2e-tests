@@ -55,10 +55,6 @@ export function getCookies(filepath: string) {
 }
 
 export function isSessionValid(path: string, cookieName: string): boolean {
-  // consider the cookie valid if there's at least 2 hours left on the session
-  const expiryTime = 2 * 60 * 60 * 1000;
-
-  // In the case the file doesn't exist, it should attempt to login
   if (!fs.existsSync(path)) return false;
 
   try {
@@ -66,8 +62,18 @@ export function isSessionValid(path: string, cookieName: string): boolean {
     const cookie = data.cookies.find(
       (cookie: Cookie) => cookie.name === cookieName
     );
-    const expiry = new Date(cookie.expires * 1000);
-    return expiry.getTime() - Date.now() > expiryTime;
+
+    const oneHourMs = 1 * 60 * 60 * 1000;
+    // Using last modified time of the file as the session start time
+    const sessionStartTime = fs.statSync(path).mtime.getTime();
+    const elapsedTime = Date.now() - sessionStartTime;
+    // Converting the cookie value from seconds to ms
+    const maxActiveMs = parseInt(cookie.value, 10) * 1000;
+    const remainingTime = maxActiveMs - elapsedTime;
+
+    console.log(remainingTime > oneHourMs);
+    // Session is considered valid if there is >= 1 hour remaining
+    return remainingTime > oneHourMs;
   } catch (error) {
     throw new Error(`Could not read session data: ${error} for ${path}`);
   }
