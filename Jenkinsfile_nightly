@@ -35,7 +35,7 @@ static Map < String, Object > secret(String secretName, String envVariable) {
 }
 
 def secrets = [
-  'list-assist-trg': [
+  'acmedtssdstest': [
     secret('test-password', 'TEST_USERNAME'),
     secret('test-username', 'TEST_PASSWORD'),
     secret('base-url', 'BASE_URL'),
