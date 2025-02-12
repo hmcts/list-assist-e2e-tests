@@ -3,7 +3,7 @@
 
 // Need to replace these with List Assist values
 def type = "nodejs"
-def product = "dtsse"
+def product = "snl-automation"
 def component = "e2e-tests"
 def channel = "#list-assist-qa-builds"
 
