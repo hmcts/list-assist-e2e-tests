@@ -71,7 +71,6 @@ export function isSessionValid(path: string, cookieName: string): boolean {
     const maxActiveMs = parseInt(cookie.value, 10) * 1000;
     const remainingTime = maxActiveMs - elapsedTime;
 
-    console.log(remainingTime > oneHourMs);
     // Session is considered valid if there is >= 1 hour remaining
     return remainingTime > oneHourMs;
   } catch (error) {
