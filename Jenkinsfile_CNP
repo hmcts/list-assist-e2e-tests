@@ -1,7 +1,6 @@
 #!groovy
 @Library("Infrastructure")
 
-// Need to replace these with List Assist values
 def type = "nodejs"
 def product = "snl-automation"
 def component = "e2e-tests"

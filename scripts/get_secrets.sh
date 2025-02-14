@@ -5,7 +5,6 @@
 
 # Requires: Azure CLI & JQ (brew install azure-cli jq)
 
-# TODO: This may be different
 KEY_VAULT_NAME="snl-automation-bts-stg"
 EXAMPLE_ENV_FILE=".env.example"
 ENV_FILE=".env"
