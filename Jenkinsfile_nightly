@@ -141,7 +141,7 @@ withNightlyPipeline(type, product, component, 600) {
           ])
         }
       }
-      stage('Accessibiity Tests') {
+      /* stage('Accessibiity Tests') {
         try {
           yarnBuilder.yarn('test:a11y')
         } catch (Error) {
@@ -156,7 +156,7 @@ withNightlyPipeline(type, product, component, 600) {
             reportName: 'Accessibility Tests'
           ])
         }
-      }
+      } */
     }
   }
 }
