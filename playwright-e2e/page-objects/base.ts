@@ -1,7 +1,11 @@
 import { Page } from "@playwright/test";
+import { SidebarComponent } from "./components";
 
 // A base page inherited by pages & components
-// can contain any additional config needed + instantiated page object
+// common objects and methods can be defined here
 export abstract class Base {
+  readonly baseContainer = this.page.locator("body");
+  readonly sidebarComponent = new SidebarComponent(this.baseContainer);
+
   constructor(public readonly page: Page) {}
 }
