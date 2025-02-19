@@ -50,7 +50,7 @@ test.describe("Session creation @create-session", () => {
     }
   );
 
-  test("Create session using an existing case @smoke @this", async ({
+  test("Create session using an existing case @smoke", async ({
     hearingSchedulePage,
     bookSessionPage,
   }) => {
