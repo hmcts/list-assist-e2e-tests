@@ -7,7 +7,7 @@ test.use({
 
 test.describe("Session creation @create-session", () => {
   // These tests should be run serially to avoid conflicts
-  // Parallel is possible, but needs unique data. e.g. different case, different room and different column
+  // Parallel is possible, but needs unique data. e.g. different case & different room
   test.describe.configure({ mode: "serial" });
 
   // Test data
@@ -33,6 +33,7 @@ test.describe("Session creation @create-session", () => {
       await homePage.sidebarComponent.openSearchCasePage();
       await caseSearchPage.searchCase(data.caseNumber);
 
+      // TODO: is there an API we can clear down sessions with?
       if (!(await caseDetailsPage.isCaseListed())) {
         // If the case is not listed, add it to cart
         await caseDetailsPage.addToCartButton.click();
@@ -49,8 +50,6 @@ test.describe("Session creation @create-session", () => {
     }
   );
 
-  // TODO: is there an API we can clear down sessions with?
-  // TODO: sometimes listing duration dropdown is not selected
   test("Create session using an existing case @smoke @this", async ({
     hearingSchedulePage,
     bookSessionPage,
