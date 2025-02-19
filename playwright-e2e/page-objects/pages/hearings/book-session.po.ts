@@ -41,6 +41,7 @@ export class BookSessionPage extends Base {
   }
 
   async cancelSession(cancelReason: string) {
+    await this.waitForLoad();
     await this.popup.cancelButton.click();
     await this.cancelListingButton.click();
     await expect(this.cancelPopup.popup).toBeVisible();

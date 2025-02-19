@@ -7,35 +7,54 @@ test.use({
 
 test.describe("Session creation @create-session", () => {
   // These tests should be run serially to avoid conflicts
+  // Parallel is possible, but needs unique data. e.g. different case, different room and different column
   test.describe.configure({ mode: "serial" });
 
-  test.beforeEach(async ({ page }) => {
-    await page.goto(config.urls.baseUrl);
-  });
+  // Test data
+  const data = {
+    roomName: "Leicester County Courtroom 07",
+    column: "columnOne",
+    caseNumber: "AUTOTESTING001",
+    sessionDuration: "1:00",
+    hearingType: "Application",
+    cancelReason: "Amend",
+  };
+
+  test.beforeEach(
+    async ({
+      page,
+      homePage,
+      caseSearchPage,
+      caseDetailsPage,
+      bookSessionPage,
+      hearingSchedulePage,
+    }) => {
+      await page.goto(config.urls.baseUrl);
+      await homePage.sidebarComponent.openSearchCasePage();
+      await caseSearchPage.searchCase(data.caseNumber);
+
+      if (!(await caseDetailsPage.isCaseListed())) {
+        // If the case is not listed, add it to cart
+        await caseDetailsPage.addToCartButton.click();
+      } else {
+        // Otherwise, attempt to cancel the session
+        await caseDetailsPage.addToCartButton.click();
+        await caseDetailsPage.openListingDetails.click();
+        await bookSessionPage.cancelSession(data.cancelReason);
+        const row = await hearingSchedulePage.filterTableByRoom(data.roomName);
+        expect(
+          await row.row.locator(hearingSchedulePage.siblingRow).textContent()
+        ).not.toContain(data.caseNumber);
+      }
+    }
+  );
 
   // TODO: is there an API we can clear down sessions with?
+  // TODO: sometimes listing duration dropdown is not selected
   test("Create session using an existing case @smoke @this", async ({
-    homePage,
     hearingSchedulePage,
-    caseSearchPage,
-    caseDetailsPage,
     bookSessionPage,
   }) => {
-    // Test data for the test
-    const data = {
-      roomName: "Leicester County Courtroom 07",
-      column: "columnOne",
-      caseNumber: "AUTOTESTING001",
-      sessionDuration: "1:00",
-      hearingType: "Application",
-      cancelReason: "Amend",
-    };
-
-    // Add case to cart
-    await homePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(data.caseNumber);
-    await caseDetailsPage.addToCartButton.click();
-
     // Choose a slot to schedule the hearing
     await expect(hearingSchedulePage.sidebarComponent.sidebar).toBeVisible();
     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
@@ -51,19 +70,5 @@ test.describe("Session creation @create-session", () => {
     expect(
       await row.row.locator(hearingSchedulePage.siblingRow).textContent()
     ).toContain(data.caseNumber);
-
-    // Remove the session
-    await homePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(data.caseNumber);
-    await caseDetailsPage.openListingDetails.click();
-    await bookSessionPage.cancelSession(data.cancelReason);
-    const rowAfterCancel = await hearingSchedulePage.filterTableByRoom(
-      data.roomName
-    );
-    expect(
-      await rowAfterCancel.row
-        .locator(hearingSchedulePage.siblingRow)
-        .textContent()
-    ).not.toContain(data.caseNumber);
   });
 });
