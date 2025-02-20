@@ -4,7 +4,6 @@ import path from "path";
 import { Cookie } from "playwright-core";
 import { fileURLToPath } from "url";
 
-// This needs to be placed somewhere before attempting to access any environment variables
 dotenv.config();
 
 export interface UserCredentials {
