@@ -53,7 +53,8 @@ export class BookSessionPage extends Base {
 
   async selectListingDuration(duration: string) {
     // This dropdown can be flaky, so extra wait steps
-    await this.listingDuration.waitFor({ state: "visible" });
+    // TODO: Replace implicit wait
+    await this.page.waitForTimeout(3_000);
     await this.listingDuration.selectOption(duration);
   }
 
