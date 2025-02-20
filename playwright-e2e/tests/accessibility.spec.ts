@@ -1,4 +1,4 @@
-import { expect, test } from "../fixtures"; // Import from the centralized fixtures.ts
+import { expect, test } from "../fixtures";
 import { config } from "../utils";
 
 test.use({
@@ -13,8 +13,12 @@ test.describe("Accessibility test example @a11y", () => {
   test("Accessibility example using Axe fixture", async ({
     homePage,
     axeUtils,
+    hearingSchedulePage,
   }) => {
     await expect(homePage.sidebarComponent.sidebar).toBeVisible();
+    await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+    await hearingSchedulePage.waitForNavigation();
+    // TODO: A lot of a11y failures on this page
     await axeUtils.audit();
   });
 });
