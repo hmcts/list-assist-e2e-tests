@@ -17,7 +17,7 @@ test.describe("Accessibility test example @a11y", () => {
   }) => {
     await expect(homePage.sidebarComponent.sidebar).toBeVisible();
     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-    await hearingSchedulePage.waitForNavigation();
+    await hearingSchedulePage.waitForLoad();
     // TODO: A lot of a11y failures on this page
     await axeUtils.audit();
   });

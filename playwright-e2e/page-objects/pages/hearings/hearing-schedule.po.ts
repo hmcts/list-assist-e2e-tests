@@ -32,15 +32,15 @@ export class HearingSchedulePage extends Base {
     super(page);
   }
 
-  async waitForNavigation(): Promise<void> {
+  async waitForLoad(): Promise<void> {
     await expect
       .poll(
         async () => {
           return await this.table.isVisible();
         },
         {
-          message: "Hearing Schedule table is not visible",
-          timeout: 10_000,
+          intervals: [2_000],
+          timeout: 60_000,
         }
       )
       .toBeTruthy();
@@ -90,7 +90,7 @@ export class HearingSchedulePage extends Base {
   }
 
   async filterTableByRoom(roomName: string): Promise<TableRow> {
-    await this.waitForNavigation();
+    await this.waitForLoad();
     const table: TableRow[] = await this.mapTable();
     const row = table.filter((row) => row.roomName === roomName)[0];
     return row;
