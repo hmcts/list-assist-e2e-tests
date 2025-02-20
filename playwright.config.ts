@@ -2,6 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 const DEFAULT_VIEWPORT = { width: 1920, height: 1080 };
 
+// testing
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
