@@ -33,7 +33,7 @@ export class BookSessionPage extends Base {
 
   async bookSession(duration: string, hearingType: string) {
     await this.waitForLoad();
-    await this.listingDuration.selectOption(duration);
+    await this.selectListingDuration(duration);
     await this.saveButton.click();
     await this.waitForFrame();
     await this.popup.hearingType.selectOption(hearingType);
@@ -49,6 +49,12 @@ export class BookSessionPage extends Base {
     await expect(this.confirmPopup.confirmButton).toBeVisible();
     await this.confirmPopup.confirmButton.click();
     await this.deleteButton.click();
+  }
+
+  async selectListingDuration(duration: string) {
+    // This dropdown can be flaky, so extra wait steps
+    await this.listingDuration.waitFor({ state: "visible" });
+    await this.listingDuration.selectOption(duration);
   }
 
   async waitForFrame() {

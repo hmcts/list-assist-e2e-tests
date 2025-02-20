@@ -32,14 +32,13 @@ test.describe("Session creation @create-session", () => {
       await page.goto(config.urls.baseUrl);
       await homePage.sidebarComponent.openSearchCasePage();
       await caseSearchPage.searchCase(data.caseNumber);
+      await caseDetailsPage.addToCartButton.click();
 
       // TODO: is there an API we can clear down sessions with?
-      if (!(await caseDetailsPage.isCaseListed())) {
-        // If the case is not listed, add it to cart
-        await caseDetailsPage.addToCartButton.click();
-      } else {
-        // Otherwise, attempt to cancel the session
-        await caseDetailsPage.addToCartButton.click();
+      const caseListed = await caseDetailsPage.isCaseListed();
+      // If a case is listed we need to cancel the session
+      // Otherwise, the test can continue
+      if (caseListed) {
         await caseDetailsPage.openListingDetails.click();
         await bookSessionPage.cancelSession(data.cancelReason);
         const row = await hearingSchedulePage.filterTableByRoom(data.roomName);
@@ -57,7 +56,7 @@ test.describe("Session creation @create-session", () => {
     // Choose a slot to schedule the hearing
     await expect(hearingSchedulePage.sidebarComponent.sidebar).toBeVisible();
     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-    await hearingSchedulePage.waitForNavigation();
+    await hearingSchedulePage.waitForLoad();
     await hearingSchedulePage.scheduleHearingWithBasket(
       data.roomName,
       data.column,
