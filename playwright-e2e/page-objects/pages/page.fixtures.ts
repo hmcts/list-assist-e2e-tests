@@ -1,4 +1,3 @@
-import { Page } from "@playwright/test";
 import { CaseDetailsPage } from "./cases/case-details.po";
 import { CaseSearchPage } from "./cases/case-search.po";
 import { BookSessionPage } from "./hearings/book-session.po";
@@ -7,7 +6,6 @@ import { HomePage } from "./home.po";
 import { LoginPage } from "./login.po";
 
 export interface PageFixtures {
-  determinePage: Page;
   loginPage: LoginPage;
   homePage: HomePage;
   hearingSchedulePage: HearingSchedulePage;
