@@ -37,6 +37,14 @@ yarn install
 yarn playwright install --with-deps
 ```
 
+### Key Vault Secrets
+
+Secrets for this repo are stored in an Azure Key Vault. For local set up, you can use the [get_secrets.sh](scripts/get_secrets.sh) script to populate your .env file.
+
+[Jenkinsfile_nightly](./Jenkinsfile_nightly) also uses this key vault, this file will need to be updated when new secrets are added/removed.
+
+When adding a secret in the key vault ensure the secret is tagged with tag name: `e2e` and the tag value should be the env variable set in the [.env.example](./.env.example) file.
+
 ### Running Tests
 
 Run all tests using the Playwright test runner:
