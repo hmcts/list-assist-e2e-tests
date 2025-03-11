@@ -4,11 +4,9 @@ import { UtilsFixtures, utilsFixtures } from "./utils";
 
 export type CustomFixtures = PageFixtures & UtilsFixtures;
 
-export const test = baseTest.extend<CustomFixtures, { lighthousePort: number }>(
-  {
-    ...pageFixtures,
-    ...utilsFixtures,
-  }
-);
+export const test = baseTest.extend<CustomFixtures>({
+  ...pageFixtures,
+  ...utilsFixtures,
+});
 
 export const expect = test.expect;
