@@ -14,7 +14,7 @@ test.describe("Session creation @create-session", () => {
   const data = {
     roomName: "Leicester County Courtroom 07",
     column: "columnOne",
-    caseNumber: "AUTOTESTING001",
+    caseNumber: "AUTOTESTING002",
     sessionDuration: "1:00",
     hearingType: "Application",
     cancelReason: "Amend",
