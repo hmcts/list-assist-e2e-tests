@@ -399,11 +399,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:^22.6.1":
-  version: 22.13.13
-  resolution: "@types/node@npm:22.13.13"
+  version: 22.13.14
+  resolution: "@types/node@npm:22.13.14"
   dependencies:
     undici-types: "npm:~6.20.0"
-  checksum: 10/1750518a26fe070dcd4aacd9869d8c72c5b315e3b2fc643e3604fa02b3adac2817eae7808ae34c6bdd6ac96bb5d25acea59656c4ac155b1ee47469a65d32eba4
+  checksum: 10/5fafad441c7bb27f963aa8fdfa0787ffb1142b27f4dd2047a2cc27a39f981b432acc71a9b5a428a258f93daeb72f12b7468ab9163a41fe4f98584bc5d42ade6e
   languageName: node
   linkType: hard
 
@@ -1866,8 +1866,8 @@ __metadata:
   linkType: hard
 
 "lighthouse@npm:^12.2.1":
-  version: 12.5.0
-  resolution: "lighthouse@npm:12.5.0"
+  version: 12.5.1
+  resolution: "lighthouse@npm:12.5.1"
   dependencies:
     "@paulirish/trace_engine": "npm:0.0.50"
     "@sentry/node": "npm:^7.0.0"
@@ -1901,7 +1901,7 @@ __metadata:
     chrome-debug: core/scripts/manual-chrome-launcher.js
     lighthouse: cli/index.js
     smokehouse: cli/test/smokehouse/frontends/smokehouse-bin.js
-  checksum: 10/70d9362143a2b0b15bc83459f8bc96381b5f7393bdf3e213a1f2d3713aa87d5efcde24082e9499ef54106f636ebb3cf818a083a52c44681f108e4607e4ab86b8
+  checksum: 10/29969d1c58529f5602d3443e21a138ffa8712a293cbcd68cddf742f9435df3e447e30655a1d43c0133a7695cc32bdc8eefcb87ce2f88a01beb15a0a6cf69e652
   languageName: node
   linkType: hard
 
