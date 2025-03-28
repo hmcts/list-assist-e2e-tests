@@ -7,7 +7,6 @@ export class AddNewCasePage extends Base {
   //new case page
   readonly newCaseHeader = this.page.locator('h1.header-title.my-2');
   readonly jurisdictionSelector = this.page.getByLabel('Matter Detail - Jurisdiction_listbox').getByText('Select One');
-  readonly familySelect = this.page.getByRole('option', { name: 'Family', exact: true }).locator('span').first();
   readonly serviceSelector = this.page.getByLabel('Matter Detail - Service_listbox').getByText('Select One');
   readonly divorceServiceSelect = this.page.getByRole('option', { name: 'Divorce', exact: true }).locator('span').first();
   readonly caseTypeSelector = this.page.getByLabel('Matter Detail - Case Type_listbox').locator('div').filter({ hasText: 'Select One' });
