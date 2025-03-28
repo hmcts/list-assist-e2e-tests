@@ -75,7 +75,7 @@ test.describe("Case creation @add-new-case", () => {
     );
 
     //LISTING REQUIREMENTS
-    await editNewCasePage.sidebarComponent.openCurrentCasePage();
+    await editNewCasePage.sidebarComponent.openListingRequirementsPage();
     //checks header
     await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
 
