@@ -8,15 +8,10 @@ export class AddNewCasePage extends Base {
   readonly newCaseHeader = this.page.locator('h1.header-title.my-2');
   readonly jurisdictionSelector = this.page.getByLabel('Matter Detail - Jurisdiction_listbox').getByText('Select One');
   readonly serviceSelector = this.page.getByLabel('Matter Detail - Service_listbox').getByText('Select One');
-  readonly divorceServiceSelect = this.page.getByRole('option', { name: 'Divorce', exact: true }).locator('span').first();
   readonly caseTypeSelector = this.page.getByLabel('Matter Detail - Case Type_listbox').locator('div').filter({ hasText: 'Select One' });
-  readonly caseTypeDecreeAbsoluteSelect = this.page.getByText('Decree Absolute');
   readonly regionSelector = this.page.getByRole('combobox', { name: 'Matter Detail - Region_listbox' }).locator('div').first();
-  readonly regionWalesSelect = this.page.getByRole('option', { name: 'Wales' }).locator('span').first();
   readonly clusterSelect = this.page.getByRole('combobox', { name: 'Matter Detail - Cluster_listbox' }).locator('div').first();
-  readonly clusterWalesTribSelect = this.page.getByText('Wales Civil, Family and Tribunals');
   readonly owningHearingSelector = this.page.getByLabel('Matter Detail - Owning Hearing Location_listbox').getByText('Select One');
-  readonly owningCardiffCivilSelect = this.page.getByText('Cardiff Civil and Family');
   readonly hmctsCaseNumberInput = this.page.locator("#mtrNumberAdded");
   readonly enterNameInput = this.page.locator("#mtrAltTitleTxt");
   readonly saveButton = this.page.getByRole('button', { name: 'Save Case', exact: true });
@@ -30,38 +25,47 @@ export class AddNewCasePage extends Base {
     await this.page.getByRole('option', { name: jurisdiction, exact: true }).locator('span').first().click();
   }
 
-  async selectDivorceService() {
+  async selectService(service : string) {
     await this.serviceSelector.click();
-    await this.divorceServiceSelect.click();
+    await this.page.getByRole('option', { name: service, exact: true }).locator('span').first().click();
   }
 
-  async selectDecreeAbsoluteCaseType() {
+  async selectCaseType(caseType: string) {
     await this.caseTypeSelector.click();
-    await this.caseTypeDecreeAbsoluteSelect.click();
+    await this.page.getByText(caseType).click();
   }
 
-  async selectWalesRegion() {
+  async selectRegion(region: string) {
     await this.regionSelector.click();
-    await this.regionWalesSelect.click();
+    await this.page.getByRole('option', { name: region }).locator('span').first().click();
   }
 
-  async selectWalesFamilyTribunalCluster() {
+  async selectCluster(cluster: string) {
     await this.clusterSelect.click();
-    await this.clusterWalesTribSelect.click();
+    await this.page.getByText(cluster).click();
   }
 
-  async selectCardiffCivilHearing() {
+  async selectOwningHearing(owningHearing: string) {
     await this.owningHearingSelector.click();
-    await this.owningCardiffCivilSelect.click();
+    await this.page.getByText(owningHearing).click();
+
   }
 
-  async populateNewCaseDetails(hmctsCaseNumber: string, caseName: string, jurisdiction: string) {
+  async populateNewCaseDetails(
+    hmctsCaseNumber: string,
+    caseName: string,
+    jurisdiction: string,
+    service: string,
+    caseType: string,
+    region: string,
+    cluster: string,
+    owninghearing: string) {
     await this.selectJurisdiction(jurisdiction);
-    await this.selectDivorceService();
-    await this.selectDecreeAbsoluteCaseType();
-    await this.selectWalesRegion();
-    await this.selectWalesFamilyTribunalCluster();
-    await this.selectCardiffCivilHearing();
+    await this.selectService(service);
+    await this.selectCaseType(caseType);
+    await this.selectRegion(region);
+    await this.selectCluster(cluster);
+    await this.selectOwningHearing(owninghearing);
     await this.hmctsCaseNumberInput.fill(hmctsCaseNumber);
     await this.enterNameInput.fill(caseName)
   }

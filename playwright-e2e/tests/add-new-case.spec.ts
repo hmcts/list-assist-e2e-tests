@@ -47,7 +47,12 @@ test.describe("Case creation @add-new-case", () => {
     await addNewCasePage.populateNewCaseDetails(
       hmctsCaseNumber,
       caseName,
-      data.familyJurisdiction
+      data.familyJurisdiction,
+      data.divorceService,
+      data.decreeAbsoluteCaseType,
+      data.walesRegion,
+      data.walesTribCluster,
+      data.cardiffCivilHearing,
     );
     //click save button
     await addNewCasePage.saveButton.click();
