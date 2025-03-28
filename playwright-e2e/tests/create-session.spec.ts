@@ -49,8 +49,7 @@ test.describe("Session creation @create-session", () => {
     }
   );
 
-  test("Create session using an existing case @smoke", async ({
-    hearingSchedulePage,
+  test("Create session using an existing case @smoke", async ({hearingSchedulePage,
     bookSessionPage,
   }) => {
     // Choose a slot to schedule the hearing
