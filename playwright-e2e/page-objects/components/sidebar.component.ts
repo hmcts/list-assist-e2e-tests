@@ -31,7 +31,7 @@ export class SidebarComponent {
     await this.caseAddNew.click();
   }
 
-  async openCurrentCasePage() {
+  async openListingRequirementsPage() {
     await this.casesManu.click()
     await this.currentCaseSubMenu.click()
     await this.listingRequirementsSubmenu.click()
