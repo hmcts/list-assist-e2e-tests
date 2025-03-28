@@ -4,6 +4,8 @@ import { BookSessionPage } from "./hearings/book-session.po";
 import { HearingSchedulePage } from "./hearings/hearing-schedule.po";
 import { HomePage } from "./home.po";
 import { LoginPage } from "./login.po";
+import { AddNewCasePage } from "./cases/add-new-case.po.ts";
+import { EditNewCasePage } from "./cases/edit-case.po.ts";
 
 export interface PageFixtures {
   loginPage: LoginPage;
@@ -12,6 +14,8 @@ export interface PageFixtures {
   caseSearchPage: CaseSearchPage;
   caseDetailsPage: CaseDetailsPage;
   bookSessionPage: BookSessionPage;
+  addNewCasePage: AddNewCasePage;
+  editNewCasePage: EditNewCasePage;
 }
 
 export const pageFixtures = {
@@ -32,5 +36,11 @@ export const pageFixtures = {
   },
   bookSessionPage: async ({ page }, use) => {
     await use(new BookSessionPage(page));
+  },
+  addNewCasePage: async ({ page }, use) => {
+    await use(new AddNewCasePage(page));
+  },
+  editNewCasePage: async ({ page }, use) => {
+    await use(new EditNewCasePage(page));
   },
 };
