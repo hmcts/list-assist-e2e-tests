@@ -66,6 +66,7 @@ export class SidebarComponent {
   }
 
   async openCaseDetailsEditPage() {
+    // TODO: Replace implicit wait
     await this.page.waitForTimeout(3_000);
     await expect
       .poll(
