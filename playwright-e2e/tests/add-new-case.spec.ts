@@ -6,10 +6,6 @@ test.use({
 });
 
 test.describe("Case creation @add-new-case", () => {
-  // These tests should be run serially to avoid conflicts
-  // Parallel is possible, but needs unique data. e.g. different case & different room
-  test.describe.configure({ mode: "parallel" });
-
   test.beforeEach(async ({ page, homePage }) => {
     await page.goto(config.urls.baseUrl);
     await homePage.sidebarComponent.openAddNewCasePage();
