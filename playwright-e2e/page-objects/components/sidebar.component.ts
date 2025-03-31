@@ -43,6 +43,7 @@ export class SidebarComponent {
           return await this.currentCaseSubMenu.isVisible();
         },
         {
+          intervals: [2_000],
           timeout: 10_000,
         }
       )
@@ -55,6 +56,7 @@ export class SidebarComponent {
           return await this.listingRequirementsSubmenu.isVisible();
         },
         {
+          intervals: [2_000],
           timeout: 10_000,
         }
       )
@@ -71,6 +73,7 @@ export class SidebarComponent {
           return await this.currentCaseSubMenu.isVisible();
         },
         {
+          intervals: [2_000],
           timeout: 10_000,
         }
       )
