@@ -9,10 +9,14 @@ export class SidebarComponent {
   );
   readonly casesMenu = this.root.locator("#matter_menuItem");
   readonly caseSearchSubMenu = this.root.locator("#search_subMenuItem");
-  readonly caseAddNew = this.root.locator("#addNew_subMenuItem")
+  readonly caseAddNew = this.root.locator("#addNew_subMenuItem");
   readonly currentCaseSubMenu = this.root.locator("#currentMatter_subMenuItem");
-  readonly currentCaseDetailsEdit = this.root.locator('#detailsEdit_subMenuItem');
-  readonly listingRequirementsSubmenu = this.root.locator('#listingRequirements_subMenuItem');
+  readonly currentCaseDetailsEdit = this.root.locator(
+    "#detailsEdit_subMenuItem"
+  );
+  readonly listingRequirementsSubmenu = this.root.locator(
+    "#listingRequirements_subMenuItem"
+  );
 
   constructor(private root: Locator) {}
 
@@ -32,7 +36,8 @@ export class SidebarComponent {
   }
 
   async openListingRequirementsPage() {
-    await expect.poll(
+    await expect
+      .poll(
         async () => {
           await this.casesMenu.click();
           return await this.currentCaseSubMenu.isVisible();
@@ -43,21 +48,32 @@ export class SidebarComponent {
       )
       .toBeTruthy();
 
-    await this.currentCaseSubMenu.click();
-    await expect(this.listingRequirementsSubmenu).toBeVisible();
-    await this.listingRequirementsSubmenu.click()
+    await expect
+      .poll(
+        async () => {
+          await this.currentCaseSubMenu.click();
+          return await this.listingRequirementsSubmenu.isVisible();
+        },
+        {
+          timeout: 10_000,
+        }
+      )
+      .toBeTruthy();
+
+    await this.listingRequirementsSubmenu.click();
   }
 
   async openCaseDetailsEditPage() {
-    await expect.poll(
-      async () => {
-        await this.casesMenu.click();
-        return await this.currentCaseSubMenu.isVisible();
-      },
-      {
-        timeout: 10_000,
-      }
-    )
+    await expect
+      .poll(
+        async () => {
+          await this.casesMenu.click();
+          return await this.currentCaseSubMenu.isVisible();
+        },
+        {
+          timeout: 10_000,
+        }
+      )
       .toBeTruthy();
 
     await this.currentCaseSubMenu.click();
