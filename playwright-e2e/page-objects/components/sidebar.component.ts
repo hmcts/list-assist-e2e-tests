@@ -33,17 +33,25 @@ export class SidebarComponent {
 
   async openListingRequirementsPage() {
     await this.casesMenu.click()
-    await expect.poll(async () => await this.currentCaseSubMenu.isVisible()).toBe(true);
-    await this.currentCaseSubMenu.click();
+    await this.checkCurrentCaseSubMenuIsPresent();
     await expect(this.listingRequirementsSubmenu).toBeVisible();
     await this.listingRequirementsSubmenu.click()
   }
 
   async openCaseDetailsEditPage() {
     await this.casesMenu.click();
-    await expect.poll(async () => await this.currentCaseSubMenu.isVisible()).toBe(true);
-    await this.currentCaseSubMenu.click();
+    await this.checkCurrentCaseSubMenuIsPresent();
     await expect(this.currentCaseDetailsEdit).toBeVisible();
     await this.currentCaseDetailsEdit.click();
+  }
+
+  private async checkCurrentCaseSubMenuIsPresent() {
+    await expect.poll(async () => {
+      if (await this.currentCaseSubMenu.isVisible()) {
+        await this.currentCaseSubMenu.click();
+        return true;
+      }
+      return false;
+    }).toBe(true);
   }
 }
