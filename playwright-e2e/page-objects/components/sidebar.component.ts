@@ -34,13 +34,16 @@ export class SidebarComponent {
   async openListingRequirementsPage() {
     await this.casesMenu.click()
     await expect(this.currentCaseSubMenu).toBeVisible();
-    await this.currentCaseSubMenu.click()
+    await this.currentCaseSubMenu.click();
+    await expect(this.listingRequirementsSubmenu).toBeVisible();
     await this.listingRequirementsSubmenu.click()
   }
 
   async openCaseDetailsEditPage() {
     await this.casesMenu.click();
+    await expect(this.currentCaseSubMenu).toBeVisible();
     await this.currentCaseSubMenu.click();
+    await expect(this.currentCaseDetailsEdit).toBeVisible();
     await this.currentCaseDetailsEdit.click();
   }
 }
