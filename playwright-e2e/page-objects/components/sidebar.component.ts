@@ -1,5 +1,5 @@
 import { Locator } from "@playwright/test";
-import {expect} from "../../fixtures.ts";
+import { expect } from "../../fixtures.ts";
 
 export class SidebarComponent {
   readonly sidebar = this.root.locator("#pageNavigation");
