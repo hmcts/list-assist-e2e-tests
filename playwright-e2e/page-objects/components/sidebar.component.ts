@@ -1,4 +1,5 @@
-import { Locator } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
+import { expect } from "../../fixtures.ts";
 
 export class SidebarComponent {
   readonly sidebar = this.root.locator("#pageNavigation");
@@ -8,13 +9,16 @@ export class SidebarComponent {
   );
   readonly casesMenu = this.root.locator("#matter_menuItem");
   readonly caseSearchSubMenu = this.root.locator("#search_subMenuItem");
-  readonly caseAddNew = this.root.locator("#addNew_subMenuItem")
-  readonly casesManu = this.root.locator("#matter_menuItem");
+  readonly caseAddNew = this.root.locator("#addNew_subMenuItem");
   readonly currentCaseSubMenu = this.root.locator("#currentMatter_subMenuItem");
-  readonly currentCaseDetailsEdit = this.root.locator('#detailsEdit_subMenuItem');
-  readonly listingRequirementsSubmenu = this.root.locator('#listingRequirements_subMenuItem');
+  readonly currentCaseDetailsEdit = this.root.locator(
+    "#detailsEdit_subMenuItem"
+  );
+  readonly listingRequirementsSubmenu = this.root.locator(
+    "#listingRequirements_subMenuItem"
+  );
 
-  constructor(private root: Locator) {}
+  constructor(private root: Locator, private page: Page) {}
 
   async openHearingSchedulePage() {
     await this.hearingsMenu.click();
@@ -32,13 +36,51 @@ export class SidebarComponent {
   }
 
   async openListingRequirementsPage() {
-    await this.casesManu.click()
-    await this.currentCaseSubMenu.click()
-    await this.listingRequirementsSubmenu.click()
+    await expect
+      .poll(
+        async () => {
+          await this.casesMenu.click();
+          return await this.currentCaseSubMenu.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        }
+      )
+      .toBeTruthy();
+
+    await expect
+      .poll(
+        async () => {
+          await this.currentCaseSubMenu.click();
+          return await this.listingRequirementsSubmenu.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        }
+      )
+      .toBeTruthy();
+
+    await this.listingRequirementsSubmenu.click();
   }
 
   async openCaseDetailsEditPage() {
-    await this.casesManu.click();
+    // TODO: Replace implicit wait
+    await this.page.waitForTimeout(3_000);
+    await expect
+      .poll(
+        async () => {
+          await this.casesMenu.click();
+          return await this.currentCaseSubMenu.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        }
+      )
+      .toBeTruthy();
+
     await this.currentCaseSubMenu.click();
     await this.currentCaseDetailsEdit.click();
   }

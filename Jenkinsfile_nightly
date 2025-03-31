@@ -14,6 +14,11 @@ properties([
       defaultValue: '',
       description: 'Optionally, run a single or multiple tags (comma separated e.g. @cui, @exui)'
     ),
+    choice(
+      name: 'browser',
+      choices: ['chrome', 'firefox', 'webkit', 'edge'],
+      description: 'Which browser to use'
+    ),
   ])
 ])
 
@@ -49,7 +54,7 @@ def buildPlaywrightCommand(tags) {
   def command = 'playwright test tests/'
     tagList.each { tag ->
     if (!tag.isEmpty()) {
-      command += " --grep ${tag}"
+      command += " --grep ${tag} --project ${params.browser}"
     }
   }
   return command
@@ -73,7 +78,7 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
     if (!TAGS_TO_RUN.isEmpty()) {
-      stage("${TAGS_TO_RUN} E2E Tests") {
+      stage("${TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
           currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests"
           yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN))
@@ -86,7 +91,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: "${TAGS_TO_RUN} E2E Tests"
+            reportName: "${TAGS_TO_RUN} E2E Tests ${params.browser}"
           ])
         }
       }
