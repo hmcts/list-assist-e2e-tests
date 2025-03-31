@@ -22,17 +22,17 @@ test.describe("Case creation @add-new-case", () => {
   test("Create new case and confirm case is created correctly @smoke", async ({ addNewCasePage, editNewCasePage, caseDetailsPage }) => {
 
     // Test data
-    const data = {
+    const caseData = {
       hmctsCaseNumberHeaderValue: "HMCTS Case Number",
       caseNameHeaderValue: "Case Name",
-      familyJurisdiction: "Family",
-      divorceService: "Divorce",
-      decreeAbsoluteCaseType: "Decree Absolute",
-      walesRegion: "Wales",
-      walesTribCluster: "Wales Civil, Family and Tribunals",
-      cardiffCivilHearing: "Cardiff Civil and Family Justice Centre",
-      applicationHearingTypeRef: "449628128",
-      currentStatusAwaitingListing: "Awaiting Listing"
+      jurisdiction: "Family",
+      service: "Divorce",
+      caseType: "Decree Absolute",
+      region: "Wales",
+      cluster: "Wales Civil, Family and Tribunals",
+      hearingCentre: "Cardiff Civil and Family Justice Centre",
+      hearingTypeRef: "449628128",
+      currentStatus: "Awaiting Listing"
     };
 
     const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
@@ -47,12 +47,12 @@ test.describe("Case creation @add-new-case", () => {
     await addNewCasePage.populateNewCaseDetails(
       hmctsCaseNumber,
       caseName,
-      data.familyJurisdiction,
-      data.divorceService,
-      data.decreeAbsoluteCaseType,
-      data.walesRegion,
-      data.walesTribCluster,
-      data.cardiffCivilHearing,
+      caseData.jurisdiction,
+      caseData.service,
+      caseData.caseType,
+      caseData.region,
+      caseData.cluster,
+      caseData.hearingCentre,
     );
     //click save button
     await addNewCasePage.saveButton.click();
@@ -66,12 +66,12 @@ test.describe("Case creation @add-new-case", () => {
       editNewCasePage,
       hmctsCaseNumber,
       caseName,
-      data.familyJurisdiction,
-      data.divorceService,
-      data.decreeAbsoluteCaseType,
-      data.walesRegion,
-      data.walesTribCluster,
-      data.cardiffCivilHearing
+      caseData.jurisdiction,
+      caseData.service,
+      caseData.caseType,
+      caseData.region,
+      caseData.cluster,
+      caseData.hearingCentre
     );
 
     //LISTING REQUIREMENTS
@@ -80,12 +80,12 @@ test.describe("Case creation @add-new-case", () => {
     await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
 
     //select hearing type
-    await caseDetailsPage.hearingTypeSelect.selectOption(data.applicationHearingTypeRef);
+    await caseDetailsPage.hearingTypeSelect.selectOption(caseData.hearingTypeRef);
     await caseDetailsPage.saveButton.click();
 
     //CHECK CURRENT DETAILS OF CASE
     await caseDetailsPage.sidebarComponent.openCaseDetailsEditPage();
-    await expect(caseDetailsPage.currentCaseCurrentStatusField).toHaveText("Current Status " + data.currentStatusAwaitingListing);
+    await expect(caseDetailsPage.currentCaseCurrentStatusField).toHaveText("Current Status " + caseData.currentStatus);
 
     //Close case
     await caseDetailsPage.closeCaseButton.click();

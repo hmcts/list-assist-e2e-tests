@@ -1,4 +1,5 @@
 import { Locator } from "@playwright/test";
+import {expect} from "../../fixtures.ts";
 
 export class SidebarComponent {
   readonly sidebar = this.root.locator("#pageNavigation");
@@ -9,7 +10,6 @@ export class SidebarComponent {
   readonly casesMenu = this.root.locator("#matter_menuItem");
   readonly caseSearchSubMenu = this.root.locator("#search_subMenuItem");
   readonly caseAddNew = this.root.locator("#addNew_subMenuItem")
-  readonly casesManu = this.root.locator("#matter_menuItem");
   readonly currentCaseSubMenu = this.root.locator("#currentMatter_subMenuItem");
   readonly currentCaseDetailsEdit = this.root.locator('#detailsEdit_subMenuItem');
   readonly listingRequirementsSubmenu = this.root.locator('#listingRequirements_subMenuItem');
@@ -32,13 +32,14 @@ export class SidebarComponent {
   }
 
   async openListingRequirementsPage() {
-    await this.casesManu.click()
+    await this.casesMenu.click()
+    await expect(this.currentCaseSubMenu).toBeVisible();
     await this.currentCaseSubMenu.click()
     await this.listingRequirementsSubmenu.click()
   }
 
   async openCaseDetailsEditPage() {
-    await this.casesManu.click();
+    await this.casesMenu.click();
     await this.currentCaseSubMenu.click();
     await this.currentCaseDetailsEdit.click();
   }
