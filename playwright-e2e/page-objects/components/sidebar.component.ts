@@ -33,7 +33,7 @@ export class SidebarComponent {
 
   async openListingRequirementsPage() {
     await this.casesMenu.click()
-    await expect(this.currentCaseSubMenu).toBeVisible();
+    await expect.poll(async () => await this.currentCaseSubMenu.isVisible()).toBe(true);
     await this.currentCaseSubMenu.click();
     await expect(this.listingRequirementsSubmenu).toBeVisible();
     await this.listingRequirementsSubmenu.click()
@@ -41,7 +41,7 @@ export class SidebarComponent {
 
   async openCaseDetailsEditPage() {
     await this.casesMenu.click();
-    await expect(this.currentCaseSubMenu).toBeVisible();
+    await expect.poll(async () => await this.currentCaseSubMenu.isVisible()).toBe(true);
     await this.currentCaseSubMenu.click();
     await expect(this.currentCaseDetailsEdit).toBeVisible();
     await this.currentCaseDetailsEdit.click();
