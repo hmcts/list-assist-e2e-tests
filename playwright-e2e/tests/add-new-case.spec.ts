@@ -88,7 +88,6 @@ test.describe("Case creation @add-new-case", () => {
 
     //CHECK CURRENT DETAILS OF CASE
     await caseDetailsPage.sidebarComponent.openCaseDetailsEditPage();
-    await caseDetailsPage.page.pause();
     await expect(caseDetailsPage.currentCaseCurrentStatusField).toHaveText(
       "Current Status " + caseData.currentStatus
     );
