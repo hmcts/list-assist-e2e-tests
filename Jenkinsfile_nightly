@@ -78,7 +78,7 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
     if (!TAGS_TO_RUN.isEmpty()) {
-      stage("${TAGS_TO_RUN} E2E Tests") {
+      stage("${TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
           currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests"
           yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN))
