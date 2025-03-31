@@ -1,5 +1,6 @@
 import { Page } from "@playwright/test";
 import { Base } from "../../base";
+import { generateRandomAlphanumeric } from "../../base";
 
 export class AddNewCasePage extends Base {
   readonly hmctsCaseNumber = generateRandomAlphanumeric(10).toUpperCase();
@@ -69,13 +70,4 @@ export class AddNewCasePage extends Base {
     await this.hmctsCaseNumberInput.fill(hmctsCaseNumber);
     await this.enterNameInput.fill(caseName)
   }
-}
-
-function generateRandomAlphanumeric(length: number): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
 }
