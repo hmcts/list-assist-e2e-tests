@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { expect } from "../../fixtures.ts";
 
 export class SidebarComponent {
@@ -18,7 +18,7 @@ export class SidebarComponent {
     "#listingRequirements_subMenuItem"
   );
 
-  constructor(private root: Locator) {}
+  constructor(private root: Locator, private page: Page) {}
 
   async openHearingSchedulePage() {
     await this.hearingsMenu.click();
@@ -66,6 +66,7 @@ export class SidebarComponent {
   }
 
   async openCaseDetailsEditPage() {
+    await this.page.waitForTimeout(3_000);
     await expect
       .poll(
         async () => {

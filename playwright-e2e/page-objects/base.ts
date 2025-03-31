@@ -5,14 +5,18 @@ import { SidebarComponent } from "./components";
 // common objects and methods can be defined here
 export abstract class Base {
   readonly baseContainer = this.page.locator("body");
-  readonly sidebarComponent = new SidebarComponent(this.baseContainer);
+  readonly sidebarComponent = new SidebarComponent(
+    this.baseContainer,
+    this.page
+  );
 
   constructor(public readonly page: Page) {}
 }
 
 export function generateRandomAlphanumeric(length: number): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
