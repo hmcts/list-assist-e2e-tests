@@ -32,26 +32,35 @@ export class SidebarComponent {
   }
 
   async openListingRequirementsPage() {
-    await this.casesMenu.click()
-    await this.checkCurrentCaseSubMenuIsPresent();
+    await expect.poll(
+        async () => {
+          await this.casesMenu.click();
+          return await this.currentCaseSubMenu.isVisible();
+        },
+        {
+          timeout: 10_000,
+        }
+      )
+      .toBeTruthy();
+
+    await this.currentCaseSubMenu.click();
     await expect(this.listingRequirementsSubmenu).toBeVisible();
     await this.listingRequirementsSubmenu.click()
   }
 
   async openCaseDetailsEditPage() {
-    await this.casesMenu.click();
-    await this.checkCurrentCaseSubMenuIsPresent();
-    await expect(this.currentCaseDetailsEdit).toBeVisible();
-    await this.currentCaseDetailsEdit.click();
-  }
-
-  private async checkCurrentCaseSubMenuIsPresent() {
-    await expect.poll(async () => {
-      if (await this.currentCaseSubMenu.isVisible()) {
-        await this.currentCaseSubMenu.click();
-        return true;
+    await expect.poll(
+      async () => {
+        await this.casesMenu.click();
+        return await this.currentCaseSubMenu.isVisible();
+      },
+      {
+        timeout: 10_000,
       }
-      return false;
-    }).toBe(true);
+    )
+      .toBeTruthy();
+
+    await this.currentCaseSubMenu.click();
+    await this.currentCaseDetailsEdit.click();
   }
 }
