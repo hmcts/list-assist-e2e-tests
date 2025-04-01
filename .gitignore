@@ -16,3 +16,4 @@ node_modules/
 .vscode/*
 .sessions/
 .prettierignore
+.prettierrc
