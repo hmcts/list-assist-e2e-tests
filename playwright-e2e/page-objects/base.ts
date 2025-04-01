@@ -1,5 +1,5 @@
-import {Page} from "@playwright/test";
-import {SidebarComponent} from "./components";
+import { Page } from "@playwright/test";
+import { SidebarComponent } from "./components";
 
 
 // A base page inherited by pages & components
