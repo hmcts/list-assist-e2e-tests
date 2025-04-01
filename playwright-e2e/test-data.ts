@@ -1,5 +1,4 @@
 export class TestData {
-
   //new data new case creation
   static readonly HMCTS_CASE_NUMBER_HEADER_VALUE = "HMCTS Case Number";
   static readonly CASE_NAME_HEADER_VALUE = "Case Name";
@@ -7,8 +6,10 @@ export class TestData {
   static readonly SERVICE_DIVORCE = "Divorce";
   static readonly DECREE_ABSOLUTE_CASE_TYPE = "Decree Absolute";
   static readonly REGION_WALES = "Wales";
-  static readonly CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS = "Wales Civil, Family and Tribunals";
-  static readonly HEARING_CENTRE_CARDIFF = "Cardiff Civil and Family Justice Centre";
+  static readonly CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS =
+    "Wales Civil, Family and Tribunals";
+  static readonly HEARING_CENTRE_CARDIFF =
+    "Cardiff Civil and Family Justice Centre";
   static readonly CURRENT_STATUS_AWAITING_LISTING = "Awaiting Listing";
 
   //hearing type ids
@@ -22,7 +23,6 @@ export class TestData {
   static readonly PARTICIPANT_ROLE_APPLICANT = "APPL";
   static readonly CASE_PARTICIPANT_TABLE_INDIVIDUAL = "Individual";
   static readonly CASE_PARTICIPANT_TABLE_INTERPRETER = "Welsh";
-
 }
 
 export function generateRandomAlphanumeric(length: number): string {
@@ -41,8 +41,7 @@ function capitalizeFirstLetter(str: string): string {
 }
 
 export function generateRandomAlphabetical(length: number): string {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   let result = "";
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -56,9 +55,11 @@ export function getRandomNumberBetween1And50(): number {
 
 export function generateDobInDdMmYyyy(yearsInThePast: number): string {
   const today = new Date();
-  const pastDate = new Date(today.setFullYear(today.getFullYear() - yearsInThePast));
-  const day = String(pastDate.getDate()).padStart(2, '0');
-  const month = String(pastDate.getMonth() + 1).padStart(2, '0');
+  const pastDate = new Date(
+    today.setFullYear(today.getFullYear() - yearsInThePast),
+  );
+  const day = String(pastDate.getDate()).padStart(2, "0");
+  const month = String(pastDate.getMonth() + 1).padStart(2, "0");
   const year = pastDate.getFullYear();
   return `${day}/${month}/${year}`;
 }

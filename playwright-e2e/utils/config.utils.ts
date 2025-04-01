@@ -59,7 +59,7 @@ export function isSessionValid(path: string, cookieName: string): boolean {
   try {
     const data = JSON.parse(fs.readFileSync(path, "utf-8"));
     const cookie = data.cookies.find(
-      (cookie: Cookie) => cookie.name === cookieName
+      (cookie: Cookie) => cookie.name === cookieName,
     );
 
     const oneHourMs = 1 * 60 * 60 * 1000;

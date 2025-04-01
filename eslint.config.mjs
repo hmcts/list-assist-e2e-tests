@@ -34,5 +34,5 @@ export default tseslint.config(
       "playwright/expect-expect": "off",
     },
     files: ["playwright-e2e/**/*.ts"],
-  }
+  },
 );
