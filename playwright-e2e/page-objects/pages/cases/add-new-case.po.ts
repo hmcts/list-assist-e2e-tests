@@ -1,6 +1,16 @@
-import { Page } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 import { Base } from "../../base";
-import { generateRandomAlphanumeric } from "../../base";
+
+import {generateRandomAlphanumeric} from "../../../test-data.ts";
+
+interface CaseData {
+  jurisdiction: string;
+  service: string;
+  caseType: string;
+  region: string;
+  cluster: string;
+  hearingCentre: string;
+}
 
 export class AddNewCasePage extends Base {
   readonly hmctsCaseNumber = generateRandomAlphanumeric(10).toUpperCase();
@@ -69,5 +79,26 @@ export class AddNewCasePage extends Base {
     await this.selectOwningHearing(owninghearing);
     await this.hmctsCaseNumberInput.fill(hmctsCaseNumber);
     await this.enterNameInput.fill(caseName)
+  }
+
+  async addNewCaseWithMandatoryData(caseData: CaseData, hmctsCaseNumber: string, caseName: string) {
+
+    // Assert that the header contains the text 'New Case'
+    await expect(this.newCaseHeader).toHaveText("New Case");
+    // Assert that sidebar is visible
+    await expect(this.sidebarComponent.sidebar).toBeVisible();
+    // Populate new case details form
+    await this.populateNewCaseDetails(
+      hmctsCaseNumber,
+      caseName,
+      caseData.jurisdiction,
+      caseData.service,
+      caseData.caseType,
+      caseData.region,
+      caseData.cluster,
+      caseData.hearingCentre
+    );
+    // Click save button
+    await this.saveButton.click();
   }
 }
