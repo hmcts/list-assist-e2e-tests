@@ -25,7 +25,7 @@ export class AxeUtils {
    */
   public async audit(options?: AuditOptions) {
     const builder = new AxeBuilder({ page: this.page }).withTags(
-      this.DEFAULT_TAGS
+      this.DEFAULT_TAGS,
     );
     if (options?.exclude && options) builder.exclude(options.exclude);
     const results = await builder.analyze();

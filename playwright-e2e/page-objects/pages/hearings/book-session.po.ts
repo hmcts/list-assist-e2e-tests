@@ -8,7 +8,7 @@ export class BookSessionPage extends Base {
   readonly saveButton = this.page.locator("#svb");
   readonly deleteButton = this.page.locator("#dvb");
   readonly popupFrame = this.page.frameLocator(
-    "#container iframe[name='addAssociation']"
+    "#container iframe[name='addAssociation']",
   );
   readonly popup = {
     form: this.popupFrame.locator("#listingPopupForm"),
@@ -67,7 +67,7 @@ export class BookSessionPage extends Base {
         {
           intervals: [2_000],
           timeout: 60_000,
-        }
+        },
       )
       .toBeTruthy();
   }
@@ -81,7 +81,7 @@ export class BookSessionPage extends Base {
         {
           intervals: [2_000],
           timeout: 60_000,
-        }
+        },
       )
       .toBeTruthy();
   }

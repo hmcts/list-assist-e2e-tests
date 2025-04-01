@@ -1,20 +1,121 @@
-import { Page } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 import { Base } from "../../base";
 
 export class EditNewCasePage extends Base {
+  // Edit new case
+  readonly newCaseHeader = this.page.locator("h1.header-title.my-2");
+  readonly hmctsCaseNumberField = this.page.locator(
+    "#matter-detail-mtrNumberAdded",
+  );
+  readonly caseNameField = this.page.locator("#matter-detail-mtrAltTitleTxt");
+  readonly jurisdictionField = this.page.locator("#matter-detail-mtrJsCodeId");
+  readonly serviceField = this.page.locator("#matter-detail-mtrCategoryId");
+  readonly caseTypeField = this.page.locator("#matter-detail-mtrMatterCdId");
+  readonly regionField = this.page.locator("#matter-detail-areaCode");
+  readonly clusterField = this.page.locator("#matter-detail-registry");
+  readonly owningHearingField = this.page.locator(
+    "#matter-detail-homeLocationId",
+  );
 
-    readonly newCaseHeader = this.page.locator('h1.header-title.my-2');
-    readonly hmctsCaseNumberField = this.page.locator("#matter-detail-mtrNumberAdded");
-    readonly caseNameField = this.page.locator("#matter-detail-mtrAltTitleTxt");
-    readonly jurisdictionField = this.page.locator("#matter-detail-mtrJsCodeId");
-    readonly serviceField = this.page.locator("#matter-detail-mtrCategoryId");
-    readonly caseTypeField = this.page.locator("#matter-detail-mtrMatterCdId");
-    readonly regionField = this.page.locator("#matter-detail-areaCode");
-    readonly clusterField = this.page.locator("#matter-detail-registry");
-    readonly owningHearingField = this.page.locator("#matter-detail-homeLocationId");
-
+  // Add new participant
+  readonly caseParticipantsHeader = this.page.getByRole("heading", {
+    name: "Case Participants",
+  });
+  readonly addNewParticipantButton = this.page.locator("#add_new_party_btn_id");
 
   constructor(page: Page) {
     super(page);
+  }
+
+  async createNewParticipant(
+    participantClass: string,
+    participantType: string,
+    givenNames: string,
+    lastName: string,
+    gender: string,
+    dateOfBirth: string,
+    interpreter: string,
+    role: string,
+  ) {
+    const waitForCreateNewPartyPopup = this.page.waitForEvent("popup");
+    await this.addNewParticipantButton.click();
+    const createNewParticipant = await waitForCreateNewPartyPopup;
+    await expect(
+      createNewParticipant.getByRole("button", {
+        name: "Create New",
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    await createNewParticipant
+      .getByRole("button", { name: "Create New", exact: true })
+      .click();
+
+    // Fill in the participant details
+    await expect(
+      createNewParticipant.getByText("New Participant"),
+    ).toBeVisible();
+
+    await createNewParticipant.getByLabel("Participant Class").click();
+    await createNewParticipant
+      .getByLabel("Participant Class")
+      .selectOption(participantClass);
+    await createNewParticipant.getByLabel("Participant Type").click();
+    await createNewParticipant
+      .getByLabel("Participant Type")
+      .selectOption(participantType);
+    await createNewParticipant
+      .getByRole("textbox", { name: "Given Names" })
+      .click();
+    await createNewParticipant
+      .getByRole("textbox", { name: "Given Names" })
+      .fill(givenNames);
+    await createNewParticipant
+      .getByRole("textbox", { name: "Last Name" })
+      .click();
+    await createNewParticipant
+      .getByRole("textbox", { name: "Last Name" })
+      .fill(lastName);
+    await createNewParticipant
+      .getByLabel("Gender", { exact: true })
+      .selectOption(gender);
+    await createNewParticipant.getByRole("textbox", { name: "DOB" }).click();
+    await createNewParticipant
+      .getByRole("textbox", { name: "DOB" })
+      .fill(dateOfBirth);
+    await createNewParticipant.locator("#personentityLanguageCodeIntp").click();
+    await createNewParticipant
+      .locator("#personentityLanguageCodeIntp")
+      .selectOption(interpreter);
+    await createNewParticipant.getByRole("button", { name: "Save" }).click();
+
+    await expect(createNewParticipant.getByText("New Party")).toBeVisible();
+    await expect(createNewParticipant.getByLabel("Role")).toBeVisible();
+    await createNewParticipant.getByLabel("Role").selectOption(role);
+    await createNewParticipant
+      .getByRole("button", { name: "Save", exact: true })
+      .click();
+  }
+
+  async checkCaseParticipantTable(
+    caseParticipantsType: string,
+    caseParticipantsName: string,
+    caseInterpreter: string,
+  ) {
+    await expect(
+      this.page.getByRole("cell", { name: caseParticipantsType }),
+    ).toBeVisible();
+    await expect(
+      this.page.getByRole("link", { name: caseParticipantsName }),
+    ).toBeVisible();
+    await expect(
+      this.page.getByRole("cell", { name: caseInterpreter }),
+    ).toBeVisible();
+    await expect(
+      this.page.getByRole("button", { name: "View/Edit" }),
+    ).toBeVisible();
+    await expect(
+      this.page.getByRole("button", { name: "Remove" }),
+    ).toBeVisible();
   }
 }

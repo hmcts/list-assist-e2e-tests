@@ -1,21 +1,25 @@
 import { expect, test } from "../fixtures";
 import { config } from "../utils";
-import { TestData } from "../test-data.ts";
+import {
+  generateRandomAlphabetical,
+  generateDobInDdMmYyyy,
+  getRandomNumberBetween1And50,
+  TestData,
+} from "../test-data";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe("Case creation @add-new-case", () => {
+test.describe("Add participant @add-participant", () => {
   test.beforeEach(async ({ page, homePage }) => {
     await page.goto(config.urls.baseUrl);
     await homePage.sidebarComponent.openAddNewCasePage();
   });
 
-  test("Create new case and confirm case is created correctly @smoke", async ({
+  test("Add new participant to case @smoke", async ({
     addNewCasePage,
     editNewCasePage,
-    caseDetailsPage,
   }) => {
     // Test data
     const caseData = {
@@ -46,38 +50,29 @@ test.describe("Case creation @add-new-case", () => {
       `Case ${hmctsCaseNumber} (${caseName})`,
     );
 
-    //checks case details against known values
-    await caseDetailsPage.checkInputtedCaseValues(
-      editNewCasePage,
-      hmctsCaseNumber,
-      caseName,
-      caseData.jurisdiction,
-      caseData.service,
-      caseData.caseType,
-      caseData.region,
-      caseData.cluster,
-      caseData.hearingCentre,
+    //add new participant
+    await expect(editNewCasePage.caseParticipantsHeader).toBeVisible();
+    await expect(editNewCasePage.addNewParticipantButton).toBeVisible();
+    await editNewCasePage.addNewParticipantButton.click();
+
+    const givenName = generateRandomAlphabetical(7);
+    const lastName = generateRandomAlphabetical(8);
+
+    await editNewCasePage.createNewParticipant(
+      TestData.PARTICIPANT_CLASS_PERSON,
+      TestData.PARTICIPANT_TYPE_INDIVIDUAL,
+      givenName,
+      lastName,
+      TestData.PARTICIPANT_GENDER_MALE,
+      generateDobInDdMmYyyy(getRandomNumberBetween1And50()),
+      TestData.PARTICIPANT_INTERPRETER_CYM,
+      TestData.PARTICIPANT_ROLE_APPLICANT,
     );
 
-    //LISTING REQUIREMENTS
-    await editNewCasePage.sidebarComponent.openListingRequirementsPage();
-    //checks header
-    await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
-
-    //select hearing type
-    await caseDetailsPage.hearingTypeSelect.selectOption(
-      caseData.hearingTypeRef,
+    await editNewCasePage.checkCaseParticipantTable(
+      TestData.CASE_PARTICIPANT_TABLE_INDIVIDUAL,
+      `${lastName}, ${givenName}`,
+      TestData.CASE_PARTICIPANT_TABLE_INTERPRETER,
     );
-    await caseDetailsPage.saveButton.click();
-
-    //CHECK CURRENT DETAILS OF CASE
-    await caseDetailsPage.sidebarComponent.openCaseDetailsEditPage();
-    await expect(caseDetailsPage.currentCaseCurrentStatusField).toHaveText(
-      "Current Status " + caseData.currentStatus,
-    );
-
-    //Close case
-    await caseDetailsPage.closeCaseButton.click();
-    await caseDetailsPage.headerTitle.isVisible();
   });
 });
