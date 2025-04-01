@@ -1,5 +1,6 @@
 import { expect, test } from "../fixtures";
 import { config } from "../utils";
+import { TestData } from "../test-data.ts";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
@@ -18,39 +19,22 @@ test.describe("Case creation @add-new-case", () => {
   }) => {
     // Test data
     const caseData = {
-      hmctsCaseNumberHeaderValue: "HMCTS Case Number",
-      caseNameHeaderValue: "Case Name",
-      jurisdiction: "Family",
-      service: "Divorce",
-      caseType: "Decree Absolute",
-      region: "Wales",
-      cluster: "Wales Civil, Family and Tribunals",
-      hearingCentre: "Cardiff Civil and Family Justice Centre",
-      hearingTypeRef: "449628128",
-      currentStatus: "Awaiting Listing",
+      hmctsCaseNumberHeaderValue: TestData.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      caseNameHeaderValue: TestData.CASE_NAME_HEADER_VALUE,
+      jurisdiction: TestData.JURISDICTION_FAMILY,
+      service: TestData.SERVICE_DIVORCE,
+      caseType: TestData.DECREE_ABSOLUTE_CASE_TYPE,
+      region: TestData.REGION_WALES,
+      cluster: TestData.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      hearingCentre: TestData.HEARING_CENTRE_CARDIFF,
+      hearingTypeRef: TestData.HEARING_TYPE_APPLICATION_REF,
+      currentStatus: TestData.CURRENT_STATUS_AWAITING_LISTING,
     };
 
     const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
     const caseName = "AUTO_" + addNewCasePage.hmctsCaseNumber;
 
-    //ADD NEW CASE FORM
-    // Assert that the header contains the text 'New Case'
-    await expect(addNewCasePage.newCaseHeader).toHaveText("New Case");
-    // Assert that sidebar is visible
-    await expect(addNewCasePage.sidebarComponent.sidebar).toBeVisible();
-    //Populate new case details form
-    await addNewCasePage.populateNewCaseDetails(
-      hmctsCaseNumber,
-      caseName,
-      caseData.jurisdiction,
-      caseData.service,
-      caseData.caseType,
-      caseData.region,
-      caseData.cluster,
-      caseData.hearingCentre
-    );
-    //click save button
-    await addNewCasePage.saveButton.click();
+    await addNewCasePage.addNewCaseWithMandatoryData(caseData, hmctsCaseNumber, caseName);
 
     // Assert that the new case has been created
     // Assert that the header contains HMCTS case number and case name set when creating the case
