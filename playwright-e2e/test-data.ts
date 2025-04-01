@@ -54,7 +54,6 @@ export function getRandomNumberBetween1And50(): number {
   return Math.floor(Math.random() * 50) + 1;
 }
 
-//able to pass in age of test user
 export function generateDobInDdMmYyyy(yearsInThePast: number): string {
   const today = new Date();
   const pastDate = new Date(today.setFullYear(today.getFullYear() - yearsInThePast));
