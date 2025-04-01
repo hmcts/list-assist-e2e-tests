@@ -34,12 +34,16 @@ test.describe("Case creation @add-new-case", () => {
     const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
     const caseName = "AUTO_" + addNewCasePage.hmctsCaseNumber;
 
-    await addNewCasePage.addNewCaseWithMandatoryData(caseData, hmctsCaseNumber, caseName);
+    await addNewCasePage.addNewCaseWithMandatoryData(
+      caseData,
+      hmctsCaseNumber,
+      caseName,
+    );
 
     // Assert that the new case has been created
     // Assert that the header contains HMCTS case number and case name set when creating the case
     await expect(editNewCasePage.newCaseHeader).toHaveText(
-      `Case ${hmctsCaseNumber} (${caseName})`
+      `Case ${hmctsCaseNumber} (${caseName})`,
     );
 
     //checks case details against known values
@@ -52,7 +56,7 @@ test.describe("Case creation @add-new-case", () => {
       caseData.caseType,
       caseData.region,
       caseData.cluster,
-      caseData.hearingCentre
+      caseData.hearingCentre,
     );
 
     //LISTING REQUIREMENTS
@@ -62,14 +66,14 @@ test.describe("Case creation @add-new-case", () => {
 
     //select hearing type
     await caseDetailsPage.hearingTypeSelect.selectOption(
-      caseData.hearingTypeRef
+      caseData.hearingTypeRef,
     );
     await caseDetailsPage.saveButton.click();
 
     //CHECK CURRENT DETAILS OF CASE
     await caseDetailsPage.sidebarComponent.openCaseDetailsEditPage();
     await expect(caseDetailsPage.currentCaseCurrentStatusField).toHaveText(
-      "Current Status " + caseData.currentStatus
+      "Current Status " + caseData.currentStatus,
     );
 
     //Close case

@@ -41,7 +41,7 @@ export class HearingSchedulePage extends Base {
         {
           intervals: [2_000],
           timeout: 60_000,
-        }
+        },
       )
       .toBeTruthy();
   }
@@ -80,7 +80,7 @@ export class HearingSchedulePage extends Base {
   async scheduleHearingWithBasket(
     roomName: string,
     column: string,
-    caseName: string
+    caseName: string,
   ): Promise<void> {
     const table: TableRow[] = await this.mapTable();
     const row = table.filter((row) => row.roomName === roomName)[0];

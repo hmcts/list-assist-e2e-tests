@@ -5,20 +5,23 @@ export class SidebarComponent {
   readonly sidebar = this.root.locator("#pageNavigation");
   readonly hearingsMenu = this.root.locator("#hearing_menuItem");
   readonly hearingScheduleSubMenu = this.root.locator(
-    "#hearingSchedule_subMenuItem"
+    "#hearingSchedule_subMenuItem",
   );
   readonly casesMenu = this.root.locator("#matter_menuItem");
   readonly caseSearchSubMenu = this.root.locator("#search_subMenuItem");
   readonly caseAddNew = this.root.locator("#addNew_subMenuItem");
   readonly currentCaseSubMenu = this.root.locator("#currentMatter_subMenuItem");
   readonly currentCaseDetailsEdit = this.root.locator(
-    "#detailsEdit_subMenuItem"
+    "#detailsEdit_subMenuItem",
   );
   readonly listingRequirementsSubmenu = this.root.locator(
-    "#listingRequirements_subMenuItem"
+    "#listingRequirements_subMenuItem",
   );
 
-  constructor(private root: Locator, private page: Page) {}
+  constructor(
+    private root: Locator,
+    private page: Page,
+  ) {}
 
   async openHearingSchedulePage() {
     await this.hearingsMenu.click();
@@ -45,7 +48,7 @@ export class SidebarComponent {
         {
           intervals: [2_000],
           timeout: 10_000,
-        }
+        },
       )
       .toBeTruthy();
 
@@ -58,7 +61,7 @@ export class SidebarComponent {
         {
           intervals: [2_000],
           timeout: 10_000,
-        }
+        },
       )
       .toBeTruthy();
 
@@ -77,7 +80,7 @@ export class SidebarComponent {
         {
           intervals: [2_000],
           timeout: 10_000,
-        }
+        },
       )
       .toBeTruthy();
 

@@ -43,13 +43,14 @@ test.describe("Session creation @create-session", () => {
         await bookSessionPage.cancelSession(data.cancelReason);
         const row = await hearingSchedulePage.filterTableByRoom(data.roomName);
         expect(
-          await row.row.locator(hearingSchedulePage.siblingRow).textContent()
+          await row.row.locator(hearingSchedulePage.siblingRow).textContent(),
         ).not.toContain(data.caseNumber);
       }
-    }
+    },
   );
 
-  test("Create session using an existing case @smoke", async ({hearingSchedulePage,
+  test("Create session using an existing case @smoke", async ({
+    hearingSchedulePage,
     bookSessionPage,
   }) => {
     // Choose a slot to schedule the hearing
@@ -59,13 +60,13 @@ test.describe("Session creation @create-session", () => {
     await hearingSchedulePage.scheduleHearingWithBasket(
       data.roomName,
       data.column,
-      data.caseNumber
+      data.caseNumber,
     );
     await bookSessionPage.bookSession(data.sessionDuration, data.hearingType);
     // Verify the session is present on the calendar
     const row = await hearingSchedulePage.filterTableByRoom(data.roomName);
     expect(
-      await row.row.locator(hearingSchedulePage.siblingRow).textContent()
+      await row.row.locator(hearingSchedulePage.siblingRow).textContent(),
     ).toContain(data.caseNumber);
   });
 });
