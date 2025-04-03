@@ -3,6 +3,9 @@ import { expect } from "../../fixtures.ts";
 
 export class SidebarComponent {
   readonly sidebar = this.root.locator("#pageNavigation");
+  readonly backToMenuButton = this.root.locator(
+    'div.sidepanel-card--topheader:has-text("Back to menu")',
+  );
   readonly hearingsMenu = this.root.locator("#hearing_menuItem");
   readonly hearingScheduleSubMenu = this.root.locator(
     "#hearingSchedule_subMenuItem",
@@ -24,11 +27,38 @@ export class SidebarComponent {
   ) {}
 
   async openHearingSchedulePage() {
+    await expect
+      .poll(
+        async () => {
+          await this.hearingsMenu.click();
+          return await this.hearingScheduleSubMenu.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
+
     await this.hearingsMenu.click();
     await this.hearingScheduleSubMenu.click();
   }
 
   async openSearchCasePage() {
+    await expect
+      .poll(
+        async () => {
+          await this.casesMenu.click();
+          return await this.caseSearchSubMenu.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
     await this.casesMenu.click();
     await this.caseSearchSubMenu.click();
   }

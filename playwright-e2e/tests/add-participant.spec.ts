@@ -65,7 +65,7 @@ test.describe("Add participant @add-participant", () => {
       lastName,
       TestData.PARTICIPANT_GENDER_MALE,
       generateDobInDdMmYyyy(getRandomNumberBetween1And50()),
-      TestData.PARTICIPANT_INTERPRETER_CYM,
+      TestData.PARTICIPANT_INTERPRETER_WELSH,
       TestData.PARTICIPANT_ROLE_APPLICANT,
     );
 
