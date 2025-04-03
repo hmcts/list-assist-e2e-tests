@@ -6,6 +6,7 @@ import { HomePage } from "./home.po";
 import { LoginPage } from "./login.po";
 import { AddNewCasePage } from "./cases/add-new-case.po.ts";
 import { EditNewCasePage } from "./cases/edit-case.po.ts";
+import { ListACase } from "./cases/list-a-case.po.ts";
 
 export interface PageFixtures {
   loginPage: LoginPage;
@@ -16,6 +17,7 @@ export interface PageFixtures {
   bookSessionPage: BookSessionPage;
   addNewCasePage: AddNewCasePage;
   editNewCasePage: EditNewCasePage;
+  listACase: ListACase;
 }
 
 export const pageFixtures = {
@@ -42,5 +44,8 @@ export const pageFixtures = {
   },
   editNewCasePage: async ({ page }, use) => {
     await use(new EditNewCasePage(page));
+  },
+  listACase: async ({ page }, use) => {
+    await use(new ListACase(page));
   },
 };
