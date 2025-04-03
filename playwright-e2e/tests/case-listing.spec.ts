@@ -6,19 +6,20 @@ test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe("Listing a case @listing-a-case", () => {
-  test.beforeEach(async ({ page, homePage, listACase }) => {
+test.describe("Case listing @case-listing", () => {
+  test.beforeEach(async ({ page, homePage, caseListingPage }) => {
     await page.goto(config.urls.baseUrl);
+    //empties cart if there is anything present
+    await caseListingPage.emptyCaseCart();
     await homePage.sidebarComponent.openAddNewCasePage();
-    await listACase.emptyCaseCart();
   });
 
   test("Confirm case listing @smoke", async ({
     addNewCasePage,
     caseSearchPage,
     caseDetailsPage,
-    listACase,
-    hearingSchedulePage
+    caseListingPage,
+    hearingSchedulePage,
   }) => {
     const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
     const caseName = "AUTO_" + addNewCasePage.hmctsCaseNumber;
@@ -39,32 +40,36 @@ test.describe("Listing a case @listing-a-case", () => {
 
     // Test data
     const roomData = {
-      roomName: "Leicester County Courtroom 07",
-      column: "columnOne",
+      roomName: TestData.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      column: TestData.CASE_LISTING_COLUMN_ONE,
       caseNumber: hmctsCaseNumber,
-      sessionDuration: "1:00",
-      hearingType: "Application",
-      cancelReason: "Amend",
+      sessionDuration: TestData.CASE_LISTING_SESSION_DURATION_1_00,
+      hearingType: TestData.CASE_LISTING_HEARING_TYPE_APPLICATION,
+      cancelReason: TestData.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await addNewCasePage.addNewCaseWithMandatoryData(
       caseData,
       hmctsCaseNumber,
-      caseName
+      caseName,
     );
 
     //add case to cart
-    await listACase.sidebarComponent.openSearchCasePage();
+    await caseListingPage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(caseName);
     await caseDetailsPage.addToCartButton.click();
-    await expect(listACase.cartButton).toBeEnabled();
+    await expect(caseListingPage.cartButton).toBeEnabled();
 
     //go to hearing schedule page
     await expect(hearingSchedulePage.sidebarComponent.sidebar).toBeVisible();
-    await listACase.sidebarComponent.openHearingSchedulePage();
+    await caseListingPage.sidebarComponent.openHearingSchedulePage();
 
     //schedule hearing
     await hearingSchedulePage.waitForLoad();
+
+    //clears down schedule
+    await caseListingPage.clearDownSchedule();
+
     await hearingSchedulePage.scheduleHearingWithBasket(
       roomData.roomName,
       roomData.column,
@@ -72,7 +77,21 @@ test.describe("Listing a case @listing-a-case", () => {
     );
 
     //session booking page
-    await expect(listACase.sessionBookingHeader).toBeVisible();
+    await expect(caseListingPage.sessionBookingHeader).toBeVisible();
+    await caseListingPage.sessionStatusDropdown.click();
+    await caseListingPage.sessionStatusDropdown.selectOption(
+      TestData.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+    );
+    await caseListingPage.durationDropdown.selectOption(
+      TestData.CASE_LISTING_SESSION_DURATION_1_00,
+    );
+    await caseListingPage.saveButton.click();
+
+    //Check Listing iframe
+    await caseListingPage.checkingListingIframe()
+
+    //confirm listing
+    await expect(caseListingPage.bookingDetailsButtons).toContainText('Released');
 
   });
 });

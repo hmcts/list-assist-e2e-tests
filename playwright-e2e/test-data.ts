@@ -19,10 +19,20 @@ export class TestData {
   static readonly PARTICIPANT_CLASS_PERSON = "PERSON";
   static readonly PARTICIPANT_TYPE_INDIVIDUAL = "IND";
   static readonly PARTICIPANT_GENDER_MALE = "M";
-  static readonly PARTICIPANT_INTERPRETER_CYM = "cym";
+  static readonly PARTICIPANT_INTERPRETER_WELSH = "cym";
   static readonly PARTICIPANT_ROLE_APPLICANT = "APPL";
   static readonly CASE_PARTICIPANT_TABLE_INDIVIDUAL = "Individual";
   static readonly CASE_PARTICIPANT_TABLE_INTERPRETER = "Welsh";
+
+  //case listing
+  static readonly CASE_LISTING_ROOM_NAME_LEICESTER_CC_7 =
+    "Leicester County Courtroom 07";
+  static readonly CASE_LISTING_SESSION_STATUS_TYPE_RELEASED = "5";
+  static readonly CASE_LISTING_SESSION_STATUS_TYPE_APPROVED = "4";
+  static readonly CASE_LISTING_SESSION_DURATION_1_00 = "60";
+  static readonly CASE_LISTING_COLUMN_ONE = "columnOne";
+  static readonly CASE_LISTING_HEARING_TYPE_APPLICATION = "Application";
+  static readonly CASE_LISTING_CANCEL_REASON_AMEND = "Amend";
 }
 
 export function generateRandomAlphanumeric(length: number): string {
