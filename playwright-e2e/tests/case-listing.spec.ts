@@ -41,7 +41,7 @@ test.describe("Case listing @case-listing", () => {
 
     // Test data
     const roomData = {
-      roomName: TestData.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      roomName: TestData.CASE_LISTING_ROOM_NAME_LEICESTER_CC_8,
       column: TestData.CASE_LISTING_COLUMN_ONE,
       caseNumber: hmctsCaseNumber,
       sessionDuration: TestData.CASE_LISTING_SESSION_DURATION_1_00,
@@ -89,8 +89,6 @@ test.describe("Case listing @case-listing", () => {
     await caseListingPage.checkingListingIframe();
 
     //confirm listing
-    await expect(caseListingPage.bookingDetailsButtons).toContainText(
-      TestData.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-    );
+    await expect(caseListingPage.confirmListingReleasedStatus).toBeVisible();
   });
 });

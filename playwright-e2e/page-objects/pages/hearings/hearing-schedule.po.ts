@@ -32,9 +32,8 @@ export class HearingSchedulePage extends Base {
   readonly scheduleButton10amTo6pmReleased = this.page.getByRole("button", {
     name: "10:00-16:00 - Released",
   });
-  readonly scheduleButton10amTo6pmLeicester = this.page.getByRole("button", {
-    name: "10:00-16:00 - Leicester",
-  });
+  readonly scheduleButton10amTo6pmLeicester =
+    this.page.locator('div.droparea span.sessionHeader', { hasText: 'Leicester County Courtroom 08' });
   readonly goToSessionDetailsButton = this.page.getByRole("button", {
     name: "Go to Session Details screen",
   });

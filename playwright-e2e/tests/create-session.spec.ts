@@ -13,7 +13,7 @@ test.describe("Session creation @create-session", () => {
 
   // Test data
   const data = {
-    roomName: "Leicester County Courtroom 07",
+    roomName: TestData.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
     column: "columnOne",
     caseNumber: "AUTOTESTING002",
     sessionDuration: "1:00",
