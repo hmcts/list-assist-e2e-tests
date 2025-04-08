@@ -7,15 +7,18 @@ test.use({
 });
 
 test.describe("Case listing @case-listing", () => {
-  test.beforeEach(async ({ page, homePage, caseListingPage }) => {
+
+  test.beforeEach(async ({ page, homePage, caseListingPage, hearingSchedulePage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
     await caseListingPage.emptyCaseCart();
+    await hearingSchedulePage.clearDownSchedule(TestData.SESSION_DETAILS_CANCELLATION_CODE_CANCEL);
     await homePage.sidebarComponent.openAddNewCasePage();
   });
 
   test("Confirm case listing @smoke", async ({
-    addNewCasePage,
+    bookSessionPage,
+                                               addNewCasePage,
     caseSearchPage,
     caseDetailsPage,
     caseListingPage,
@@ -66,11 +69,6 @@ test.describe("Case listing @case-listing", () => {
 
     //schedule hearing
     await hearingSchedulePage.waitForLoad();
-
-    //clears down schedule
-    await caseListingPage.clearDownSchedule(
-      TestData.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-    );
 
     await hearingSchedulePage.scheduleHearingWithBasket(
       roomData.roomName,
