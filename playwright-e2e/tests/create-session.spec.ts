@@ -1,5 +1,6 @@
 import { expect, test } from "../fixtures";
 import { config } from "../utils";
+import { TestData } from "../test-data.ts";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
@@ -30,6 +31,7 @@ test.describe("Session creation @create-session", () => {
       hearingSchedulePage,
     }) => {
       await page.goto(config.urls.baseUrl);
+      await hearingSchedulePage.clearDownSchedule(TestData.SESSION_DETAILS_CANCELLATION_CODE_CANCEL);
       await homePage.sidebarComponent.openSearchCasePage();
       await caseSearchPage.searchCase(data.caseNumber);
       await caseDetailsPage.addToCartButton.click();
