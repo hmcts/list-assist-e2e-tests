@@ -16,9 +16,7 @@ test.describe("Case listing @case-listing", () => {
     await homePage.sidebarComponent.openAddNewCasePage();
   });
 
-  test("Confirm case listing @smoke", async ({
-    bookSessionPage,
-                                               addNewCasePage,
+  test("Confirm case listing @smoke", async ({addNewCasePage,
     caseSearchPage,
     caseDetailsPage,
     caseListingPage,
@@ -92,7 +90,7 @@ test.describe("Case listing @case-listing", () => {
 
     //confirm listing
     await expect(caseListingPage.bookingDetailsButtons).toContainText(
-      "Released",
+      TestData.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
     );
   });
 });
