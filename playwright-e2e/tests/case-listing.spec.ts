@@ -68,7 +68,9 @@ test.describe("Case listing @case-listing", () => {
     await hearingSchedulePage.waitForLoad();
 
     //clears down schedule
-    await caseListingPage.clearDownSchedule();
+    await caseListingPage.clearDownSchedule(
+      TestData.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+    );
 
     await hearingSchedulePage.scheduleHearingWithBasket(
       roomData.roomName,
@@ -88,10 +90,11 @@ test.describe("Case listing @case-listing", () => {
     await caseListingPage.saveButton.click();
 
     //Check Listing iframe
-    await caseListingPage.checkingListingIframe()
+    await caseListingPage.checkingListingIframe();
 
     //confirm listing
-    await expect(caseListingPage.bookingDetailsButtons).toContainText('Released');
-
+    await expect(caseListingPage.bookingDetailsButtons).toContainText(
+      "Released",
+    );
   });
 });

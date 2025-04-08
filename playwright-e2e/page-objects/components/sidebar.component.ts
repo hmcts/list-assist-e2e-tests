@@ -40,7 +40,6 @@ export class SidebarComponent {
       )
       .toBeTruthy();
 
-
     await this.hearingsMenu.click();
     await this.hearingScheduleSubMenu.click();
   }
