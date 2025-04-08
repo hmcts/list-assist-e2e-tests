@@ -7,12 +7,17 @@ test.use({
 });
 
 test.describe("Case listing @case-listing", () => {
-  test.beforeEach(async ({ page, homePage, caseListingPage }) => {
-    await page.goto(config.urls.baseUrl);
-    //empties cart if there is anything present
-    await caseListingPage.emptyCaseCart();
-    await homePage.sidebarComponent.openAddNewCasePage();
-  });
+  test.beforeEach(
+    async ({ page, homePage, caseListingPage, hearingSchedulePage }) => {
+      await page.goto(config.urls.baseUrl);
+      //empties cart if there is anything present
+      await caseListingPage.emptyCaseCart();
+      await hearingSchedulePage.clearDownSchedule(
+        TestData.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+      );
+      await homePage.sidebarComponent.openAddNewCasePage();
+    },
+  );
 
   test("Confirm case listing @smoke", async ({
     addNewCasePage,
@@ -57,6 +62,8 @@ test.describe("Case listing @case-listing", () => {
     //add case to cart
     await caseListingPage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(caseName);
+
+    // await expect(caseDetailsPage.addToCartButton).toBeVisible();
     await caseDetailsPage.addToCartButton.click();
     await expect(caseListingPage.cartButton).toBeEnabled();
 
@@ -67,11 +74,6 @@ test.describe("Case listing @case-listing", () => {
     //schedule hearing
     await hearingSchedulePage.waitForLoad();
 
-    //clears down schedule
-    await caseListingPage.clearDownSchedule(
-      TestData.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-    );
-
     await hearingSchedulePage.scheduleHearingWithBasket(
       roomData.roomName,
       roomData.column,
@@ -80,10 +82,11 @@ test.describe("Case listing @case-listing", () => {
 
     //session booking page
     await expect(caseListingPage.sessionBookingHeader).toBeVisible();
-    await caseListingPage.sessionStatusDropdown.click();
     await caseListingPage.sessionStatusDropdown.selectOption(
       TestData.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
     );
+    await expect(caseListingPage.durationDropdownButton).toBeVisible();
+    await caseListingPage.durationDropdownButton.click();
     await caseListingPage.durationDropdown.selectOption(
       TestData.CASE_LISTING_SESSION_DURATION_1_00,
     );
@@ -93,8 +96,6 @@ test.describe("Case listing @case-listing", () => {
     await caseListingPage.checkingListingIframe();
 
     //confirm listing
-    await expect(caseListingPage.bookingDetailsButtons).toContainText(
-      "Released",
-    );
+    await expect(caseListingPage.confirmListingReleasedStatus).toBeVisible();
   });
 });

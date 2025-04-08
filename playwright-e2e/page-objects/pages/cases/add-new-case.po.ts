@@ -133,5 +133,11 @@ export class AddNewCasePage extends Base {
     );
     // Click save button
     await this.saveButton.click();
+
+    //confirms banner for created case is visible
+    await expect(this.newCaseHeader).toBeVisible();
+    await expect(this.newCaseHeader).toHaveText(
+      `Case ${hmctsCaseNumber} (${caseName})`,
+    );
   }
 }
