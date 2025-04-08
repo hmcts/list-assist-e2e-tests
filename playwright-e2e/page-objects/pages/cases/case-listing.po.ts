@@ -13,7 +13,8 @@ export class CaseListingPage extends Base {
   readonly sessionStatusDropdown = this.page.getByLabel(
     "Session Status: This field is",
   );
-  readonly durationDropdown = this.page.getByLabel(
+  readonly durationDropDownBox = this.page.locator('#defListingDuration');
+  readonly durationDropdownPicker = this.page.getByLabel(
     "Default Listing Duration (",
   );
   readonly saveButton = this.page.getByRole("button", { name: "Save" });

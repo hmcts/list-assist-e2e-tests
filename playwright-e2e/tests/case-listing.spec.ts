@@ -17,7 +17,7 @@ test.describe("Case listing @case-listing", () => {
   });
 
   test("Confirm case listing @smoke", async ({addNewCasePage,
-    caseSearchPage,
+                                               caseSearchPage,
     caseDetailsPage,
     caseListingPage,
     hearingSchedulePage,
@@ -58,6 +58,8 @@ test.describe("Case listing @case-listing", () => {
     //add case to cart
     await caseListingPage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(caseName);
+
+    // await expect(caseDetailsPage.addToCartButton).toBeVisible();
     await caseDetailsPage.addToCartButton.click();
     await expect(caseListingPage.cartButton).toBeEnabled();
 
@@ -76,11 +78,11 @@ test.describe("Case listing @case-listing", () => {
 
     //session booking page
     await expect(caseListingPage.sessionBookingHeader).toBeVisible();
-    await caseListingPage.sessionStatusDropdown.click();
     await caseListingPage.sessionStatusDropdown.selectOption(
       TestData.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
     );
-    await caseListingPage.durationDropdown.selectOption(
+    await caseListingPage.durationDropDownBox.click();
+    await caseListingPage.durationDropdownPicker.selectOption(
       TestData.CASE_LISTING_SESSION_DURATION_1_00,
     );
     await caseListingPage.saveButton.click();

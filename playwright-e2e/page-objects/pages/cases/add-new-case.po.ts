@@ -133,5 +133,7 @@ export class AddNewCasePage extends Base {
     );
     // Click save button
     await this.saveButton.click();
+
+
   }
 }
