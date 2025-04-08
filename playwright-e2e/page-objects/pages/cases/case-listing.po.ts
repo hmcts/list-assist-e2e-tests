@@ -18,10 +18,9 @@ export class CaseListingPage extends Base {
   );
   readonly durationDropdownButton = this.page.locator("#defListingDuration");
   readonly saveButton = this.page.getByRole("button", { name: "Save" });
-  readonly bookingDetailsButtons = this.page.locator(
-    'button[title="Show booking details"]',
-  );
-  readonly confirmListingReleasedStatus = this.page.getByRole('button', { name: '10:00-16:00 - Released' })
+  readonly confirmListingReleasedStatus = this.page.getByRole("button", {
+    name: "10:00-16:00 - Released",
+  });
 
   async checkingListingIframe() {
     const listingIframe = this.page.locator('iframe[name="addAssociation"]');

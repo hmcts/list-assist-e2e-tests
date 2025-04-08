@@ -1,6 +1,6 @@
 import { Locator, Page, expect } from "@playwright/test";
 import { Base } from "../../base";
-import {TestData} from "../../../test-data.ts";
+import { TestData } from "../../../test-data.ts";
 
 interface TableRow {
   roomName: string;
@@ -33,8 +33,10 @@ export class HearingSchedulePage extends Base {
   readonly scheduleButton10amTo6pmReleased = this.page.getByRole("button", {
     name: "10:00-16:00 - Released",
   });
-  readonly scheduleButton10amTo6pmLeicester =
-    this.page.locator('div.droparea span.sessionHeader', { hasText: TestData.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7});
+  readonly scheduleButton10amTo6pmLeicester = this.page.locator(
+    "div.droparea span.sessionHeader",
+    { hasText: TestData.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7 },
+  );
   readonly goToSessionDetailsButton = this.page.getByRole("button", {
     name: "Go to Session Details screen",
   });

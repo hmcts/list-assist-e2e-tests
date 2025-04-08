@@ -17,7 +17,6 @@ export class AddNewCasePage extends Base {
 
   //new case page
   readonly newCaseHeader = this.page.locator("h1.header-title.my-2");
-  readonly banner = this.page.locator('h1.header-title');
   readonly jurisdictionSelector = this.page
     .getByLabel("Matter Detail - Jurisdiction_listbox")
     .getByText("Select One");
@@ -137,6 +136,8 @@ export class AddNewCasePage extends Base {
 
     //confirms banner for created case is visible
     await expect(this.newCaseHeader).toBeVisible();
-    await expect(this.newCaseHeader).toHaveText(`Case ${hmctsCaseNumber} (${caseName})`);
+    await expect(this.newCaseHeader).toHaveText(
+      `Case ${hmctsCaseNumber} (${caseName})`,
+    );
   }
 }
