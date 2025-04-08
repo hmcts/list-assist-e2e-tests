@@ -54,6 +54,8 @@ export class CaseListingPage extends Base {
       await modal.getByRole("button", { name: "Yes" }).click();
       await expect(this.cartCounterLabel).toBeHidden();
       await this.sidebarComponent.backToMenuButton.click();
+
+      console.log("Cart has been emptied");
     } else {
       console.log("Cart is empty. No action needed");
     }
