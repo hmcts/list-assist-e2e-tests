@@ -13,15 +13,15 @@ export class CaseListingPage extends Base {
   readonly sessionStatusDropdown = this.page.getByLabel(
     "Session Status: This field is",
   );
-  readonly durationDropDownBox = this.page.locator('#defListingDuration');
-  readonly durationDropdownPicker = this.page.getByLabel(
+  readonly durationDropdown = this.page.getByLabel(
     "Default Listing Duration (",
   );
+  readonly durationDropdownButton = this.page.locator("#defListingDuration");
   readonly saveButton = this.page.getByRole("button", { name: "Save" });
   readonly bookingDetailsButtons = this.page.locator(
     'button[title="Show booking details"]',
   );
-  readonly confirmListingReleasedStatus = this.page.getByRole('button', { name: '10:00-16:00 - Released' }).nth(1);
+  readonly confirmListingReleasedStatus = this.page.getByRole('button', { name: '10:00-16:00 - Released' })
 
   async checkingListingIframe() {
     const listingIframe = this.page.locator('iframe[name="addAssociation"]');

@@ -27,8 +27,6 @@ export class TestData {
   //case listing
   static readonly CASE_LISTING_ROOM_NAME_LEICESTER_CC_7 =
     "Leicester County Courtroom 07";
-  static readonly CASE_LISTING_ROOM_NAME_LEICESTER_CC_8 =
-    "Leicester County Courtroom 08";
   static readonly CASE_LISTING_SESSION_STATUS_TYPE_RELEASED = "5";
   static readonly CASE_LISTING_SESSION_STATUS_TYPE_APPROVED = "4";
   static readonly CASE_LISTING_SESSION_DURATION_1_00 = "60";
