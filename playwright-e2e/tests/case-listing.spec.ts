@@ -1,18 +1,18 @@
 import { expect, test } from "../fixtures";
 import { config } from "../utils";
-import { TestData } from "../test-data.ts";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
 test.describe("Case listing @case-listing", () => {
-  test.beforeEach(async ({ page, homePage, hearingSchedulePage }) => {
+  test.beforeEach(async ({ page, homePage, hearingSchedulePage, bookSessionPage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
     await hearingSchedulePage.clearDownSchedule(
-      TestData.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+      bookSessionPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+      bookSessionPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7
     );
     await homePage.sidebarComponent.openAddNewCasePage();
   });
@@ -29,26 +29,26 @@ test.describe("Case listing @case-listing", () => {
 
     // Test data
     const caseData = {
-      hmctsCaseNumberHeaderValue: TestData.HMCTS_CASE_NUMBER_HEADER_VALUE,
-      caseNameHeaderValue: TestData.CASE_NAME_HEADER_VALUE,
-      jurisdiction: TestData.JURISDICTION_FAMILY,
-      service: TestData.SERVICE_DIVORCE,
-      caseType: TestData.DECREE_ABSOLUTE_CASE_TYPE,
-      region: TestData.REGION_WALES,
-      cluster: TestData.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-      hearingCentre: TestData.HEARING_CENTRE_CARDIFF,
-      hearingTypeRef: TestData.HEARING_TYPE_APPLICATION_REF,
-      currentStatus: TestData.CURRENT_STATUS_AWAITING_LISTING,
+      hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
+      jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
+      service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
+      caseType: addNewCasePage.CONSTANTS.DECREE_ABSOLUTE_CASE_TYPE,
+      region: addNewCasePage.CONSTANTS.REGION_WALES,
+      cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+      hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+      currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
     };
 
     // Test data
     const roomData = {
-      roomName: TestData.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
-      column: TestData.CASE_LISTING_COLUMN_ONE,
+      roomName: bookSessionPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      column: bookSessionPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       caseNumber: hmctsCaseNumber,
-      sessionDuration: TestData.CASE_LISTING_SESSION_DURATION_1_00,
-      hearingType: TestData.CASE_LISTING_HEARING_TYPE_APPLICATION,
-      cancelReason: TestData.CASE_LISTING_CANCEL_REASON_AMEND,
+      sessionDuration: bookSessionPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      hearingType: bookSessionPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
+      cancelReason: bookSessionPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await addNewCasePage.addNewCaseWithMandatoryData(
@@ -80,8 +80,8 @@ test.describe("Case listing @case-listing", () => {
 
     //session booking page
     await bookSessionPage.bookSession(
-      TestData.CASE_LISTING_SESSION_DURATION_1_00,
-      TestData.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+      bookSessionPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      bookSessionPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
     );
 
     //Check Listing iframe

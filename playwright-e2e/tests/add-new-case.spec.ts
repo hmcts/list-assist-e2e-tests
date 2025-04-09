@@ -1,6 +1,5 @@
 import { expect, test } from "../fixtures";
 import { config } from "../utils";
-import { TestData } from "../test-data.ts";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
@@ -19,16 +18,16 @@ test.describe("Case creation @add-new-case", () => {
   }) => {
     // Test data
     const caseData = {
-      hmctsCaseNumberHeaderValue: TestData.HMCTS_CASE_NUMBER_HEADER_VALUE,
-      caseNameHeaderValue: TestData.CASE_NAME_HEADER_VALUE,
-      jurisdiction: TestData.JURISDICTION_FAMILY,
-      service: TestData.SERVICE_DIVORCE,
-      caseType: TestData.DECREE_ABSOLUTE_CASE_TYPE,
-      region: TestData.REGION_WALES,
-      cluster: TestData.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-      hearingCentre: TestData.HEARING_CENTRE_CARDIFF,
-      hearingTypeRef: TestData.HEARING_TYPE_APPLICATION_REF,
-      currentStatus: TestData.CURRENT_STATUS_AWAITING_LISTING,
+      hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
+      jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
+      service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
+      caseType: addNewCasePage.CONSTANTS.DECREE_ABSOLUTE_CASE_TYPE,
+      region: addNewCasePage.CONSTANTS.REGION_WALES,
+      cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+      hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+      currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
     };
 
     const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
