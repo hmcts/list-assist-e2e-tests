@@ -8,10 +8,10 @@ test.use({
 
 test.describe("Case listing @case-listing", () => {
   test.beforeEach(
-    async ({ page, homePage, caseListingPage, hearingSchedulePage }) => {
+    async ({ page, homePage, hearingSchedulePage }) => {
       await page.goto(config.urls.baseUrl);
       //empties cart if there is anything present
-      await caseListingPage.emptyCaseCart();
+      await hearingSchedulePage.sidebarComponent.emptyCaseCart();
       await hearingSchedulePage.clearDownSchedule(
         TestData.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
       );
@@ -19,11 +19,11 @@ test.describe("Case listing @case-listing", () => {
     },
   );
 
-  test("Confirm case listing @smoke", async ({
-    addNewCasePage,
+  test("Confirm case listing has status 'Released' @smoke", async ({
+    bookSessionPage,
+                                                                     addNewCasePage,
     caseSearchPage,
     caseDetailsPage,
-    caseListingPage,
     hearingSchedulePage,
   }) => {
     const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
@@ -60,16 +60,16 @@ test.describe("Case listing @case-listing", () => {
     );
 
     //add case to cart
-    await caseListingPage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(caseName);
 
     // await expect(caseDetailsPage.addToCartButton).toBeVisible();
     await caseDetailsPage.addToCartButton.click();
-    await expect(caseListingPage.cartButton).toBeEnabled();
+    await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
 
     //go to hearing schedule page
     await expect(hearingSchedulePage.sidebarComponent.sidebar).toBeVisible();
-    await caseListingPage.sidebarComponent.openHearingSchedulePage();
+    await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
 
     //schedule hearing
     await hearingSchedulePage.waitForLoad();
@@ -81,21 +81,15 @@ test.describe("Case listing @case-listing", () => {
     );
 
     //session booking page
-    await expect(caseListingPage.sessionBookingHeader).toBeVisible();
-    await caseListingPage.sessionStatusDropdown.selectOption(
-      TestData.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-    );
-    await expect(caseListingPage.durationDropdownButton).toBeVisible();
-    await caseListingPage.durationDropdownButton.click();
-    await caseListingPage.durationDropdown.selectOption(
-      TestData.CASE_LISTING_SESSION_DURATION_1_00,
-    );
-    await caseListingPage.saveButton.click();
+    await bookSessionPage.bookSession(
+        TestData.CASE_LISTING_SESSION_DURATION_1_00,
+        TestData.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED
+    )
 
     //Check Listing iframe
-    await caseListingPage.checkingListingIframe();
+    await bookSessionPage.checkingListingIframe();
 
     //confirm listing
-    await expect(caseListingPage.confirmListingReleasedStatus).toBeVisible();
+    await expect(hearingSchedulePage.confirmListingReleasedStatus).toBeVisible();
   });
 });

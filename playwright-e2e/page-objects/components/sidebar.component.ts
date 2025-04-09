@@ -21,6 +21,13 @@ export class SidebarComponent {
     "#listingRequirements_subMenuItem",
   );
 
+  //case cart
+  readonly cartCounterLabel = this.page.locator(".cart-counter-label");
+  readonly emptyCartButton = this.page.getByRole("button", {
+    name: "Empty Cart",
+  });
+  readonly cartButton = this.page.getByRole("button", { name: "Case Cart" });
+
   constructor(
     private root: Locator,
     private page: Page,
@@ -115,5 +122,20 @@ export class SidebarComponent {
 
     await this.currentCaseSubMenu.click();
     await this.currentCaseDetailsEdit.click();
+  }
+
+  async emptyCaseCart() {
+    if (await this.cartButton.isEnabled()) {
+      await this.cartButton.click();
+      await this.emptyCartButton.click();
+      const modal = this.page.locator(".modal-content");
+      await modal.getByRole("button", { name: "Yes" }).click();
+      await expect(this.cartCounterLabel).toBeHidden();
+      await this.backToMenuButton.click();
+
+      console.log("Cart has been emptied");
+    } else {
+      console.log("Cart is empty. No action needed");
+    }
   }
 }
