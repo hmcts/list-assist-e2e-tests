@@ -40,7 +40,7 @@ export class BookSessionPage extends Base {
     await expect(this.heading).toBeVisible();
     await this.durationDropdownButton.click();
     await this.selectListingDuration(duration);
-    await this.sessionStatusDropdown.selectOption(sessionStatus)
+    await this.sessionStatusDropdown.selectOption(sessionStatus);
     await this.saveButton.click();
     await this.waitForFrame();
   }
