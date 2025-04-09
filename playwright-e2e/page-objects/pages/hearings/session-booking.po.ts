@@ -2,7 +2,6 @@ import { expect, Page } from "@playwright/test";
 import { Base } from "../../base";
 
 export class BookSessionPage extends Base {
-
   readonly CONSTANTS = {
     //case listing
     CASE_LISTING_ROOM_NAME_LEICESTER_CC_7: "Leicester County Courtroom 07",
@@ -14,7 +13,7 @@ export class BookSessionPage extends Base {
     CASE_LISTING_CANCEL_REASON_AMEND: "Amend",
 
     //session details
-    SESSION_DETAILS_CANCELLATION_CODE_CANCEL: "CNCL"
+    SESSION_DETAILS_CANCELLATION_CODE_CANCEL: "CNCL",
   };
 
   readonly container = this.page.locator("#pageContent");

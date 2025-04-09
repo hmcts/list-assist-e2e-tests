@@ -18,7 +18,8 @@ test.describe("Case creation @add-new-case", () => {
   }) => {
     // Test data
     const caseData = {
-      hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      hmctsCaseNumberHeaderValue:
+        addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
       caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
       jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
       service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
