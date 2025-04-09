@@ -119,7 +119,6 @@ export class HearingSchedulePage extends Base {
       "div.droparea span.sessionHeader",
       { hasText: room },
     );
-    const modal = this.page.locator(".modal-content");
 
     //go to hearing schedule page
     await expect(this.sidebarComponent.sidebar).toBeVisible();
