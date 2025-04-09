@@ -28,11 +28,11 @@ export class HearingSchedulePage extends Base {
   readonly scheduleSelector = 'div[booking="item"]';
   readonly siblingRow = "+ tr";
   readonly separatorValue = "--------------------------";
-
-  //scheduling
-  readonly scheduleButton10amTo6pmReleased = this.page.getByRole("button", {
+  readonly confirmListingReleasedStatus = this.page.getByRole("button", {
     name: "10:00-16:00 - Released",
   });
+
+  //scheduling
   readonly scheduleButton10amTo6pmLeicester = this.page.locator(
     "div.droparea span.sessionHeader",
     { hasText: TestData.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7 },
@@ -46,27 +46,6 @@ export class HearingSchedulePage extends Base {
   readonly deleteSessionInSessionDetailsButton = this.page
     .locator("#handleListingImgId")
     .nth(1);
-
-  //listing iframe
-  readonly listingHearingDropdown = this.page
-    .locator('iframe[name="addAssociation"]')
-    .contentFrame()
-    .getByRole("button", { name: "Please Choose..." });
-  readonly listingHearingApplicationSelect = this.page
-    .locator('iframe[name="addAssociation"]')
-    .contentFrame()
-    .getByRole("list")
-    .getByRole("option", {
-      name: "Application",
-      exact: true,
-    });
-  readonly listingIframeSaveButton = this.page
-    .locator('iframe[name="addAssociation"]')
-    .contentFrame()
-    .getByRole("button", {
-      name: "Save",
-      exact: true,
-    });
 
   constructor(page: Page) {
     super(page);

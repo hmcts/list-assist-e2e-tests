@@ -5,6 +5,10 @@ export class BookSessionPage extends Base {
   readonly container = this.page.locator("#pageContent");
   readonly heading = this.page.getByText("Session Booking", { exact: true });
   readonly listingDuration = this.page.locator("#defListingDuration");
+  readonly durationDropdownButton = this.page.locator("#defListingDuration");
+  readonly sessionStatusDropdown = this.page.getByLabel(
+    "Session Status: This field is",
+  );
   readonly saveButton = this.page.locator("#svb");
   readonly deleteButton = this.page.locator("#dvb");
   readonly popupFrame = this.page.frameLocator(
@@ -31,13 +35,14 @@ export class BookSessionPage extends Base {
     super(page);
   }
 
-  async bookSession(duration: string, hearingType: string) {
+  async bookSession(duration: string, sessionStatus: string) {
     await this.waitForLoad();
+    await expect(this.heading).toBeVisible();
+    await this.durationDropdownButton.click();
     await this.selectListingDuration(duration);
+    await this.sessionStatusDropdown.selectOption(sessionStatus)
     await this.saveButton.click();
     await this.waitForFrame();
-    await this.popup.hearingType.selectOption(hearingType);
-    await this.popup.saveButton.click();
   }
 
   async cancelSession(cancelReason: string) {
@@ -84,5 +89,30 @@ export class BookSessionPage extends Base {
         },
       )
       .toBeTruthy();
+  }
+
+  async checkingListingIframe() {
+    const listingIframe = this.page.locator('iframe[name="addAssociation"]');
+
+    await this.page.waitForTimeout(2000);
+
+    await expect(
+      listingIframe
+        .contentFrame()
+        .getByRole("button", { name: "Please Choose..." }),
+    ).toBeVisible();
+    await listingIframe
+      .contentFrame()
+      .getByRole("button", { name: "Please Choose..." })
+      .click();
+    await listingIframe
+      .contentFrame()
+      .getByRole("list")
+      .getByRole("option", { name: "Allocation Hearing", exact: true })
+      .click();
+    await listingIframe
+      .contentFrame()
+      .getByRole("button", { name: "Save", exact: true })
+      .click();
   }
 }
