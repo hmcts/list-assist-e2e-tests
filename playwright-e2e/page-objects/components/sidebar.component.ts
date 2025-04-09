@@ -22,6 +22,7 @@ export class SidebarComponent {
   );
 
   //case cart
+  readonly modal = this.page.locator(".modal-content");
   readonly cartCounterLabel = this.page.locator(".cart-counter-label");
   readonly emptyCartButton = this.page.getByRole("button", {
     name: "Empty Cart",
@@ -128,14 +129,9 @@ export class SidebarComponent {
     if (await this.cartButton.isEnabled()) {
       await this.cartButton.click();
       await this.emptyCartButton.click();
-      const modal = this.page.locator(".modal-content");
-      await modal.getByRole("button", { name: "Yes" }).click();
+      await this.modal.getByRole("button", { name: "Yes" }).click();
       await expect(this.cartCounterLabel).toBeHidden();
       await this.backToMenuButton.click();
-
-      console.log("Cart has been emptied");
-    } else {
-      console.log("Cart is empty. No action needed");
     }
   }
 }

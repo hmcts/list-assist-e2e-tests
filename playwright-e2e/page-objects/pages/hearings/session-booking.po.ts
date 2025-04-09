@@ -2,6 +2,21 @@ import { expect, Page } from "@playwright/test";
 import { Base } from "../../base";
 
 export class BookSessionPage extends Base {
+
+  readonly CONSTANTS = {
+    //case listing
+    CASE_LISTING_ROOM_NAME_LEICESTER_CC_7: "Leicester County Courtroom 07",
+    CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
+    CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: "4",
+    CASE_LISTING_SESSION_DURATION_1_00: "60",
+    CASE_LISTING_COLUMN_ONE: "columnOne",
+    CASE_LISTING_HEARING_TYPE_APPLICATION: "Application",
+    CASE_LISTING_CANCEL_REASON_AMEND: "Amend",
+
+    //session details
+    SESSION_DETAILS_CANCELLATION_CODE_CANCEL: "CNCL"
+  };
+
   readonly container = this.page.locator("#pageContent");
   readonly heading = this.page.getByText("Session Booking", { exact: true });
   readonly listingDuration = this.page.locator("#defListingDuration");
@@ -94,7 +109,7 @@ export class BookSessionPage extends Base {
   async checkingListingIframe() {
     const listingIframe = this.page.locator('iframe[name="addAssociation"]');
 
-    await this.page.waitForTimeout(2000);
+    await expect(listingIframe).toBeVisible();
 
     await expect(
       listingIframe
