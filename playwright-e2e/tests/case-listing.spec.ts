@@ -6,16 +6,18 @@ test.use({
 });
 
 test.describe("Case listing @case-listing", () => {
-  test.beforeEach(async ({ page, homePage, hearingSchedulePage, bookSessionPage }) => {
-    await page.goto(config.urls.baseUrl);
-    //empties cart if there is anything present
-    await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-    await hearingSchedulePage.clearDownSchedule(
-      bookSessionPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-      bookSessionPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7
-    );
-    await homePage.sidebarComponent.openAddNewCasePage();
-  });
+  test.beforeEach(
+    async ({ page, homePage, hearingSchedulePage, bookSessionPage }) => {
+      await page.goto(config.urls.baseUrl);
+      //empties cart if there is anything present
+      await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+      await hearingSchedulePage.clearDownSchedule(
+        bookSessionPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+        bookSessionPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      );
+      await homePage.sidebarComponent.openAddNewCasePage();
+    },
+  );
 
   test("Confirm case listing has status 'Released' @smoke", async ({
     bookSessionPage,
@@ -29,7 +31,8 @@ test.describe("Case listing @case-listing", () => {
 
     // Test data
     const caseData = {
-      hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      hmctsCaseNumberHeaderValue:
+        addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
       caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
       jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
       service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
@@ -46,8 +49,10 @@ test.describe("Case listing @case-listing", () => {
       roomName: bookSessionPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
       column: bookSessionPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       caseNumber: hmctsCaseNumber,
-      sessionDuration: bookSessionPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-      hearingType: bookSessionPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
+      sessionDuration:
+        bookSessionPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      hearingType:
+        bookSessionPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
       cancelReason: bookSessionPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 

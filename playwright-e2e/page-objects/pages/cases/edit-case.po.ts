@@ -2,7 +2,6 @@ import { Page, expect } from "@playwright/test";
 import { Base } from "../../base";
 
 export class EditNewCasePage extends Base {
-
   readonly CONSTANTS = {
     //add participant
     PARTICIPANT_CLASS_PERSON: "PERSON",
@@ -11,8 +10,8 @@ export class EditNewCasePage extends Base {
     PARTICIPANT_INTERPRETER_WELSH: "cym",
     PARTICIPANT_ROLE_APPLICANT: "APPL",
     CASE_PARTICIPANT_TABLE_INDIVIDUAL: "Individual",
-    CASE_PARTICIPANT_TABLE_INTERPRETER: "Welsh"
-  }
+    CASE_PARTICIPANT_TABLE_INTERPRETER: "Welsh",
+  };
 
   // Edit new case
   readonly newCaseHeader = this.page.locator("h1.header-title.my-2");

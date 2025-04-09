@@ -1,6 +1,6 @@
 import { Locator, Page, expect } from "@playwright/test";
 import { Base } from "../../base";
-import { BookSessionPage } from "./session-booking.po.ts"
+import { BookSessionPage } from "./session-booking.po.ts";
 
 interface TableRow {
   roomName: string;
@@ -115,7 +115,8 @@ export class HearingSchedulePage extends Base {
   }
 
   async clearDownSchedule(cancellationCode: string, room: string) {
-    const scheduleButton = this.page.locator("div.droparea span.sessionHeader",
+    const scheduleButton = this.page.locator(
+      "div.droparea span.sessionHeader",
       { hasText: room },
     );
     const modal = this.page.locator(".modal-content");
