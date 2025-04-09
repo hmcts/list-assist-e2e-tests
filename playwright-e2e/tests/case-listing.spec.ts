@@ -7,21 +7,19 @@ test.use({
 });
 
 test.describe("Case listing @case-listing", () => {
-  test.beforeEach(
-    async ({ page, homePage, hearingSchedulePage }) => {
-      await page.goto(config.urls.baseUrl);
-      //empties cart if there is anything present
-      await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-      await hearingSchedulePage.clearDownSchedule(
-        TestData.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-      );
-      await homePage.sidebarComponent.openAddNewCasePage();
-    },
-  );
+  test.beforeEach(async ({ page, homePage, hearingSchedulePage }) => {
+    await page.goto(config.urls.baseUrl);
+    //empties cart if there is anything present
+    await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+    await hearingSchedulePage.clearDownSchedule(
+      TestData.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+    );
+    await homePage.sidebarComponent.openAddNewCasePage();
+  });
 
   test("Confirm case listing has status 'Released' @smoke", async ({
     bookSessionPage,
-                                                                     addNewCasePage,
+    addNewCasePage,
     caseSearchPage,
     caseDetailsPage,
     hearingSchedulePage,
@@ -82,14 +80,16 @@ test.describe("Case listing @case-listing", () => {
 
     //session booking page
     await bookSessionPage.bookSession(
-        TestData.CASE_LISTING_SESSION_DURATION_1_00,
-        TestData.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED
-    )
+      TestData.CASE_LISTING_SESSION_DURATION_1_00,
+      TestData.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+    );
 
     //Check Listing iframe
     await bookSessionPage.checkingListingIframe();
 
     //confirm listing
-    await expect(hearingSchedulePage.confirmListingReleasedStatus).toBeVisible();
+    await expect(
+      hearingSchedulePage.confirmListingReleasedStatus,
+    ).toBeVisible();
   });
 });
