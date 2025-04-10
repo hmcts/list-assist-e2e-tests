@@ -1,8 +1,6 @@
 import { expect, test } from "../fixtures";
 import { config } from "../utils";
 
-import {generateDobInDdMmYyyy, generateRandomAlphabetical, getRandomNumberBetween1And50} from "../utils/data-utils.ts";
-
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
@@ -16,6 +14,7 @@ test.describe("Add participant @add-participant", () => {
   test("Add new participant to case @smoke", async ({
     addNewCasePage,
     editNewCasePage,
+    dataUtils
   }) => {
     // Test data
     const caseData = {
@@ -52,8 +51,8 @@ test.describe("Add participant @add-participant", () => {
     await expect(editNewCasePage.addNewParticipantButton).toBeVisible();
     await editNewCasePage.addNewParticipantButton.click();
 
-    const givenName = generateRandomAlphabetical(7);
-    const lastName = generateRandomAlphabetical(8);
+    const givenName = dataUtils.generateRandomAlphabetical(7);
+    const lastName = dataUtils.generateRandomAlphabetical(8);
 
     await editNewCasePage.createNewParticipant(
       editNewCasePage.CONSTANTS.PARTICIPANT_CLASS_PERSON,
@@ -61,7 +60,7 @@ test.describe("Add participant @add-participant", () => {
       givenName,
       lastName,
       editNewCasePage.CONSTANTS.PARTICIPANT_GENDER_MALE,
-      generateDobInDdMmYyyy(getRandomNumberBetween1And50()),
+      dataUtils.generateDobInDdMmYyyy(dataUtils.getRandomNumberBetween1And50()),
       editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
       editNewCasePage.CONSTANTS.PARTICIPANT_ROLE_APPLICANT,
     );

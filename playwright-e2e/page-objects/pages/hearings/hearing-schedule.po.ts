@@ -13,7 +13,7 @@ interface TableRow {
 }
 
 export class HearingSchedulePage extends Base {
-  private bookingSessionPage: SessionBookingPage;
+  private sessionBookingPage: SessionBookingPage;
 
   readonly container = this.page.locator("#pageContent");
   readonly header = this.page.locator("#hs-header");
@@ -47,7 +47,7 @@ export class HearingSchedulePage extends Base {
 
   constructor(page: Page) {
     super(page);
-    this.bookingSessionPage = new SessionBookingPage(page);
+    this.sessionBookingPage = new SessionBookingPage(page);
   }
 
   async waitForLoad(): Promise<void> {
@@ -130,7 +130,7 @@ export class HearingSchedulePage extends Base {
     if (await scheduleButton.isVisible()) {
       await scheduleButton.click();
       await this.goToSessionDetailsButton.click();
-      await expect(this.bookingSessionPage.heading).toBeVisible();
+      await expect(this.sessionBookingPage.heading).toBeVisible();
 
       //delete session from inside of session details page, if available
       if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
