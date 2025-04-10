@@ -7,20 +7,20 @@ test.use({
 
 test.describe("Case listing @case-listing", () => {
   test.beforeEach(
-    async ({ page, homePage, hearingSchedulePage, bookSessionPage }) => {
+    async ({ page, homePage, hearingSchedulePage, sessionBookingPage }) => {
       await page.goto(config.urls.baseUrl);
       //empties cart if there is anything present
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
       await hearingSchedulePage.clearDownSchedule(
-        bookSessionPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-        bookSessionPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+        sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
       );
       await homePage.sidebarComponent.openAddNewCasePage();
     },
   );
 
   test("Confirm case listing has status 'Released' @smoke", async ({
-    bookSessionPage,
+    sessionBookingPage,
     addNewCasePage,
     caseSearchPage,
     caseDetailsPage,
@@ -46,14 +46,14 @@ test.describe("Case listing @case-listing", () => {
 
     // Test data
     const roomData = {
-      roomName: bookSessionPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
-      column: bookSessionPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
+      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       caseNumber: hmctsCaseNumber,
       sessionDuration:
-        bookSessionPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       hearingType:
-        bookSessionPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-      cancelReason: bookSessionPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
+      cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await addNewCasePage.addNewCaseWithMandatoryData(
@@ -84,13 +84,13 @@ test.describe("Case listing @case-listing", () => {
     );
 
     //session booking page
-    await bookSessionPage.bookSession(
-      bookSessionPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-      bookSessionPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+    await sessionBookingPage.bookSession(
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
     );
 
     //Check Listing iframe
-    await bookSessionPage.checkingListingIframe();
+    await sessionBookingPage.checkingListingIframe();
 
     //confirm listing
     await expect(

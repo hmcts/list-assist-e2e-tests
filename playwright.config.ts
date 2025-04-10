@@ -12,7 +12,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 2,
+  retries: process.env.CI ? 2 : 0,
   /* This timeout should match whatever your longest test takes with slight leeway for app performance */
   timeout: 3 * 60 * 1000,
   /* The default timeout for assertions is 5s, it's not advised to increase this massively.
