@@ -1,5 +1,6 @@
 import { Locator, Page, expect } from "@playwright/test";
 import { Base } from "../../base";
+import { SessionBookingPage } from "./session-booking.po.ts";
 
 interface TableRow {
   roomName: string;
@@ -12,6 +13,8 @@ interface TableRow {
 }
 
 export class HearingSchedulePage extends Base {
+  private sessionBookingPage: SessionBookingPage;
+
   readonly container = this.page.locator("#pageContent");
   readonly header = this.page.locator("#hs-header");
   readonly tabList = this.page.locator("#joh-tabs");
@@ -27,9 +30,24 @@ export class HearingSchedulePage extends Base {
   readonly scheduleSelector = 'div[booking="item"]';
   readonly siblingRow = "+ tr";
   readonly separatorValue = "--------------------------";
+  readonly confirmListingReleasedStatus = this.page.getByRole("button", {
+    name: "10:00-16:00 - Released",
+  });
+
+  //scheduling
+  readonly goToSessionDetailsButton = this.page.getByRole("button", {
+    name: "Go to Session Details screen",
+  });
+  readonly deleteSessionButton = this.page.getByRole("button", {
+    name: "Delete",
+  });
+  readonly deleteSessionInSessionDetailsButton = this.page
+    .locator("#handleListingImgId")
+    .nth(1);
 
   constructor(page: Page) {
     super(page);
+    this.sessionBookingPage = new SessionBookingPage(page);
   }
 
   async waitForLoad(): Promise<void> {
@@ -94,5 +112,39 @@ export class HearingSchedulePage extends Base {
     const table: TableRow[] = await this.mapTable();
     const row = table.filter((row) => row.roomName === roomName)[0];
     return row;
+  }
+
+  async clearDownSchedule(cancellationCode: string, room: string) {
+    const scheduleButton = this.page.locator(
+      "div.droparea span.sessionHeader",
+      { hasText: room },
+    );
+
+    //go to hearing schedule page
+    await expect(this.sidebarComponent.sidebar).toBeVisible();
+    await this.sidebarComponent.openHearingSchedulePage();
+
+    //schedule hearing
+    await this.waitForLoad();
+
+    if (await scheduleButton.isVisible()) {
+      await scheduleButton.click();
+      await this.goToSessionDetailsButton.click();
+      await expect(this.sessionBookingPage.heading).toBeVisible();
+
+      //delete session from inside of session details page, if available
+      if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
+        await this.deleteSessionInSessionDetailsButton.click();
+        await this.page.locator("#cancellationCode").click();
+        await this.page
+          .locator("#cancellationCode")
+          .selectOption(cancellationCode);
+        await this.page.getByRole("button", { name: "Yes" }).click();
+      }
+      //delete session from schedule page
+      await expect(this.deleteSessionButton).toBeVisible();
+      await this.deleteSessionButton.click();
+      await expect(this.header).toBeVisible();
+    }
   }
 }

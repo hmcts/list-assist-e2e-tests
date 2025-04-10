@@ -3,6 +3,9 @@ import { expect } from "../../fixtures.ts";
 
 export class SidebarComponent {
   readonly sidebar = this.root.locator("#pageNavigation");
+  readonly backToMenuButton = this.root.locator(
+    'div.sidepanel-card--topheader:has-text("Back to menu")',
+  );
   readonly hearingsMenu = this.root.locator("#hearing_menuItem");
   readonly hearingScheduleSubMenu = this.root.locator(
     "#hearingSchedule_subMenuItem",
@@ -18,17 +21,51 @@ export class SidebarComponent {
     "#listingRequirements_subMenuItem",
   );
 
+  //case cart
+  readonly modal = this.page.locator(".modal-content");
+  readonly cartCounterLabel = this.page.locator(".cart-counter-label");
+  readonly emptyCartButton = this.page.getByRole("button", {
+    name: "Empty Cart",
+  });
+  readonly cartButton = this.page.getByRole("button", { name: "Case Cart" });
+
   constructor(
     private root: Locator,
     private page: Page,
   ) {}
 
   async openHearingSchedulePage() {
+    await expect
+      .poll(
+        async () => {
+          await this.hearingsMenu.click();
+          return await this.hearingScheduleSubMenu.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
     await this.hearingsMenu.click();
     await this.hearingScheduleSubMenu.click();
   }
 
   async openSearchCasePage() {
+    await expect
+      .poll(
+        async () => {
+          await this.casesMenu.click();
+          return await this.caseSearchSubMenu.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
     await this.casesMenu.click();
     await this.caseSearchSubMenu.click();
   }
@@ -86,5 +123,15 @@ export class SidebarComponent {
 
     await this.currentCaseSubMenu.click();
     await this.currentCaseDetailsEdit.click();
+  }
+
+  async emptyCaseCart() {
+    if (await this.cartButton.isEnabled()) {
+      await this.cartButton.click();
+      await this.emptyCartButton.click();
+      await this.modal.getByRole("button", { name: "Yes" }).click();
+      await expect(this.cartCounterLabel).toBeHidden();
+      await this.backToMenuButton.click();
+    }
   }
 }

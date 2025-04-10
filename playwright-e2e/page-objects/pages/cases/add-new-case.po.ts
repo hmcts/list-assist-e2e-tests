@@ -1,7 +1,6 @@
 import { Page, expect } from "@playwright/test";
 import { Base } from "../../base";
-
-import { generateRandomAlphanumeric } from "../../../test-data.ts";
+import { DataUtils } from "../../../utils/data.utils";
 
 interface CaseData {
   jurisdiction: string;
@@ -13,7 +12,21 @@ interface CaseData {
 }
 
 export class AddNewCasePage extends Base {
-  readonly hmctsCaseNumber = generateRandomAlphanumeric(10).toUpperCase();
+  private dataUtils = new DataUtils();
+  readonly hmctsCaseNumber = this.dataUtils.generateRandomAlphanumeric(10).toUpperCase();
+
+  readonly CONSTANTS = {
+    HMCTS_CASE_NUMBER_HEADER_VALUE: "HMCTS Case Number",
+    CASE_NAME_HEADER_VALUE: "Case Name",
+    JURISDICTION_FAMILY: "Family",
+    SERVICE_DIVORCE: "Divorce",
+    DECREE_ABSOLUTE_CASE_TYPE: "Decree Absolute",
+    REGION_WALES: "Wales",
+    CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS: "Wales Civil, Family and Tribunals",
+    HEARING_CENTRE_CARDIFF: "Cardiff Civil and Family Justice Centre",
+    CURRENT_STATUS_AWAITING_LISTING: "Awaiting Listing",
+    HEARING_TYPE_APPLICATION_REF: "449628128",
+  };
 
   //new case page
   readonly newCaseHeader = this.page.locator("h1.header-title.my-2");
@@ -133,5 +146,11 @@ export class AddNewCasePage extends Base {
     );
     // Click save button
     await this.saveButton.click();
+
+    //confirms banner for created case is visible
+    await expect(this.newCaseHeader).toBeVisible();
+    await expect(this.newCaseHeader).toHaveText(
+      `Case ${hmctsCaseNumber} (${caseName})`,
+    );
   }
 }

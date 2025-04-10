@@ -2,12 +2,14 @@ import { Page } from "playwright/test";
 import { AxeUtils } from "./axe.utils";
 import { BrowserUtils } from "./browser.utils";
 import { config, Config } from "./config.utils";
+import { DataUtils } from "./data.utils";
 
 export interface UtilsFixtures {
   config: Config;
   axeUtils: AxeUtils;
   browserUtils: BrowserUtils;
   lighthousePage: Page;
+  dataUtils: DataUtils;
 }
 
 export const utilsFixtures = {
@@ -19,5 +21,8 @@ export const utilsFixtures = {
   },
   browserUtils: async ({ browser }, use) => {
     await use(new BrowserUtils(browser));
+  },
+  dataUtils: async ({}, use) => {
+    await use(new DataUtils());
   },
 };

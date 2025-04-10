@@ -1,11 +1,5 @@
 import { expect, test } from "../fixtures";
 import { config } from "../utils";
-import {
-  generateRandomAlphabetical,
-  generateDobInDdMmYyyy,
-  getRandomNumberBetween1And50,
-  TestData,
-} from "../test-data";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
@@ -20,19 +14,21 @@ test.describe("Add participant @add-participant", () => {
   test("Add new participant to case @smoke", async ({
     addNewCasePage,
     editNewCasePage,
+    dataUtils
   }) => {
     // Test data
     const caseData = {
-      hmctsCaseNumberHeaderValue: TestData.HMCTS_CASE_NUMBER_HEADER_VALUE,
-      caseNameHeaderValue: TestData.CASE_NAME_HEADER_VALUE,
-      jurisdiction: TestData.JURISDICTION_FAMILY,
-      service: TestData.SERVICE_DIVORCE,
-      caseType: TestData.DECREE_ABSOLUTE_CASE_TYPE,
-      region: TestData.REGION_WALES,
-      cluster: TestData.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-      hearingCentre: TestData.HEARING_CENTRE_CARDIFF,
-      hearingTypeRef: TestData.HEARING_TYPE_APPLICATION_REF,
-      currentStatus: TestData.CURRENT_STATUS_AWAITING_LISTING,
+      hmctsCaseNumberHeaderValue:
+        addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
+      jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
+      service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
+      caseType: addNewCasePage.CONSTANTS.DECREE_ABSOLUTE_CASE_TYPE,
+      region: addNewCasePage.CONSTANTS.REGION_WALES,
+      cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+      hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+      currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
     };
 
     const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
@@ -55,24 +51,24 @@ test.describe("Add participant @add-participant", () => {
     await expect(editNewCasePage.addNewParticipantButton).toBeVisible();
     await editNewCasePage.addNewParticipantButton.click();
 
-    const givenName = generateRandomAlphabetical(7);
-    const lastName = generateRandomAlphabetical(8);
+    const givenName = dataUtils.generateRandomAlphabetical(7);
+    const lastName = dataUtils.generateRandomAlphabetical(8);
 
     await editNewCasePage.createNewParticipant(
-      TestData.PARTICIPANT_CLASS_PERSON,
-      TestData.PARTICIPANT_TYPE_INDIVIDUAL,
+      editNewCasePage.CONSTANTS.PARTICIPANT_CLASS_PERSON,
+      editNewCasePage.CONSTANTS.PARTICIPANT_TYPE_INDIVIDUAL,
       givenName,
       lastName,
-      TestData.PARTICIPANT_GENDER_MALE,
-      generateDobInDdMmYyyy(getRandomNumberBetween1And50()),
-      TestData.PARTICIPANT_INTERPRETER_CYM,
-      TestData.PARTICIPANT_ROLE_APPLICANT,
+      editNewCasePage.CONSTANTS.PARTICIPANT_GENDER_MALE,
+      dataUtils.generateDobInDdMmYyyy(dataUtils.getRandomNumberBetween1And50()),
+      editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
+      editNewCasePage.CONSTANTS.PARTICIPANT_ROLE_APPLICANT,
     );
 
     await editNewCasePage.checkCaseParticipantTable(
-      TestData.CASE_PARTICIPANT_TABLE_INDIVIDUAL,
+      editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INDIVIDUAL,
       `${lastName}, ${givenName}`,
-      TestData.CASE_PARTICIPANT_TABLE_INTERPRETER,
+      editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
     );
   });
 });
