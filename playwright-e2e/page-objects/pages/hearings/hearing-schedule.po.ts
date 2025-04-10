@@ -1,6 +1,6 @@
 import { Locator, Page, expect } from "@playwright/test";
 import { Base } from "../../base";
-import { BookSessionPage } from "./session-booking.po.ts";
+import { SessionBookingPage } from "./session-booking.po.ts";
 
 interface TableRow {
   roomName: string;
@@ -13,7 +13,7 @@ interface TableRow {
 }
 
 export class HearingSchedulePage extends Base {
-  private bookingSessionPage: BookSessionPage;
+  private bookingSessionPage: SessionBookingPage;
 
   readonly container = this.page.locator("#pageContent");
   readonly header = this.page.locator("#hs-header");
@@ -47,7 +47,7 @@ export class HearingSchedulePage extends Base {
 
   constructor(page: Page) {
     super(page);
-    this.bookingSessionPage = new BookSessionPage(page);
+    this.bookingSessionPage = new SessionBookingPage(page);
   }
 
   async waitForLoad(): Promise<void> {
