@@ -1,7 +1,7 @@
 import { expect, Page } from "@playwright/test";
 import { Base } from "../../base";
 
-export class BookSessionPage extends Base {
+export class SessionBookingPage extends Base {
   readonly CONSTANTS = {
     //case listing
     CASE_LISTING_ROOM_NAME_LEICESTER_CC_7: "Leicester County Courtroom 07",
