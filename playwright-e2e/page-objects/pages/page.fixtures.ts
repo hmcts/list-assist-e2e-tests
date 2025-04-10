@@ -13,7 +13,7 @@ export interface PageFixtures {
   hearingSchedulePage: HearingSchedulePage;
   caseSearchPage: CaseSearchPage;
   caseDetailsPage: CaseDetailsPage;
-  bookSessionPage: SessionBookingPage;
+  sessionBookingPage: SessionBookingPage;
   addNewCasePage: AddNewCasePage;
   editNewCasePage: EditNewCasePage;
 }
@@ -34,7 +34,7 @@ export const pageFixtures = {
   caseDetailsPage: async ({ page }, use) => {
     await use(new CaseDetailsPage(page));
   },
-  bookSessionPage: async ({ page }, use) => {
+  sessionBookingPage: async ({ page }, use) => {
     await use(new SessionBookingPage(page));
   },
   addNewCasePage: async ({ page }, use) => {
