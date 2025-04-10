@@ -1,7 +1,8 @@
 import { Page, expect } from "@playwright/test";
 import { Base } from "../../base";
 
-import { generateRandomAlphanumeric } from "../../../common-data-methods.ts";
+
+import {generateRandomAlphanumeric} from "../../../utils/data-utils.ts";
 
 interface CaseData {
   jurisdiction: string;

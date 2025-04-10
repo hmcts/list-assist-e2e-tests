@@ -1,10 +1,7 @@
 import { expect, test } from "../fixtures";
 import { config } from "../utils";
-import {
-  generateRandomAlphabetical,
-  generateDobInDdMmYyyy,
-  getRandomNumberBetween1And50,
-} from "../common-data-methods.ts";
+
+import {generateDobInDdMmYyyy, generateRandomAlphabetical, getRandomNumberBetween1And50} from "../utils/data-utils.ts";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
