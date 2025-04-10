@@ -14,7 +14,7 @@ test.describe("Add participant @add-participant", () => {
   test("Add new participant to case @smoke", async ({
     addNewCasePage,
     editNewCasePage,
-    dataUtils
+    dataUtils,
   }) => {
     // Test data
     const caseData = {
