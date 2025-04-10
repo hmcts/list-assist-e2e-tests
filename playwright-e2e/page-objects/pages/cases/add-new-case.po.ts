@@ -1,8 +1,6 @@
 import { Page, expect } from "@playwright/test";
 import { Base } from "../../base";
-
-
-import {generateRandomAlphanumeric} from "../../../utils/data-utils.ts";
+import { DataUtils } from "../../../utils/data.utils";
 
 interface CaseData {
   jurisdiction: string;
@@ -14,7 +12,8 @@ interface CaseData {
 }
 
 export class AddNewCasePage extends Base {
-  readonly hmctsCaseNumber = generateRandomAlphanumeric(10).toUpperCase();
+  private dataUtils = new DataUtils();
+  readonly hmctsCaseNumber = this.dataUtils.generateRandomAlphanumeric(10).toUpperCase();
 
   readonly CONSTANTS = {
     HMCTS_CASE_NUMBER_HEADER_VALUE: "HMCTS Case Number",
