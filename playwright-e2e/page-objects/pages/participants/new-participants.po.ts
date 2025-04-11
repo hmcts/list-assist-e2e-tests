@@ -1,7 +1,10 @@
 import { Page, expect } from "@playwright/test";
 import { Base } from "../../base";
+import { EditParticipantPage } from "./edit-participants.po.ts";
 
 export class NewParticipantPage extends Base {
+  readonly editParticipantPage = new EditParticipantPage(this.page);
+
   readonly givenNameInput = this.page.getByRole("textbox", {
     name: "Given Names",
   });
@@ -17,9 +20,6 @@ export class NewParticipantPage extends Base {
     super(page);
   }
 
-  //edit participant header (to be moved when edit participant page test is created)
-  readonly editParticipantHeader = this.page.getByText('Edit Participant', { exact: true })
-
   readonly CONSTANTS = {
     CASE_PARTICIPANT_TABLE_INTERPRETER_CYM: "Welsh",
   };
@@ -27,14 +27,13 @@ export class NewParticipantPage extends Base {
   async populateNewParticipantFormWithMandatoryData(
     givenName: string,
     lastName: string,
-    interpreter: string
+    interpreter: string,
   ) {
     await this.givenNameInput.fill(givenName);
     await this.lastNameInput.fill(lastName);
 
     await this.interpreterInput.click();
-    await this.interpreterInput.selectOption(interpreter
-    );
+    await this.interpreterInput.selectOption(interpreter);
 
     await this.saveButton.click();
   }
@@ -43,7 +42,7 @@ export class NewParticipantPage extends Base {
     await expect
       .poll(
         async () => {
-          return await this.editParticipantHeader.isVisible();
+          return await this.editParticipantPage.editParticipantHeader.isVisible();
         },
         {
           intervals: [2_000],
