@@ -1,6 +1,5 @@
 import { expect, test } from "../fixtures";
 import { config } from "../utils";
-import { NewParticipantPage } from "../page-objects/pages/participants/new-participants.po";
 
 test.describe("Logout functionality", () => {
   test("Logout button is present and functions as expected @smoke", async ({
