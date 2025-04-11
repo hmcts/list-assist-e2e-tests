@@ -3,8 +3,7 @@ import { Base } from "../base";
 
 export class HomePage extends Base {
   readonly container = this.page.locator(".bodycontent");
-  readonly homePage = this.page.locator('.management-list')
-
+  readonly homePage = this.page.locator("#home-page");
 
   constructor(page: Page) {
     super(page);
@@ -23,7 +22,4 @@ export class HomePage extends Base {
       )
       .toBeTruthy();
   }
-
-
-
 }
