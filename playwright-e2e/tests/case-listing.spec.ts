@@ -46,14 +46,16 @@ test.describe("Case listing @case-listing", () => {
 
     // Test data
     const roomData = {
-      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      roomName:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       caseNumber: hmctsCaseNumber,
       sessionDuration:
         sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       hearingType:
         sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-      cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
+      cancelReason:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await addNewCasePage.addNewCaseWithMandatoryData(

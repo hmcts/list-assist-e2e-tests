@@ -13,7 +13,9 @@ interface CaseData {
 
 export class AddNewCasePage extends Base {
   private dataUtils = new DataUtils();
-  readonly hmctsCaseNumber = this.dataUtils.generateRandomAlphanumeric(10).toUpperCase();
+  readonly hmctsCaseNumber = this.dataUtils
+    .generateRandomAlphanumeric(10)
+    .toUpperCase();
 
   readonly CONSTANTS = {
     HMCTS_CASE_NUMBER_HEADER_VALUE: "HMCTS Case Number",
