@@ -22,7 +22,7 @@ test.describe("Upper bar functionality", () => {
     storageState: config.users.testUser.sessionFile,
   });
 
-  test("Close case button is present and works as expected @smoke", async ({
+  test("Close case buttons is present and works as expected @smoke", async ({
     homePage,
     addNewCasePage,
     caseSearchPage,
@@ -69,6 +69,15 @@ test.describe("Upper bar functionality", () => {
     await caseDetailsPage.addToCartButton.click();
     await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
 
+    //check current case drop down menu
+    await expect(
+      homePage.upperbarComponent.currentCaseDropdownButton,
+    ).toBeVisible();
+    await homePage.upperbarComponent.currentCaseDropdownButton.click();
+    await expect(
+      homePage.upperbarComponent.currentCaseDropdownList,
+    ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
+
     //press Close case button
     await homePage.upperbarComponent.closeCaseButton.click();
 
@@ -79,7 +88,7 @@ test.describe("Upper bar functionality", () => {
     await expect(caseDetailsPage.sidebarComponent.cartButton).toBeDisabled();
   });
 
-  test("Close participant button is present and works as expected @smoke", async ({
+  test("Close participant buttons is present and works as expected @smoke", async ({
     homePage,
     dataUtils,
     newParticipantsPage,
@@ -105,6 +114,15 @@ test.describe("Upper bar functionality", () => {
 
     await newParticipantsPage.checkEditParticipantHeader();
 
+    //checks current participant drop down menu
+    await expect(
+      homePage.upperbarComponent.currentParticipantDropdownButton,
+    ).toBeVisible();
+    await homePage.upperbarComponent.currentParticipantDropdownButton.click();
+    await expect(
+      homePage.upperbarComponent.currentParticipantDropdownList,
+    ).toContainText(homePage.upperbarComponent.currentParticipantDropDownItems);
+
     //use close participant button
     await expect(
       homePage.upperbarComponent.closeParticipantButton,
@@ -113,5 +131,19 @@ test.describe("Upper bar functionality", () => {
 
     //wait for homepage to load
     await homePage.waitForHomePageLoad();
+  });
+
+  test("Help button is present and works as expected @smoke", async ({
+    homePage,
+  }) => {
+    await homePage.page.goto(config.urls.baseUrl);
+    await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
+    await expect(homePage.upperbarComponent.helpButton).toBeVisible();
+
+    //checks popup is present
+    const waitForCreateNewPartyPopup = homePage.page.waitForEvent("popup");
+    await homePage.upperbarComponent.helpButton.click();
+    const helpDialogPopup = await waitForCreateNewPartyPopup;
+    await expect(helpDialogPopup).toBeTruthy();
   });
 });
