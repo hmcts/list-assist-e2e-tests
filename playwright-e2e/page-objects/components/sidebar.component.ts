@@ -6,10 +6,14 @@ export class SidebarComponent {
   readonly backToMenuButton = this.root.locator(
     'div.sidepanel-card--topheader:has-text("Back to menu")',
   );
+
+  //hearing menu
   readonly hearingsMenu = this.root.locator("#hearing_menuItem");
   readonly hearingScheduleSubMenu = this.root.locator(
     "#hearingSchedule_subMenuItem",
   );
+
+  //cases manu
   readonly casesMenu = this.root.locator("#matter_menuItem");
   readonly caseSearchSubMenu = this.root.locator("#search_subMenuItem");
   readonly caseAddNew = this.root.locator("#addNew_subMenuItem");
@@ -17,9 +21,15 @@ export class SidebarComponent {
   readonly currentCaseDetailsEdit = this.root.locator(
     "#detailsEdit_subMenuItem",
   );
+
+  //listing requirements menu
   readonly listingRequirementsSubmenu = this.root.locator(
     "#listingRequirements_subMenuItem",
   );
+
+  //add new participant menu
+  readonly participantsMenu = this.root.locator("#entity_menuItem");
+  readonly addNewParticipant = this.root.locator("#addAnEntity_subMenuItem");
 
   //case cart
   readonly modal = this.page.locator(".modal-content");
@@ -123,6 +133,24 @@ export class SidebarComponent {
 
     await this.currentCaseSubMenu.click();
     await this.currentCaseDetailsEdit.click();
+  }
+
+  async openAddNewParticipantPage() {
+    await expect
+      .poll(
+        async () => {
+          await this.participantsMenu.click();
+          return await this.addNewParticipant.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
+    await this.participantsMenu.click();
+    await this.addNewParticipant.click();
   }
 
   async emptyCaseCart() {

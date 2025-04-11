@@ -34,11 +34,11 @@ test.describe("Upper bar functionality", () => {
     const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
     const caseName = "AUTO_" + addNewCasePage.hmctsCaseNumber;
 
-    // Check if the close case button is present
-    await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
-
     //empties cart if anything present in cart
     await homePage.sidebarComponent.emptyCaseCart();
+
+    // Check if the close case button is present
+    await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
 
     // Test data
     const caseData = {
@@ -60,7 +60,7 @@ test.describe("Upper bar functionality", () => {
     await addNewCasePage.addNewCaseWithMandatoryData(
       caseData,
       hmctsCaseNumber,
-      caseName
+      caseName,
     );
 
     //add case to cart
@@ -73,9 +73,40 @@ test.describe("Upper bar functionality", () => {
     await homePage.upperbarComponent.closeCaseButton.click();
 
     //wait for page load
-    await expect(homePage.header).toBeVisible();
+    await homePage.waitForHomePageLoad();
 
     //confirms case is closed by checking that the case is not in the cart
     await expect(caseDetailsPage.sidebarComponent.cartButton).toBeDisabled();
+  });
+
+  test("Close participant button is present and works as expected", async ({
+    homePage,
+    dataUtils,
+    newParticipantsPage,
+  }) => {
+    const firstName = dataUtils.generateRandomAlphabetical(7);
+    const lastName = dataUtils.generateRandomAlphabetical(8);
+
+    await homePage.page.goto(config.urls.baseUrl);
+    await expect(homePage.upperbarComponent.loginButton).toBeVisible();
+
+    await expect(
+      homePage.upperbarComponent.closeParticipantButton,
+    ).toBeVisible();
+
+    // Add new participant
+    await homePage.sidebarComponent.openAddNewParticipantPage();
+
+    await newParticipantsPage.populateNewParticipantFormWithMandatoryData(
+      firstName,
+      lastName,
+    );
+
+    //use close participant button
+    await expect(homePage.upperbarComponent.loginButton).toBeVisible();
+    await homePage.upperbarComponent.closeParticipantButton.click();
+
+    //wait for homepage to load
+    await homePage.waitForHomePageLoad();
   });
 });

@@ -14,7 +14,7 @@ export class LoginPage extends Base {
 
   async login(
     user: UserCredentials,
-    disableSaveSession?: boolean
+    disableSaveSession?: boolean,
   ): Promise<void> {
     await this.usernameInput.fill(user.username);
     await this.passwordInput.fill(user.password);
