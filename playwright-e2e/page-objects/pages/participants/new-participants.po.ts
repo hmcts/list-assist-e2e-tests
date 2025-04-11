@@ -1,6 +1,5 @@
-import { Page, expect } from "@playwright/test";
+import { Page } from "@playwright/test";
 import { Base } from "../../base";
-import { DataUtils } from "../../../utils/data.utils";
 
 export class NewParticipantPage extends Base {
   readonly givenNameInput = this.page.getByRole("textbox", {
