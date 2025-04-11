@@ -106,7 +106,9 @@ test.describe("Upper bar functionality", () => {
     await newParticipantsPage.checkEditParticipantHeader();
 
     //use close participant button
-    await expect(homePage.upperbarComponent.closeParticipantButton).toBeVisible();
+    await expect(
+      homePage.upperbarComponent.closeParticipantButton,
+    ).toBeVisible();
     await homePage.upperbarComponent.closeParticipantButton.click();
 
     //wait for homepage to load
