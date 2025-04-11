@@ -12,11 +12,15 @@ export class LoginPage extends Base {
     super(page);
   }
 
-  async login(user: UserCredentials, saveSession?: boolean): Promise<void> {
+  async login(
+    user: UserCredentials,
+    disableSaveSession?: boolean
+  ): Promise<void> {
     await this.usernameInput.fill(user.username);
     await this.passwordInput.fill(user.password);
     await this.submitBtn.click();
-    if (saveSession) await this.saveSession(user);
+    if (disableSaveSession) return;
+    await this.saveSession(user);
   }
 
   private async saveSession(user: UserCredentials) {
