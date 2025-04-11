@@ -1,23 +1,25 @@
 import { expect, test } from "../fixtures";
 import { config } from "../utils";
 
-test.use({
-  storageState: config.users.testUser.sessionFile,
-});
-
-test.describe("Buttons present in upper bar function as expected", () => {
-  test.beforeEach(async ({ page, homePage }) => {
-    await page.goto(config.urls.baseUrl);
-    await expect(homePage.upperbarComponent.loginButton).toBeVisible();
-  });
-
+test.describe("Logout functionality", () => {
   test("Logout button is present and functions as expected", async ({
     loginPage,
     homePage,
+    config,
   }) => {
+    await homePage.page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser, true);
+    await expect(homePage.upperbarComponent.loginButton).toBeVisible();
+
     await expect(homePage.upperbarComponent.loginButton).toBeVisible();
     await homePage.upperbarComponent.loginButton.click();
     await expect(loginPage.usernameInput).toBeVisible();
+  });
+});
+
+test.describe("Upper bar functionality", () => {
+  test.use({
+    storageState: config.users.testUser.sessionFile,
   });
 
   test("Close case button is present and works as expected", async ({
@@ -26,6 +28,9 @@ test.describe("Buttons present in upper bar function as expected", () => {
     caseSearchPage,
     caseDetailsPage,
   }) => {
+    await homePage.page.goto(config.urls.baseUrl);
+    await expect(homePage.upperbarComponent.loginButton).toBeVisible();
+
     const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
     const caseName = "AUTO_" + addNewCasePage.hmctsCaseNumber;
 
@@ -55,7 +60,7 @@ test.describe("Buttons present in upper bar function as expected", () => {
     await addNewCasePage.addNewCaseWithMandatoryData(
       caseData,
       hmctsCaseNumber,
-      caseName,
+      caseName
     );
 
     //add case to cart
