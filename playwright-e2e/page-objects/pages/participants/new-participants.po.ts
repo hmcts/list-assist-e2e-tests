@@ -1,8 +1,10 @@
 import { Page, expect } from "@playwright/test";
 import { Base } from "../../base";
-import { DataUtils } from "../../../utils/data.utils";
+import { EditParticipantPage } from "./edit-participants.po.ts";
 
 export class NewParticipantPage extends Base {
+  readonly editParticipantPage = new EditParticipantPage(this.page);
+
   readonly givenNameInput = this.page.getByRole("textbox", {
     name: "Given Names",
   });
@@ -19,21 +21,34 @@ export class NewParticipantPage extends Base {
   }
 
   readonly CONSTANTS = {
-    CASE_PARTICIPANT_TABLE_INTERPRETER: "Welsh",
+    CASE_PARTICIPANT_TABLE_INTERPRETER_CYM: "Welsh",
   };
 
   async populateNewParticipantFormWithMandatoryData(
     givenName: string,
     lastName: string,
+    interpreter: string,
   ) {
     await this.givenNameInput.fill(givenName);
     await this.lastNameInput.fill(lastName);
 
     await this.interpreterInput.click();
-    await this.interpreterInput.selectOption(
-      this.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
-    );
+    await this.interpreterInput.selectOption(interpreter);
 
     await this.saveButton.click();
+  }
+
+  async checkEditParticipantHeader() {
+    await expect
+      .poll(
+        async () => {
+          return await this.editParticipantPage.editParticipantHeader.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 60_000,
+        },
+      )
+      .toBeTruthy();
   }
 }

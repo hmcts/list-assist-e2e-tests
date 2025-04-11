@@ -2,17 +2,17 @@ import { expect, test } from "../fixtures";
 import { config } from "../utils";
 
 test.describe("Logout functionality", () => {
-  test("Logout button is present and functions as expected", async ({
+  test("Logout button is present and functions as expected @smoke", async ({
     loginPage,
     homePage,
     config,
   }) => {
     await homePage.page.goto(config.urls.baseUrl);
     await loginPage.login(config.users.testUser, true);
-    await expect(homePage.upperbarComponent.loginButton).toBeVisible();
+    await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
 
-    await expect(homePage.upperbarComponent.loginButton).toBeVisible();
-    await homePage.upperbarComponent.loginButton.click();
+    await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
+    await homePage.upperbarComponent.logoutButton.click();
     await expect(loginPage.usernameInput).toBeVisible();
   });
 });
@@ -22,14 +22,14 @@ test.describe("Upper bar functionality", () => {
     storageState: config.users.testUser.sessionFile,
   });
 
-  test("Close case button is present and works as expected", async ({
+  test("Close case buttons is present and works as expected @smoke", async ({
     homePage,
     addNewCasePage,
     caseSearchPage,
     caseDetailsPage,
   }) => {
     await homePage.page.goto(config.urls.baseUrl);
-    await expect(homePage.upperbarComponent.loginButton).toBeVisible();
+    await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
 
     const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
     const caseName = "AUTO_" + addNewCasePage.hmctsCaseNumber;
@@ -69,6 +69,15 @@ test.describe("Upper bar functionality", () => {
     await caseDetailsPage.addToCartButton.click();
     await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
 
+    //check current case drop down menu
+    await expect(
+      homePage.upperbarComponent.currentCaseDropdownButton,
+    ).toBeVisible();
+    await homePage.upperbarComponent.currentCaseDropdownButton.click();
+    await expect(
+      homePage.upperbarComponent.currentCaseDropdownList,
+    ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
+
     //press Close case button
     await homePage.upperbarComponent.closeCaseButton.click();
 
@@ -79,16 +88,16 @@ test.describe("Upper bar functionality", () => {
     await expect(caseDetailsPage.sidebarComponent.cartButton).toBeDisabled();
   });
 
-  test("Close participant button is present and works as expected", async ({
+  test("Close participant buttons is present and works as expected @smoke", async ({
     homePage,
     dataUtils,
     newParticipantsPage,
   }) => {
-    const firstName = dataUtils.generateRandomAlphabetical(7);
+    const givenName = dataUtils.generateRandomAlphabetical(7);
     const lastName = dataUtils.generateRandomAlphabetical(8);
 
     await homePage.page.goto(config.urls.baseUrl);
-    await expect(homePage.upperbarComponent.loginButton).toBeVisible();
+    await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
 
     await expect(
       homePage.upperbarComponent.closeParticipantButton,
@@ -98,15 +107,43 @@ test.describe("Upper bar functionality", () => {
     await homePage.sidebarComponent.openAddNewParticipantPage();
 
     await newParticipantsPage.populateNewParticipantFormWithMandatoryData(
-      firstName,
+      givenName,
       lastName,
+      newParticipantsPage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER_CYM,
     );
 
+    await newParticipantsPage.checkEditParticipantHeader();
+
+    //checks current participant drop down menu
+    await expect(
+      homePage.upperbarComponent.currentParticipantDropdownButton,
+    ).toBeVisible();
+    await homePage.upperbarComponent.currentParticipantDropdownButton.click();
+    await expect(
+      homePage.upperbarComponent.currentParticipantDropdownList,
+    ).toContainText(homePage.upperbarComponent.currentParticipantDropDownItems);
+
     //use close participant button
-    await expect(homePage.upperbarComponent.loginButton).toBeVisible();
+    await expect(
+      homePage.upperbarComponent.closeParticipantButton,
+    ).toBeVisible();
     await homePage.upperbarComponent.closeParticipantButton.click();
 
     //wait for homepage to load
     await homePage.waitForHomePageLoad();
+  });
+
+  test("Help button is present and works as expected @smoke", async ({
+    homePage,
+  }) => {
+    await homePage.page.goto(config.urls.baseUrl);
+    await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
+    await expect(homePage.upperbarComponent.helpButton).toBeVisible();
+
+    //checks popup is present
+    const waitForCreateNewPartyPopup = homePage.page.waitForEvent("popup");
+    await homePage.upperbarComponent.helpButton.click();
+    const helpDialogPopup = await waitForCreateNewPartyPopup;
+    await expect(helpDialogPopup).toBeTruthy();
   });
 });
