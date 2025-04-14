@@ -132,6 +132,21 @@ export class EditNewCasePage extends Base {
       .selectOption(interpreter);
     await createNewParticipant.getByRole("button", { name: "Save" }).click();
 
+    //wait for Participant Class to be visible
+    await expect
+      .poll(
+        async () => {
+          return await createNewParticipant
+            .getByText("New Party")
+            .isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
     await expect(createNewParticipant.getByText("New Party")).toBeVisible();
     await expect(createNewParticipant.getByLabel("Role")).toBeVisible();
     await createNewParticipant.getByLabel("Role").selectOption(role);

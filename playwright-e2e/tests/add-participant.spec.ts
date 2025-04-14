@@ -11,7 +11,7 @@ test.describe("Add participant @add-participant", () => {
     await homePage.sidebarComponent.openAddNewCasePage();
   });
 
-  test("Add new participant to case @smoke", async ({
+  test("Add new participant to case and then close participant using topbar UI  @smoke", async ({
     addNewCasePage,
     editNewCasePage,
     dataUtils,

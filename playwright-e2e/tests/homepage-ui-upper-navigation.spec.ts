@@ -89,13 +89,9 @@ test.describe("Upper bar functionality @ui-test", () => {
     await homePage.sidebarComponent.checkCartButtonDisabled();
   });
 
-  test("Close participant buttons is present and works as expected @smoke", async ({
+  test("Close participant button is present and works as expected @smoke", async ({
     homePage,
-    dataUtils,
-    newParticipantsPage,
   }) => {
-    const givenName = dataUtils.generateRandomAlphabetical(7);
-    const lastName = dataUtils.generateRandomAlphabetical(8);
 
     await homePage.page.goto(config.urls.baseUrl);
     await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
@@ -103,35 +99,6 @@ test.describe("Upper bar functionality @ui-test", () => {
     await expect(
       homePage.upperbarComponent.closeParticipantButton,
     ).toBeVisible();
-
-    // Add new participant
-    await homePage.sidebarComponent.openAddNewParticipantPage();
-
-    await newParticipantsPage.populateNewParticipantFormWithMandatoryData(
-      givenName,
-      lastName,
-      newParticipantsPage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER_CYM,
-    );
-
-    await newParticipantsPage.checkEditParticipantHeader();
-
-    //checks current participant drop down menu
-    await expect(
-      homePage.upperbarComponent.currentParticipantDropdownButton,
-    ).toBeVisible();
-    await homePage.upperbarComponent.currentParticipantDropdownButton.click();
-    await expect(
-      homePage.upperbarComponent.currentParticipantDropdownList,
-    ).toContainText(homePage.upperbarComponent.currentParticipantDropDownItems);
-
-    //use close participant button
-    await expect(
-      homePage.upperbarComponent.closeParticipantButton,
-    ).toBeVisible();
-    await homePage.upperbarComponent.closeParticipantButton.click();
-
-    //wait for homepage to load
-    await homePage.waitForHomePageLoad();
   });
 
   test("Help button is present and works as expected @smoke", async ({
