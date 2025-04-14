@@ -1,7 +1,7 @@
 import { expect, test } from "../fixtures";
 import { config } from "../utils";
 
-test.describe("Logout functionality", () => {
+test.describe("Logout functionality @ui-test", () => {
   test("Logout button is present and functions as expected @smoke", async ({
     loginPage,
     homePage,
@@ -17,7 +17,7 @@ test.describe("Logout functionality", () => {
   });
 });
 
-test.describe("Upper bar functionality", () => {
+test.describe("Upper bar functionality @ui-test", () => {
   test.use({
     storageState: config.users.testUser.sessionFile,
   });
