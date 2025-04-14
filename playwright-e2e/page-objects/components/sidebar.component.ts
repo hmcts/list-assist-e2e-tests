@@ -162,4 +162,18 @@ export class SidebarComponent {
       await this.backToMenuButton.click();
     }
   }
+
+  async checkCartButtonDisabled() {
+    await expect
+      .poll(
+        async () => {
+          return await expect(this.cartButton).toBeDisabled();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+  }
 }
