@@ -22,7 +22,8 @@ test.describe("Upper bar UI @ui-test", () => {
     storageState: config.users.testUser.sessionFile,
   });
 
-  test("Close case buttons is present", async ({
+  //test checks that buttons are present. Functionality tests as part of other tests
+  test("Close case button and Close participant buttons are present", async ({
     homePage,
   }) => {
     await homePage.page.goto(config.urls.baseUrl);
@@ -33,18 +34,9 @@ test.describe("Upper bar UI @ui-test", () => {
 
     // Check if the close case button is present
     await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
-  });
 
-  test("Close participant button is present and works as expected @smoke", async ({
-    homePage,
-  }) => {
-
-    await homePage.page.goto(config.urls.baseUrl);
-    await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
-
-    await expect(
-      homePage.upperbarComponent.closeParticipantButton,
-    ).toBeVisible();
+    // Checks if close participant button is present
+    await expect(homePage.upperbarComponent.closeParticipantButton,).toBeVisible();
   });
 
   test("Help button is present and works as expected @smoke", async ({
