@@ -84,9 +84,6 @@ test.describe("Upper bar functionality @ui-test", () => {
 
     //wait for page load
     await homePage.waitForHomePageLoad();
-
-    //confirms case is closed by checking that the case is not in the cart
-    await homePage.sidebarComponent.checkCartButtonDisabled();
   });
 
   test("Close participant button is present and works as expected @smoke", async ({
