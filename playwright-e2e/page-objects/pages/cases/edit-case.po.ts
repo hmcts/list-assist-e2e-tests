@@ -63,10 +63,13 @@ export class EditNewCasePage extends Base {
       .click();
 
     // Fill in the participant details
+    //wait for heading to be visible
     await expect
       .poll(
         async () => {
-          return await createNewParticipant.getByText("New Participant").isVisible();
+          return await createNewParticipant
+            .getByText("New Participant")
+            .isVisible();
         },
         {
           intervals: [2_000],
@@ -75,10 +78,31 @@ export class EditNewCasePage extends Base {
       )
       .toBeTruthy();
 
+    //wait for Participant Class to be visible
+    await expect
+      .poll(
+        async () => {
+          return await createNewParticipant
+            .getByLabel("Participant Class")
+            .isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
+    await expect(
+      createNewParticipant.getByLabel("Participant Class"),
+    ).toBeVisible();
     await createNewParticipant.getByLabel("Participant Class").click();
     await createNewParticipant
       .getByLabel("Participant Class")
       .selectOption(participantClass);
+    await expect(
+      createNewParticipant.getByLabel("Participant Type"),
+    ).toBeVisible();
     await createNewParticipant.getByLabel("Participant Type").click();
     await createNewParticipant
       .getByLabel("Participant Type")
@@ -122,16 +146,18 @@ export class EditNewCasePage extends Base {
     caseInterpreter: string,
   ) {
     await expect
-        .poll(
-          async () => {
-            return await this.page.getByRole("cell", { name: caseParticipantsType }).isVisible();
-          },
-          {
-            intervals: [2_000],
-            timeout: 10_000,
-          },
-        )
-        .toBeTruthy();
+      .poll(
+        async () => {
+          return await this.page
+            .getByRole("cell", { name: caseParticipantsType })
+            .isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
 
     await expect(
       this.page.getByRole("cell", { name: caseParticipantsType }),

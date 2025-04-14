@@ -2,7 +2,7 @@ import { Page } from "@playwright/test";
 import { Base } from "../../base";
 
 export class CaseSearchPage extends Base {
-  readonly caseSearchPageHeader= this.page.locator("#CMSHomeHeading");
+  readonly caseSearchPageHeader = this.page.locator("#CMSHomeHeading");
   readonly caseNumber = this.page.locator("#mtrMediumTitle");
   readonly searchButton = this.page.locator("#submitButton");
 

@@ -151,16 +151,16 @@ export class AddNewCasePage extends Base {
 
     //confirms banner for created case is visible
     await expect
-        .poll(
-          async () => {
-            return await this.newCaseHeader.isVisible();
-          },
-          {
-            intervals: [2_000],
-            timeout: 10_000,
-          },
-        )
-        .toBeTruthy();
+      .poll(
+        async () => {
+          return await this.newCaseHeader.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
 
     await expect(this.newCaseHeader).toBeVisible();
     await expect(this.newCaseHeader).toHaveText(
