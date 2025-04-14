@@ -8,7 +8,6 @@ import { AddNewCasePage } from "./cases/add-new-case.po.ts";
 import { EditNewCasePage } from "./cases/edit-case.po.ts";
 import { NewParticipantPage } from "./participants/new-participants.po.ts";
 import { EditParticipantPage } from "./participants/edit-participants.po.ts";
-import {CaseHistoryPage} from "./cases/case-history.po.ts";
 
 export interface PageFixtures {
   loginPage: LoginPage;
@@ -21,7 +20,6 @@ export interface PageFixtures {
   editNewCasePage: EditNewCasePage;
   newParticipantsPage: NewParticipantPage;
   editParticipantsPage: EditParticipantPage;
-  caseHistoryPage: CaseHistoryPage;
 }
 
 export const pageFixtures = {
@@ -54,8 +52,5 @@ export const pageFixtures = {
   },
   editParticipantsPage: async ({ page }, use) => {
     await use(new EditParticipantPage(page));
-  },
-  caseHistoryPage: async ({ page }, use) => {
-    await use(new CaseHistoryPage(page));
   },
 };
