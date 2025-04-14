@@ -39,6 +39,8 @@ export class SidebarComponent {
   });
   readonly cartButton = this.page.locator("#cart");
 
+  readonly caseSearchPageHeader= this.page.locator("#CMSHomeHeading");
+
   constructor(
     private root: Locator,
     private page: Page,
@@ -78,6 +80,18 @@ export class SidebarComponent {
 
     await this.casesMenu.click();
     await this.caseSearchSubMenu.click();
+
+      await expect
+        .poll(
+          async () => {
+            return await this.caseSearchPageHeader.isVisible();
+          },
+          {
+            intervals: [2_000],
+            timeout: 10_000,
+          },
+        )
+        .toBeTruthy();
   }
 
   async openAddNewCasePage() {

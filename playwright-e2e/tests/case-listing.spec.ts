@@ -68,7 +68,7 @@ test.describe("Case listing @case-listing", () => {
     await caseSearchPage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(caseName);
 
-    // await expect(caseDetailsPage.addToCartButton).toBeVisible();
+    await expect(caseDetailsPage.addToCartButton).toBeVisible();
     await caseDetailsPage.addToCartButton.click();
     await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
 

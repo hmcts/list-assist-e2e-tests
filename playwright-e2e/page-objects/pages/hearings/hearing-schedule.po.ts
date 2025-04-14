@@ -142,7 +142,6 @@ export class HearingSchedulePage extends Base {
           },
         )
         .toBeTruthy();
-      // await expect(this.sessionBookingPage.heading).toBeVisible();
 
       //delete session from inside of session details page, if available
       if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
