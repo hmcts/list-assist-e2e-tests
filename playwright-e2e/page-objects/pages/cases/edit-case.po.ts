@@ -63,9 +63,17 @@ export class EditNewCasePage extends Base {
       .click();
 
     // Fill in the participant details
-    await expect(
-      createNewParticipant.getByText("New Participant"),
-    ).toBeVisible();
+    await expect
+      .poll(
+        async () => {
+          return await createNewParticipant.getByText("New Participant").isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
 
     await createNewParticipant.getByLabel("Participant Class").click();
     await createNewParticipant
@@ -113,6 +121,18 @@ export class EditNewCasePage extends Base {
     caseParticipantsName: string,
     caseInterpreter: string,
   ) {
+    await expect
+        .poll(
+          async () => {
+            return await this.page.getByRole("cell", { name: caseParticipantsType }).isVisible();
+          },
+          {
+            intervals: [2_000],
+            timeout: 10_000,
+          },
+        )
+        .toBeTruthy();
+
     await expect(
       this.page.getByRole("cell", { name: caseParticipantsType }),
     ).toBeVisible();
