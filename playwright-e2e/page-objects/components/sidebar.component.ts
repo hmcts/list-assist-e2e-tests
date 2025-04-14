@@ -130,8 +130,18 @@ export class SidebarComponent {
   }
 
   async openCaseDetailsEditPage() {
-    // TODO: Replace implicit wait
-    await this.page.waitForTimeout(3_000);
+    await expect
+      .poll(
+        async () => {
+          return await this.casesMenu.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
     await expect
       .poll(
         async () => {
