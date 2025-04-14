@@ -109,15 +109,16 @@ export class SessionBookingPage extends Base {
     const listingIframe = this.page.locator('iframe[name="addAssociation"]');
 
     // Wait for the iframe to be visible
-    await expect.poll(
-      async () => {
-        return await listingIframe.isVisible();
-      },
-      {
-        intervals: [1_000],
-        timeout: 20_000,
-      },
-    )
+    await expect
+      .poll(
+        async () => {
+          return await listingIframe.isVisible();
+        },
+        {
+          intervals: [1_000],
+          timeout: 20_000,
+        },
+      )
       .toBeTruthy();
 
     await expect(
