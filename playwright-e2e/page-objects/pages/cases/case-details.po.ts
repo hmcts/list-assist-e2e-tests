@@ -4,7 +4,7 @@ import { EditNewCasePage } from "./edit-case.po.ts";
 
 export class CaseDetailsPage extends Base {
   readonly container = this.page.locator("#pageContent");
-  readonly addToCartButton = this.page.getByLabel("Add to cart");
+  readonly addToCartButton = this.page.locator("#header-bar-add-to-cart-icon");
   readonly additionalDetailsCard = this.page.locator(
     "#matter-detail-summaryFields",
   );
@@ -90,5 +90,21 @@ export class CaseDetailsPage extends Base {
     await expect
       .soft(editNewCasePage.owningHearingField)
       .toHaveText("Owning Hearing Location " + owningHearing);
+  }
+
+  async addCaseToCart() {
+    await expect
+      .poll(
+        async () => {
+          return await this.addToCartButton.click();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
+    await this.addToCartButton.click();
   }
 }

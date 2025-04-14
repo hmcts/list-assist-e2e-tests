@@ -37,7 +37,7 @@ export class SidebarComponent {
   readonly emptyCartButton = this.page.getByRole("button", {
     name: "Empty Cart",
   });
-  readonly cartButton = this.page.getByRole("button", { name: "Case Cart" });
+  readonly cartButton = this.page.locator("#cart");
 
   constructor(
     private root: Locator,
@@ -163,11 +163,25 @@ export class SidebarComponent {
     }
   }
 
+  async checkCartButtonEnabled() {
+    await expect
+      .poll(
+        async () => {
+          return (await this.cartButton.isEnabled())
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+  }
+
   async checkCartButtonDisabled() {
     await expect
       .poll(
         async () => {
-          return await expect(this.cartButton).toBeDisabled();
+          return !(await this.cartButton.isEnabled())
         },
         {
           intervals: [2_000],
