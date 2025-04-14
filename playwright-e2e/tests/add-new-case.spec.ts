@@ -15,6 +15,7 @@ test.describe("Case creation @add-new-case", () => {
     addNewCasePage,
     editNewCasePage,
     caseDetailsPage,
+    homePage
   }) => {
     // Test data
     const caseData = {
@@ -77,7 +78,10 @@ test.describe("Case creation @add-new-case", () => {
     );
 
     //Close case
-    await caseDetailsPage.closeCaseButton.click();
-    await caseDetailsPage.headerTitle.isVisible();
+    //press Close case button
+    await homePage.upperbarComponent.closeCaseButton.click();
+
+    //wait for page load
+    await homePage.waitForHomePageLoad();
   });
 });

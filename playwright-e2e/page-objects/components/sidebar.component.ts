@@ -37,7 +37,9 @@ export class SidebarComponent {
   readonly emptyCartButton = this.page.getByRole("button", {
     name: "Empty Cart",
   });
-  readonly cartButton = this.page.getByRole("button", { name: "Case Cart" });
+  readonly cartButton = this.page.locator("#cart");
+
+  readonly caseSearchPageHeader = this.page.locator("#CMSHomeHeading");
 
   constructor(
     private root: Locator,
@@ -78,6 +80,18 @@ export class SidebarComponent {
 
     await this.casesMenu.click();
     await this.caseSearchSubMenu.click();
+
+    await expect
+      .poll(
+        async () => {
+          return await this.caseSearchPageHeader.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
   }
 
   async openAddNewCasePage() {
@@ -161,5 +175,33 @@ export class SidebarComponent {
       await expect(this.cartCounterLabel).toBeHidden();
       await this.backToMenuButton.click();
     }
+  }
+
+  async checkCartButtonEnabled() {
+    await expect
+      .poll(
+        async () => {
+          return await this.cartButton.isEnabled();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+  }
+
+  async checkCartButtonDisabled() {
+    await expect
+      .poll(
+        async () => {
+          return !(await this.cartButton.isEnabled());
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
   }
 }

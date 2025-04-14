@@ -63,14 +63,46 @@ export class EditNewCasePage extends Base {
       .click();
 
     // Fill in the participant details
-    await expect(
-      createNewParticipant.getByText("New Participant"),
-    ).toBeVisible();
+    //wait for heading to be visible
+    await expect
+      .poll(
+        async () => {
+          return await createNewParticipant
+            .getByText("New Participant")
+            .isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
 
+    //wait for Participant Class to be visible
+    await expect
+      .poll(
+        async () => {
+          return await createNewParticipant
+            .getByLabel("Participant Class")
+            .isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
+    await expect(
+      createNewParticipant.getByLabel("Participant Class"),
+    ).toBeVisible();
     await createNewParticipant.getByLabel("Participant Class").click();
     await createNewParticipant
       .getByLabel("Participant Class")
       .selectOption(participantClass);
+    await expect(
+      createNewParticipant.getByLabel("Participant Type"),
+    ).toBeVisible();
     await createNewParticipant.getByLabel("Participant Type").click();
     await createNewParticipant
       .getByLabel("Participant Type")
@@ -100,6 +132,21 @@ export class EditNewCasePage extends Base {
       .selectOption(interpreter);
     await createNewParticipant.getByRole("button", { name: "Save" }).click();
 
+    //wait for Participant Class to be visible
+    await expect
+      .poll(
+        async () => {
+          return await createNewParticipant
+            .getByText("New Party")
+            .isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
     await expect(createNewParticipant.getByText("New Party")).toBeVisible();
     await expect(createNewParticipant.getByLabel("Role")).toBeVisible();
     await createNewParticipant.getByLabel("Role").selectOption(role);
@@ -113,6 +160,20 @@ export class EditNewCasePage extends Base {
     caseParticipantsName: string,
     caseInterpreter: string,
   ) {
+    await expect
+      .poll(
+        async () => {
+          return await this.page
+            .getByRole("cell", { name: caseParticipantsType })
+            .isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
     await expect(
       this.page.getByRole("cell", { name: caseParticipantsType }),
     ).toBeVisible();

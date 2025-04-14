@@ -130,7 +130,18 @@ export class HearingSchedulePage extends Base {
     if (await scheduleButton.isVisible()) {
       await scheduleButton.click();
       await this.goToSessionDetailsButton.click();
-      await expect(this.sessionBookingPage.heading).toBeVisible();
+
+      await expect
+        .poll(
+          async () => {
+            return await this.sessionBookingPage.heading.isVisible();
+          },
+          {
+            intervals: [2_000],
+            timeout: 10_000,
+          },
+        )
+        .toBeTruthy();
 
       //delete session from inside of session details page, if available
       if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
