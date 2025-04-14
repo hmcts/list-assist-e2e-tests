@@ -15,7 +15,6 @@ test.describe("Case creation @add-new-case", () => {
     addNewCasePage,
     editNewCasePage,
     caseDetailsPage,
-    caseHistoryPage
   }) => {
     // Test data
     const caseData = {
