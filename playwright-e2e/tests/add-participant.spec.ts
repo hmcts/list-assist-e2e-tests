@@ -15,6 +15,7 @@ test.describe("Add participant @add-participant", () => {
     addNewCasePage,
     editNewCasePage,
     dataUtils,
+    homePage,
   }) => {
     // Test data
     const caseData = {
@@ -70,5 +71,14 @@ test.describe("Add participant @add-participant", () => {
       `${lastName}, ${givenName}`,
       editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
     );
+
+    //use close participant button
+    await expect(
+      editNewCasePage.upperbarComponent.closeParticipantButton,
+    ).toBeVisible();
+    await editNewCasePage.upperbarComponent.closeParticipantButton.click();
+
+    //wait for homepage to load
+    await homePage.waitForHomePageLoad();
   });
 });
