@@ -66,8 +66,9 @@ test.describe("Upper bar functionality", () => {
     //add case to cart
     await caseSearchPage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(caseName);
+
     await caseDetailsPage.addToCartButton.click();
-    await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
+    await caseDetailsPage.sidebarComponent.checkCartButtonEnabled();
 
     //check current case drop down menu
     await expect(
