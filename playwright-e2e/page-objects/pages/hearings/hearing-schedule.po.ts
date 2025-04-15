@@ -1,6 +1,6 @@
 import { Locator, Page, expect } from '@playwright/test';
 import { Base } from '../../base';
-import { SessionBookingPage } from './session-booking.po.js';
+import { SessionBookingPage } from './session-booking.po.ts';
 
 interface TableRow {
   roomName: string;
