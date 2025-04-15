@@ -78,7 +78,6 @@ test.describe("Case creation @add-new-case", () => {
     );
 
     //Close case
-    //press Close case button
     await homePage.upperbarComponent.closeCaseButton.click();
 
     //wait for page load
