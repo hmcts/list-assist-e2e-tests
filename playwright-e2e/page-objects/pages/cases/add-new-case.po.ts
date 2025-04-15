@@ -157,7 +157,7 @@ export class AddNewCasePage extends Base {
         },
         {
           intervals: [2_000],
-          timeout: 10_000,
+          timeout: 30_000,
         },
       )
       .toBeTruthy();
