@@ -1,48 +1,42 @@
-import { expect, Page } from "@playwright/test";
-import { Base } from "../../base";
+import { expect, Page } from '@playwright/test';
+import { Base } from '../../base';
 
 export class SessionBookingPage extends Base {
   readonly CONSTANTS = {
     //case listing
-    CASE_LISTING_ROOM_NAME_LEICESTER_CC_7: "Leicester County Courtroom 07",
-    CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
-    CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: "4",
-    CASE_LISTING_SESSION_DURATION_1_00: "60",
-    CASE_LISTING_COLUMN_ONE: "columnOne",
-    CASE_LISTING_HEARING_TYPE_APPLICATION: "Application",
-    CASE_LISTING_CANCEL_REASON_AMEND: "Amend",
+    CASE_LISTING_ROOM_NAME_LEICESTER_CC_7: 'Leicester County Courtroom 07',
+    CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: '5',
+    CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: '4',
+    CASE_LISTING_SESSION_DURATION_1_00: '60',
+    CASE_LISTING_COLUMN_ONE: 'columnOne',
+    CASE_LISTING_HEARING_TYPE_APPLICATION: 'Application',
+    CASE_LISTING_CANCEL_REASON_AMEND: 'Amend',
 
     //session details
-    SESSION_DETAILS_CANCELLATION_CODE_CANCEL: "CNCL",
+    SESSION_DETAILS_CANCELLATION_CODE_CANCEL: 'CNCL',
   };
 
-  readonly container = this.page.locator("#pageContent");
-  readonly heading = this.page.getByText("Session Booking", { exact: true });
-  readonly listingDuration = this.page.locator("#defListingDuration");
-  readonly durationDropdownButton = this.page.locator("#defListingDuration");
-  readonly sessionStatusDropdown = this.page.getByLabel(
-    "Session Status: This field is",
-  );
-  readonly saveButton = this.page.locator("#svb");
-  readonly deleteButton = this.page.locator("#dvb");
-  readonly popupFrame = this.page.frameLocator(
-    "#container iframe[name='addAssociation']",
-  );
+  readonly container = this.page.locator('#pageContent');
+  readonly heading = this.page.getByText('Session Booking', { exact: true });
+  readonly listingDuration = this.page.locator('#defListingDuration');
+  readonly durationDropdownButton = this.page.locator('#defListingDuration');
+  readonly sessionStatusDropdown = this.page.getByLabel('Session Status: This field is');
+  readonly saveButton = this.page.locator('#svb');
+  readonly deleteButton = this.page.locator('#dvb');
+  readonly popupFrame = this.page.frameLocator("#container iframe[name='addAssociation']");
   readonly popup = {
-    form: this.popupFrame.locator("#listingPopupForm"),
-    saveButton: this.popupFrame.locator("#saveListingBtn"),
-    cancelButton: this.popupFrame.locator("#cancelListingBtn"),
-    hearingType: this.popupFrame.locator("#hearingType"),
+    form: this.popupFrame.locator('#listingPopupForm'),
+    saveButton: this.popupFrame.locator('#saveListingBtn'),
+    cancelButton: this.popupFrame.locator('#cancelListingBtn'),
+    hearingType: this.popupFrame.locator('#hearingType'),
   };
-  readonly cancelListingButton = this.page
-    .locator("#handleListingImgId")
-    .last();
+  readonly cancelListingButton = this.page.locator('#handleListingImgId').last();
   readonly cancelPopup = {
-    popup: this.page.locator("#vbCancelReasonsLov"),
-    cancelDropdown: this.page.locator("#cancellationCode"),
+    popup: this.page.locator('#vbCancelReasonsLov'),
+    cancelDropdown: this.page.locator('#cancellationCode'),
   };
   readonly confirmPopup = {
-    confirmButton: this.page.locator(".modal-content #ok-btn"),
+    confirmButton: this.page.locator('.modal-content #ok-btn'),
   };
 
   constructor(page: Page) {
@@ -108,25 +102,26 @@ export class SessionBookingPage extends Base {
   async checkingListingIframe() {
     const listingIframe = this.page.locator('iframe[name="addAssociation"]');
 
-    await expect(listingIframe).toBeVisible();
+    // Wait for the iframe to be visible
+    await expect
+      .poll(
+        async () => {
+          return await listingIframe.isVisible();
+        },
+        {
+          intervals: [1_000],
+          timeout: 20_000,
+        },
+      )
+      .toBeTruthy();
 
-    await expect(
-      listingIframe
-        .contentFrame()
-        .getByRole("button", { name: "Please Choose..." }),
-    ).toBeVisible();
+    await expect(listingIframe.contentFrame().getByRole('button', { name: 'Please Choose...' })).toBeVisible();
+    await listingIframe.contentFrame().getByRole('button', { name: 'Please Choose...' }).click();
     await listingIframe
       .contentFrame()
-      .getByRole("button", { name: "Please Choose..." })
+      .getByRole('list')
+      .getByRole('option', { name: 'Allocation Hearing', exact: true })
       .click();
-    await listingIframe
-      .contentFrame()
-      .getByRole("list")
-      .getByRole("option", { name: "Allocation Hearing", exact: true })
-      .click();
-    await listingIframe
-      .contentFrame()
-      .getByRole("button", { name: "Save", exact: true })
-      .click();
+    await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
   }
 }
