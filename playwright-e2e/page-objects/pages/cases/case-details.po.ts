@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test';
 import { Base } from '../../base';
-import { EditNewCasePage } from './edit-case.po.js';
+import { EditNewCasePage } from './edit-case.po.ts';
 
 export class CaseDetailsPage extends Base {
   readonly container = this.page.locator('#pageContent');
