@@ -1,23 +1,21 @@
-import { expect, test } from "../fixtures";
-import { config } from "../utils";
+import { expect, test } from '../fixtures';
+import { config } from '../utils';
 
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe("Case listing @case-listing", () => {
-  test.beforeEach(
-    async ({ page, homePage, hearingSchedulePage, sessionBookingPage }) => {
-      await page.goto(config.urls.baseUrl);
-      //empties cart if there is anything present
-      await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-      await hearingSchedulePage.clearDownSchedule(
-        sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-        sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
-      );
-      await homePage.sidebarComponent.openAddNewCasePage();
-    },
-  );
+test.describe('Case listing @case-listing', () => {
+  test.beforeEach(async ({ page, homePage, hearingSchedulePage, sessionBookingPage }) => {
+    await page.goto(config.urls.baseUrl);
+    //empties cart if there is anything present
+    await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+    await hearingSchedulePage.clearDownSchedule(
+      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+    );
+    await homePage.sidebarComponent.openAddNewCasePage();
+  });
 
   test("Confirm case listing has status 'Released' @smoke", async ({
     sessionBookingPage,
@@ -25,14 +23,14 @@ test.describe("Case listing @case-listing", () => {
     caseSearchPage,
     caseDetailsPage,
     hearingSchedulePage,
+    homePage,
   }) => {
-    const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
-    const caseName = "AUTO_" + addNewCasePage.hmctsCaseNumber;
+    const hmctsCaseNumber = 'HMCTS_CN_' + addNewCasePage.hmctsCaseNumber;
+    const caseName = 'AUTO_' + addNewCasePage.hmctsCaseNumber;
 
     // Test data
     const caseData = {
-      hmctsCaseNumberHeaderValue:
-        addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
       caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
       jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
       service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
@@ -46,29 +44,30 @@ test.describe("Case listing @case-listing", () => {
 
     // Test data
     const roomData = {
-      roomName:
-        sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       caseNumber: hmctsCaseNumber,
-      sessionDuration:
-        sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-      hearingType:
-        sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-      cancelReason:
-        sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
+      sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
+      cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
-    await addNewCasePage.addNewCaseWithMandatoryData(
-      caseData,
-      hmctsCaseNumber,
-      caseName,
+    await addNewCasePage.addNewCaseWithMandatoryData(caseData, hmctsCaseNumber, caseName);
+
+    // Check if the close case button in upper bar is present
+    await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
+    //check current case drop down menu in upper bar
+    await expect(homePage.upperbarComponent.currentCaseDropdownButton).toBeVisible();
+    await homePage.upperbarComponent.currentCaseDropdownButton.click();
+    await expect(homePage.upperbarComponent.currentCaseDropdownList).toContainText(
+      homePage.upperbarComponent.currentCaseDropDownItems,
     );
 
     //add case to cart
     await caseSearchPage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(caseName);
 
-    // await expect(caseDetailsPage.addToCartButton).toBeVisible();
+    await expect(caseDetailsPage.addToCartButton).toBeVisible();
     await caseDetailsPage.addToCartButton.click();
     await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
 
@@ -79,11 +78,7 @@ test.describe("Case listing @case-listing", () => {
     //schedule hearing
     await hearingSchedulePage.waitForLoad();
 
-    await hearingSchedulePage.scheduleHearingWithBasket(
-      roomData.roomName,
-      roomData.column,
-      roomData.caseNumber,
-    );
+    await hearingSchedulePage.scheduleHearingWithBasket(roomData.roomName, roomData.column, roomData.caseNumber);
 
     //session booking page
     await sessionBookingPage.bookSession(
@@ -95,8 +90,6 @@ test.describe("Case listing @case-listing", () => {
     await sessionBookingPage.checkingListingIframe();
 
     //confirm listing
-    await expect(
-      hearingSchedulePage.confirmListingReleasedStatus,
-    ).toBeVisible();
+    await expect(hearingSchedulePage.confirmListingReleasedStatus).toBeVisible();
   });
 });
