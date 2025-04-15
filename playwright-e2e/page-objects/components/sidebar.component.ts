@@ -21,7 +21,7 @@ export class SidebarComponent {
   readonly currentCaseDetailsEdit = this.root.locator(
     "#detailsEdit_subMenuItem",
   );
-  readonly caseHeader = this.page.locator("#CMSHomeHeading")
+  readonly caseHeader = this.page.locator("#CMSHomeHeading");
 
   //listing requirements menu
   readonly listingRequirementsSubmenu = this.root.locator(
@@ -39,7 +39,6 @@ export class SidebarComponent {
     name: "Empty Cart",
   });
   readonly cartButton = this.page.locator("#cart");
-
 
   constructor(
     private root: Locator,
@@ -84,8 +83,7 @@ export class SidebarComponent {
     await expect
       .poll(
         async () => {
-          return await
-            this.caseHeader.isVisible();
+          return await this.caseHeader.isVisible();
         },
         {
           intervals: [2_000],
