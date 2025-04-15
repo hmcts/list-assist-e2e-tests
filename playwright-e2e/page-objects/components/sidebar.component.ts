@@ -1,6 +1,5 @@
 import { Locator, Page } from "@playwright/test";
 import { expect } from "../../fixtures.ts";
-import { CaseSearchPage } from "../pages";
 
 export class SidebarComponent {
   readonly sidebar = this.root.locator("#pageNavigation");
@@ -22,6 +21,7 @@ export class SidebarComponent {
   readonly currentCaseDetailsEdit = this.root.locator(
     "#detailsEdit_subMenuItem",
   );
+  readonly caseHeader = this.page.locator("#CMSHomeHeading")
 
   //listing requirements menu
   readonly listingRequirementsSubmenu = this.root.locator(
@@ -39,6 +39,7 @@ export class SidebarComponent {
     name: "Empty Cart",
   });
   readonly cartButton = this.page.locator("#cart");
+
 
   constructor(
     private root: Locator,
@@ -84,7 +85,7 @@ export class SidebarComponent {
       .poll(
         async () => {
           return await
-            this.page.locator("#CMSHomeHeading").isVisible();
+            this.caseHeader.isVisible();
         },
         {
           intervals: [2_000],
