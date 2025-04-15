@@ -1,5 +1,6 @@
 import { Locator, Page } from "@playwright/test";
 import { expect } from "../../fixtures.ts";
+import { CaseSearchPage } from "../pages";
 
 export class SidebarComponent {
   readonly sidebar = this.root.locator("#pageNavigation");
@@ -82,7 +83,8 @@ export class SidebarComponent {
     await expect
       .poll(
         async () => {
-          return await this.page.locator("#CMSHomeHeading").isVisible();
+          return await
+            this.page.locator("#CMSHomeHeading").isVisible();
         },
         {
           intervals: [2_000],
@@ -193,13 +195,13 @@ export class SidebarComponent {
     await expect
       .poll(
         async () => {
-          return !(await this.cartButton.isEnabled());
+          return await this.cartButton.isEnabled();
         },
         {
           intervals: [2_000],
           timeout: 10_000,
         },
       )
-      .toBeTruthy();
+      .toBeFalsy();
   }
 }

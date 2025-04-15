@@ -83,10 +83,10 @@ test.describe("Add participant @add-participant", () => {
   });
 
   test("Add new participant via Participants menu and close via topbar UI @smoke", async ({
-                                                                                     homePage,
-                                                                                     dataUtils,
-                                                                                     newParticipantsPage,
-                                                                                   }) => {
+    homePage,
+    dataUtils,
+    newParticipantsPage,
+  }) => {
     const givenName = dataUtils.generateRandomAlphabetical(7);
     const lastName = dataUtils.generateRandomAlphabetical(8);
 
