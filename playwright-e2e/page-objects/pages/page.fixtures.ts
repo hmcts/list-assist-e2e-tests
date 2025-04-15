@@ -1,13 +1,13 @@
-import { CaseDetailsPage } from "./cases/case-details.po";
-import { CaseSearchPage } from "./cases/case-search.po";
-import { SessionBookingPage } from "./hearings/session-booking.po.ts";
-import { HearingSchedulePage } from "./hearings/hearing-schedule.po";
-import { HomePage } from "./home.po";
-import { LoginPage } from "./login.po";
-import { AddNewCasePage } from "./cases/add-new-case.po.ts";
-import { EditNewCasePage } from "./cases/edit-case.po.ts";
-import { NewParticipantPage } from "./participants/new-participants.po.ts";
-import { EditParticipantPage } from "./participants/edit-participants.po.ts";
+import { CaseDetailsPage } from './cases/case-details.po';
+import { CaseSearchPage } from './cases/case-search.po';
+import { SessionBookingPage } from './hearings/session-booking.po.ts';
+import { HearingSchedulePage } from './hearings/hearing-schedule.po';
+import { HomePage } from './home.po';
+import { LoginPage } from './login.po';
+import { AddNewCasePage } from './cases/add-new-case.po.ts';
+import { EditNewCasePage } from './cases/edit-case.po.ts';
+import { NewParticipantPage } from './participants/new-participants.po.ts';
+import { EditParticipantPage } from './participants/edit-participants.po.ts';
 
 export interface PageFixtures {
   loginPage: LoginPage;

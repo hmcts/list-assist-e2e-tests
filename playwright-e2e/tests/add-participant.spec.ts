@@ -1,17 +1,17 @@
-import { expect, test } from "../fixtures";
-import { config } from "../utils";
+import { expect, test } from '../fixtures';
+import { config } from '../utils';
 
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe("Add participant @add-participant", () => {
+test.describe('Add participant @add-participant', () => {
   test.beforeEach(async ({ page, homePage }) => {
     await page.goto(config.urls.baseUrl);
     await homePage.sidebarComponent.openAddNewCasePage();
   });
 
-  test("Add new participant via Case Participants menu to case and then close participant using topbar UI  @smoke", async ({
+  test('Add new participant via Case Participants menu to case and then close participant using topbar UI  @smoke', async ({
     addNewCasePage,
     editNewCasePage,
     dataUtils,
@@ -19,8 +19,7 @@ test.describe("Add participant @add-participant", () => {
   }) => {
     // Test data
     const caseData = {
-      hmctsCaseNumberHeaderValue:
-        addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
       caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
       jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
       service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
@@ -32,20 +31,14 @@ test.describe("Add participant @add-participant", () => {
       currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
     };
 
-    const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
-    const caseName = "AUTO_" + addNewCasePage.hmctsCaseNumber;
+    const hmctsCaseNumber = 'HMCTS_CN_' + addNewCasePage.hmctsCaseNumber;
+    const caseName = 'AUTO_' + addNewCasePage.hmctsCaseNumber;
 
-    await addNewCasePage.addNewCaseWithMandatoryData(
-      caseData,
-      hmctsCaseNumber,
-      caseName,
-    );
+    await addNewCasePage.addNewCaseWithMandatoryData(caseData, hmctsCaseNumber, caseName);
 
     // Assert that the new case has been created
     // Assert that the header contains HMCTS case number and case name set when creating the case
-    await expect(editNewCasePage.newCaseHeader).toHaveText(
-      `Case ${hmctsCaseNumber} (${caseName})`,
-    );
+    await expect(editNewCasePage.newCaseHeader).toHaveText(`Case ${hmctsCaseNumber} (${caseName})`);
 
     //add new participant
     await expect(editNewCasePage.caseParticipantsHeader).toBeVisible();
@@ -73,16 +66,14 @@ test.describe("Add participant @add-participant", () => {
     );
 
     //use close participant button
-    await expect(
-      editNewCasePage.upperbarComponent.closeParticipantButton,
-    ).toBeVisible();
+    await expect(editNewCasePage.upperbarComponent.closeParticipantButton).toBeVisible();
     await editNewCasePage.upperbarComponent.closeParticipantButton.click();
 
     //wait for homepage to load
     await homePage.waitForHomePageLoad();
   });
 
-  test("Add new participant via Participants menu and close via topbar UI @smoke", async ({
+  test('Add new participant via Participants menu and close via topbar UI @smoke', async ({
     homePage,
     dataUtils,
     newParticipantsPage,
@@ -92,9 +83,7 @@ test.describe("Add participant @add-participant", () => {
 
     await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
 
-    await expect(
-      homePage.upperbarComponent.closeParticipantButton,
-    ).toBeVisible();
+    await expect(homePage.upperbarComponent.closeParticipantButton).toBeVisible();
 
     // Add new participant
     await homePage.sidebarComponent.openAddNewParticipantPage();
@@ -108,18 +97,14 @@ test.describe("Add participant @add-participant", () => {
     await newParticipantsPage.checkEditParticipantHeader();
 
     //checks current participant drop down menu
-    await expect(
-      homePage.upperbarComponent.currentParticipantDropdownButton,
-    ).toBeVisible();
+    await expect(homePage.upperbarComponent.currentParticipantDropdownButton).toBeVisible();
     await homePage.upperbarComponent.currentParticipantDropdownButton.click();
-    await expect(
-      homePage.upperbarComponent.currentParticipantDropdownList,
-    ).toContainText(homePage.upperbarComponent.currentParticipantDropDownItems);
+    await expect(homePage.upperbarComponent.currentParticipantDropdownList).toContainText(
+      homePage.upperbarComponent.currentParticipantDropDownItems,
+    );
 
     //use close participant button
-    await expect(
-      homePage.upperbarComponent.closeParticipantButton,
-    ).toBeVisible();
+    await expect(homePage.upperbarComponent.closeParticipantButton).toBeVisible();
     await homePage.upperbarComponent.closeParticipantButton.click();
 
     //wait for homepage to load
