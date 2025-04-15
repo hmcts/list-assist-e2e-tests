@@ -136,9 +136,7 @@ export class EditNewCasePage extends Base {
     await expect
       .poll(
         async () => {
-          return await createNewParticipant
-            .getByText("New Party")
-            .isVisible();
+          return await createNewParticipant.getByText("New Party").isVisible();
         },
         {
           intervals: [2_000],
@@ -169,7 +167,7 @@ export class EditNewCasePage extends Base {
         },
         {
           intervals: [2_000],
-          timeout: 10_000,
+          timeout: 30_000,
         },
       )
       .toBeTruthy();

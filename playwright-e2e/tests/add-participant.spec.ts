@@ -11,7 +11,7 @@ test.describe("Add participant @add-participant", () => {
     await homePage.sidebarComponent.openAddNewCasePage();
   });
 
-  test("Add new participant to case and then close participant using topbar UI  @smoke", async ({
+  test("Add new participant via Case Participants menu to case and then close participant using topbar UI  @smoke", async ({
     addNewCasePage,
     editNewCasePage,
     dataUtils,
@@ -77,6 +77,50 @@ test.describe("Add participant @add-participant", () => {
       editNewCasePage.upperbarComponent.closeParticipantButton,
     ).toBeVisible();
     await editNewCasePage.upperbarComponent.closeParticipantButton.click();
+
+    //wait for homepage to load
+    await homePage.waitForHomePageLoad();
+  });
+
+  test("Add new participant via Participants menu and close via topbar UI @smoke", async ({
+                                                                                     homePage,
+                                                                                     dataUtils,
+                                                                                     newParticipantsPage,
+                                                                                   }) => {
+    const givenName = dataUtils.generateRandomAlphabetical(7);
+    const lastName = dataUtils.generateRandomAlphabetical(8);
+
+    await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
+
+    await expect(
+      homePage.upperbarComponent.closeParticipantButton,
+    ).toBeVisible();
+
+    // Add new participant
+    await homePage.sidebarComponent.openAddNewParticipantPage();
+
+    await newParticipantsPage.populateNewParticipantFormWithMandatoryData(
+      givenName,
+      lastName,
+      newParticipantsPage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER_CYM,
+    );
+
+    await newParticipantsPage.checkEditParticipantHeader();
+
+    //checks current participant drop down menu
+    await expect(
+      homePage.upperbarComponent.currentParticipantDropdownButton,
+    ).toBeVisible();
+    await homePage.upperbarComponent.currentParticipantDropdownButton.click();
+    await expect(
+      homePage.upperbarComponent.currentParticipantDropdownList,
+    ).toContainText(homePage.upperbarComponent.currentParticipantDropDownItems);
+
+    //use close participant button
+    await expect(
+      homePage.upperbarComponent.closeParticipantButton,
+    ).toBeVisible();
+    await homePage.upperbarComponent.closeParticipantButton.click();
 
     //wait for homepage to load
     await homePage.waitForHomePageLoad();

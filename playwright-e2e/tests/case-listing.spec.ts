@@ -25,6 +25,7 @@ test.describe("Case listing @case-listing", () => {
     caseSearchPage,
     caseDetailsPage,
     hearingSchedulePage,
+    homePage,
   }) => {
     const hmctsCaseNumber = "HMCTS_CN_" + addNewCasePage.hmctsCaseNumber;
     const caseName = "AUTO_" + addNewCasePage.hmctsCaseNumber;
@@ -63,6 +64,17 @@ test.describe("Case listing @case-listing", () => {
       hmctsCaseNumber,
       caseName,
     );
+
+    // Check if the close case button in upper bar is present
+    await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
+    //check current case drop down menu in upper bar
+    await expect(
+      homePage.upperbarComponent.currentCaseDropdownButton,
+    ).toBeVisible();
+    await homePage.upperbarComponent.currentCaseDropdownButton.click();
+    await expect(
+      homePage.upperbarComponent.currentCaseDropdownList,
+    ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
 
     //add case to cart
     await caseSearchPage.sidebarComponent.openSearchCasePage();
