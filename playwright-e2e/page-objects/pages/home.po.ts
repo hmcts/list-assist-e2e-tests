@@ -1,9 +1,9 @@
-import { Page, expect } from "@playwright/test";
-import { Base } from "../base";
+import { Page, expect } from '@playwright/test';
+import { Base } from '../base';
 
 export class HomePage extends Base {
-  readonly container = this.page.locator(".bodycontent");
-  readonly homePage = this.page.locator("#home-page");
+  readonly container = this.page.locator('.bodycontent');
+  readonly homePage = this.page.locator('#home-page');
 
   constructor(page: Page) {
     super(page);
