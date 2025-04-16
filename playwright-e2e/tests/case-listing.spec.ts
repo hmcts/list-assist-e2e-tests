@@ -70,15 +70,17 @@ test.describe('Case listing @case-listing', () => {
       cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
-    await createHearingSession(
-      caseName,
-      homePage,
-      caseSearchPage,
-      caseDetailsPage,
-      hearingSchedulePage,
-      roomData,
-      sessionBookingPage,
-    );
+    if (hearingCreated === false) {
+      await createHearingSession(
+        caseName,
+        homePage,
+        caseSearchPage,
+        caseDetailsPage,
+        hearingSchedulePage,
+        roomData,
+        sessionBookingPage,
+      );
+    }
 
     //test data
     const reportData = {
