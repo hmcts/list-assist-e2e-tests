@@ -2,6 +2,12 @@ import { Page, expect } from '@playwright/test';
 import { Base } from '../../base';
 
 export class ViewReportsPage extends Base {
+  readonly CONSTANTS = {
+    LOCALITY_LEICESTER_COMBINED_COURT: 'Leicester Combined Court',
+    LOCATION_LEICESTER_COUNTY_COURTROOM_07: 'Leicester County Courtroom 07',
+    JURISDICTION_FAMILY: 'Family',
+    SERVICE_DIVORCE: 'Divorce',
+  };
   //reports menu
   readonly reportsMenu = this.page.locator('#reports_menuItem');
   readonly reportsMenuInternalHearingList = this.page.getByRole('link', { name: 'Opens Internal Hearing List' });
