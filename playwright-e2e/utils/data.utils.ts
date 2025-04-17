@@ -1,23 +1,4 @@
 export class DataUtils {
-  getMonthInWelsh(month: string): string {
-    const monthsInWelsh: { [key: string]: string } = {
-      January: 'Ionawr',
-      February: 'Chwefror',
-      March: 'Mawrth',
-      April: 'Ebrill',
-      May: 'Mai',
-      June: 'Mehefin',
-      July: 'Gorffennaf',
-      August: 'Awst',
-      September: 'Medi',
-      October: 'Hydref',
-      November: 'Tachwedd',
-      December: 'Rhagfyr',
-    };
-
-    return monthsInWelsh[month] || 'Invalid month';
-  }
-
   // Generate a random string of alphabetical characters
   generateRandomAlphabetical(length: number): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -68,45 +49,15 @@ export class DataUtils {
 
   getCurrentMonthAsString(): string {
     const today = new Date();
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    return months[today.getMonth()];
+    return today.toLocaleString('en-UK', { month: 'long' });
   }
 
   getFormattedDateForReportAssertion(): string {
     const today = new Date();
 
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-
-    const dayName = days[today.getDay()];
+    const dayName = today.toLocaleString('en-UK', { weekday: 'long' });
     const day = today.getDate();
-    const monthName = months[today.getMonth()];
+    const monthName = today.toLocaleString('en-UK', { month: 'long' });
     const year = today.getFullYear();
 
     return `${dayName}, ${day} ${monthName} ${year}`;
