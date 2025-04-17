@@ -20,9 +20,13 @@ export class SidebarComponent {
   //listing requirements menu
   readonly listingRequirementsSubmenu = this.root.locator('#listingRequirements_subMenuItem');
 
-  //add new participant menu
+  //participant menu
   readonly participantsMenu = this.root.locator('#entity_menuItem');
   readonly addNewParticipant = this.root.locator('#addAnEntity_subMenuItem');
+
+  //administration menu
+  readonly administrationMenu = this.root.locator('#maintenance_menuItem');
+  readonly automaticBookingDashboardButton = this.root.locator('#automaticBookingDashboard_subMenuItem');
 
   //case cart
   readonly modal = this.page.locator('.modal-content');
@@ -156,6 +160,23 @@ export class SidebarComponent {
 
     await this.participantsMenu.click();
     await this.addNewParticipant.click();
+  }
+
+  async openAutomaticBookingDashboard() {
+    await expect
+      .poll(
+        async () => {
+          await this.administrationMenu.click();
+          return await this.automaticBookingDashboardButton.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
+    await this.automaticBookingDashboardButton.click();
   }
 
   async emptyCaseCart() {
