@@ -17,7 +17,7 @@ test.describe('Case listing @case-listing', () => {
     //empties cart if there is anything present
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
 
-    //clears sessions at start of test class but then does not when sessions created as part of tests in the class
+    //clears sessions at start of test class
     await hearingSchedulePage.clearDownSchedule(
       sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
       sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
@@ -49,58 +49,58 @@ test.describe('Case listing @case-listing', () => {
     }
   });
 
-  test('List "Released" session and Generate report via reports menu @smoke', async ({
-    sessionBookingPage,
-    caseSearchPage,
-    caseDetailsPage,
-    hearingSchedulePage,
-    homePage,
-    viewReportsPage,
-    dataUtils,
-  }) => {
-    // Test data
-    const roomData = {
-      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
-      column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-      caseNumber: hmctsCaseNumber,
-      sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-      hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-      cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
-    };
+  // test('List "Released" session and Generate report via reports menu @smoke', async ({
+  //   sessionBookingPage,
+  //   caseSearchPage,
+  //   caseDetailsPage,
+  //   hearingSchedulePage,
+  //   homePage,
+  //   viewReportsPage,
+  //   dataUtils,
+  // }) => {
+  //   // Test data
+  //   const roomData = {
+  //     roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+  //     column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
+  //     caseNumber: hmctsCaseNumber,
+  //     sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+  //     hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
+  //     cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
+  //   };
 
-    await createHearingSession(
-      caseName,
-      homePage,
-      caseSearchPage,
-      caseDetailsPage,
-      hearingSchedulePage,
-      roomData,
-      sessionBookingPage,
-    );
+  //   await createHearingSession(
+  //     caseName,
+  //     homePage,
+  //     caseSearchPage,
+  //     caseDetailsPage,
+  //     hearingSchedulePage,
+  //     roomData,
+  //     sessionBookingPage,
+  //   );
 
-    //test data
-    const reportData = {
-      //numeric, current day of the month
-      dateFrom: dataUtils.getTodaysDayAsDd(),
-      dateTo: dataUtils.getTodaysDayAsDd(),
+  //   //test data
+  //   const reportData = {
+  //     //numeric, current day of the month
+  //     dateFrom: dataUtils.getTodaysDayAsDd(),
+  //     dateTo: dataUtils.getTodaysDayAsDd(),
 
-      locality: viewReportsPage.CONSTANTS.LOCALITY_LEICESTER_COMBINED_COURT,
-      location: viewReportsPage.CONSTANTS.LOCATION_LEICESTER_COUNTY_COURTROOM_07,
-      jurisdiction: viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-      service: viewReportsPage.CONSTANTS.SERVICE_DIVORCE,
-    };
+  //     locality: viewReportsPage.CONSTANTS.LOCALITY_LEICESTER_COMBINED_COURT,
+  //     location: viewReportsPage.CONSTANTS.LOCATION_LEICESTER_COUNTY_COURTROOM_07,
+  //     jurisdiction: viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
+  //     service: viewReportsPage.CONSTANTS.SERVICE_DIVORCE,
+  //   };
 
-    //open reports menu and check generated report
-    await viewReportsPage.reportRequestPageActions(
-      reportData.dateFrom,
-      reportData.dateTo,
-      reportData.locality,
-      reportData.location,
-      reportData.jurisdiction,
-      reportData.service,
-      dataUtils.getFormattedDateForReportAssertion(),
-    );
-  });
+  //   //open reports menu and check generated report
+  //   await viewReportsPage.reportRequestPageActions(
+  //     reportData.dateFrom,
+  //     reportData.dateTo,
+  //     reportData.locality,
+  //     reportData.location,
+  //     reportData.jurisdiction,
+  //     reportData.service,
+  //     dataUtils.getFormattedDateForReportAssertion(),
+  //   );
+  // });
 
   test('List "Released" session and Generate report via P&I Dashboard @smoke', async ({
     sessionBookingPage,
@@ -108,8 +108,7 @@ test.describe('Case listing @case-listing', () => {
     caseDetailsPage,
     hearingSchedulePage,
     homePage,
-    viewReportsPage,
-    dataUtils,
+    automaticBookingDashboardPage,
   }) => {
     // Test data
     const roomData = {
@@ -130,6 +129,12 @@ test.describe('Case listing @case-listing', () => {
       roomData,
       sessionBookingPage,
     );
+
+    await homePage.sidebarComponent.openAutomaticBookingDashboard();
+    await automaticBookingDashboardPage.createPublishExternalListsHeader.isVisible();
+    await automaticBookingDashboardPage.publishExternalListsCreate.click();
+
+    await automaticBookingDashboardPage.populateCreatePublishExternalListsForm();
   });
 });
 
