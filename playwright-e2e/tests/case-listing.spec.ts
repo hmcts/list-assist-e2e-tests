@@ -8,7 +8,6 @@ test.use({
 });
 
 let caseCreated = false;
-let hearingCreated = false;
 let hmctsCaseNumber: string;
 let caseName: string;
 
@@ -19,11 +18,10 @@ test.describe('Case listing @case-listing', () => {
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
 
     //clears sessions at start of test class but then does not when sessions created as part of tests in the class
-    if (hearingCreated === false)
-      await hearingSchedulePage.clearDownSchedule(
-        sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-        sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
-      );
+    await hearingSchedulePage.clearDownSchedule(
+      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+    );
 
     //add a single case for all tests in the class in instead of creating a new case for each test
     //sets caseCreated to true so that it doesn't create a new case for each test in test class
@@ -158,7 +156,4 @@ async function createHearingSession(
 
   //confirm listing
   await expect(hearingSchedulePage.confirmListingReleasedStatus).toBeVisible();
-
-  //sets hearingCreated to true so that it doesn't create a new hearing session for each test in test class
-  hearingCreated = true;
 }
