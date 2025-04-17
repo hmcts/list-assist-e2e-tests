@@ -101,6 +101,36 @@ test.describe('Case listing @case-listing', () => {
       dataUtils.getFormattedDateForReportAssertion(),
     );
   });
+
+  test('List "Released" session and Generate report via P&I Dashboard @smoke', async ({
+    sessionBookingPage,
+    caseSearchPage,
+    caseDetailsPage,
+    hearingSchedulePage,
+    homePage,
+    viewReportsPage,
+    dataUtils,
+  }) => {
+    // Test data
+    const roomData = {
+      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
+      caseNumber: hmctsCaseNumber,
+      sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
+      cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
+    };
+
+    await createHearingSession(
+      caseName,
+      homePage,
+      caseSearchPage,
+      caseDetailsPage,
+      hearingSchedulePage,
+      roomData,
+      sessionBookingPage,
+    );
+  });
 });
 
 async function createHearingSession(
