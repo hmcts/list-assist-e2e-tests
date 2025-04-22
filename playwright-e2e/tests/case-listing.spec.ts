@@ -12,7 +12,7 @@ let hmctsCaseNumber: string;
 let caseName: string;
 
 test.describe('Case listing @case-listing', () => {
-  test.describe.configure({ mode: 'serial' });
+  test.describe.configure({ mode: 'default' });
   test.beforeEach(async ({ page, homePage, hearingSchedulePage, sessionBookingPage, addNewCasePage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
@@ -141,6 +141,7 @@ test.describe('Case listing @case-listing', () => {
       automaticBookingDashboardPage.CONSTANTS.CLUSTER_LEICESTERSHIRE_RUTLAND,
       automaticBookingDashboardPage.CONSTANTS.LOCALITY_LEICESTER_COMBINED_COURT,
       automaticBookingDashboardPage.CONSTANTS.JURISDICTION_FAMILY,
+      automaticBookingDashboardPage.CONSTANTS.SERVICE_DIVORCE_OPTION,
       automaticBookingDashboardPage.CONSTANTS.DAILY_MIXED_CAUSE_LIST_SSRS,
       automaticBookingDashboardPage.CONSTANTS.VERSION_TYPE,
     );
