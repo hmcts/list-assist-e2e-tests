@@ -24,7 +24,7 @@ export class AutomaticBookingDashboardPage extends Base {
     LOCALITY_LEICESTER_COMBINED_COURT: 'Leicester Combined Court',
     JURISDICTION_FAMILY: 'Family',
     SERVICE_LABEL: 'Service',
-    SERVICE_DIVORCE: 'Divorce',
+    SERVICE_DIVORCE_OPTION: '4',
   };
   readonly autoCreationTasksHeader = this.page.getByRole('heading', {
     name: this.CONSTANTS.AUTO_CREATION_TASK_HEADER_TEXT,
@@ -72,9 +72,6 @@ export class AutomaticBookingDashboardPage extends Base {
 
   //service
   readonly serviceFilterListbox = this.page.getByLabel(this.CONSTANTS.SERVICE_LABEL);
-  readonly serviceFilterOptionDivorce = this.page.locator(
-    'div.multiselect__options-container span[for="publishExternalLists_Creation_Service_getMtrCategoryByJurisdiction_4"]',
-  );
 
   //list name
   readonly listNameDropDown = this.page
@@ -105,6 +102,7 @@ export class AutomaticBookingDashboardPage extends Base {
     cluster: string,
     locality: string,
     jurisdiction: string,
+    service: string,
     listType: string,
     versionType: string,
   ) {
@@ -112,7 +110,7 @@ export class AutomaticBookingDashboardPage extends Base {
     await this.selectClusterFilter(cluster);
     await this.selectLocalitiesFilter(locality);
     await this.selectJurisdiction(jurisdiction);
-    await this.selectServiceFilter();
+    await this.selectServiceFilter(service);
     await this.selectListName(listType);
     await this.selectVersionType(versionType);
     await this.includeUnallocatedSessionsCheckbox.click();
@@ -177,7 +175,11 @@ export class AutomaticBookingDashboardPage extends Base {
     await this.closeListboxButton.click();
   }
 
-  async selectServiceFilter() {
+  async selectServiceFilter(service: string) {
+    const serviceFilterOption = this.page.locator(
+      `div.multiselect__options-container span[for="publishExternalLists_Creation_Service_getMtrCategoryByJurisdiction_${service}"]`,
+    );
+
     await this.page
       .getByLabel(this.CONSTANTS.SERVICE_FILTER_LIST_BUTTON)
       .getByText(this.CONSTANTS.SELECT_AN_ITEM_BUTTON_TEXT)
@@ -186,7 +188,7 @@ export class AutomaticBookingDashboardPage extends Base {
     await expect
       .poll(
         async () => {
-          return await this.serviceFilterOptionDivorce.isVisible();
+          return await serviceFilterOption.isVisible();
         },
         {
           intervals: [500],
@@ -195,7 +197,7 @@ export class AutomaticBookingDashboardPage extends Base {
       )
       .toBeTruthy();
 
-    await this.serviceFilterOptionDivorce.click();
+    await serviceFilterOption.click();
 
     await this.closeListboxButton.click();
   }
@@ -212,7 +214,7 @@ export class AutomaticBookingDashboardPage extends Base {
   async assertPreviewReport(formattedDate: string, listType: string, location: string) {
     const reportPopup = await this.page.waitForEvent('popup');
     await this.previewButton.click();
-    const report = await reportPopup;
+    const report = reportPopup;
     await expect(report.getByText(listType)).toBeVisible();
     await expect(report.getByText(formattedDate)).toBeVisible();
     await expect(report.getByText(location)).toBeVisible();
