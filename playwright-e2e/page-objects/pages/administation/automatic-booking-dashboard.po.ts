@@ -1,7 +1,5 @@
 import { expect, Page } from '@playwright/test';
 import { Base } from '../../base';
-import { ViewReportsPage } from '../reports/view-reports.po';
-import { version } from 'os';
 
 export class AutomaticBookingDashboardPage extends Base {
   readonly CONSTANTS = {
