@@ -31,13 +31,23 @@ export class DataUtils {
   }
 
   // Generate a random date of birth in dd/mm/yyyy format
-  generateDobInDdMmYyyy(yearsInThePast: number): string {
+  generateDobInDdMmYyyyForwardSlashSeparators(yearsInThePast: number): string {
     const today = new Date();
     const pastDate = new Date(today.setFullYear(today.getFullYear() - yearsInThePast));
     const day = String(pastDate.getDate()).padStart(2, '0');
     const month = String(pastDate.getMonth() + 1).padStart(2, '0');
     const year = pastDate.getFullYear();
     return `${day}/${month}/${year}`;
+  }
+
+  // Generate a random date of birth in dd/mm/yyyy format
+  generateDobInDdMmYyyyDashSeparators(yearsInThePast: number): string {
+    const today = new Date();
+    const pastDate = new Date(today.setFullYear(today.getFullYear() - yearsInThePast));
+    const day = String(pastDate.getDate()).padStart(2, '0');
+    const month = String(pastDate.getMonth() + 1).padStart(2, '0');
+    const year = pastDate.getFullYear();
+    return `${day}-${month}-${year}`;
   }
 
   //gets today's numeric date in DD

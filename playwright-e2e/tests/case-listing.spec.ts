@@ -12,6 +12,7 @@ let hmctsCaseNumber: string;
 let caseName: string;
 
 test.describe('Case listing @case-listing', () => {
+  test.describe.configure({ mode: 'serial' });
   test.beforeEach(async ({ page, homePage, hearingSchedulePage, sessionBookingPage, addNewCasePage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
@@ -49,58 +50,58 @@ test.describe('Case listing @case-listing', () => {
     }
   });
 
-  // test('List "Released" session and Generate report via reports menu @smoke', async ({
-  //   sessionBookingPage,
-  //   caseSearchPage,
-  //   caseDetailsPage,
-  //   hearingSchedulePage,
-  //   homePage,
-  //   viewReportsPage,
-  //   dataUtils,
-  // }) => {
-  //   // Test data
-  //   const roomData = {
-  //     roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
-  //     column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-  //     caseNumber: hmctsCaseNumber,
-  //     sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-  //     hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-  //     cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
-  //   };
+  test('List "Released" session and Generate report via reports menu @smoke', async ({
+    sessionBookingPage,
+    caseSearchPage,
+    caseDetailsPage,
+    hearingSchedulePage,
+    homePage,
+    viewReportsPage,
+    dataUtils,
+  }) => {
+    // Test data
+    const roomData = {
+      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
+      caseNumber: hmctsCaseNumber,
+      sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
+      cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
+    };
 
-  //   await createHearingSession(
-  //     caseName,
-  //     homePage,
-  //     caseSearchPage,
-  //     caseDetailsPage,
-  //     hearingSchedulePage,
-  //     roomData,
-  //     sessionBookingPage,
-  //   );
+    await createHearingSession(
+      caseName,
+      homePage,
+      caseSearchPage,
+      caseDetailsPage,
+      hearingSchedulePage,
+      roomData,
+      sessionBookingPage,
+    );
 
-  //   //test data
-  //   const reportData = {
-  //     //numeric, current day of the month
-  //     dateFrom: dataUtils.getTodaysDayAsDd(),
-  //     dateTo: dataUtils.getTodaysDayAsDd(),
+    //test data
+    const reportData = {
+      //numeric, current day of the month
+      dateFrom: dataUtils.getTodaysDayAsDd(),
+      dateTo: dataUtils.getTodaysDayAsDd(),
 
-  //     locality: viewReportsPage.CONSTANTS.LOCALITY_LEICESTER_COMBINED_COURT,
-  //     location: viewReportsPage.CONSTANTS.LOCATION_LEICESTER_COUNTY_COURTROOM_07,
-  //     jurisdiction: viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-  //     service: viewReportsPage.CONSTANTS.SERVICE_DIVORCE,
-  //   };
+      locality: viewReportsPage.CONSTANTS.LOCALITY_LEICESTER_COMBINED_COURT,
+      location: viewReportsPage.CONSTANTS.LOCATION_LEICESTER_COUNTY_COURTROOM_07,
+      jurisdiction: viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
+      service: viewReportsPage.CONSTANTS.SERVICE_DIVORCE,
+    };
 
-  //   //open reports menu and check generated report
-  //   await viewReportsPage.reportRequestPageActions(
-  //     reportData.dateFrom,
-  //     reportData.dateTo,
-  //     reportData.locality,
-  //     reportData.location,
-  //     reportData.jurisdiction,
-  //     reportData.service,
-  //     dataUtils.getFormattedDateForReportAssertion(),
-  //   );
-  // });
+    //open reports menu and check generated report
+    await viewReportsPage.reportRequestPageActions(
+      reportData.dateFrom,
+      reportData.dateTo,
+      reportData.locality,
+      reportData.location,
+      reportData.jurisdiction,
+      reportData.service,
+      dataUtils.getFormattedDateForReportAssertion(),
+    );
+  });
 
   test('List "Released" session and Generate report via P&I Dashboard @smoke', async ({
     sessionBookingPage,
@@ -109,6 +110,7 @@ test.describe('Case listing @case-listing', () => {
     hearingSchedulePage,
     homePage,
     automaticBookingDashboardPage,
+    dataUtils,
   }) => {
     // Test data
     const roomData = {
@@ -134,7 +136,21 @@ test.describe('Case listing @case-listing', () => {
     await automaticBookingDashboardPage.createPublishExternalListsHeader.isVisible();
     await automaticBookingDashboardPage.publishExternalListsCreate.click();
 
-    await automaticBookingDashboardPage.populateCreatePublishExternalListsForm();
+    await automaticBookingDashboardPage.populateCreatePublishExternalListsForm(
+      automaticBookingDashboardPage.CONSTANTS.REGION_MIDLANDS,
+      automaticBookingDashboardPage.CONSTANTS.CLUSTER_LEICESTERSHIRE_RUTLAND,
+      automaticBookingDashboardPage.CONSTANTS.LOCALITY_LEICESTER_COMBINED_COURT,
+      automaticBookingDashboardPage.CONSTANTS.JURISDICTION_FAMILY,
+      automaticBookingDashboardPage.CONSTANTS.DAILY_MIXED_CAUSE_LIST_SSRS,
+      automaticBookingDashboardPage.CONSTANTS.VERSION_TYPE,
+    );
+
+    //assert that the report is generated and contains expected elements
+    await automaticBookingDashboardPage.assertPreviewReport(
+      dataUtils.getFormattedDateForReportAssertion(),
+      automaticBookingDashboardPage.CONSTANTS.CIVIL_AND_FAMILY_DAILY_CAUSE_LIST,
+      automaticBookingDashboardPage.CONSTANTS.LOCATION_LEICESTER_COUNTY_COURTROOM_07,
+    );
   });
 });
 

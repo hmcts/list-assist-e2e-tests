@@ -54,7 +54,7 @@ test.describe('Add participant @add-participant', () => {
       givenName,
       lastName,
       editNewCasePage.CONSTANTS.PARTICIPANT_GENDER_MALE,
-      dataUtils.generateDobInDdMmYyyy(dataUtils.getRandomNumberBetween1And50()),
+      dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(dataUtils.getRandomNumberBetween1And50()),
       editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
       editNewCasePage.CONSTANTS.PARTICIPANT_ROLE_APPLICANT,
     );
