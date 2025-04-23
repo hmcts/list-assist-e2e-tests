@@ -84,6 +84,9 @@ export class AutomaticBookingDashboardPage extends Base {
   //preview button
   readonly previewButton = this.page.locator('#publishExternalLists_Creation_Preview');
 
+  //publish button
+  readonly publishButton = this.page.locator('#publishExternalLists_Creation_Publish');
+
   //report preview
   readonly includeUnallocatedSessionsCheckbox = this.page.getByRole('checkbox', {
     name: 'Include Un-Allocated Sessions',
