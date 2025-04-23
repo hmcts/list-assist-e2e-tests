@@ -7,10 +7,6 @@ test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-let caseCreated = false;
-let hmctsCaseNumber: string;
-let caseName: string;
-
 test.describe('Case listing @case-listing', () => {
   test.describe.configure({ mode: 'serial' });
   test.beforeEach(async ({ page, homePage, hearingSchedulePage, sessionBookingPage, addNewCasePage }) => {
@@ -23,34 +19,10 @@ test.describe('Case listing @case-listing', () => {
       sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
       sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
     );
-
-    //add a single case for all tests in the class in instead of creating a new case for each test
-    //sets caseCreated to true so that it doesn't create a new case for each test in test class
-    if (caseCreated === false) {
-      //add new case
-      await homePage.sidebarComponent.openAddNewCasePage();
-      hmctsCaseNumber = 'HMCTS_CN_' + addNewCasePage.hmctsCaseNumber;
-      caseName = 'AUTO_' + addNewCasePage.hmctsCaseNumber;
-      //Test data
-      const caseData = {
-        hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
-        caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
-        jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
-        service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
-        caseType: addNewCasePage.CONSTANTS.DECREE_ABSOLUTE_CASE_TYPE,
-        region: addNewCasePage.CONSTANTS.REGION_WALES,
-        cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-        hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-        hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-        currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-      };
-
-      await addNewCasePage.addNewCaseWithMandatoryData(caseData, hmctsCaseNumber, caseName);
-      caseCreated = true;
-    }
   });
 
   test('List "Released" session and Generate report via reports menu @smoke', async ({
+    addNewCasePage,
     sessionBookingPage,
     caseSearchPage,
     caseDetailsPage,
@@ -63,14 +35,14 @@ test.describe('Case listing @case-listing', () => {
     const roomData = {
       roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-      caseNumber: hmctsCaseNumber,
+      caseNumber: process.env.HMCTS_CASE_NUMBER as string,
       sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
       cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await createHearingSession(
-      caseName,
+      process.env.CASE_NAME as string,
       homePage,
       caseSearchPage,
       caseDetailsPage,
@@ -104,6 +76,7 @@ test.describe('Case listing @case-listing', () => {
   });
 
   test('List "Released" session and Generate report via P&I Dashboard @smoke', async ({
+    addNewCasePage,
     sessionBookingPage,
     caseSearchPage,
     caseDetailsPage,
@@ -116,14 +89,14 @@ test.describe('Case listing @case-listing', () => {
     const roomData = {
       roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-      caseNumber: hmctsCaseNumber,
+      caseNumber: process.env.HMCTS_CASE_NUMBER as string,
       sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
       cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await createHearingSession(
-      caseName,
+      process.env.CASE_NAME as string,
       homePage,
       caseSearchPage,
       caseDetailsPage,
