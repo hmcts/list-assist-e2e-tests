@@ -10,7 +10,7 @@ test.describe('Case creation @add-new-case', () => {
     await page.goto(config.urls.baseUrl);
   });
 
-  test('Create new case and confirm case is created correctly @smoke', async ({
+  test('Search for case and confirm case details are correct @smoke', async ({
     addNewCasePage,
     editNewCasePage,
     caseDetailsPage,
