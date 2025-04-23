@@ -8,6 +8,7 @@ test.use({
 test.describe('Case creation @add-new-case', () => {
   test.beforeEach(async ({ page, homePage }) => {
     await page.goto(config.urls.baseUrl);
+    await homePage.upperbarComponent.closeCaseButton.click();
     await homePage.sidebarComponent.openAddNewCasePage();
   });
 
