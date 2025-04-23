@@ -9,8 +9,6 @@ test.describe('Add participant @add-participant', () => {
   test.describe.configure({ mode: 'serial' });
   test.beforeEach(async ({ page, homePage }) => {
     await page.goto(config.urls.baseUrl);
-    await homePage.upperbarComponent.closeCaseButton.click();
-    await homePage.upperbarComponent.closeParticipantButton.click();
     await homePage.sidebarComponent.openAddNewCasePage();
   });
 
@@ -34,14 +32,17 @@ test.describe('Add participant @add-participant', () => {
       currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
     };
 
-    const hmctsCaseNumber = 'HMCTS_CN_' + addNewCasePage.hmctsCaseNumber;
-    const caseName = 'AUTO_' + addNewCasePage.hmctsCaseNumber;
-
-    await addNewCasePage.addNewCaseWithMandatoryData(caseData, hmctsCaseNumber, caseName);
+    await addNewCasePage.addNewCaseWithMandatoryData(
+      caseData,
+      process.env.HMCTS_CASE_NUMBER as string,
+      process.env.CASE_NAME as string,
+    );
 
     // Assert that the new case has been created
     // Assert that the header contains HMCTS case number and case name set when creating the case
-    await expect(editNewCasePage.newCaseHeader).toHaveText(`Case ${hmctsCaseNumber} (${caseName})`);
+    await expect(editNewCasePage.newCaseHeader).toHaveText(
+      `Case ${process.env.HMCTS_CASE_NUMBER as string} (${process.env.CASE_NAME as string})`,
+    );
 
     //add new participant
     await expect(editNewCasePage.caseParticipantsHeader).toBeVisible();

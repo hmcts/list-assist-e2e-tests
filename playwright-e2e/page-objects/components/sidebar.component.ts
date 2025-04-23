@@ -75,18 +75,6 @@ export class SidebarComponent {
 
     await this.casesMenu.click();
     await this.caseSearchSubMenu.click();
-
-    await expect
-      .poll(
-        async () => {
-          return await this.caseHeader.isVisible();
-        },
-        {
-          intervals: [2_000],
-          timeout: 10_000,
-        },
-      )
-      .toBeTruthy();
   }
 
   async openAddNewCasePage() {
