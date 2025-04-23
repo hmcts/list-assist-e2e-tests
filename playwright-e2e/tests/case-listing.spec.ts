@@ -141,16 +141,20 @@ test.describe('Case listing @case-listing', () => {
       automaticBookingDashboardPage.CONSTANTS.CLUSTER_LEICESTERSHIRE_RUTLAND,
       automaticBookingDashboardPage.CONSTANTS.LOCALITY_LEICESTER_COMBINED_COURT,
       automaticBookingDashboardPage.CONSTANTS.JURISDICTION_FAMILY,
+      automaticBookingDashboardPage.CONSTANTS.SERVICE_DIVORCE_OPTION,
       automaticBookingDashboardPage.CONSTANTS.DAILY_MIXED_CAUSE_LIST_SSRS,
       automaticBookingDashboardPage.CONSTANTS.VERSION_TYPE,
     );
 
-    //assert that the report is generated and contains expected elements
+    //assert that the report preview is generated and contains expected elements
     await automaticBookingDashboardPage.assertPreviewReport(
       dataUtils.getFormattedDateForReportAssertion(),
       automaticBookingDashboardPage.CONSTANTS.CIVIL_AND_FAMILY_DAILY_CAUSE_LIST,
       automaticBookingDashboardPage.CONSTANTS.LOCATION_LEICESTER_COUNTY_COURTROOM_07,
     );
+
+    //assert publish button is now visible
+    await expect(automaticBookingDashboardPage.publishButton).toBeVisible();
   });
 });
 

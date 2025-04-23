@@ -6,8 +6,11 @@ test.use({
 });
 
 test.describe('Add participant @add-participant', () => {
+  test.describe.configure({ mode: 'serial' });
   test.beforeEach(async ({ page, homePage }) => {
     await page.goto(config.urls.baseUrl);
+    await homePage.upperbarComponent.closeCaseButton.click();
+    await homePage.upperbarComponent.closeParticipantButton.click();
     await homePage.sidebarComponent.openAddNewCasePage();
   });
 
