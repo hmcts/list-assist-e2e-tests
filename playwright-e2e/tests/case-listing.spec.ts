@@ -12,7 +12,7 @@ let hmctsCaseNumber: string;
 let caseName: string;
 
 test.describe('Case listing @case-listing', () => {
-  test.describe.configure({ mode: 'default' });
+  test.describe.configure({ mode: 'serial' });
   test.beforeEach(async ({ page, homePage, hearingSchedulePage, sessionBookingPage, addNewCasePage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
