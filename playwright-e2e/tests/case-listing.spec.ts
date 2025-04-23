@@ -9,7 +9,7 @@ test.use({
 
 test.describe('Case listing @case-listing', () => {
   test.describe.configure({ mode: 'serial' });
-  test.beforeEach(async ({ page, homePage, hearingSchedulePage, sessionBookingPage, addNewCasePage }) => {
+  test.beforeEach(async ({ page, hearingSchedulePage, sessionBookingPage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
@@ -22,7 +22,6 @@ test.describe('Case listing @case-listing', () => {
   });
 
   test('List "Released" session and Generate report via reports menu @smoke', async ({
-    addNewCasePage,
     sessionBookingPage,
     caseSearchPage,
     caseDetailsPage,
