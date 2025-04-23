@@ -18,7 +18,7 @@ test.describe('Add participant @add-participant', () => {
     dataUtils,
     homePage,
   }) => {
-    addNewCasePage.sidebarComponent.openSearchCasePage();
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(process.env.CASE_NAME as string);
 
     //add new participant
