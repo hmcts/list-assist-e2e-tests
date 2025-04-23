@@ -75,7 +75,6 @@ test.describe('Case listing @case-listing', () => {
   });
 
   test('List "Released" session and Generate report via P&I Dashboard @smoke', async ({
-    addNewCasePage,
     sessionBookingPage,
     caseSearchPage,
     caseDetailsPage,

@@ -7,7 +7,7 @@ test.use({
 
 test.describe('Add participant @add-participant', () => {
   test.describe.configure({ mode: 'serial' });
-  test.beforeEach(async ({ page, homePage }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto(config.urls.baseUrl);
   });
 
