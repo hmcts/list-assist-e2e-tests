@@ -8,7 +8,6 @@ test.use({
 });
 
 test.describe('Case listing @case-listing', () => {
-  test.describe.configure({ mode: 'serial' });
   test.beforeEach(async ({ page, hearingSchedulePage, sessionBookingPage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
