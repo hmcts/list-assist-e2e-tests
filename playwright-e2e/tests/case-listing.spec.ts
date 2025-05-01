@@ -8,16 +8,11 @@ test.use({
 });
 
 test.describe('Case listing @case-listing', () => {
-  test.beforeEach(async ({ page, hearingSchedulePage, sessionBookingPage }) => {
+  test.describe.configure({ mode: 'serial' });
+  test.beforeEach(async ({ page, hearingSchedulePage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-
-    //clears sessions at start of test class
-    await hearingSchedulePage.clearDownSchedule(
-      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
-    );
   });
 
   test('List "Released" session and Generate report via reports menu @smoke', async ({
@@ -29,9 +24,24 @@ test.describe('Case listing @case-listing', () => {
     viewReportsPage,
     dataUtils,
   }) => {
+    await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
+
+    await sessionBookingPage.updateAdvancedFilterConfig(
+      sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+    );
+
+    await hearingSchedulePage.clearDownSchedule(
+      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+      process.env.HMCTS_CASE_NUMBER as string,
+    );
+
     // Test data
     const roomData = {
-      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       caseNumber: process.env.HMCTS_CASE_NUMBER as string,
       sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
@@ -55,8 +65,8 @@ test.describe('Case listing @case-listing', () => {
       dateFrom: dataUtils.getTodaysDayAsDd(),
       dateTo: dataUtils.getTodaysDayAsDd(),
 
-      locality: viewReportsPage.CONSTANTS.LOCALITY_LEICESTER_COMBINED_COURT,
-      location: viewReportsPage.CONSTANTS.LOCATION_LEICESTER_COUNTY_COURTROOM_07,
+      locality: viewReportsPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+      location: viewReportsPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
       jurisdiction: viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
       service: viewReportsPage.CONSTANTS.SERVICE_DIVORCE,
     };
@@ -82,9 +92,23 @@ test.describe('Case listing @case-listing', () => {
     automaticBookingDashboardPage,
     dataUtils,
   }) => {
+    await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
+
+    await sessionBookingPage.updateAdvancedFilterConfig(
+      sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
+    );
+
+    await hearingSchedulePage.clearDownSchedule(
+      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
+      process.env.HMCTS_CASE_NUMBER as string,
+    );
     // Test data
     const roomData = {
-      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       caseNumber: process.env.HMCTS_CASE_NUMBER as string,
       sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
@@ -107,20 +131,20 @@ test.describe('Case listing @case-listing', () => {
     await automaticBookingDashboardPage.publishExternalListsCreate.click();
 
     await automaticBookingDashboardPage.populateCreatePublishExternalListsForm(
-      automaticBookingDashboardPage.CONSTANTS.REGION_MIDLANDS,
-      automaticBookingDashboardPage.CONSTANTS.CLUSTER_LEICESTERSHIRE_RUTLAND,
-      automaticBookingDashboardPage.CONSTANTS.LOCALITY_LEICESTER_COMBINED_COURT,
-      automaticBookingDashboardPage.CONSTANTS.JURISDICTION_FAMILY,
-      automaticBookingDashboardPage.CONSTANTS.SERVICE_DIVORCE_OPTION,
-      automaticBookingDashboardPage.CONSTANTS.DAILY_MIXED_CAUSE_LIST_SSRS,
-      automaticBookingDashboardPage.CONSTANTS.VERSION_TYPE,
+      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_REGION_WALES,
+      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_FAMILY_JURISDICTION,
+      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_SERVICE_DIVORCE_OPTION,
+      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_DAILY_MIXED_CAUSE_LIST_SSRS,
+      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_VERSION_TYPE,
     );
 
     //assert that the report preview is generated and contains expected elements
     await automaticBookingDashboardPage.assertPreviewReport(
       dataUtils.getFormattedDateForReportAssertion(),
       automaticBookingDashboardPage.CONSTANTS.CIVIL_AND_FAMILY_DAILY_CAUSE_LIST,
-      automaticBookingDashboardPage.CONSTANTS.LOCATION_LEICESTER_COUNTY_COURTROOM_07,
+      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
     );
 
     //assert publish button is now visible

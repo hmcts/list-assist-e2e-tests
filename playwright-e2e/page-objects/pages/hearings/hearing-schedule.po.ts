@@ -28,8 +28,8 @@ export class HearingSchedulePage extends Base {
   readonly scheduleSelector = 'div[booking="item"]';
   readonly siblingRow = '+ tr';
   readonly separatorValue = '--------------------------';
-  readonly confirmListingReleasedStatus = this.page.getByRole('button', {
-    name: '10:00-16:00 - Released',
+  readonly confirmListingReleasedStatus = this.page.locator('button[title="Show booking details"] .hs-session-status', {
+    hasText: 'Released',
   });
 
   //scheduling
@@ -102,7 +102,7 @@ export class HearingSchedulePage extends Base {
     return row;
   }
 
-  async clearDownSchedule(cancellationCode: string, room: string) {
+  async clearDownSchedule(cancellationCode: string, room: string, caseName: string): Promise<void> {
     const scheduleButton = this.page.locator('div.droparea span.sessionHeader', { hasText: room });
 
     //go to hearing schedule page
@@ -112,7 +112,12 @@ export class HearingSchedulePage extends Base {
     //schedule hearing
     await this.waitForLoad();
 
-    if (await scheduleButton.isVisible()) {
+    const bookingSessionWithCaseName = this.page.locator('div.draggable', { hasText: caseName });
+
+    if (await this.confirmListingReleasedStatus.isVisible()) {
+      await this.confirmListingReleasedStatus.click();
+      await expect(bookingSessionWithCaseName).toBeVisible;
+
       await scheduleButton.click();
       await this.goToSessionDetailsButton.click();
 
