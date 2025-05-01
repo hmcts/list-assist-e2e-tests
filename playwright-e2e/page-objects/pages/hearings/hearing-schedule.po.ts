@@ -116,7 +116,7 @@ export class HearingSchedulePage extends Base {
 
     if (await this.confirmListingReleasedStatus.isVisible()) {
       await this.confirmListingReleasedStatus.click();
-      await expect(bookingSessionWithCaseName).toBeVisible;
+      await expect(bookingSessionWithCaseName).toBeVisible();
 
       await scheduleButton.click();
       await this.goToSessionDetailsButton.click();
