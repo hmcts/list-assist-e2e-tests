@@ -123,7 +123,7 @@ export class EditNewCasePage extends Base {
     await expect
       .poll(
         async () => {
-          return await this.page.getByRole('cell', { name: caseParticipantsType }).isVisible();
+          return await this.page.getByRole('cell', { name: caseParticipantsType }).first().isVisible();
         },
         {
           intervals: [2_000],
@@ -134,7 +134,7 @@ export class EditNewCasePage extends Base {
 
     await expect(this.page.getByRole('cell', { name: caseParticipantsType })).toBeVisible();
     await expect(this.page.getByRole('link', { name: caseParticipantsName })).toBeVisible();
-    await expect(this.page.getByRole('cell', { name: caseInterpreter })).toBeVisible();
+    await expect(this.page.getByRole('cell', { name: caseInterpreter }).first()).toBeVisible();
     await expect(this.page.getByRole('button', { name: 'View/Edit' })).toBeVisible();
     await expect(this.page.getByRole('button', { name: 'Remove' })).toBeVisible();
   }
