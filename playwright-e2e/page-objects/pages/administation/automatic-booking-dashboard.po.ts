@@ -179,6 +179,18 @@ export class AutomaticBookingDashboardPage extends Base {
     await expect(this.jurisdictionsFilterListbox).toBeVisible();
     await this.jurisdictionsFilterListbox.click();
 
+    await expect
+      .poll(
+        async () => {
+          return await this.page.getByRole('option', { name: jurisdiction }).locator('span').nth(2).isVisible();
+        },
+        {
+          intervals: [500],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
     await this.page.getByRole('option', { name: jurisdiction }).locator('span').nth(2).click();
 
     await this.closeListboxButton.click();
