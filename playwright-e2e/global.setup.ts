@@ -4,7 +4,7 @@ import { isSessionValid } from './utils';
 
 setup(
   'Setup test user and create new case',
-  async ({ page, config, homePage, addNewCasePage, hearingSchedulePage, sessionBookingPage, dataUtils }) => {
+  async ({ page, config, homePage, addNewCasePage, hearingSchedulePage, dataUtils }) => {
     //test user setup
     const user = config.users.testUser;
     if (!isSessionValid(user.sessionFile, user.cookieName!)) {
