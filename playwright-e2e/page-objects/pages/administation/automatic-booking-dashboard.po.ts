@@ -4,9 +4,16 @@ import { Base } from '../../base';
 export class AutomaticBookingDashboardPage extends Base {
   readonly CONSTANTS = {
     AUTO_CREATION_TASK_HEADER_TEXT: 'Auto Creation Tasks',
-    REGION_MIDLANDS: 'Midlands',
-    CLUSTER_LEICESTERSHIRE_RUTLAND: 'Leicestershire, Rutland, Lincolnshire and North',
-    FAMILY_JURISDICTION: 'Family',
+    AUTO_CREATION_REGION_MIDLANDS: 'Midlands',
+    AUTO_CREATION_CLUSTER_LEICESTERSHIRE_RUTLAND: 'Leicestershire, Rutland, Lincolnshire and North',
+    AUTO_CREATION_FAMILY_JURISDICTION: 'Family',
+    AUTO_CREATION_REGION_WALES: 'Wales',
+    AUTO_CREATION_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS: 'Wales Civil, Family and Tribunals',
+    AUTO_CREATION_LOCATION_LEICESTER_CC_7: 'Leicester County Courtroom 07',
+    AUTO_CREATION_LOCATION_PONTYPRIDD_CRTRM_1: 'Pontypridd Courtroom 01',
+    AUTO_CREATION_LOCALITY_PONTYPRIDD_COUNTY_COURT: 'Pontypridd County Court and',
+    AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC: 'Newport (South Wales) County Court and Family Court',
+    AUTO_CREATION_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1: 'Newport (South Wales) Chambers 01',
     REGION_FILTER_LIST_BUTTON: 'Region filter list with 0',
     CLUSTER_FILTER_LIST_BUTTON: 'Cluster filter list with 0',
     JURISDICTION_FILTER_LIST_BUTTON: 'Jurisdictions filter list',
@@ -14,15 +21,15 @@ export class AutomaticBookingDashboardPage extends Base {
     SERVICE_FILTER_LIST_BUTTON: 'Service filter list with 0',
     SELECT_AN_ITEM_BUTTON_TEXT: 'Select an item',
     CLOSE_LISTBOX_NAME: 'Close listbox',
-    DAILY_MIXED_CAUSE_LIST_SSRS: 'Daily Mixed Cause List Publish (SSRS)',
+    AUTO_CREATION_DAILY_MIXED_CAUSE_LIST_SSRS: 'Daily Mixed Cause List Publish (SSRS)',
     LIST_OF_VERSION_TYPES_LABEL: 'List of Version Types',
-    VERSION_TYPE: 'FINAL',
+    AUTO_CREATION_VERSION_TYPE: 'FINAL',
     CIVIL_AND_FAMILY_DAILY_CAUSE_LIST: 'CIVIL AND FAMILY DAILY CAUSE LIST',
     LOCATION_LEICESTER_COUNTY_COURTROOM_07: 'Leicester County Courtroom 07',
     LOCALITY_LEICESTER_COMBINED_COURT: 'Leicester Combined Court',
     JURISDICTION_FAMILY: 'Family',
     SERVICE_LABEL: 'Service',
-    SERVICE_DIVORCE_OPTION: '4',
+    AUTO_CREATION_SERVICE_DIVORCE_OPTION: '4',
   };
   readonly autoCreationTasksHeader = this.page.getByRole('heading', {
     name: this.CONSTANTS.AUTO_CREATION_TASK_HEADER_TEXT,
@@ -123,7 +130,7 @@ export class AutomaticBookingDashboardPage extends Base {
   async selectRegionFilter(region: string) {
     await expect(this.regionFilterListbox).toBeVisible();
     await this.regionFilterListbox.click();
-    await this.page.getByText(region).click();
+    await this.page.getByText(region).first().click();
 
     await this.closeListboxButton.click();
   }
@@ -171,7 +178,20 @@ export class AutomaticBookingDashboardPage extends Base {
   async selectJurisdiction(jurisdiction: string) {
     await expect(this.jurisdictionsFilterListbox).toBeVisible();
     await this.jurisdictionsFilterListbox.click();
-    await this.page.getByText(jurisdiction).click();
+
+    await expect
+      .poll(
+        async () => {
+          return await this.page.getByText(jurisdiction, { exact: true }).isVisible();
+        },
+        {
+          intervals: [500],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
+    await this.page.getByText(jurisdiction, { exact: true }).click();
 
     await this.closeListboxButton.click();
   }

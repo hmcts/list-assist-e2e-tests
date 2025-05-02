@@ -50,11 +50,10 @@ export class DataUtils {
     return `${day}-${month}-${year}`;
   }
 
-  //gets today's numeric date in DD
   getTodaysDayAsDd(): string {
     const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0'); // Ensure two-digit format
-    return day;
+    const day = String(today.getDate()).padStart(2, '0');
+    return day.startsWith('0') ? day.slice(1) : day;
   }
 
   getCurrentMonthAsString(): string {

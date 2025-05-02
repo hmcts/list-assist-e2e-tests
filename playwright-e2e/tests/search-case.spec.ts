@@ -10,7 +10,7 @@ test.describe('Case creation @add-new-case', () => {
     await page.goto(config.urls.baseUrl);
   });
 
-  test('Create new case and confirm case is created correctly @smoke', async ({
+  test('Search for case and confirm case details are correct @smoke', async ({
     addNewCasePage,
     editNewCasePage,
     caseDetailsPage,
@@ -30,7 +30,7 @@ test.describe('Case creation @add-new-case', () => {
       currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
     };
 
-    addNewCasePage.sidebarComponent.openSearchCasePage();
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(process.env.CASE_NAME as string);
 
     //checks case details against known values

@@ -7,42 +7,19 @@ test.use({
 
 test.describe('Add participant @add-participant', () => {
   test.describe.configure({ mode: 'serial' });
-  test.beforeEach(async ({ page, homePage }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto(config.urls.baseUrl);
-    await homePage.sidebarComponent.openAddNewCasePage();
   });
 
   test('Add new participant via Case Participants menu to case and then close participant using topbar UI  @smoke', async ({
     addNewCasePage,
     editNewCasePage,
+    caseSearchPage,
     dataUtils,
     homePage,
   }) => {
-    // Test data
-    const caseData = {
-      hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
-      caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
-      jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
-      service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
-      caseType: addNewCasePage.CONSTANTS.DECREE_ABSOLUTE_CASE_TYPE,
-      region: addNewCasePage.CONSTANTS.REGION_WALES,
-      cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-      hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-      hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-      currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-    };
-
-    await addNewCasePage.addNewCaseWithMandatoryData(
-      caseData,
-      process.env.HMCTS_CASE_NUMBER as string,
-      process.env.CASE_NAME as string,
-    );
-
-    // Assert that the new case has been created
-    // Assert that the header contains HMCTS case number and case name set when creating the case
-    await expect(editNewCasePage.newCaseHeader).toHaveText(
-      `Case ${process.env.HMCTS_CASE_NUMBER as string} (${process.env.CASE_NAME as string})`,
-    );
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.searchCase(process.env.CASE_NAME as string);
 
     //add new participant
     await expect(editNewCasePage.caseParticipantsHeader).toBeVisible();

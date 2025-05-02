@@ -1,6 +1,5 @@
 import { Page, expect } from '@playwright/test';
 import { Base } from '../../base';
-import { DataUtils } from '../../../utils/data.utils';
 
 interface CaseData {
   jurisdiction: string;
@@ -11,12 +10,7 @@ interface CaseData {
   hearingCentre: string;
 }
 
-let caseCreated = false;
-
 export class AddNewCasePage extends Base {
-  private caseDetails: { hmctsCaseNumber: string; caseName: string } | null = null;
-  private dataUtils = new DataUtils();
-
   readonly CONSTANTS = {
     HMCTS_CASE_NUMBER_HEADER_VALUE: 'HMCTS Case Number',
     CASE_NAME_HEADER_VALUE: 'Case Name',
@@ -111,7 +105,6 @@ export class AddNewCasePage extends Base {
   }
 
   async addNewCaseWithMandatoryData(caseData: CaseData, hmctsCaseNumber: string, caseName: string) {
-    console.log(caseName);
     // Assert that the header contains the text 'New Case'
     await expect(this.newCaseHeader).toHaveText('New Case');
     // Assert that sidebar is visible

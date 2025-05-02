@@ -4,7 +4,13 @@ import { Base } from '../../base';
 export class SessionBookingPage extends Base {
   readonly CONSTANTS = {
     //case listing
-    CASE_LISTING_ROOM_NAME_LEICESTER_CC_7: 'Leicester County Courtroom 07',
+    CASE_LISTING_REGION_WALES: 'Wales',
+    CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS: 'Wales Civil, Family and Tribunals',
+    CASE_LISTING_LOCATION_LEICESTER_CC_7: 'Leicester County Courtroom 07',
+    CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: 'Pontypridd Courtroom 01',
+    CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT: 'Pontypridd County Court and',
+    CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC: 'Newport (South Wales) County Court and Family Court',
+    CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1: 'Newport (South Wales) Chambers 01',
     CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: '5',
     CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: '4',
     CASE_LISTING_SESSION_DURATION_1_00: '60',
@@ -38,6 +44,21 @@ export class SessionBookingPage extends Base {
   readonly confirmPopup = {
     confirmButton: this.page.locator('.modal-content #ok-btn'),
   };
+
+  //advanced filters
+  readonly advancedFiltersButton = this.page.getByRole('button', { name: 'Advanced Filters' });
+  readonly advancedFiltersHeader = this.page.locator('header#advancedFilter___BV_modal_header_ h2.header-title', {
+    hasText: 'HS Advanced Filters',
+  });
+  readonly clearAdvanceFilterButton = this.page
+    .getByRole('dialog', { name: 'Advanced Filter' })
+    .getByLabel('Clear filter criteria');
+
+  readonly regionDropdown = this.page.getByText('Region', { exact: true });
+  readonly clusterDropDown = this.page.getByText('Cluster', { exact: true });
+  readonly localityDropDown = this.page.getByLabel('Advanced Filter', { exact: true }).getByText('Locality');
+  readonly locationDropDown = this.page.getByLabel('Location filter list with 0').getByText('Location');
+  readonly applyButton = this.page.getByRole('dialog', { name: 'Advanced Filter' }).getByLabel('Apply filter criteria');
 
   constructor(page: Page) {
     super(page);
@@ -123,5 +144,31 @@ export class SessionBookingPage extends Base {
       .getByRole('option', { name: 'Allocation Hearing', exact: true })
       .click();
     await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
+  }
+
+  async updateAdvancedFilterConfig(region: string, cluster: string, locality: string, location) {
+    await this.advancedFiltersButton.click();
+    await expect(this.advancedFiltersHeader).toBeVisible();
+    //ensure the advanced filter is cleared
+    await this.clearAdvanceFilterButton.click();
+
+    //region dropdown and region selection
+    await this.regionDropdown.click();
+    await this.page.getByRole('option', { name: region }).locator('span').nth(2).click();
+
+    //cluster dropdown and cluster selection
+    await this.clusterDropDown.click();
+    await this.page.getByText(cluster).click();
+
+    //locality dropdown and locality selection
+    await this.localityDropDown.click();
+    await this.page.getByRole('option', { name: locality }).locator('span').nth(2).click();
+
+    //location dropdown and location selection
+    await this.locationDropDown.click();
+    await this.page.getByRole('option', { name: location }).locator('span').nth(2).click();
+
+    //apply filter
+    await this.applyButton.click();
   }
 }
