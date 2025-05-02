@@ -182,7 +182,7 @@ export class AutomaticBookingDashboardPage extends Base {
     await expect
       .poll(
         async () => {
-          return await this.page.getByRole('option', { name: jurisdiction }).locator('span').nth(2).isVisible();
+          return await this.page.getByText(jurisdiction, { exact: true }).isVisible();
         },
         {
           intervals: [500],
@@ -191,7 +191,7 @@ export class AutomaticBookingDashboardPage extends Base {
       )
       .toBeTruthy();
 
-    await this.page.getByRole('option', { name: jurisdiction }).locator('span').nth(2).click();
+    await this.page.getByText(jurisdiction, { exact: true }).click();
 
     await this.closeListboxButton.click();
   }
