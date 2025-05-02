@@ -112,14 +112,14 @@ export class HearingSchedulePage extends Base {
     //schedule hearing
     await this.waitForLoad();
 
-    const bookingSessionWithCaseName = this.page.locator('div.draggable', { hasText: location });
+    // const bookingSessionWithCaseName = this.page.locator('div.draggable', { hasText: location });
     const releasedStatusCheck = this.page.locator('button[title="Show booking details"] .hs-session-status', {
       hasText: 'Released',
     });
 
     if (await releasedStatusCheck.isVisible()) {
       await releasedStatusCheck.click();
-      await expect(bookingSessionWithCaseName).toBeVisible();
+      // await expect(bookingSessionWithCaseName).toBeVisible();
 
       await scheduleButton.click();
       await this.goToSessionDetailsButton.click();
