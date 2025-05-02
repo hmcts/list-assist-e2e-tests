@@ -119,7 +119,7 @@ export class HearingSchedulePage extends Base {
 
     if (await releasedStatusCheck.isVisible()) {
       await releasedStatusCheck.click();
-      await expect(bookingSessionWithCaseName).toBeVisible;
+      await expect(bookingSessionWithCaseName).toBeVisible();
 
       await scheduleButton.click();
       await this.goToSessionDetailsButton.click();
