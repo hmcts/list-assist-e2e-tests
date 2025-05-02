@@ -1,16 +1,27 @@
-import { expect, test as setup } from './fixtures';
+import { test as setup } from './fixtures';
 import { LoginPage } from './page-objects/pages/login.po';
 import { isSessionValid } from './utils';
 
 setup(
   'Setup test user and create new case',
-  async ({ page, config, homePage, addNewCasePage, editNewCasePage, caseDetailsPage, dataUtils }) => {
+  async ({ page, config, homePage, addNewCasePage, hearingSchedulePage, dataUtils }) => {
     //test user setup
     const user = config.users.testUser;
     if (!isSessionValid(user.sessionFile, user.cookieName!)) {
       await page.goto(config.urls.baseUrl);
       await new LoginPage(page).login(config.users.testUser);
     }
+
+    await page.goto(config.urls.baseUrl);
+    await new LoginPage(page).login(config.users.testUser);
+
+    //empties cart if there is anything present
+    await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+    // //clears sessions at start of test class
+    // await hearingSchedulePage.clearDownSchedule(
+    //   sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+    //   sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
+    // );
 
     //creates new case for all tests
     await homePage.sidebarComponent.openAddNewCasePage();
