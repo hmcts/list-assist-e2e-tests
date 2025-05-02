@@ -113,7 +113,7 @@ export class HearingSchedulePage extends Base {
     await this.waitForLoad();
 
     console.log(location);
-    const bookingSessionWithCaseName = this.page.locator('div.draggable', { hasText: location });
+    // const bookingSessionWithCaseName = this.page.locator('div.draggable', { hasText: location });
     const releasedStatusCheck = this.page.locator('button[title="Show booking details"] .hs-session-status', {
       hasText: 'Released',
     });
