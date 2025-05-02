@@ -102,7 +102,7 @@ export class HearingSchedulePage extends Base {
     return row;
   }
 
-  async clearDownSchedule(cancellationCode: string, room: string): Promise<void> {
+  async clearDownSchedule(cancellationCode: string, room: string, location: string): Promise<void> {
     const scheduleButton = this.page.locator('div.droparea span.sessionHeader', { hasText: room });
 
     //go to hearing schedule page
@@ -112,7 +112,8 @@ export class HearingSchedulePage extends Base {
     //schedule hearing
     await this.waitForLoad();
 
-    // const bookingSessionWithCaseName = this.page.locator('div.draggable', { hasText: location });
+    console.log(location);
+    const bookingSessionWithCaseName = this.page.locator('div.draggable', { hasText: location });
     const releasedStatusCheck = this.page.locator('button[title="Show booking details"] .hs-session-status', {
       hasText: 'Released',
     });
