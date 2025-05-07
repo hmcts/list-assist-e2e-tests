@@ -1,7 +1,7 @@
-import { expect, test } from '../fixtures';
-import { HomePage, CaseSearchPage, CaseDetailsPage, HearingSchedulePage} from '../page-objects/pages';
-import { SessionBookingPage } from '../page-objects/pages/hearings/session-booking.po';
-import { config } from '../utils';
+import {expect, test} from '../fixtures';
+import {HomePage, CaseSearchPage, CaseDetailsPage, HearingSchedulePage} from '../page-objects/pages';
+import {SessionBookingPage} from '../page-objects/pages/hearings/session-booking.po';
+import {config} from '../utils';
 
 test.use({
   storageState: config.users.testUser.sessionFile,
@@ -20,7 +20,6 @@ test.describe('Hearing channel test @hearing-channel-test', () => {
     //clears sessions at start of test class but then does not when sessions created as part of tests in the class
     await hearingSchedulePage.clearDownSchedule(
       sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-      //sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_MAGISTRATES_MC_02,
       sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
     );
 
@@ -47,18 +46,19 @@ test.describe('Hearing channel test @hearing-channel-test', () => {
 
       await addNewCasePage.addNewCaseWithMandatoryData(caseData, hmctsCaseNumber, caseName);
       caseCreated = true;
-     }
+    }
   });
 
-  test('Only the session-supported hearing channels should be displayed', async ({editNewCasePage,
-                                       caseDetailsPage,
-                                       addNewCasePage,
-                                       listingRequirementsPage,
-                                       homePage,
-                                       caseSearchPage,
-                                       hearingSchedulePage,
-                                       sessionBookingPage,
-                                       }) => {
+  test('Only the session-supported hearing channels should be displayed', async ({
+                                                                                        editNewCasePage,
+                                                                                        caseDetailsPage,
+                                                                                        addNewCasePage,
+                                                                                        listingRequirementsPage,
+                                                                                        homePage,
+                                                                                        caseSearchPage,
+                                                                                        hearingSchedulePage,
+                                                                                        sessionBookingPage,
+                                                                                      }) => {
 
     const roomData = {
       roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
@@ -121,7 +121,7 @@ async function createHearingSession(
     homePage.upperbarComponent.currentCaseDropDownItems,
   );
 
-  //add case to cart...............125
+  //add case to cart.
   await caseSearchPage.sidebarComponent.openSearchCasePage();
   await caseSearchPage.searchCase(caseName);
 
@@ -142,15 +142,19 @@ async function createHearingSession(
     sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
   );
 
-  if (await sessionBookingPage.sessionExpandButton.isVisible())
-      await sessionBookingPage.toggleSessionBtn.click();
+  const expandButton = sessionBookingPage.getToggleSessionButton(
+    sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7
+  );
 
-   await hearingSchedulePage.waitForLoad();
+  if (await expandButton.isVisible())
+    await expandButton.click();
+
+  await hearingSchedulePage.waitForLoad();
 
   // asserting that only phone icon is displayed
-  const allIcons= await sessionBookingPage.hearingIconAll.count();
-  const phoneIcons = await sessionBookingPage.hearingIconEarphone .count();
+  const allIcons = await sessionBookingPage.hearingIconAll.count();
+  const phoneIcons = await sessionBookingPage.hearingIconEarphone.count();
 
-  expect ( phoneIcons === allIcons && phoneIcons > 0) .toBeTruthy() ;
+  expect(phoneIcons === allIcons && phoneIcons > 0).toBeTruthy();
 
 }
