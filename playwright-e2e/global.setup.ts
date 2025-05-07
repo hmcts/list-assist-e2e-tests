@@ -14,7 +14,7 @@ setup.describe('Global Setup', () => {
   });
 
   setup('Create new case', async ({ config, page, homePage, addNewCasePage, hearingSchedulePage, dataUtils }) => {
-    // await page.goto(config.urls.baseUrl);
+    await page.goto(config.urls.baseUrl);
     await new LoginPage(page).login(config.users.testUser);
 
     // Empties cart if there is anything present
