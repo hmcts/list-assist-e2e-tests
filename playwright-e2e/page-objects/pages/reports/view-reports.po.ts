@@ -5,6 +5,12 @@ export class ViewReportsPage extends Base {
   readonly CONSTANTS = {
     LOCALITY_LEICESTER_COMBINED_COURT: 'Leicester Combined Court',
     LOCATION_LEICESTER_COUNTY_COURTROOM_07: 'Leicester County Courtroom 07',
+    CASE_LISTING_REGION_WALES: 'Wales',
+    CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS: 'Wales Civil, Family and Tribunals',
+    CASE_LISTING_LOCATION_LEICESTER_CC_7: 'Leicester County Courtroom 07',
+    CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: 'Pontypridd Courtroom 01',
+    CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT: 'Pontypridd County Court and',
+    CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1: 'Newport (South Wales) Chambers 01',
     JURISDICTION_FAMILY: 'Family',
     SERVICE_DIVORCE: 'Divorce',
   };
@@ -63,6 +69,7 @@ export class ViewReportsPage extends Base {
       .locator('iframe[name="ReportViewerControl_ctl04_ctl03_ctl02"]')
       .contentFrame()
       .getByRole('link', { name: `${dateFrom}`, exact: true })
+      .first()
       .click();
 
     await reportsRequestPage.dateToCalenderSelect.click();
@@ -70,6 +77,7 @@ export class ViewReportsPage extends Base {
       .locator('iframe[name="ReportViewerControl_ctl04_ctl05_ctl02"]')
       .contentFrame()
       .getByRole('link', { name: `${dateTo}`, exact: true })
+      .first()
       .click();
 
     //locality drop down select
