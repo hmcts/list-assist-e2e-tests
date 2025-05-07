@@ -4,7 +4,7 @@ import { isSessionValid } from './utils';
 
 setup.describe('Global Setup', () => {
   setup.describe.configure({ mode: 'serial' });
-  setup('Setup test user', async ({ page, config, hearingSchedulePage }) => {
+  setup('Setup test user', async ({ page, config }) => {
     // Test user setup
     const user = config.users.testUser;
     if (!isSessionValid(user.sessionFile, user.cookieName!)) {
