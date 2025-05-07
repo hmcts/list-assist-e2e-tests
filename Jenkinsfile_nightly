@@ -94,7 +94,6 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
-    // Stage for case-listing.spec.ts
     stage('Chrome - Case Listing and Reporting Tests') {
       try {
         yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @case-listing')
@@ -129,7 +128,6 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
-    // Stage for case-listing.spec.ts
     stage('Firefox - Case Listing and Reporting Tests') {
       try {
         yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @case-listing')
@@ -164,7 +162,6 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
-    // Stage for case-listing.spec.ts
     stage('Webkit - Case Listing and Reporting Tests') {
       try {
         yarnBuilder.yarn('playwright test tests/ --project=webkit --grep @case-listing')
@@ -181,5 +178,25 @@ withNightlyPipeline(type, product, component, 600) {
         ])
       }
     }
+
+    // Accessibility Tests (commented out for now)
+    /*
+    stage('Accessibility Tests') {
+      try {
+        yarnBuilder.yarn('test:a11y')
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      } finally {
+        publishHTML([
+          allowMissing: true,
+          alwaysLinkToLastBuild: true,
+          keepAll: true,
+          reportDir: "playwright-report",
+          reportFiles: 'index.html',
+          reportName: 'Accessibility Tests'
+        ])
+      }
+    }
+    */
   }
 }
