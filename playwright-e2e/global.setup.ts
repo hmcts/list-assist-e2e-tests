@@ -4,7 +4,6 @@ import { isSessionValid } from './utils';
 
 setup.describe('Global Setup', () => {
   setup.describe.configure({ mode: 'serial' });
-  // Step 1: Setup test user
   setup('Setup test user', async ({ page, config, hearingSchedulePage }) => {
     // Test user setup
     const user = config.users.testUser;
@@ -15,15 +14,15 @@ setup.describe('Global Setup', () => {
 
     await page.goto(config.urls.baseUrl);
     await new LoginPage(page).login(config.users.testUser);
+  });
+
+  setup('Create new case', async ({ config, page, homePage, addNewCasePage, hearingSchedulePage, dataUtils }) => {
+    await page.goto(config.urls.baseUrl);
+    await new LoginPage(page).login(config.users.testUser);
 
     // Empties cart if there is anything present
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-  });
 
-  // Step 2: Create a new case
-  setup('Create new case', async ({ config, page, homePage, addNewCasePage, dataUtils }) => {
-    await page.goto(config.urls.baseUrl);
-    await new LoginPage(page).login(config.users.testUser);
     // Navigate to Add New Case page
     await homePage.sidebarComponent.openAddNewCasePage();
 
