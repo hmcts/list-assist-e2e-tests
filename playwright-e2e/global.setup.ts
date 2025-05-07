@@ -17,11 +17,6 @@ setup(
 
     //empties cart if there is anything present
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-    // //clears sessions at start of test class
-    // await hearingSchedulePage.clearDownSchedule(
-    //   sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-    //   sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
-    // );
 
     //creates new case for all tests
     await homePage.sidebarComponent.openAddNewCasePage();
