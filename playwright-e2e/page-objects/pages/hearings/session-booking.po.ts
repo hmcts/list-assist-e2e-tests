@@ -12,12 +12,13 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_HEARING_TYPE_APPLICATION: 'Application',
     CASE_LISTING_CANCEL_REASON_AMEND: 'Amend',
 
-
     //session details
     SESSION_DETAILS_CANCELLATION_CODE_CANCEL: 'CNCL',
     //session hearing channels
     SESSION_HEARING_CHANNEL_IN_PERSON: 'In Person (child)',
     SESSION_HEARING_CHANNEL_TELEPHONE: 'Telephone - Other',
+
+    CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON: 'Generic Decision 3'
 
   };
 
@@ -28,13 +29,6 @@ export class SessionBookingPage extends Base {
   readonly sessionStatusDropdown = this.page.getByLabel('Session Status: This field is');
   readonly hearingIconAll = this.page.locator('.booking-icon-group i.glyphicon');
   readonly hearingIconEarphone = this.page.locator('.booking-icon-group i.glyphicon-earphone')
-  readonly toggleSessionBtn = this.page.getByRole('button',
-    {name: `Toggle sessions details for room: ${this.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7}`
-    });
-
-  readonly sessionExpandButton = this.page.locator(`button[title="Expand"][aria-label="Toggle sessions details for room: ${this.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7}"]`);
-
-
   readonly sessionHearingChannel  = this.page.getByRole('button', { name: 'Hearing Channel:' });
   readonly sessionHearingChannelTel = this.page.locator('a').filter({ hasText: 'Telephone - Other' });
   readonly sessionHearingChannelVid = this.page.locator('a').filter({ hasText: 'Video - CVP' });
@@ -61,6 +55,13 @@ export class SessionBookingPage extends Base {
     super(page);
   }
 
+  getToggleSessionButton(roomName: string) {
+
+    return this.page.locator(`button[title="Expand"]
+    [aria-label="Toggle sessions details for room: ${roomName}"]`);
+
+  }
+
   async bookSession(duration: string, sessionStatus: string) {
     await this.waitForLoad();
     await expect(this.heading).toBeVisible();
@@ -77,10 +78,11 @@ export class SessionBookingPage extends Base {
       await this.page.getByRole('button', { name: 'Save' }).click();
       validationPopup = await pagePromise;
       await validationPopup.waitForLoadState('domcontentloaded');
-      console.log('Popup appeared!');
 
       // interacting with validation popup
-      await validationPopup.getByLabel('Reason to override rule/s *').selectOption('446918790');
+
+      await validationPopup.getByRole('combobox', { name: 'Reason to override rule/s *' })
+        .selectOption({ label: this.CONSTANTS.CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON });
       await validationPopup.getByRole('button', { name: 'SAVE & CONTINUE LISTING' }).click();
       await this.checkingListingIframe();
 
