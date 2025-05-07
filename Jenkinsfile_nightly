@@ -77,113 +77,109 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
-    stage('Chrome: Case Listing Tests') {
-      try {
-        currentBuild.displayName = "Case Listing And Reporting Tests ${params.browser}"
-        yarnBuilder.yarn('test:chrome playwright test tests/case-listing.spec.ts --project ${params.browser}')
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      } finally {
-        publishHTML([
-          allowMissing: true,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: "playwright-report",
-          reportFiles: 'index.html',
-          reportName: 'Chrome Case Listing Tests'
-        ])
+    
+    stage('Chrome -  All E2E Tests') {
+        try {
+          yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @nightly --grep-invert @case-listing')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome E2E Tests'
+          ])
+        }
       }
-    }
 
-    // Stage for all other tests
-    stage('Chrome: All Other E2E Tests') {
-      try {
-        currentBuild.displayName = "All Other E2E Tests ${params.browser}"
-        yarnBuilder.yarn('test:chrome playwright test tests/ --exclude tests/case-listing.spec.ts --project ${params.browser}')
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      } finally {
-        publishHTML([
-          allowMissing: true,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: "playwright-report",
-          reportFiles: 'index.html',
-          reportName: 'Chrome All Other E2E Tests ${params.browser}'
-        ])
+    // Stage for case-listing.spec.ts
+    stage('Chrome -  Case Listing and Reporting Tests') {
+        try {
+          yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @case-listing')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome Case Listing and Reporting Tests'
+          ])
+        }
       }
-    }
-    stage('Firefox: Case Listing Tests') {
-      try {
-        currentBuild.displayName = "Case Listing And Reporting Tests ${params.browser}"
-        yarnBuilder.yarn('test:firefox playwright test tests/case-listing.spec.ts --project ${params.browser}')
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      } finally {
-        publishHTML([
-          allowMissing: true,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: "playwright-report",
-          reportFiles: 'index.html',
-          reportName: 'Firefox Case Listing Tests'
-        ])
-      }
-    }
 
-    // Stage for all other tests
-    stage('Firefox: All Other E2E Tests') {
-      try {
-        currentBuild.displayName = "All Other E2E Tests ${params.browser}"
-        yarnBuilder.yarn('test:firefox playwright test tests/ --exclude tests/case-listing.spec.ts --project ${params.browser}')
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      } finally {
-        publishHTML([
-          allowMissing: true,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: "playwright-report",
-          reportFiles: 'index.html',
-          reportName: 'Firefox All Other E2E Tests ${params.browser}'
-        ])
+      stage('Firefox -  All E2E Tests') {
+        try {
+          yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @nightly --grep-invert @case-listing')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox E2E Tests'
+          ])
+        }
       }
-    }
-    stage('Webkit: Case Listing Tests') {
-      try {
-        currentBuild.displayName = "Case Listing And Reporting Tests ${params.browser}"
-        yarnBuilder.yarn('test:webkit playwright test tests/case-listing.spec.ts --project ${params.browser}')
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      } finally {
-        publishHTML([
-          allowMissing: true,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: "playwright-report",
-          reportFiles: 'index.html',
-          reportName: 'Webkit Case Listing Tests'
-        ])
-      }
-    }
 
-    // Stage for all other tests
-    stage('Webkit: All Other E2E Tests') {
-      try {
-        currentBuild.displayName = "All Other E2E Tests ${params.browser}"
-        yarnBuilder.yarn('test:Webkit playwright test tests/ --exclude tests/case-listing.spec.ts --project ${params.browser}')
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      } finally {
-        publishHTML([
-          allowMissing: true,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: "playwright-report",
-          reportFiles: 'index.html',
-          reportName: 'Webkit All Other E2E Tests ${params.browser}'
-        ])
+    // Stage for case-listing.spec.ts
+    stage('Firefox -  Case Listing and Reporting Tests') {
+        try {
+          yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @case-listing')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox Case Listing and Reporting Tests'
+          ])
+        }
       }
-    }
+
+      stage('Webkit -  All E2E Tests') {
+        try {
+          yarnBuilder.yarn('playwright test tests/ --project=webkit --grep @nightly --grep-invert @case-listing')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Webkit E2E Tests'
+          ])
+        }
+      }
+    // Stage for case-listing.spec.ts
+    stage('Webkit -  Case Listing and Reporting Tests') {
+        try {
+          yarnBuilder.yarn('playwright test tests/ --project=webkit --grep @case-listing')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Webkit Case Listing and Reporting Tests'
+          ])
+        }
+      }
   }
 }
