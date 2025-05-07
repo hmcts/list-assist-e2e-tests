@@ -1,7 +1,7 @@
 import { expect, test } from '../fixtures';
 import { config } from '../utils';
 
-test.describe('Logout functionality @ui-test', () => {
+test.describe('Logout functionality @ui-test @nightly', () => {
   test('Logout button is present and functions as expected @smoke', async ({ loginPage, homePage, config }) => {
     await homePage.page.goto(config.urls.baseUrl);
     await loginPage.login(config.users.testUser, true);
