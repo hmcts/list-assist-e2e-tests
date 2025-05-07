@@ -2,44 +2,49 @@ import { test as setup } from './fixtures';
 import { LoginPage } from './page-objects/pages/login.po';
 import { isSessionValid } from './utils';
 
-// Setup block for test user login
-setup('Setup test user', async ({ page, config, hearingSchedulePage }) => {
-  // Test user setup
-  const user = config.users.testUser;
-  if (!isSessionValid(user.sessionFile, user.cookieName!)) {
+setup.describe('Global Setup', () => {
+  setup.describe.configure({ mode: 'serial' });
+  // Step 1: Setup test user
+  setup('Setup test user', async ({ page, config, hearingSchedulePage }) => {
+    // Test user setup
+    const user = config.users.testUser;
+    if (!isSessionValid(user.sessionFile, user.cookieName!)) {
+      await page.goto(config.urls.baseUrl);
+      await new LoginPage(page).login(config.users.testUser);
+    }
+
     await page.goto(config.urls.baseUrl);
     await new LoginPage(page).login(config.users.testUser);
-  }
 
-  await page.goto(config.urls.baseUrl);
-  await new LoginPage(page).login(config.users.testUser);
+    // Empties cart if there is anything present
+    await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+  });
 
-  // Empties cart if there is anything present
-  await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-});
+  // Step 2: Create a new case
+  setup('Create new case', async ({ config, page, homePage, addNewCasePage, dataUtils }) => {
+    await page.goto(config.urls.baseUrl);
+    await new LoginPage(page).login(config.users.testUser);
+    // Navigate to Add New Case page
+    await homePage.sidebarComponent.openAddNewCasePage();
 
-// Setup block for creating a new case
-setup('Create new case', async ({ homePage, addNewCasePage, dataUtils }) => {
-  // Navigate to Add New Case page
-  await homePage.sidebarComponent.openAddNewCasePage();
+    // Generate case details
+    process.env.HMCTS_CASE_NUMBER = 'HMCTS_CN_' + dataUtils.generateRandomAlphabetical(10).toUpperCase();
+    process.env.CASE_NAME = 'AUTO_' + dataUtils.generateRandomAlphabetical(10).toUpperCase();
 
-  // Generate case details
-  process.env.HMCTS_CASE_NUMBER = 'HMCTS_CN_' + dataUtils.generateRandomAlphabetical(10).toUpperCase();
-  process.env.CASE_NAME = 'AUTO_' + dataUtils.generateRandomAlphabetical(10).toUpperCase();
+    const caseData = {
+      hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
+      jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
+      service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
+      caseType: addNewCasePage.CONSTANTS.DECREE_ABSOLUTE_CASE_TYPE,
+      region: addNewCasePage.CONSTANTS.REGION_WALES,
+      cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+      hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+      currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
+    };
 
-  const caseData = {
-    hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
-    caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
-    jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
-    service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
-    caseType: addNewCasePage.CONSTANTS.DECREE_ABSOLUTE_CASE_TYPE,
-    region: addNewCasePage.CONSTANTS.REGION_WALES,
-    cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-    hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-    hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-    currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-  };
-
-  // Create the new case
-  await addNewCasePage.addNewCaseWithMandatoryData(caseData, process.env.HMCTS_CASE_NUMBER, process.env.CASE_NAME);
+    // Create the new case
+    await addNewCasePage.addNewCaseWithMandatoryData(caseData, process.env.HMCTS_CASE_NUMBER, process.env.CASE_NAME);
+  });
 });
