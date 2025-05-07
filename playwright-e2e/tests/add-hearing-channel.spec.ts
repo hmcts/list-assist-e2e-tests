@@ -1,7 +1,7 @@
-import {expect, test} from '../fixtures';
-import {HomePage, CaseSearchPage, CaseDetailsPage, HearingSchedulePage} from '../page-objects/pages';
-import {SessionBookingPage} from '../page-objects/pages/hearings/session-booking.po';
-import {config} from '../utils';
+import { expect, test } from '../fixtures';
+import { HomePage, CaseSearchPage, CaseDetailsPage, HearingSchedulePage } from '../page-objects/pages';
+import { SessionBookingPage } from '../page-objects/pages/hearings/session-booking.po';
+import { config } from '../utils';
 
 test.use({
   storageState: config.users.testUser.sessionFile,
@@ -12,7 +12,7 @@ let hmctsCaseNumber: string;
 let caseName: string;
 
 test.describe('Hearing channel test @hearing-channel-test', () => {
-  test.beforeEach(async ({page, homePage, hearingSchedulePage, sessionBookingPage, addNewCasePage}) => {
+  test.beforeEach(async ({ page, homePage, hearingSchedulePage, sessionBookingPage, addNewCasePage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
@@ -50,16 +50,15 @@ test.describe('Hearing channel test @hearing-channel-test', () => {
   });
 
   test('Only the session-supported hearing channels should be displayed', async ({
-                                                                                        editNewCasePage,
-                                                                                        caseDetailsPage,
-                                                                                        addNewCasePage,
-                                                                                        listingRequirementsPage,
-                                                                                        homePage,
-                                                                                        caseSearchPage,
-                                                                                        hearingSchedulePage,
-                                                                                        sessionBookingPage,
-                                                                                      }) => {
-
+    editNewCasePage,
+    caseDetailsPage,
+    addNewCasePage,
+    listingRequirementsPage,
+    homePage,
+    caseSearchPage,
+    hearingSchedulePage,
+    sessionBookingPage,
+  }) => {
     const roomData = {
       roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
@@ -92,7 +91,6 @@ test.describe('Hearing channel test @hearing-channel-test', () => {
       roomData,
       sessionBookingPage,
     );
-
   });
 });
 
@@ -143,11 +141,10 @@ async function createHearingSession(
   );
 
   const expandButton = sessionBookingPage.getToggleSessionButton(
-    sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7
+    sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
   );
 
-  if (await expandButton.isVisible())
-    await expandButton.click();
+  if (await expandButton.isVisible()) await expandButton.click();
 
   await hearingSchedulePage.waitForLoad();
 
@@ -156,5 +153,4 @@ async function createHearingSession(
   const phoneIcons = await sessionBookingPage.hearingIconEarphone.count();
 
   expect(phoneIcons === allIcons && phoneIcons > 0).toBeTruthy();
-
 }
