@@ -11,9 +11,6 @@ setup.describe('Global Setup', () => {
       await page.goto(config.urls.baseUrl);
       await new LoginPage(page).login(config.users.testUser);
     }
-
-    await page.goto(config.urls.baseUrl);
-    await new LoginPage(page).login(config.users.testUser);
   });
 
   setup('Create new case', async ({ config, page, homePage, addNewCasePage, hearingSchedulePage, dataUtils }) => {
