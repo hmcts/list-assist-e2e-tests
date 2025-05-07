@@ -27,6 +27,6 @@ test.describe('Upper bar UI @ui-test', () => {
     const waitForCreateNewPartyPopup = homePage.page.waitForEvent('popup');
     await homePage.upperbarComponent.helpButton.click();
     const helpDialogPopup = await waitForCreateNewPartyPopup;
-    await expect(helpDialogPopup).toBeTruthy();
+    expect(helpDialogPopup).toBeTruthy();
   });
 });
