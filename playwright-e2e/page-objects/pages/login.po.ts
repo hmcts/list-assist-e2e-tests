@@ -13,15 +13,17 @@ export class LoginPage extends Base {
   }
 
   async login(user: UserCredentials, disableSaveSession?: boolean): Promise<void> {
-    expect.poll(
-      async () => {
-        return await this.usernameInput.isVisible();
-      },
-      {
-        intervals: [2000],
-        timeout: 60000,
-      },
-    );
+    await expect
+      .poll(
+        async () => {
+          return await this.usernameInput.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
 
     await this.usernameInput.fill(user.username);
     await this.passwordInput.fill(user.password);
