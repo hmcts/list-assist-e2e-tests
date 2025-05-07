@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { UserCredentials } from '../../utils';
 import { Base } from '../base';
 
@@ -13,6 +13,16 @@ export class LoginPage extends Base {
   }
 
   async login(user: UserCredentials, disableSaveSession?: boolean): Promise<void> {
+    await expect.poll(
+      async () => {
+        return await this.usernameInput.isVisible();
+      },
+      {
+        intervals: [2_000],
+        timeout: 60_000,
+      },
+    );
+
     await this.usernameInput.fill(user.username);
     await this.passwordInput.fill(user.password);
     await this.submitBtn.click();
