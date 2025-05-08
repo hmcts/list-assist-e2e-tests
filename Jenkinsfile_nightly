@@ -77,6 +77,25 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
+    if (!TAGS_TO_RUN.isEmpty()) {
+      stage("${TAGS_TO_RUN} E2E Tests ${params.browser}") {
+        try {
+          currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests"
+          yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN))
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: "${TAGS_TO_RUN} E2E Tests ${params.browser}"
+          ])
+        }
+      }
+    } else {
     stage('Chrome - All E2E Tests') {
       try {
         yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @nightly --grep-invert @case-listing')
@@ -198,5 +217,6 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
     */
+    }
   }
 }
