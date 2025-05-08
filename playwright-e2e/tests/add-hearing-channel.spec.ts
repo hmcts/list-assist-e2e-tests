@@ -130,6 +130,18 @@ async function createHearingSession(
 
   await hearingSchedulePage.waitForLoad();
 
+  await expect
+    .poll(
+      async () => {
+        return await sessionBookingPage.hearingIconAll.isVisible();
+      },
+      {
+        intervals: [2_000],
+        timeout: 10_000,
+      },
+    )
+    .toBeTruthy();
+
   // asserting that only phone icon is displayed
   const allIcons = await sessionBookingPage.hearingIconAll.count();
   const phoneIcons = await sessionBookingPage.hearingIconEarphone.count();
