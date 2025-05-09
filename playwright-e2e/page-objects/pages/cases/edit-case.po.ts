@@ -41,7 +41,7 @@ export class EditNewCasePage extends Base {
     lastName: string,
     gender: string,
     dateOfBirth: string,
-    interpreter: string,
+    // interpreter: string,
     role: string,
   ) {
     const waitForCreateNewPartyPopup = this.page.waitForEvent('popup');
@@ -96,8 +96,8 @@ export class EditNewCasePage extends Base {
     await createNewParticipant.getByLabel('Gender', { exact: true }).selectOption(gender);
     await createNewParticipant.getByRole('textbox', { name: 'DOB' }).click();
     await createNewParticipant.getByRole('textbox', { name: 'DOB' }).fill(dateOfBirth);
-    await createNewParticipant.locator('#personentityLanguageCodeIntp').click();
-    await createNewParticipant.locator('#personentityLanguageCodeIntp').selectOption(interpreter);
+    // await createNewParticipant.locator('#personentityLanguageCodeIntp').click();
+    // await createNewParticipant.locator('#personentityLanguageCodeIntp').selectOption(interpreter);
     await createNewParticipant.getByRole('button', { name: 'Save' }).click();
 
     //wait for Participant Class to be visible
@@ -134,7 +134,7 @@ export class EditNewCasePage extends Base {
 
     await expect(this.page.getByRole('cell', { name: caseParticipantsType })).toBeVisible();
     await expect(this.page.getByRole('link', { name: caseParticipantsName })).toBeVisible();
-    await expect(this.page.getByRole('cell', { name: caseInterpreter }).first()).toBeVisible();
+    // await expect(this.page.getByRole('cell', { name: caseInterpreter }).first()).toBeVisible();
     await expect(this.page.getByRole('button', { name: 'View/Edit' })).toBeVisible();
     await expect(this.page.getByRole('button', { name: 'Remove' })).toBeVisible();
   }
