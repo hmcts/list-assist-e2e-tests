@@ -119,7 +119,7 @@ export class EditNewCasePage extends Base {
     await createNewParticipant.getByRole('button', { name: 'Save', exact: true }).click();
   }
 
-  async checkCaseParticipantTable(caseParticipantsType: string, caseParticipantsName: string, caseInterpreter: string) {
+  async checkCaseParticipantTable(caseParticipantsType: string, caseParticipantsName: string) {
     await expect
       .poll(
         async () => {
