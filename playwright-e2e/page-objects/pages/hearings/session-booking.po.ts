@@ -1,4 +1,4 @@
-import {expect, Page} from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { Base } from '../../base';
 
 export class SessionBookingPage extends Base {
@@ -24,8 +24,7 @@ export class SessionBookingPage extends Base {
     SESSION_HEARING_CHANNEL_IN_PERSON: 'In Person (child)',
     SESSION_HEARING_CHANNEL_TELEPHONE: 'Telephone - Other',
 
-    CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON: 'Generic Decision 3'
-
+    CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON: 'Generic Decision 3',
   };
 
   readonly container = this.page.locator('#pageContent');
@@ -34,8 +33,8 @@ export class SessionBookingPage extends Base {
   readonly durationDropdownButton = this.page.locator('#defListingDuration');
   readonly sessionStatusDropdown = this.page.getByLabel('Session Status: This field is');
   readonly hearingIconAll = this.page.locator('.booking-icon-group i.glyphicon');
-  readonly hearingIconEarphone = this.page.locator('.booking-icon-group i.glyphicon-earphone')
-  readonly sessionHearingChannel  = this.page.getByRole('button', { name: 'Hearing Channel:' });
+  readonly hearingIconEarphone = this.page.locator('.booking-icon-group i.glyphicon-earphone');
+  readonly sessionHearingChannel = this.page.getByRole('button', { name: 'Hearing Channel:' });
   readonly sessionHearingChannelTel = this.page.locator('a').filter({ hasText: 'Telephone - Other' });
   readonly sessionHearingChannelVid = this.page.locator('a').filter({ hasText: 'Video - CVP' });
   readonly saveButton = this.page.locator('#svb');
@@ -77,10 +76,8 @@ export class SessionBookingPage extends Base {
   }
 
   getToggleSessionButton(roomName: string) {
-
     return this.page.locator(`button[title="Expand"]
     [aria-label="Toggle sessions details for room: ${roomName}"]`);
-
   }
 
   async bookSession(duration: string, sessionStatus: string) {
@@ -102,11 +99,11 @@ export class SessionBookingPage extends Base {
 
       // interacting with validation popup
 
-      await validationPopup.getByRole('combobox', { name: 'Reason to override rule/s *' })
+      await validationPopup
+        .getByRole('combobox', { name: 'Reason to override rule/s *' })
         .selectOption({ label: this.CONSTANTS.CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON });
       await validationPopup.getByRole('button', { name: 'SAVE & CONTINUE LISTING' }).click();
       await this.checkingListingIframe();
-
     } catch {
       await this.checkingListingIframe();
     }
@@ -165,7 +162,7 @@ export class SessionBookingPage extends Base {
     await expect
       .poll(
         async () => {
-          return await listingIframe.isVisible();
+          return await listingIframe.first().isVisible();
         },
         {
           intervals: [1_000],
@@ -185,7 +182,6 @@ export class SessionBookingPage extends Base {
         .getByRole('option', { name: 'Allocation Hearing', exact: true })
         .click();
       await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
-
     } else {
       await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
     }
