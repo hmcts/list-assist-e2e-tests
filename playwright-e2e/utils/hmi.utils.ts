@@ -39,10 +39,19 @@ export class HmiUtils {
     return context;
   }
 
-  static async getAllSessions() {
+  static async getAllSessions(): Promise<unknown> {
     const context = await this.generateContext();
     const response = await context.get(`/hmi/sessions`);
-    expect(response.status()).toBe(200);
+    expect(response.ok()).toBeTruthy();
+    return response.json();
+  }
+
+  static async cancelHearing(hearingId: string): Promise<unknown> {
+    const context = await this.generateContext();
+    const response = await context.delete(`/hmi/hearings/${hearingId}`);
+    console.log(response);
+    console.log(await response.json());
+    expect(response.ok()).toBeTruthy();
     return response.json();
   }
 }
