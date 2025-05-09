@@ -118,7 +118,18 @@ export class HearingSchedulePage extends Base {
 
     if (await releasedStatusCheck.isVisible()) {
       await releasedStatusCheck.click();
-      // await expect(bookingSessionWithCaseName).toBeVisible();
+
+      await expect
+        .poll(
+          async () => {
+            return await scheduleButton.isVisible();
+          },
+          {
+            intervals: [2_000],
+            timeout: 10_000,
+          },
+        )
+        .toBeTruthy();
 
       await scheduleButton.click();
       await this.goToSessionDetailsButton.click();
