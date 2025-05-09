@@ -133,7 +133,7 @@ async function createHearingSession(
   await expect
     .poll(
       async () => {
-        return await sessionBookingPage.hearingIconAll.isVisible();
+        return await sessionBookingPage.hearingIconAll.first().isVisible();
       },
       {
         intervals: [2_000],
