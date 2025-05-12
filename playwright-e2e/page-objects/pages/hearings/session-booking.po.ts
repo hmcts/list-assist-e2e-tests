@@ -171,6 +171,11 @@ export class SessionBookingPage extends Base {
       )
       .toBeTruthy();
 
+    const contentFrame = await listingIframe.contentFrame();
+    if (!contentFrame) {
+      throw new Error('Failed to locate content frame inside the iframe.');
+    }
+
     await expect(listingIframe.contentFrame().getByLabel('Hearing Type')).toBeVisible();
     const hearingTypeBtn = await listingIframe.contentFrame().getByRole('button', { name: 'Please Choose...' });
 
@@ -182,6 +187,7 @@ export class SessionBookingPage extends Base {
         .getByRole('option', { name: 'Allocation Hearing', exact: true })
         .click();
 
+      const saveButton = contentFrame.getByRole('button', { name: 'Save', exact: true });
       await expect
         .poll(
           async () => {
