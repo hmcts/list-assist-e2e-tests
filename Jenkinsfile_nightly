@@ -166,7 +166,7 @@ withNightlyPipeline(type, product, component, 600) {
 
     stage('Webkit - Smoke Tests') {
       try {
-        yarnBuilder.yarn('playwright test tests/ --project=edge --grep @smoke --grep-invert @case-listing')
+        yarnBuilder.yarn('playwright test tests/ --project=webkit --grep @smoke --grep-invert @case-listing')
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
@@ -176,7 +176,7 @@ withNightlyPipeline(type, product, component, 600) {
           keepAll: true,
           reportDir: "playwright-report",
           reportFiles: 'index.html',
-          reportName: 'Edge E2E Tests'
+          reportName: 'Webkit smoke Tests'
         ])
       }
     }
