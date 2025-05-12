@@ -5,7 +5,7 @@ test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe('Case creation @add-new-case @nightly', () => {
+test.describe('Case creation @add-new-case @nightly @smoke', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(config.urls.baseUrl);
   });
