@@ -156,7 +156,7 @@ export class SessionBookingPage extends Base {
   }
 
   async checkingListingIframe() {
-    const listingIframe = this.page.locator('iframe[name="addAssociation"]');
+    const listingIframe = this.page.locator('#container iframe[name="addAssociation"]');
 
     // Wait for the iframe to be visible
     await expect
