@@ -164,9 +164,9 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
-    stage('Edge - All E2E Tests') {
+    stage('Webkit - Smoke Tests') {
       try {
-        yarnBuilder.yarn('playwright test tests/ --project=edge --grep @nightly --grep-invert @case-listing')
+        yarnBuilder.yarn('playwright test tests/ --project=edge --grep @smoke --grep-invert @case-listing')
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
@@ -177,23 +177,6 @@ withNightlyPipeline(type, product, component, 600) {
           reportDir: "playwright-report",
           reportFiles: 'index.html',
           reportName: 'Edge E2E Tests'
-        ])
-      }
-    }
-
-    stage('Edge - Case Listing and Reporting Tests') {
-      try {
-        yarnBuilder.yarn('playwright test tests/ --project=edge --grep @case-listing')
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      } finally {
-        publishHTML([
-          allowMissing: true,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: "playwright-report",
-          reportFiles: 'index.html',
-          reportName: 'Edge Case Listing and Reporting Tests'
         ])
       }
     }
