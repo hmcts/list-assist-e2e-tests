@@ -11,7 +11,7 @@ test.describe('Add participant @add-participant', () => {
     await page.goto(config.urls.baseUrl);
   });
 
-  test('Add new participant via Case Participants menu to case and then close participant using topbar UI  @smoke', async ({
+  test('Add new participant via Case Participants menu to case and then close participant using topbar UI', async ({
     addNewCasePage,
     editNewCasePage,
     caseSearchPage,
