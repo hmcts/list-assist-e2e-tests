@@ -1,5 +1,4 @@
 import { test as setup } from './fixtures';
-import { LoginPage } from './page-objects/pages/login.po';
 import { isSessionValid } from './utils';
 
 setup.describe('Global Setup', () => {
