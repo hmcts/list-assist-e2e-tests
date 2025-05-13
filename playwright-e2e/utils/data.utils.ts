@@ -34,20 +34,11 @@ export class DataUtils {
   generateDobInDdMmYyyyForwardSlashSeparators(yearsInThePast: number): string {
     const today = new Date();
     const pastDate = new Date(today.setFullYear(today.getFullYear() - yearsInThePast));
-    const day = String(pastDate.getDate()).padStart(2, '0');
-    const month = String(pastDate.getMonth() + 1).padStart(2, '0');
-    const year = pastDate.getFullYear();
-    return `${day}/${month}/${year}`;
-  }
 
-  // Generate a random date of birth in dd/mm/yyyy format
-  generateDobInDdMmYyyyDashSeparators(yearsInThePast: number): string {
-    const today = new Date();
-    const pastDate = new Date(today.setFullYear(today.getFullYear() - yearsInThePast));
-    const day = String(pastDate.getDate()).padStart(2, '0');
-    const month = String(pastDate.getMonth() + 1).padStart(2, '0');
-    const year = pastDate.getFullYear();
-    return `${day}-${month}-${year}`;
+    // Format the date as dd/mm/yyyy using toLocaleDateString
+    const formattedDate = pastDate.toLocaleDateString('en-GB').replace(/\//g, '/');
+
+    return formattedDate;
   }
 
   getTodaysDayAsDd(): string {
