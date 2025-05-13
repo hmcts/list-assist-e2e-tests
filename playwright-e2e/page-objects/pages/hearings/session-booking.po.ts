@@ -38,6 +38,10 @@ export class SessionBookingPage extends Base {
   readonly sessionHearingChannelTel = this.page.locator('a').filter({ hasText: 'Telephone - Other' });
   readonly sessionHearingChannelVid = this.page.locator('a').filter({ hasText: 'Video - CVP' });
   readonly saveButton = this.page.locator('#svb');
+  readonly listingSaveButton = this.page
+    .locator('iframe[name="addAssociation"]')
+    .contentFrame()
+    .getByRole('button', { name: 'Save', exact: true });
   readonly deleteButton = this.page.locator('#dvb');
   readonly popupFrame = this.page.frameLocator("#container iframe[name='addAssociation']");
 

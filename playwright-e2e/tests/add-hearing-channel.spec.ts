@@ -128,6 +128,20 @@ async function createHearingSession(
 
   if (await expandButton.isVisible()) await expandButton.click();
 
+  await expect
+    .poll(
+      async () => {
+        return await sessionBookingPage.listingSaveButton.isVisible();
+      },
+      {
+        intervals: [2_000],
+        timeout: 10_000,
+      },
+    )
+    .toBeTruthy();
+
+  await sessionBookingPage.listingSaveButton.click();
+
   await hearingSchedulePage.waitForLoad();
 
   await expect
