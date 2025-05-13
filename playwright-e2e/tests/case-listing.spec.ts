@@ -15,7 +15,7 @@ test.describe('Case listing @case-listing', () => {
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
   });
 
-  test('List "Released" session and Generate report via reports menu @smoke', async ({
+  test('List "Released" session and Generate report via reports menu', async ({
     sessionBookingPage,
     caseSearchPage,
     caseDetailsPage,
@@ -82,7 +82,7 @@ test.describe('Case listing @case-listing', () => {
     );
   });
 
-  test('List "Released" session and Generate report via P&I Dashboard @smoke', async ({
+  test('List "Released" session and Generate report via P&I Dashboard', async ({
     sessionBookingPage,
     caseSearchPage,
     caseDetailsPage,

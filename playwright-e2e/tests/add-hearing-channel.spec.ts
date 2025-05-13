@@ -7,7 +7,7 @@ test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe('Hearing channel test @hearing-channel @nightly', () => {
+test.describe('Hearing channel test @hearing-channel', () => {
   test.beforeEach(async ({ page, hearingSchedulePage, sessionBookingPage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
@@ -20,7 +20,7 @@ test.describe('Hearing channel test @hearing-channel @nightly', () => {
     );
   });
 
-  test('Only the session-supported hearing channels should be displayed', async ({
+  test('Only the session-supported hearing channels should be displayed @nightly', async ({
     editNewCasePage,
     caseDetailsPage,
     addNewCasePage,
