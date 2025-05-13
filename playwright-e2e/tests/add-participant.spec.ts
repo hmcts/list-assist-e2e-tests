@@ -5,7 +5,7 @@ test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe('Add participant @add-participant @nightly', () => {
+test.describe('Add participant @add-participant', () => {
   test.describe.configure({ mode: 'serial' });
   test.beforeEach(async ({ page }) => {
     await page.goto(config.urls.baseUrl);
@@ -54,7 +54,7 @@ test.describe('Add participant @add-participant @nightly', () => {
     await homePage.waitForHomePageLoad();
   });
 
-  test('Add new participant via Participants menu and close via topbar UI @smoke', async ({
+  test('Add new participant via Participants menu and close via topbar UI @smoke @nightly', async ({
     homePage,
     dataUtils,
     newParticipantsPage,
