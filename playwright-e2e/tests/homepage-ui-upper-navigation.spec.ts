@@ -13,7 +13,7 @@ test.describe('Logout functionality @ui-test @nightly @smoke', () => {
   });
 });
 
-test.describe('Upper bar UI @ui-test', () => {
+test.describe('Upper bar UI @ui-test @smoke', () => {
   test.use({
     storageState: config.users.testUser.sessionFile,
   });
