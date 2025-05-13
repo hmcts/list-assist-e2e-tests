@@ -166,7 +166,7 @@ withNightlyPipeline(type, product, component, 600) {
 
     stage('Webkit - Smoke Tests') {
       try {
-        yarnBuilder.yarn('playwright test tests/ --project=webkit --grep @smoke --grep-invert @case-listing @nightly')
+        yarnBuilder.yarn('playwright test tests/ --project=webkit --grep @smoke')
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
