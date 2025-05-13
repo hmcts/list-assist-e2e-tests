@@ -54,7 +54,7 @@ test.describe('Add participant @add-participant', () => {
     await homePage.waitForHomePageLoad();
   });
 
-  test('Add new participant via Participants menu and close via topbar UI @smoke @nightly', async ({
+  test('Add new participant via Participants menu and close via topbar UI', async ({
     homePage,
     dataUtils,
     newParticipantsPage,
