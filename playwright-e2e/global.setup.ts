@@ -3,7 +3,6 @@ import { LoginPage } from './page-objects/pages/login.po';
 import { isSessionValid } from './utils';
 
 setup.describe('Global Setup', () => {
-  setup.describe.configure({ mode: 'serial' });
   setup('Setup test user', async ({ loginPage, page, config }) => {
     // Test user setup
     const user = config.users.testUser;
