@@ -31,20 +31,20 @@ export class DataUtils {
   }
 
   // Generate a random date of birth in dd/mm/yyyy format
-  generateDobInDdMmYyyy(yearsInThePast: number): string {
+  generateDobInDdMmYyyyForwardSlashSeparators(yearsInThePast: number): string {
     const today = new Date();
     const pastDate = new Date(today.setFullYear(today.getFullYear() - yearsInThePast));
-    const day = String(pastDate.getDate()).padStart(2, '0');
-    const month = String(pastDate.getMonth() + 1).padStart(2, '0');
-    const year = pastDate.getFullYear();
-    return `${day}/${month}/${year}`;
+
+    // Format the date as dd/mm/yyyy using toLocaleDateString
+    const formattedDate = pastDate.toLocaleDateString('en-GB').replace(/\//g, '/');
+
+    return formattedDate;
   }
 
-  //gets today's numeric date in DD
   getTodaysDayAsDd(): string {
     const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0'); // Ensure two-digit format
-    return day;
+    const day = String(today.getDate()).padStart(2, '0');
+    return day.startsWith('0') ? day.slice(1) : day;
   }
 
   getCurrentMonthAsString(): string {
