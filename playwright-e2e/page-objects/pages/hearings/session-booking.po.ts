@@ -1,65 +1,85 @@
-import {expect, Page} from '@playwright/test';
-import { Base } from '../../base';
+import { expect, Page } from "@playwright/test";
+import { Base } from "../../base";
 
 export class SessionBookingPage extends Base {
   readonly CONSTANTS = {
     //case listing
-    CASE_LISTING_ROOM_NAME_LEICESTER_CC_7: 'Leicester County Courtroom 07',
-    CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: '5',
-    CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: '4',
-    CASE_LISTING_SESSION_DURATION_1_00: '60',
-    CASE_LISTING_COLUMN_ONE: 'columnOne',
-    CASE_LISTING_HEARING_TYPE_APPLICATION: 'Application',
-    CASE_LISTING_CANCEL_REASON_AMEND: 'Amend',
+    CASE_LISTING_ROOM_NAME_LEICESTER_CC_7: "Leicester County Courtroom 07",
+    CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
+    CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: "4",
+    CASE_LISTING_SESSION_DURATION_1_00: "60",
+    CASE_LISTING_COLUMN_ONE: "columnOne",
+    CASE_LISTING_HEARING_TYPE_APPLICATION: "Application",
+    CASE_LISTING_CANCEL_REASON_AMEND: "Amend",
 
     //session details
-    SESSION_DETAILS_CANCELLATION_CODE_CANCEL: 'CNCL',
+    SESSION_DETAILS_CANCELLATION_CODE_CANCEL: "CNCL",
     //session hearing channels
-    SESSION_HEARING_CHANNEL_IN_PERSON: 'In Person (child)',
-    SESSION_HEARING_CHANNEL_TELEPHONE: 'Telephone - Other',
+    SESSION_HEARING_CHANNEL_IN_PERSON: "In Person (child)",
+    SESSION_HEARING_CHANNEL_TELEPHONE: "Telephone - Other",
 
-    CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON: 'Generic Decision 3'
-
+    CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON: "Generic Decision 3",
   };
 
-  readonly container = this.page.locator('#pageContent');
-  readonly heading = this.page.getByText('Session Booking', { exact: true });
-  readonly listingDuration = this.page.locator('#defListingDuration');
-  readonly durationDropdownButton = this.page.locator('#defListingDuration');
-  readonly sessionStatusDropdown = this.page.getByLabel('Session Status: This field is');
-  readonly hearingIconAll = this.page.locator('.booking-icon-group i.glyphicon');
-  readonly hearingIconEarphone = this.page.locator('.booking-icon-group i.glyphicon-earphone')
-  readonly sessionHearingChannel  = this.page.getByRole('button', { name: 'Hearing Channel:' });
-  readonly sessionHearingChannelTel = this.page.locator('a').filter({ hasText: 'Telephone - Other' });
-  readonly sessionHearingChannelVid = this.page.locator('a').filter({ hasText: 'Video - CVP' });
-  readonly saveButton = this.page.locator('#svb');
-  readonly deleteButton = this.page.locator('#dvb');
-  readonly popupFrame = this.page.frameLocator("#container iframe[name='addAssociation']");
+  readonly container = this.page.locator("#pageContent");
+  readonly heading = this.page.getByText("Session Booking", { exact: true });
+  readonly listingDuration = this.page.locator("#defListingDuration");
+  readonly durationDropdownButton = this.page.locator("#defListingDuration");
+  readonly sessionStatusDropdown = this.page.getByLabel(
+    "Session Status: This field is"
+  );
+  readonly allIcons = this.page.locator(
+    ".booking-icon-group > span.booking-icon"
+  );
+  readonly phoneIcons = this.page.locator(
+    ".booking-icon-group > span.booking-icon > i.glyphicon-earphone"
+  );
+  readonly interpreterLanguageIcon = this.page.locator(
+    ".booking-icon-group > span.booking-icon > i.glyphicon-globe"
+  );
+
+  readonly sessionHearingChannel = this.page.getByRole("button", {
+    name: "Hearing Channel:",
+  });
+  readonly sessionHearingChannelTel = this.page
+    .locator("a")
+    .filter({ hasText: "Telephone - Other" });
+  readonly sessionHearingChannelVid = this.page
+    .locator("a")
+    .filter({ hasText: "Video - CVP" });
+  readonly saveButton = this.page.locator("#svb");
+  readonly deleteButton = this.page.locator("#dvb");
+  readonly popupFrame = this.page.frameLocator(
+    "#container iframe[name='addAssociation']"
+  );
 
   readonly popup = {
-    form: this.popupFrame.locator('#listingPopupForm'),
-    saveButton: this.popupFrame.locator('#saveListingBtn'),
-    cancelButton: this.popupFrame.locator('#cancelListingBtn'),
-    hearingType: this.popupFrame.locator('#hearingType'),
+    form: this.popupFrame.locator("#listingPopupForm"),
+    saveButton: this.popupFrame.locator("#saveListingBtn"),
+    cancelButton: this.popupFrame.locator("#cancelListingBtn"),
+    hearingType: this.popupFrame.locator("#hearingType"),
   };
-  readonly cancelListingButton = this.page.locator('#handleListingImgId').last();
+  readonly cancelListingButton = this.page
+    .locator("#handleListingImgId")
+    .last();
   readonly cancelPopup = {
-    popup: this.page.locator('#vbCancelReasonsLov'),
-    cancelDropdown: this.page.locator('#cancellationCode'),
+    popup: this.page.locator("#vbCancelReasonsLov"),
+    cancelDropdown: this.page.locator("#cancellationCode"),
   };
   readonly confirmPopup = {
-    confirmButton: this.page.locator('.modal-content #ok-btn'),
+    confirmButton: this.page.locator(".modal-content #ok-btn"),
   };
 
   constructor(page: Page) {
     super(page);
   }
 
-  getToggleSessionButton(roomName: string) {
+  async expandRoomButton() {
+    const roomsButton = this.page.locator('button[title="Rooms"]');
+    const icon = roomsButton.locator("i");
+    const iconClass = await icon.getAttribute("class");
 
-    return this.page.locator(`button[title="Expand"]
-    [aria-label="Toggle sessions details for room: ${roomName}"]`);
-
+    if (iconClass?.includes("glyphicon-menu-right")) await roomsButton.click();
   }
 
   async bookSession(duration: string, sessionStatus: string) {
@@ -74,18 +94,22 @@ export class SessionBookingPage extends Base {
 
     let validationPopup;
     try {
-      const pagePromise = this.page.waitForEvent('popup', { timeout: 5000 });
-      await this.page.getByRole('button', { name: 'Save' }).click();
+      const pagePromise = this.page.waitForEvent("popup", { timeout: 5000 });
+      await this.page.getByRole("button", { name: "Save" }).click();
       validationPopup = await pagePromise;
-      await validationPopup.waitForLoadState('domcontentloaded');
+      await validationPopup.waitForLoadState("domcontentloaded");
 
       // interacting with validation popup
 
-      await validationPopup.getByRole('combobox', { name: 'Reason to override rule/s *' })
-        .selectOption({ label: this.CONSTANTS.CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON });
-      await validationPopup.getByRole('button', { name: 'SAVE & CONTINUE LISTING' }).click();
+      await validationPopup
+        .getByRole("combobox", { name: "Reason to override rule/s *" })
+        .selectOption({
+          label: this.CONSTANTS.CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON,
+        });
+      await validationPopup
+        .getByRole("button", { name: "SAVE & CONTINUE LISTING" })
+        .click();
       await this.checkingListingIframe();
-
     } catch {
       await this.checkingListingIframe();
     }
@@ -118,7 +142,7 @@ export class SessionBookingPage extends Base {
         {
           intervals: [2_000],
           timeout: 60_000,
-        },
+        }
       )
       .toBeTruthy();
   }
@@ -132,7 +156,7 @@ export class SessionBookingPage extends Base {
         {
           intervals: [2_000],
           timeout: 60_000,
-        },
+        }
       )
       .toBeTruthy();
   }
@@ -149,24 +173,33 @@ export class SessionBookingPage extends Base {
         {
           intervals: [1_000],
           timeout: 20_000,
-        },
+        }
       )
       .toBeTruthy();
 
-    await expect(listingIframe.contentFrame().getByLabel('Hearing Type')).toBeVisible();
-    const hearingTypeBtn = await listingIframe.contentFrame().getByRole('button', { name: 'Please Choose...' });
+    await expect(
+      listingIframe.contentFrame().getByLabel("Hearing Type")
+    ).toBeVisible();
+    const hearingTypeBtn = await listingIframe
+      .contentFrame()
+      .getByRole("button", { name: "Please Choose..." });
 
     if (await hearingTypeBtn.isVisible()) {
       await hearingTypeBtn.click();
       await listingIframe
         .contentFrame()
-        .getByRole('list')
-        .getByRole('option', { name: 'Allocation Hearing', exact: true })
+        .getByRole("list")
+        .getByRole("option", { name: "Allocation Hearing", exact: true })
         .click();
-      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
-
+      await listingIframe
+        .contentFrame()
+        .getByRole("button", { name: "Save", exact: true })
+        .click();
     } else {
-      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
+      await listingIframe
+        .contentFrame()
+        .getByRole("button", { name: "Save", exact: true })
+        .click();
     }
   }
 }
