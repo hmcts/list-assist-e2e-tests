@@ -6,12 +6,11 @@ test.use({
 });
 
 test.describe('Add participant @add-participant', () => {
-  test.describe.configure({ mode: 'serial' });
   test.beforeEach(async ({ page }) => {
     await page.goto(config.urls.baseUrl);
   });
 
-  test('Add new participant via Case Participants menu to case and then close participant using topbar UI @nightly', async ({
+  test('Add new participant via Case Participants menu to case and then close participant using topbar UI', async ({
     addNewCasePage,
     editNewCasePage,
     caseSearchPage,
@@ -54,7 +53,7 @@ test.describe('Add participant @add-participant', () => {
     await homePage.waitForHomePageLoad();
   });
 
-  test('Add new participant via Participants menu and close via topbar UI @nightly', async ({
+  test('Add new participant via Participants menu and close via topbar UI', async ({
     homePage,
     dataUtils,
     newParticipantsPage,
