@@ -7,12 +7,8 @@ test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-let caseCreated = false;
-let hmctsCaseNumber: string;
-let caseName: string;
-
-test.describe('Hearing channel test @hearing-channel-test', () => {
-  test.beforeEach(async ({ page, homePage, hearingSchedulePage, sessionBookingPage, addNewCasePage }) => {
+test.describe('Hearing channel test @hearing-channel', () => {
+  test.beforeEach(async ({ page, hearingSchedulePage, sessionBookingPage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
@@ -20,36 +16,11 @@ test.describe('Hearing channel test @hearing-channel-test', () => {
     //clears sessions at start of test class but then does not when sessions created as part of tests in the class
     await hearingSchedulePage.clearDownSchedule(
       sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
     );
-
-    //add a single case for all tests in the class in instead of creating a new case for each test
-    //sets caseCreated to true so that it doesn't create a new case for each test in test class
-    if (caseCreated === false) {
-      //add new case
-      await homePage.sidebarComponent.openAddNewCasePage();
-      hmctsCaseNumber = 'HMCTS_CN_' + addNewCasePage.hmctsCaseNumber;
-      caseName = 'AUTO_' + addNewCasePage.hmctsCaseNumber;
-      //Test data
-      const caseData = {
-        hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
-        caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
-        jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
-        service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
-        caseType: addNewCasePage.CONSTANTS.DECREE_ABSOLUTE_CASE_TYPE,
-        region: addNewCasePage.CONSTANTS.REGION_WALES,
-        cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-        hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-        hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-        currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-      };
-
-      await addNewCasePage.addNewCaseWithMandatoryData(caseData, hmctsCaseNumber, caseName);
-      caseCreated = true;
-    }
   });
 
-  test('Only the session-supported hearing channels should be displayed', async ({
+  test('Only the session-supported hearing channels should be displayed @nightly', async ({
     editNewCasePage,
     caseDetailsPage,
     addNewCasePage,
@@ -60,9 +31,9 @@ test.describe('Hearing channel test @hearing-channel-test', () => {
     sessionBookingPage,
   }) => {
     const roomData = {
-      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-      caseNumber: hmctsCaseNumber,
+      caseNumber: process.env.HMCTS_CASE_NUMBER as string,
       sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
       cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
@@ -71,6 +42,17 @@ test.describe('Hearing channel test @hearing-channel-test', () => {
     //LISTING REQUIREMENTS
     await editNewCasePage.sidebarComponent.openListingRequirementsPage();
     //checks header
+    await expect
+      .poll(
+        async () => {
+          return await caseDetailsPage.listingRequirementsHeader.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 20_000,
+        },
+      )
+      .toBeTruthy();
     await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
 
     //select hearing type
@@ -83,7 +65,7 @@ test.describe('Hearing channel test @hearing-channel-test', () => {
     await caseDetailsPage.saveButton.click();
 
     await createHearingSession(
-      caseName,
+      process.env.CASE_NAME as string,
       homePage,
       caseSearchPage,
       caseDetailsPage,
@@ -141,12 +123,38 @@ async function createHearingSession(
   );
 
   const expandButton = sessionBookingPage.getToggleSessionButton(
-    sessionBookingPage.CONSTANTS.CASE_LISTING_ROOM_NAME_LEICESTER_CC_7,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
   );
 
   if (await expandButton.isVisible()) await expandButton.click();
 
+  await expect
+    .poll(
+      async () => {
+        return await sessionBookingPage.listingSaveButton.isVisible();
+      },
+      {
+        intervals: [2_000],
+        timeout: 10_000,
+      },
+    )
+    .toBeTruthy();
+
+  await sessionBookingPage.listingSaveButton.click();
+
   await hearingSchedulePage.waitForLoad();
+
+  await expect
+    .poll(
+      async () => {
+        return await sessionBookingPage.hearingIconAll.first().isVisible();
+      },
+      {
+        intervals: [2_000],
+        timeout: 10_000,
+      },
+    )
+    .toBeTruthy();
 
   // asserting that only phone icon is displayed
   const allIcons = await sessionBookingPage.hearingIconAll.count();

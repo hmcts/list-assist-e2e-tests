@@ -6,16 +6,15 @@ test.use({
 });
 
 test.describe('Case creation @add-new-case', () => {
-  test.beforeEach(async ({ page, homePage }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto(config.urls.baseUrl);
-    await homePage.sidebarComponent.openAddNewCasePage();
   });
 
-  test('Create new case and confirm case is created correctly @smoke', async ({
+  test('Search for case and confirm case details are correct @nightly @smoke', async ({
     addNewCasePage,
     editNewCasePage,
     caseDetailsPage,
-    homePage,
+    caseSearchPage,
   }) => {
     // Test data
     const caseData = {
@@ -31,20 +30,14 @@ test.describe('Case creation @add-new-case', () => {
       currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
     };
 
-    const hmctsCaseNumber = 'HMCTS_CN_' + addNewCasePage.hmctsCaseNumber;
-    const caseName = 'AUTO_' + addNewCasePage.hmctsCaseNumber;
-
-    await addNewCasePage.addNewCaseWithMandatoryData(caseData, hmctsCaseNumber, caseName);
-
-    // Assert that the new case has been created
-    // Assert that the header contains HMCTS case number and case name set when creating the case
-    await expect(editNewCasePage.newCaseHeader).toHaveText(`Case ${hmctsCaseNumber} (${caseName})`);
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.searchCase(process.env.CASE_NAME as string);
 
     //checks case details against known values
     await caseDetailsPage.checkInputtedCaseValues(
       editNewCasePage,
-      hmctsCaseNumber,
-      caseName,
+      process.env.HMCTS_CASE_NUMBER as string,
+      process.env.CASE_NAME as string,
       caseData.jurisdiction,
       caseData.service,
       caseData.caseType,
@@ -56,6 +49,18 @@ test.describe('Case creation @add-new-case', () => {
     //LISTING REQUIREMENTS
     await editNewCasePage.sidebarComponent.openListingRequirementsPage();
     //checks header
+    await expect
+      .poll(
+        async () => {
+          return await caseDetailsPage.listingRequirementsHeader.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 60_000,
+        },
+      )
+      .toBeTruthy();
+
     await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
 
     //select hearing type
@@ -65,11 +70,5 @@ test.describe('Case creation @add-new-case', () => {
     //CHECK CURRENT DETAILS OF CASE
     await caseDetailsPage.sidebarComponent.openCaseDetailsEditPage();
     await expect(caseDetailsPage.currentCaseCurrentStatusField).toHaveText('Current Status ' + caseData.currentStatus);
-
-    //Close case
-    await homePage.upperbarComponent.closeCaseButton.click();
-
-    //wait for page load
-    await homePage.waitForHomePageLoad();
   });
 });
