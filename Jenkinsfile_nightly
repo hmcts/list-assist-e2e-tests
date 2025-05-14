@@ -96,9 +96,26 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
     } else {
-    stage('Chrome - All E2E Tests') {
+    // stage('Chrome - All E2E Tests') {
+    //   try {
+    //     yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @nightly --grep-invert @case-listing')
+    //   } catch (Error) {
+    //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+    //   } finally {
+    //     publishHTML([
+    //       allowMissing: true,
+    //       alwaysLinkToLastBuild: true,
+    //       keepAll: true,
+    //       reportDir: "playwright-report",
+    //       reportFiles: 'index.html',
+    //       reportName: 'Chrome E2E Tests'
+    //     ])
+    //   }
+    // }
+
+    stage('Chrome - Add Participant Tests') {
       try {
-        yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @nightly --grep-invert @case-listing')
+        yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @add-participant')
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
@@ -108,7 +125,24 @@ withNightlyPipeline(type, product, component, 600) {
           keepAll: true,
           reportDir: "playwright-report",
           reportFiles: 'index.html',
-          reportName: 'Chrome E2E Tests'
+          reportName: 'Chrome- Add Participant Tests'
+        ])
+      }
+    }
+
+    stage('Chrome - Case Creation Tests') {
+      try {
+        yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @add-new-case')
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      } finally {
+        publishHTML([
+          allowMissing: true,
+          alwaysLinkToLastBuild: true,
+          keepAll: true,
+          reportDir: "playwright-report",
+          reportFiles: 'index.html',
+          reportName: 'Chrome Case Listing and Reporting Tests'
         ])
       }
     }
@@ -130,9 +164,9 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
-    stage('Firefox - All E2E Tests') {
+    stage('Chrome - Hearing Channel Tests') {
       try {
-        yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @nightly --grep-invert @case-listing')
+        yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @hearing-channel')
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
@@ -142,14 +176,13 @@ withNightlyPipeline(type, product, component, 600) {
           keepAll: true,
           reportDir: "playwright-report",
           reportFiles: 'index.html',
-          reportName: 'Firefox E2E Tests'
+          reportName: 'Chrome- Hearing Channel Tests'
         ])
       }
-    }
 
-    stage('Firefox - Case Listing and Reporting Tests') {
+      stage('Chrome - Hearing Channel Tests') {
       try {
-        yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @case-listing')
+        yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @hearing-channel')
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
@@ -159,14 +192,13 @@ withNightlyPipeline(type, product, component, 600) {
           keepAll: true,
           reportDir: "playwright-report",
           reportFiles: 'index.html',
-          reportName: 'Firefox Case Listing and Reporting Tests'
+          reportName: 'Chrome- Hearing Channel Tests'
         ])
       }
-    }
 
-    stage('Webkit - Smoke Tests') {
+      stage('Chrome - UI Tests') {
       try {
-        yarnBuilder.yarn('playwright test tests/ --project=webkit --grep @smoke')
+        yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @ui-test')
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
@@ -176,10 +208,62 @@ withNightlyPipeline(type, product, component, 600) {
           keepAll: true,
           reportDir: "playwright-report",
           reportFiles: 'index.html',
-          reportName: 'Webkit smoke Tests'
+          reportName: 'Chrome- UI Tests'
         ])
       }
-    }
+
+
+
+    // stage('Firefox - All E2E Tests') {
+    //   try {
+    //     yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @nightly --grep-invert @case-listing')
+    //   } catch (Error) {
+    //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+    //   } finally {
+    //     publishHTML([
+    //       allowMissing: true,
+    //       alwaysLinkToLastBuild: true,
+    //       keepAll: true,
+    //       reportDir: "playwright-report",
+    //       reportFiles: 'index.html',
+    //       reportName: 'Firefox E2E Tests'
+    //     ])
+    //   }
+    // }
+
+    // stage('Firefox - Case Listing and Reporting Tests') {
+    //   try {
+    //     yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @case-listing')
+    //   } catch (Error) {
+    //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+    //   } finally {
+    //     publishHTML([
+    //       allowMissing: true,
+    //       alwaysLinkToLastBuild: true,
+    //       keepAll: true,
+    //       reportDir: "playwright-report",
+    //       reportFiles: 'index.html',
+    //       reportName: 'Firefox Case Listing and Reporting Tests'
+    //     ])
+    //   }
+    // }
+
+    // stage('Webkit - Smoke Tests') {
+    //   try {
+    //     yarnBuilder.yarn('playwright test tests/ --project=webkit --grep @smoke')
+    //   } catch (Error) {
+    //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+    //   } finally {
+    //     publishHTML([
+    //       allowMissing: true,
+    //       alwaysLinkToLastBuild: true,
+    //       keepAll: true,
+    //       reportDir: "playwright-report",
+    //       reportFiles: 'index.html',
+    //       reportName: 'Webkit smoke Tests'
+    //     ])
+    //   }
+    // }
 
     // Accessibility Tests (commented out for now)
     /*
