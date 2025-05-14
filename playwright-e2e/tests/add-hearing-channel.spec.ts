@@ -122,43 +122,22 @@ async function createHearingSession(
     sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
   );
 
-  const expandButton = sessionBookingPage.getToggleSessionButton(
-    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
-  );
-
-  if (await expandButton.isVisible()) await expandButton.click();
-
-  await expect
-    .poll(
-      async () => {
-        return await sessionBookingPage.listingSaveButton.isVisible();
-      },
-      {
-        intervals: [2_000],
-        timeout: 10_000,
-      },
-    )
-    .toBeTruthy();
-
-  await sessionBookingPage.listingSaveButton.click();
-
   await hearingSchedulePage.waitForLoad();
 
-  await expect
-    .poll(
-      async () => {
-        return await sessionBookingPage.hearingIconAll.first().isVisible();
-      },
-      {
-        intervals: [2_000],
-        timeout: 10_000,
-      },
-    )
-    .toBeTruthy();
+  await sessionBookingPage.expandRoomButton();
 
   // asserting that only phone icon is displayed
-  const allIcons = await sessionBookingPage.hearingIconAll.count();
-  const phoneIcons = await sessionBookingPage.hearingIconEarphone.count();
+  const allIcons = await sessionBookingPage.allIcons.count();
+  const interpreterIcons = await sessionBookingPage.interpreterLanguageIcon.count();
+  const phoneIcons = await sessionBookingPage.phoneIcons.count();
 
-  expect(phoneIcons === allIcons && phoneIcons > 0).toBeTruthy();
+  expect(phoneIcons).toBe(1);
+
+  if (interpreterIcons === 1) {
+    expect(allIcons).toBe(2);
+  } else {
+    expect(interpreterIcons).toBe(0);
+    expect(allIcons).toBe(1);
+  }
+
 }
