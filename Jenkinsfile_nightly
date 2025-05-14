@@ -5,7 +5,7 @@ properties([
   parameters([
     string(
       name: 'FUNCTIONAL_TESTS_WORKERS',
-      defaultValue: '1',
+      defaultValue: '4',
       description: 'Number of workers running functional tests'
     ),
     string(
