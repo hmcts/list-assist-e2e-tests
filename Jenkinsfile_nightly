@@ -96,23 +96,6 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
     } else {
-    // stage('Chrome - All E2E Tests') {
-    //   try {
-    //     yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @nightly --grep-invert @case-listing')
-    //   } catch (Error) {
-    //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-    //   } finally {
-    //     publishHTML([
-    //       allowMissing: true,
-    //       alwaysLinkToLastBuild: true,
-    //       keepAll: true,
-    //       reportDir: "playwright-report",
-    //       reportFiles: 'index.html',
-    //       reportName: 'Chrome E2E Tests'
-    //     ])
-    //   }
-    // }
-
     stage('Chrome - Add Participant Tests') {
       try {
         yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @add-participant')
@@ -209,8 +192,12 @@ withNightlyPipeline(type, product, component, 600) {
           reportDir: "playwright-report",
           reportFiles: 'index.html',
           reportName: 'Chrome- UI Tests'
-        ])
+          ])
+        }
       }
+    }
+  }
+}
 
 
 
@@ -284,6 +271,6 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
     */
-    }
-  }
-}
+//     }
+//   }
+// }
