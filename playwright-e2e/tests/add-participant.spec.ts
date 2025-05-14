@@ -36,14 +36,14 @@ test.describe('Add participant @add-participant', () => {
       lastName,
       editNewCasePage.CONSTANTS.PARTICIPANT_GENDER_MALE,
       dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(dataUtils.getRandomNumberBetween1And50()),
-      // editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
+      editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
       editNewCasePage.CONSTANTS.PARTICIPANT_ROLE_APPLICANT,
     );
 
     await editNewCasePage.checkCaseParticipantTable(
       editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INDIVIDUAL,
       `${lastName}, ${givenName}`,
-      // editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
+      editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
     );
 
     //use close participant button
