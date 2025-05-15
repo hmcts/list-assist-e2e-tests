@@ -1,8 +1,9 @@
-import { test } from "../fixtures";
-import { HmiUtils } from "../utils/hmi.utils";
+import { test } from "../fixtures.js";
+import { HmiUtils } from "../utils/hmi.utils.js";
 
-test("API @api", async ({}) => {
-  const hearingId = "451194357";
-  const sessions = await HmiUtils.cancelHearing(hearingId);
+test("API @api", async ({ config }) => {
+  const payload = config.data.hearingRequest;
+  console.log(payload);
+  const sessions = await HmiUtils.requestHearing(payload);
   console.log(sessions);
 });
