@@ -36,15 +36,9 @@ export class SessionBookingPage extends Base {
   readonly sessionHearingChannelTel = this.page.locator('a').filter({ hasText: 'Telephone - Other' });
   readonly sessionHearingChannelVid = this.page.locator('a').filter({ hasText: 'Video - CVP' });
   readonly saveButton = this.page.locator('#svb');
-  readonly allIcons = this.page.locator(
-    ".booking-icon-group > span.booking-icon"
-  );
-  readonly phoneIcons = this.page.locator(
-    ".booking-icon-group > span.booking-icon > i.glyphicon-earphone"
-  );
-  readonly interpreterLanguageIcon = this.page.locator(
-    ".booking-icon-group > span.booking-icon > i.glyphicon-globe"
-  );
+  readonly allIcons = this.page.locator('.booking-icon-group > span.booking-icon');
+  readonly phoneIcons = this.page.locator('.booking-icon-group > span.booking-icon > i.glyphicon-earphone');
+  readonly interpreterLanguageIcon = this.page.locator('.booking-icon-group > span.booking-icon > i.glyphicon-globe');
   readonly listingSaveButton = this.page
     .locator('iframe[name="addAssociation"]')
     .contentFrame()
@@ -88,10 +82,10 @@ export class SessionBookingPage extends Base {
 
   async expandRoomButton() {
     const roomsButton = this.page.locator('button[title="Rooms"]');
-    const icon = roomsButton.locator("i");
-    const iconClass = await icon.getAttribute("class");
+    const icon = roomsButton.locator('i');
+    const iconClass = await icon.getAttribute('class');
 
-    if (iconClass?.includes("glyphicon-menu-right")) await roomsButton.click();
+    if (iconClass?.includes('glyphicon-menu-right')) await roomsButton.click();
   }
 
   async bookSession(duration: string, sessionStatus: string) {
@@ -201,16 +195,21 @@ export class SessionBookingPage extends Base {
         .getByRole('option', { name: 'Allocation Hearing', exact: true })
         .click();
 
-      await listingIframe
-        .contentFrame()
-        .getByRole("button", { name: "Save", exact: true })
-        .click();
+      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
     } else {
-      await listingIframe
-        .contentFrame()
-        .getByRole("button", {name: "Save", exact: true})
-        .click();
+      await expect
+        .poll(
+          async () => {
+            return listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).isVisible();
+          },
+          {
+            intervals: [1_000],
+            timeout: 20_000,
+          },
+        )
+        .toBeTruthy();
 
+      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
     }
   }
 
