@@ -197,8 +197,20 @@ export class SessionBookingPage extends Base {
 
       await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
     } else {
-      await expect(listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true })).toBeAttached();
-      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
+      const saveButton = contentFrame.getByRole('button', { name: 'Save', exact: true });
+      await expect
+        .poll(
+          async () => {
+            return saveButton.isVisible();
+          },
+          {
+            intervals: [1_000],
+            timeout: 20_000,
+          },
+        )
+        .toBeTruthy();
+
+      await saveButton.click();
     }
   }
 
