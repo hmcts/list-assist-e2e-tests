@@ -1,5 +1,5 @@
 import { APIRequestContext, expect, request } from "@playwright/test";
-import { config } from "./config.utils";
+import { config } from "./config.utils.js";
 
 export class HmiUtils {
   static async generateOAuthToken(): Promise<string> {
@@ -42,6 +42,15 @@ export class HmiUtils {
   static async getAllSessions(): Promise<unknown> {
     const context = await this.generateContext();
     const response = await context.get(`/hmi/sessions`);
+    expect(response.ok()).toBeTruthy();
+    return response.json();
+  }
+
+  static async requestHearing(payload: unknown): Promise<unknown> {
+    const context = await this.generateContext();
+    const response = await context.post(`/hmi/hearings`, { data: payload });
+    console.log(response);
+    console.log(await response.json());
     expect(response.ok()).toBeTruthy();
     return response.json();
   }
