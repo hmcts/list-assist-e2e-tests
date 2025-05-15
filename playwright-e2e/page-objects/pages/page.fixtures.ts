@@ -9,6 +9,7 @@ import { EditNewCasePage } from './cases/edit-case.po.ts';
 import { NewParticipantPage } from './participants/new-participants.po.ts';
 import { EditParticipantPage } from './participants/edit-participants.po.ts';
 import { ViewReportsPage } from './reports/view-reports.po.ts';
+import { AutomaticBookingDashboardPage } from './administation/automatic-booking-dashboard.po.ts';
 import { ListingRequirementsPage } from './cases/listing-requirments.po.ts';
 
 export interface PageFixtures {
@@ -23,6 +24,7 @@ export interface PageFixtures {
   newParticipantsPage: NewParticipantPage;
   editParticipantsPage: EditParticipantPage;
   viewReportsPage: ViewReportsPage;
+  automaticBookingDashboardPage: AutomaticBookingDashboardPage;
   listingRequirementsPage: ListingRequirementsPage;
 }
 
@@ -59,6 +61,9 @@ export const pageFixtures = {
   },
   viewReportsPage: async ({ page }, use) => {
     await use(new ViewReportsPage(page));
+  },
+  automaticBookingDashboardPage: async ({ page }, use) => {
+    await use(new AutomaticBookingDashboardPage(page));
   },
   listingRequirementsPage: async ({ page }, use) => {
     await use(new ListingRequirementsPage(page));
