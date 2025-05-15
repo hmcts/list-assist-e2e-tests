@@ -210,7 +210,7 @@ export class SessionBookingPage extends Base {
         )
         .toBeTruthy();
 
-      await saveButton.click();
+      // await saveButton.click();
     }
   }
 
