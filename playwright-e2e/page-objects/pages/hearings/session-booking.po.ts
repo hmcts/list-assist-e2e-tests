@@ -41,9 +41,9 @@ export class SessionBookingPage extends Base {
   readonly interpreterLanguageIcon = this.page.locator('.booking-icon-group > span.booking-icon > i.glyphicon-globe');
   readonly listingSaveButton = this.page
     .locator('iframe[name="addAssociation"]')
+    .first()
     .contentFrame()
-    .getByRole('button', { name: 'Save', exact: true })
-    .first();
+    .getByRole('button', { name: 'Save', exact: true });
   readonly deleteButton = this.page.locator('#dvb');
   readonly popupFrame = this.page.frameLocator("#container iframe[name='addAssociation']");
 
