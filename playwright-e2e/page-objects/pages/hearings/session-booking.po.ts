@@ -215,6 +215,7 @@ export class SessionBookingPage extends Base {
       .locator('iframe[name="addAssociation"]')
       .contentFrame()
       .getByRole('button', { name: 'Save', exact: true })
+      .first()
       .click();
   }
 
