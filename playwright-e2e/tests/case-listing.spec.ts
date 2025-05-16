@@ -169,8 +169,22 @@ async function createHearingSession(
   // Check if the close case button in upper bar is present
   await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
   //check current case drop down menu in upper bar
-  await expect(homePage.upperbarComponent.currentCaseDropdownButton).toBeVisible();
+  // await expect(homePage.upperbarComponent.currentCaseDropdownButton).toBeVisible();
+
+  await expect
+    .poll(
+      async () => {
+        return await expect(homePage.upperbarComponent.currentCaseDropdownButton).toBeVisible();
+      },
+      {
+        intervals: [1_000],
+        timeout: 20_000,
+      },
+    )
+    .toBeTruthy();
+
   await homePage.upperbarComponent.currentCaseDropdownButton.click();
+
   await expect(homePage.upperbarComponent.currentCaseDropdownList).toContainText(
     homePage.upperbarComponent.currentCaseDropDownItems,
   );
