@@ -40,7 +40,7 @@ export class SessionBookingPage extends Base {
   readonly phoneIcons = this.page.locator('.booking-icon-group > span.booking-icon > i.glyphicon-earphone');
   readonly interpreterLanguageIcon = this.page.locator('.booking-icon-group > span.booking-icon > i.glyphicon-globe');
   readonly listingSaveButton = this.page
-    .locator('iframe[name="addAssociation"]')
+    .locator('#container iframe[name="addAssociation')
     .first()
     .contentFrame()
     .getByRole('button', { name: 'Save', exact: true });
