@@ -195,9 +195,27 @@ export class SessionBookingPage extends Base {
         .click();
     }
 
-    if (await this.listingSaveButton.isVisible()) {
-      await this.listingSaveButton.click();
-    }
+    await expect
+      .poll(
+        async () => {
+          return this.page
+            .locator('iframe[name="addAssociation"]')
+            .contentFrame()
+            .getByRole('button', { name: 'Save', exact: true })
+            .isVisible();
+        },
+        {
+          intervals: [1_000],
+          timeout: 20_000,
+        },
+      )
+      .toBeTruthy();
+
+    await this.page
+      .locator('iframe[name="addAssociation"]')
+      .contentFrame()
+      .getByRole('button', { name: 'Save', exact: true })
+      .click();
   }
 
   async updateAdvancedFilterConfig(region: string, cluster: string, locality: string, location) {
