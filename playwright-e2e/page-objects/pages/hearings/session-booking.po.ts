@@ -42,7 +42,8 @@ export class SessionBookingPage extends Base {
   readonly listingSaveButton = this.page
     .locator('iframe[name="addAssociation"]')
     .contentFrame()
-    .getByRole('button', { name: 'Save', exact: true });
+    .getByRole('button', { name: 'Save', exact: true })
+    .first();
   readonly deleteButton = this.page.locator('#dvb');
   readonly popupFrame = this.page.frameLocator("#container iframe[name='addAssociation']");
 
@@ -194,9 +195,9 @@ export class SessionBookingPage extends Base {
         .getByRole('option', { name: 'Allocation Hearing', exact: true })
         .click();
 
-      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
+      await this.listingSaveButton.click();
     } else {
-      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
+      await this.listingSaveButton.click();
     }
   }
 
