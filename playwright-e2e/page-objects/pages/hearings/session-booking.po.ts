@@ -179,7 +179,7 @@ export class SessionBookingPage extends Base {
       )
       .toBeTruthy();
 
-    const contentFrame = await listingIframe.contentFrame();
+    const contentFrame = await listingIframe.first().contentFrame();
     if (!contentFrame) {
       throw new Error('Failed to locate content frame inside the iframe.');
     }
