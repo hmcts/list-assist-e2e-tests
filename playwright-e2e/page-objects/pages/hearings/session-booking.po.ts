@@ -106,7 +106,6 @@ export class SessionBookingPage extends Base {
       await validationPopup.waitForLoadState('domcontentloaded');
 
       // interacting with validation popup
-
       await validationPopup
         .getByRole('combobox', { name: 'Reason to override rule/s *' })
         .selectOption({ label: this.CONSTANTS.CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON });
@@ -195,7 +194,10 @@ export class SessionBookingPage extends Base {
         .getByRole('option', { name: 'Allocation Hearing', exact: true })
         .click();
     }
-    // await this.listingSaveButton.click();
+
+    if (await this.listingSaveButton.isVisible()) {
+      await this.listingSaveButton.click();
+    }
   }
 
   async updateAdvancedFilterConfig(region: string, cluster: string, locality: string, location) {
