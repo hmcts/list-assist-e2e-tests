@@ -196,7 +196,20 @@ export class SessionBookingPage extends Base {
         .click();
     }
 
-    await this.listingSaveButton.click();
+    const saveButton = contentFrame.getByRole('button', { name: 'Save', exact: true });
+    await expect
+      .poll(
+        async () => {
+          return saveButton.isVisible();
+        },
+        {
+          intervals: [1_000],
+          timeout: 20_000,
+        },
+      )
+      .toBeTruthy();
+
+    await saveButton.click();
   }
 
   async updateAdvancedFilterConfig(region: string, cluster: string, locality: string, location) {
