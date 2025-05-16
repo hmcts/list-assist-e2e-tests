@@ -197,6 +197,7 @@ export class SessionBookingPage extends Base {
     }
 
     const saveButton = contentFrame.getByRole('button', { name: 'Save', exact: true });
+
     await expect
       .poll(
         async () => {
@@ -209,7 +210,27 @@ export class SessionBookingPage extends Base {
       )
       .toBeTruthy();
 
-    await saveButton.click();
+    const browserName = this.page.context().browser()?.browserType().name();
+    if (browserName === 'firefox') {
+      await expect
+        .poll(
+          async () => {
+            return saveButton.isVisible();
+          },
+          {
+            intervals: [1_000],
+            timeout: 20_000,
+          },
+        )
+        .toBeTruthy();
+      await expect(saveButton).toBeEnabled();
+
+      // Click and wait for navigation or network idle
+      await Promise.all([this.page.waitForLoadState('networkidle').catch(() => {}), saveButton.click()]);
+    } else {
+      await expect(saveButton).toBeEnabled();
+      await saveButton.click();
+    }
   }
 
   async updateAdvancedFilterConfig(region: string, cluster: string, locality: string, location) {
