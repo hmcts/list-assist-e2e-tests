@@ -100,7 +100,7 @@ export class SessionBookingPage extends Base {
 
     let validationPopup;
     try {
-      const pagePromise = this.page.waitForEvent('popup');
+      const pagePromise = this.page.waitForEvent('popup', { timeout: 2000 });
       await this.page.getByRole('button', { name: 'Save' }).click();
       validationPopup = await pagePromise;
       await validationPopup.waitForLoadState('domcontentloaded');
