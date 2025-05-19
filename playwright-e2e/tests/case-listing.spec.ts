@@ -171,6 +171,7 @@ async function createHearingSession(
   //check current case drop down menu in upper bar
   await expect(homePage.upperbarComponent.currentCaseDropdownButton).toBeVisible();
   await homePage.upperbarComponent.currentCaseDropdownButton.click();
+
   await expect(homePage.upperbarComponent.currentCaseDropdownList).toContainText(
     homePage.upperbarComponent.currentCaseDropDownItems,
   );
