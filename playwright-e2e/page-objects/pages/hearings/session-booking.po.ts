@@ -116,8 +116,10 @@ export class SessionBookingPage extends Base {
             timeout: 20000,
           },
         )
-        .toBeTruthy();
-      popupAppeared = true;
+        .toBeTruthy()
+        .then(() => {
+          popupAppeared = true;
+        });
     } catch {
       popupAppeared = false;
     }
