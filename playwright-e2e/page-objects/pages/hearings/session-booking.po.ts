@@ -101,27 +101,26 @@ export class SessionBookingPage extends Base {
     let popupAppeared = false;
     let validationPopup;
 
-    await expect
-      .poll(
-        async () => {
-          const [popup] = await Promise.allSettled([
-            this.page.waitForEvent('popup'),
-            this.page.getByRole('button', { name: 'Save' }).click(),
-          ]);
-          return popup.status === 'fulfilled';
-        },
-        {
-          intervals: [2000],
-          timeout: 20000,
-        },
-      )
-      .toBeTruthy()
-      .then(() => {
-        popupAppeared = true;
-      })
-      .catch(() => {
-        popupAppeared = false;
-      });
+    try {
+      await expect
+        .poll(
+          async () => {
+            const [popup] = await Promise.allSettled([
+              this.page.waitForEvent('popup', { timeout: 5000 }),
+              this.page.getByRole('button', { name: 'Save' }).click(),
+            ]);
+            return popup.status === 'fulfilled';
+          },
+          {
+            intervals: [2000],
+            timeout: 20000,
+          },
+        )
+        .toBeTruthy();
+      popupAppeared = true;
+    } catch {
+      popupAppeared = false;
+    }
 
     if (popupAppeared) {
       validationPopup = await this.page.waitForEvent('popup');
