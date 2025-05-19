@@ -195,7 +195,7 @@ export class SessionBookingPage extends Base {
 
       await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
     } else {
-      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
+      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).first().click();
     }
   }
 
