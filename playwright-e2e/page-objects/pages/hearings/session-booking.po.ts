@@ -192,11 +192,8 @@ export class SessionBookingPage extends Base {
         .getByRole('list')
         .getByRole('option', { name: 'Allocation Hearing', exact: true })
         .click();
-
-      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
-    } else {
-      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).first().click();
     }
+    await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
   }
 
   async updateAdvancedFilterConfig(region: string, cluster: string, locality: string, location) {
