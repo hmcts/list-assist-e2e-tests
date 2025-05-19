@@ -98,23 +98,41 @@ export class SessionBookingPage extends Base {
     await this.sessionHearingChannelTel.click();
     await this.sessionHearingChannelVid.click();
 
+    let popupAppeared = false;
     let validationPopup;
-    try {
-      const pagePromise = this.page.waitForEvent('popup', { timeout: 5000 });
-      await this.page.getByRole('button', { name: 'Save' }).click();
-      validationPopup = await pagePromise;
+
+    await expect
+      .poll(
+        async () => {
+          const [popup] = await Promise.allSettled([
+            this.page.waitForEvent('popup', { timeout: 5000 }),
+            this.page.getByRole('button', { name: 'Save' }).click(),
+          ]);
+          return popup.status === 'fulfilled';
+        },
+        {
+          intervals: [2000],
+          timeout: 20000,
+        },
+      )
+      .toBeTruthy()
+      .then(() => {
+        popupAppeared = true;
+      })
+      .catch(() => {
+        popupAppeared = false;
+      });
+
+    if (popupAppeared) {
+      validationPopup = await this.page.waitForEvent('popup');
       await validationPopup.waitForLoadState('domcontentloaded');
-
-      // interacting with validation popup
-
       await validationPopup
         .getByRole('combobox', { name: 'Reason to override rule/s *' })
         .selectOption({ label: this.CONSTANTS.CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON });
       await validationPopup.getByRole('button', { name: 'SAVE & CONTINUE LISTING' }).click();
-      await this.checkingListingIframe();
-    } catch {
-      await this.checkingListingIframe();
     }
+
+    await this.checkingListingIframe();
   }
 
   async cancelSession(cancelReason: string) {
