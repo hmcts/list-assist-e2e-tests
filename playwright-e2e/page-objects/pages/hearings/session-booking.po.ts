@@ -40,8 +40,7 @@ export class SessionBookingPage extends Base {
   readonly phoneIcons = this.page.locator('.booking-icon-group > span.booking-icon > i.glyphicon-earphone');
   readonly interpreterLanguageIcon = this.page.locator('.booking-icon-group > span.booking-icon > i.glyphicon-globe');
   readonly listingSaveButton = this.page
-    .locator('#container iframe[name="addAssociation')
-    .first()
+    .locator('iframe[name="addAssociation"]')
     .contentFrame()
     .getByRole('button', { name: 'Save', exact: true });
   readonly deleteButton = this.page.locator('#dvb');
@@ -107,6 +106,7 @@ export class SessionBookingPage extends Base {
       await validationPopup.waitForLoadState('domcontentloaded');
 
       // interacting with validation popup
+
       await validationPopup
         .getByRole('combobox', { name: 'Reason to override rule/s *' })
         .selectOption({ label: this.CONSTANTS.CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON });
@@ -179,7 +179,7 @@ export class SessionBookingPage extends Base {
       )
       .toBeTruthy();
 
-    const contentFrame = await listingIframe.first().contentFrame();
+    const contentFrame = await listingIframe.contentFrame();
     if (!contentFrame) {
       throw new Error('Failed to locate content frame inside the iframe.');
     }
@@ -194,22 +194,11 @@ export class SessionBookingPage extends Base {
         .getByRole('list')
         .getByRole('option', { name: 'Allocation Hearing', exact: true })
         .click();
+
+      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
+    } else {
+      await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
     }
-
-    const saveButton = contentFrame.getByRole('button', { name: 'Save', exact: true });
-    await expect
-      .poll(
-        async () => {
-          return saveButton.isVisible();
-        },
-        {
-          intervals: [1_000],
-          timeout: 20_000,
-        },
-      )
-      .toBeTruthy();
-
-    await saveButton.click();
   }
 
   async updateAdvancedFilterConfig(region: string, cluster: string, locality: string, location) {
