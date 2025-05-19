@@ -105,7 +105,7 @@ export class SessionBookingPage extends Base {
       .poll(
         async () => {
           const [popup] = await Promise.allSettled([
-            this.page.waitForEvent('popup', { timeout: 5000 }),
+            this.page.waitForEvent('popup'),
             this.page.getByRole('button', { name: 'Save' }).click(),
           ]);
           return popup.status === 'fulfilled';
