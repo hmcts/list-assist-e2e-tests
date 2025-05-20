@@ -201,7 +201,8 @@ export class SessionBookingPage extends Base {
           return await this.page
             .locator('iframe[name="addAssociation"]')
             .contentFrame()
-            .getByRole('button', { name: 'Save', exact: true }).isVisible;
+            .locator('#saveListingBtn')
+            .isVisible();
         },
         {
           intervals: [1_000],
@@ -210,11 +211,7 @@ export class SessionBookingPage extends Base {
       )
       .toBeTruthy();
 
-    await this.page
-      .locator('iframe[name="addAssociation"]')
-      .contentFrame()
-      .getByRole('button', { name: 'Save', exact: true })
-      .click();
+    await this.page.locator('iframe[name="addAssociation"]').contentFrame().locator('#saveListingBtn').click();
   }
 
   async updateAdvancedFilterConfig(region: string, cluster: string, locality: string, location) {
