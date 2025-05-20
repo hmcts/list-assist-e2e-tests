@@ -5,7 +5,7 @@ import { defineConfig } from "@playwright/test";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  ...CommonConfig,
+  ...CommonConfig.recommended,
   testDir: "./playwright-e2e",
   snapshotDir: "./playwright-e2e/snapshots",
 
