@@ -193,7 +193,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Firefox- Add Participant Tests'
+            reportName: 'Firefox - Add Participant Tests'
           ])
         }
       }
