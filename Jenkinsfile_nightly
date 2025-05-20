@@ -215,22 +215,22 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
 
-      // stage('Firefox - Case Listing and Reporting Tests') {
-      //   try {
-      //     yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @case-listing')
-      //   } catch (Error) {
-      //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      //   } finally {
-      //     publishHTML([
-      //       allowMissing: true,
-      //       alwaysLinkToLastBuild: true,
-      //       keepAll: true,
-      //       reportDir: "playwright-report",
-      //       reportFiles: 'index.html',
-      //       reportName: 'Firefox Case Listing and Reporting Tests'
-      //     ])
-      //   }
-      // }
+      stage('Firefox - Case Listing and Reporting Tests') {
+        try {
+          yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @case-listing')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox Case Listing and Reporting Tests'
+          ])
+        }
+      }
 
       stage('Firefox - Hearing Channel Tests') {
         try {
