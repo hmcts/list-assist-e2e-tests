@@ -170,6 +170,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hmcts/playwright-common@npm:^1.0.15":
+  version: 1.0.15
+  resolution: "@hmcts/playwright-common@npm:1.0.15"
+  dependencies:
+    "@axe-core/playwright": "npm:^4.10.0"
+    "@playwright/test": "npm:^1.48.2"
+    get-port: "npm:^7.1.0"
+    globals: "npm:^15.10.0"
+    lighthouse: "npm:^12.2.1"
+    playwright: "npm:^1.48.2"
+    playwright-core: "npm:^1.48.2"
+    playwright-lighthouse: "npm:^4.0.0"
+  checksum: 10/bebcf7a2d7008f28a80fc04ffa18fbe1437efb457607a0e248f8f4c8d7d870799307b0465fa3bfc87852f2e71a0fe70f53bef0a2789ad496c45f960ece9a4671
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.1":
   version: 0.19.1
   resolution: "@humanfs/core@npm:0.19.1"
@@ -288,7 +304,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.52.0":
+"@playwright/test@npm:^1.48.2, @playwright/test@npm:^1.52.0":
   version: 1.52.0
   resolution: "@playwright/test@npm:1.52.0"
   dependencies:
@@ -2813,6 +2829,7 @@ __metadata:
   dependencies:
     "@axe-core/playwright": "npm:^4.10.0"
     "@eslint/js": "npm:^9.11.1"
+    "@hmcts/playwright-common": "npm:^1.0.15"
     "@playwright/test": "npm:^1.52.0"
     "@types/node": "npm:^22.6.1"
     "@typescript-eslint/eslint-plugin": "npm:^8.8.0"
