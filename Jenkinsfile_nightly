@@ -108,7 +108,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Chrome- Add Participant Tests'
+            reportName: 'Chrome - Add Participant Tests'
           ])
         }
       }
@@ -125,7 +125,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Chrome Case Creation Tests'
+            reportName: 'Chrome - Case Creation Tests'
           ])
         }
       }
@@ -142,7 +142,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Chrome Case Listing and Reporting Tests'
+            reportName: 'Chrome - Case Listing and Reporting Tests'
           ])
         }
       }
@@ -159,7 +159,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Chrome- Hearing Channel Tests'
+            reportName: 'Chrome - Hearing Channel Tests'
           ])
         }
       }
@@ -176,7 +176,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Chrome- UI Tests'
+            reportName: 'Chrome - UI Tests'
           ])
         }
       }
@@ -210,7 +210,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Firefox Case Creation Tests'
+            reportName: 'Firefox - Case Creation Tests'
           ])
         }
       }
@@ -227,7 +227,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Firefox Case Listing and Reporting Tests'
+            reportName: 'Firefox - Case Listing and Reporting Tests'
           ])
         }
       }
@@ -244,7 +244,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Firefox- Hearing Channel Tests'
+            reportName: 'Firefox - Hearing Channel Tests'
           ])
         }
       }
@@ -261,7 +261,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Firefox- UI Tests'
+            reportName: 'Firefox - UI Tests'
           ])
         }
       }
@@ -278,7 +278,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Webkit Smoke Tests'
+            reportName: 'Webkit - Smoke Tests'
           ])
         }
       }
