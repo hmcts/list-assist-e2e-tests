@@ -50,7 +50,7 @@ def buildPlaywrightCommand(tags) {
     return;
   }
   def tagList = tags.split(',').collect { it.trim() }
-  def command = 'playwright test tests/'
+  def command = 'playwright test'
   tagList.each { tag ->
     if (!tag.isEmpty()) {
       command += " --grep ${tag} --project ${params.browser}"
@@ -98,7 +98,7 @@ withNightlyPipeline(type, product, component, 600) {
     } else {
       stage('Chrome - Add Participant Tests') {
         try {
-          yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @add-participant')
+          yarnBuilder.yarn('playwright test --project=chrome --grep @add-participant')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -115,7 +115,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Chrome - Case Creation Tests') {
         try {
-          yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @add-new-case')
+          yarnBuilder.yarn('playwright test --project=chrome --grep @add-new-case')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -132,7 +132,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Chrome - Case Listing and Reporting Tests') {
         try {
-          yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @case-listing')
+          yarnBuilder.yarn('playwright test --project=chrome --grep @case-listing')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -149,7 +149,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Chrome - Hearing Channel Tests') {
         try {
-          yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @hearing-channel')
+          yarnBuilder.yarn('playwright test --project=chrome --grep @hearing-channel')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -166,7 +166,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Chrome - UI Tests') {
         try {
-          yarnBuilder.yarn('playwright test tests/ --project=chrome --grep @ui-test')
+          yarnBuilder.yarn('playwright test --project=chrome --grep @ui-test')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -183,7 +183,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Firefox - Add Participant Tests') {
         try {
-          yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @add-participant')
+          yarnBuilder.yarn('playwright test --project=firefox --grep @add-participant')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -200,7 +200,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Firefox - Case Creation Tests') {
         try {
-          yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @add-new-case')
+          yarnBuilder.yarn('playwright test --project=firefox --grep @add-new-case')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -217,7 +217,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Firefox - Case Listing and Reporting Tests') {
         try {
-          yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @case-listing')
+          yarnBuilder.yarn('playwright test --project=firefox --grep @case-listing')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -234,7 +234,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Firefox - Hearing Channel Tests') {
         try {
-          yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @hearing-channel')
+          yarnBuilder.yarn('playwright test --project=firefox --grep @hearing-channel')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -251,7 +251,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Firefox - UI Tests') {
         try {
-          yarnBuilder.yarn('playwright test tests/ --project=firefox --grep @ui-test')
+          yarnBuilder.yarn('playwright test --project=firefox --grep @ui-test')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -268,7 +268,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Webkit - Smoke Tests') {
         try {
-          yarnBuilder.yarn('playwright test tests/ --project=webkit --grep @smoke')
+          yarnBuilder.yarn('playwright test --project=webkit --grep @smoke')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
