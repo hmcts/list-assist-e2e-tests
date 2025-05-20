@@ -194,23 +194,27 @@ export class SessionBookingPage extends Base {
         .click();
     }
 
-    // // Wait for the "Save" button to be visible and enabled
-    // await expect
-    //   .poll(
-    //     async () => {
-    //       await expect(listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true })).toBeVisible();
-    //       return await expect(
-    //         listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }),
-    //       ).toBeEnabled();
-    //     },
-    //     {
-    //       intervals: [1_000],
-    //       timeout: 20_000,
-    //     },
-    //   )
-    //   .toBeTruthy();
+    // Wait for the "Save" button to be visible and enabled
+    await expect
+      .poll(
+        async () => {
+          return await this.page
+            .locator('iframe[name="addAssociation"]')
+            .contentFrame()
+            .getByRole('button', { name: 'Save', exact: true }).isVisible;
+        },
+        {
+          intervals: [1_000],
+          timeout: 20_000,
+        },
+      )
+      .toBeTruthy();
 
-    // await listingIframe.contentFrame().getByRole('button', { name: 'Save', exact: true }).click();
+    await this.page
+      .locator('iframe[name="addAssociation"]')
+      .contentFrame()
+      .getByRole('button', { name: 'Save', exact: true })
+      .click();
   }
 
   async updateAdvancedFilterConfig(region: string, cluster: string, locality: string, location) {
