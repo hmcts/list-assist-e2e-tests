@@ -42,6 +42,13 @@ def secrets = [
     secret('test-password', 'TEST_USERNAME'),
     secret('test-username', 'TEST_PASSWORD'),
     secret('base-url', 'BASE_URL'),
+    secret('hmi-client-id', 'HMI_CLIENT_ID'),
+    secret('hmi-client-secret', 'HMI_CLIENT_SECRET'),
+    secret('hmi-scope', 'HMI_SCOPE'),
+    secret('hmi-token-url', 'HMI_TOKEN_URL'),
+    secret('hmi-token-tenant', 'HMI_TOKEN_TENANT'),
+    secret('hmi-grant-type', 'HMI_GRANT_TYPE'),
+    secret('hmi-api-url', 'HMI_API_URL'),
   ]
 ]
 

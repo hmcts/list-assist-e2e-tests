@@ -17,11 +17,27 @@ interface Urls {
   baseUrl: string;
 }
 
+interface Hmi {
+  clientId: string;
+  clientSecret: string;
+  scope: string;
+  tokenUrl: string;
+  tenant: string;
+  grantType: string;
+  apiUrl: string;
+}
+
+interface Data {
+  hearingRequest: JSON;
+}
+
 export interface Config {
   users: {
     testUser: UserCredentials;
   };
   urls: Urls;
+  hmi: Hmi;
+  data: Data;
 }
 
 export const config: Config = {
@@ -37,6 +53,24 @@ export const config: Config = {
   },
   urls: {
     baseUrl: process.env.BASE_URL as string,
+  },
+  hmi: {
+    clientId: getEnvVar("HMI_CLIENT_ID"),
+    clientSecret: getEnvVar("HMI_CLIENT_SECRET"),
+    scope: getEnvVar("HMI_SCOPE") + "/.default",
+    tokenUrl:
+      getEnvVar("HMI_TOKEN_URL") +
+      getEnvVar("HMI_TOKEN_TENANT") +
+      "/oauth2/v2.0/token",
+    tenant: getEnvVar("HMI_TOKEN_TENANT"),
+    grantType: getEnvVar("HMI_GRANT_TYPE"),
+    apiUrl: getEnvVar("HMI_API_URL"),
+  },
+  data: {
+    hearingRequest: readJsonFile(
+      path.join(fileURLToPath(import.meta.url), "../../data/") +
+        `hearing-request.json`
+    ),
   },
 };
 
@@ -59,7 +93,7 @@ export function isSessionValid(path: string, cookieName: string): boolean {
   try {
     const data = JSON.parse(fs.readFileSync(path, "utf-8"));
     const cookie = data.cookies.find(
-      (cookie: Cookie) => cookie.name === cookieName,
+      (cookie: Cookie) => cookie.name === cookieName
     );
 
     const oneHourMs = 1 * 60 * 60 * 1000;
@@ -74,5 +108,14 @@ export function isSessionValid(path: string, cookieName: string): boolean {
     return remainingTime > oneHourMs;
   } catch (error) {
     throw new Error(`Could not read session data: ${error} for ${path}`);
+  }
+}
+
+function readJsonFile(path: string) {
+  try {
+    const data = fs.readFileSync(path, "utf8");
+    return JSON.parse(data);
+  } catch (error) {
+    throw new Error(`Could not read JSON file: ${error}`);
   }
 }
