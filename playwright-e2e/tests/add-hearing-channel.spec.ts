@@ -20,7 +20,7 @@ test.describe('Hearing channel test @hearing-channel', () => {
     );
   });
 
-  test('Only the session-supported hearing channels should be displayed @nightly', async ({
+  test('Only the session-supported hearing channels should be displayed', async ({
     editNewCasePage,
     caseDetailsPage,
     addNewCasePage,
