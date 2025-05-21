@@ -1,8 +1,8 @@
-import { test as setup } from './fixtures';
-import { isSessionValid } from './utils';
+import { test as setup } from "./fixtures";
+import { isSessionValid } from "./utils";
 
-setup.describe('Global Setup', () => {
-  setup('Setup test user', async ({ loginPage, page, config }) => {
+setup.describe("Global Setup", () => {
+  setup("Setup test user", async ({ loginPage, page, config }) => {
     // Test user setup
     const user = config.users.testUser;
     if (!isSessionValid(user.sessionFile, user.cookieName!)) {
@@ -12,8 +12,16 @@ setup.describe('Global Setup', () => {
   });
 
   setup(
-    'Create new case',
-    async ({ loginPage, config, page, homePage, addNewCasePage, hearingSchedulePage, dataUtils }) => {
+    "Create new case",
+    async ({
+      loginPage,
+      config,
+      page,
+      homePage,
+      addNewCasePage,
+      hearingSchedulePage,
+      dataUtils,
+    }) => {
       await page.goto(config.urls.baseUrl);
       await loginPage.login(config.users.testUser);
 
@@ -24,11 +32,14 @@ setup.describe('Global Setup', () => {
       await homePage.sidebarComponent.openAddNewCasePage();
 
       // Generate case details
-      process.env.HMCTS_CASE_NUMBER = 'HMCTS_CN_' + dataUtils.generateRandomAlphabetical(10).toUpperCase();
-      process.env.CASE_NAME = 'AUTO_' + dataUtils.generateRandomAlphabetical(10).toUpperCase();
+      process.env.HMCTS_CASE_NUMBER =
+        "HMCTS_CN_" + dataUtils.generateRandomAlphabetical(10).toUpperCase();
+      process.env.CASE_NAME =
+        "AUTO_" + dataUtils.generateRandomAlphabetical(10).toUpperCase();
 
       const caseData = {
-        hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+        hmctsCaseNumberHeaderValue:
+          addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
         caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
         jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
         service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
@@ -41,7 +52,11 @@ setup.describe('Global Setup', () => {
       };
 
       // Create the new case
-      await addNewCasePage.addNewCaseWithMandatoryData(caseData, process.env.HMCTS_CASE_NUMBER, process.env.CASE_NAME);
-    },
+      await addNewCasePage.addNewCaseWithMandatoryData(
+        caseData,
+        process.env.HMCTS_CASE_NUMBER,
+        process.env.CASE_NAME
+      );
+    }
   );
 });
