@@ -1,0 +1,126 @@
+{
+  "hearingRequest": {
+    "listing": {
+      "listingAutoCreateFlag": false,
+      "listingPriority": "Standard",
+      "listingType": "ABA5-FOF",
+      "listingDate": "2023-11-28T00:00:00Z",
+      "listingDuration": 120,
+      "listingNumberAttendees": 0,
+      "listingComments": "test",
+      "listingPrivateFlag": false,
+      "listingJohTiers": ["30"],
+      "listingHearingChannels": ["INTER", "VID", "TEL"],
+      "listingLocations": [
+        {
+          "locationType": "Court",
+          "locationId": "234946",
+          "locationReferenceType": "EPIMS"
+        }
+      ],
+      "listingRoomAttributes": ["6"]
+    },
+    "entities": [
+      {
+        "entityId": "f2847b15-dbb8-4df0-868a-420d9de11d29",
+        "entityTypeCode": "IND",
+        "entityRoleCode": "APPL",
+        "entitySubType": {
+          "entityClassCode": "PERSON",
+          "entityFirstName": "John",
+          "entityLastName": "Smith",
+          "entitySensitiveClient": false,
+          "entityAlertMessage": "",
+          "entityInterpreterLanguage": ""
+        },
+        "entityCommunications": [
+          {
+            "entityCommunicationDetails": "applicant1@example.net",
+            "entityCommunicationType": "EMAIL"
+          },
+          {
+            "entityCommunicationDetails": "07405123456",
+            "entityCommunicationType": "PHONE"
+          }
+        ],
+        "entityHearingChannel": "INTER"
+      },
+      {
+        "entityId": "0d730a9e-74bf-468c-ac27-2f6cc9c9acef",
+        "entityTypeCode": "IND",
+        "entityRoleCode": "LGRP",
+        "entitySubType": {
+          "entityClassCode": "PERSON",
+          "entityFirstName": "Legal",
+          "entityLastName": "Solicitor"
+        },
+        "entityCommunications": [
+          {
+            "entityCommunicationDetails": "legal.solicitor@example.net",
+            "entityCommunicationType": "EMAIL"
+          }
+        ],
+        "entityHearingChannel": "VID"
+      },
+      {
+        "entityId": "a2b211f4-6072-4970-9c34-08a47ff6ec9c",
+        "entityTypeCode": "IND",
+        "entityRoleCode": "RESP",
+        "entitySubType": {
+          "entityClassCode": "PERSON",
+          "entityFirstName": "Elise",
+          "entityLastName": "Lynn",
+          "entitySensitiveClient": false,
+          "entityAlertMessage": "",
+          "entityInterpreterLanguage": ""
+        },
+        "entityCommunications": [
+          {
+            "entityCommunicationDetails": "repondent1@example.net",
+            "entityCommunicationType": "EMAIL"
+          }
+        ],
+        "entityHearingChannel": "TEL"
+      },
+      {
+        "entityId": "c90440e6-22a4-4625-baa7-76a6fcb8309b",
+        "entityTypeCode": "ORG",
+        "entityRoleCode": "LGRP",
+        "entitySubType": {
+          "entityClassCode": "ORG",
+          "entityCompanyName": "FPRL-test-organisation"
+        }
+      }
+    ],
+    "_case": {
+      "caseListingRequestId": "HMI_1234",
+      "caseTitle": "1692379629241323_John Smith",
+      "caseJurisdiction": "AB",
+      "caseRegistered": "2023-08-18T00:00:00Z",
+      "caseCourt": {
+        "locationType": "Court",
+        "locationId": "234946",
+        "locationReferenceType": "EPIMS"
+      },
+      "caseClassifications": [
+        {
+          "caseClassificationService": "ABA5",
+          "caseClassificationType": "ABA5-PRL",
+          "caseClassificationSubType": "ABA5-PRL"
+        }
+      ],
+      "caseInterpreterRequiredFlag": false,
+      "caseRestrictedFlag": false,
+      "caseVersionId": 1,
+      "caseLinks": [
+        {
+          "url": "https://test.com#Case File View"
+        }
+      ],
+      "casePublishedName": "Smith and Lynn",
+      "caseAdditionalSecurityFlag": false,
+      "linkedHearingGroupStatus": "Not Required",
+      "caseIdHMCTS": "HMI_1234"
+    }
+  }
+}
