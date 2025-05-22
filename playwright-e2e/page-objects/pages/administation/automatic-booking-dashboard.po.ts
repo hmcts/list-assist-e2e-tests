@@ -286,7 +286,7 @@ export class AutomaticBookingDashboardPage extends Base {
           return await this.previousPublishExternalListRunsHeader.isVisible();
         },
         {
-          intervals: [5000],
+          intervals: [2000],
           timeout: 90_000,
         },
       )
