@@ -30,6 +30,7 @@ export class AutomaticBookingDashboardPage extends Base {
     JURISDICTION_FAMILY: 'Family',
     SERVICE_LABEL: 'Service',
     AUTO_CREATION_SERVICE_DIVORCE_OPTION: '4',
+    SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB: 'AutomaticBookingQueueJob',
   };
   readonly autoCreationTasksHeader = this.page.getByRole('heading', {
     name: this.CONSTANTS.AUTO_CREATION_TASK_HEADER_TEXT,
@@ -45,6 +46,9 @@ export class AutomaticBookingDashboardPage extends Base {
   readonly createPublishExternalListsHeader = this.page.getByRole('heading', {
     name: 'Create Publish External Lists',
   });
+
+  //previous publish external lists
+  readonly previousPublishExternalListHeader = this.page.getByRole('heading', { name: 'Previous Publish External' });
 
   //region
   readonly regionFilterListbox = this.page
@@ -100,6 +104,25 @@ export class AutomaticBookingDashboardPage extends Base {
   });
 
   readonly closeListboxButton = this.page.getByRole('button', { name: this.CONSTANTS.CLOSE_LISTBOX_NAME });
+
+  //duplicate report confirmation
+  readonly duplicationReportOkButton = this.page.getByRole('button', { name: 'OK', exact: true });
+  //previous publish external list runs
+  readonly previousPublishExternalListRunsHeader = this.page.locator('h2.header-title', {
+    hasText: 'Previous Publish External Lists Runs',
+  });
+  readonly closePublishExternalListButton = this.page.locator('#closePreviousPublishExternalListsRunPopup');
+
+  //publish external list view
+  readonly queuedStatus = this.page.locator('span.mcms-text-warning', { hasText: 'Queued' }).first();
+  readonly dateFilter = this.page.locator('.input-group-text > .glyphicon').first();
+  readonly publishExternalListRefreshButton = this.page.locator('#publishExternalLists_PreviousRun_Refresh');
+  readonly publishExternalListClearFilterButton = this.page
+    .getByRole('group', { name: 'Localities filter list with' })
+    .getByLabel('Clear all selected options');
+  readonly publishExternalListLocalityFilter = this.page
+    .getByRole('group', { name: 'Localities filter list with 0' })
+    .getByLabel('Open listbox');
 
   constructor(page: Page) {
     super(page);
@@ -239,5 +262,76 @@ export class AutomaticBookingDashboardPage extends Base {
     await expect(report.getByText(listType)).toBeVisible();
     await expect(report.getByText(formattedDate)).toBeVisible();
     await expect(report.getByText(location)).toBeVisible();
+  }
+
+  async waitForPublishExternalListRunsToBeVisible() {
+    // Wait for duplicate report confirmation and handle it if present
+    try {
+      await expect
+        .poll(
+          async () => {
+            return await this.page.getByRole('button', { name: 'OK', exact: true }).click();
+          },
+          { intervals: [5000], timeout: 30_000 },
+        )
+        .toBeTruthy();
+    } catch {
+      // If the confirmation does not appear, continue
+    }
+
+    // Wait for "Publish External List Runs" header to be visible
+    await expect
+      .poll(
+        async () => {
+          return await this.previousPublishExternalListRunsHeader.isVisible();
+        },
+        {
+          intervals: [5000],
+          timeout: 90_000,
+        },
+      )
+      .toBeTruthy();
+  }
+
+  async clickRunForAutomaticBookingQueueJob(queueJob: string) {
+    // Find the row containing 'AutomaticBookingQueueJob'
+    const jobRow = this.page.locator('tr', { hasText: queueJob });
+
+    // Assert the row exists and contains the correct text
+    await expect(jobRow.locator('td').first()).toHaveText(queueJob);
+
+    // Find and click the 'Run' button in this row
+    const runButton = jobRow.locator('a.link-class', { hasText: 'Run' });
+    await expect(runButton).toBeVisible();
+    await runButton.click();
+  }
+
+  async assertPreviousPublishExternalListRunsTable(jobRun: string, locality: string, dateFrom: string, dateTo: string) {
+    //filters table
+    await this.publishExternalListClearFilterButton.click();
+
+    await this.publishExternalListLocalityFilter.click();
+    await this.page.getByRole('option', { name: locality }).locator('span').nth(2).click();
+
+    //input dates
+    await this.dateFilter.click();
+    await this.page.locator('.vc-pane-container span.vc-day-content', { hasText: dateFrom }).first().click();
+    await this.page.locator('.vc-pane-container span.vc-day-content', { hasText: dateTo }).first().click();
+
+    await this.publishExternalListRefreshButton.click();
+
+    // Locate the tbody containing the rows
+    const tbody = this.page.locator('tbody.vuetable-body');
+    // Get the first row within the tbody
+    const firstRow = tbody.locator('tr');
+
+    if (jobRun === 'false') {
+      // Assert that the first row contains 'Queued'
+      await expect(firstRow.getByText('Queued')).toBeVisible();
+      await expect(firstRow.getByText('Queued')).toHaveCount(1);
+    } else if (jobRun === 'true') {
+      await expect(firstRow.getByText('Queued')).toHaveCount(0);
+      await expect(firstRow.getByText('Queued')).toBeHidden();
+    }
   }
 }
