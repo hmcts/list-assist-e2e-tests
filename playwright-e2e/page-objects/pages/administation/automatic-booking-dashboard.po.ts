@@ -47,9 +47,6 @@ export class AutomaticBookingDashboardPage extends Base {
     name: 'Create Publish External Lists',
   });
 
-  //previous publish external lists
-  readonly previousPublishExternalListHeader = this.page.getByRole('heading', { name: 'Previous Publish External' });
-
   //region
   readonly regionFilterListbox = this.page
     .getByRole('group', { name: this.CONSTANTS.REGION_FILTER_LIST_BUTTON })
@@ -114,6 +111,7 @@ export class AutomaticBookingDashboardPage extends Base {
   readonly closePublishExternalListButton = this.page.locator('#closePreviousPublishExternalListsRunPopup');
 
   //publish external list view
+  readonly previousPublishExternalListHeader = this.page.getByRole('heading', { name: 'Previous Publish External' });
   readonly queuedStatus = this.page.locator('span.mcms-text-warning', { hasText: 'Queued' }).first();
   readonly dateFilter = this.page.locator('.input-group-text > .glyphicon').first();
   readonly publishExternalListRefreshButton = this.page.locator('#publishExternalLists_PreviousRun_Refresh');
