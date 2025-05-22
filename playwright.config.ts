@@ -1,38 +1,38 @@
-import { CommonConfig, ProjectsConfig } from "@hmcts/playwright-common";
-import { defineConfig } from "@playwright/test";
+import { CommonConfig, ProjectsConfig } from '@hmcts/playwright-common';
+import { defineConfig } from '@playwright/test';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
   ...CommonConfig.recommended,
-  testDir: "./playwright-e2e",
-  snapshotDir: "./playwright-e2e/snapshots",
+  testDir: './playwright-e2e',
+  snapshotDir: './playwright-e2e/snapshots',
 
   projects: [
     {
-      name: "setup",
+      name: 'setup',
       testMatch: /global\.setup\.ts/,
     },
     {
-      name: "teardown",
+      name: 'teardown',
       testMatch: /global\.teardown\.ts/,
     },
     {
       ...ProjectsConfig.chrome,
-      dependencies: ["setup"],
+      dependencies: ['setup'],
     },
     {
       ...ProjectsConfig.edge,
-      dependencies: ["setup"],
+      dependencies: ['setup'],
     },
     {
       ...ProjectsConfig.firefox,
-      dependencies: ["setup"],
+      dependencies: ['setup'],
     },
     {
       ...ProjectsConfig.webkit,
-      dependencies: ["setup"],
+      dependencies: ['setup'],
     },
   ],
 });

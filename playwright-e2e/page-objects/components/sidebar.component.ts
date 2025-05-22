@@ -27,6 +27,8 @@ export class SidebarComponent {
   //administration menu
   readonly administrationMenu = this.root.locator('#maintenance_menuItem');
   readonly automaticBookingDashboardButton = this.root.locator('#automaticBookingDashboard_subMenuItem');
+  readonly scheduledJobsButton = this.root.locator('#scheduledJobs_subMenuItem');
+  readonly scheduledJobsHeader = this.root.locator('#CMSHomeHeading', { hasText: 'Scheduled Jobs' });
 
   //case cart
   readonly modal = this.page.locator('.modal-content');
@@ -165,6 +167,24 @@ export class SidebarComponent {
       .toBeTruthy();
 
     await this.automaticBookingDashboardButton.click();
+  }
+
+  async openScheduledJobsPage() {
+    await expect
+      .poll(
+        async () => {
+          await this.administrationMenu.click();
+          return await this.scheduledJobsButton.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
+    await this.scheduledJobsButton.click();
+    await this.scheduledJobsHeader.isVisible();
   }
 
   async emptyCaseCart() {
