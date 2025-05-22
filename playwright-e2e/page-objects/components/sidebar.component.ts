@@ -184,7 +184,7 @@ export class SidebarComponent {
       .toBeTruthy();
 
     await this.scheduledJobsButton.click();
-    await this.scheduledJobsHeader.isVisible();
+    await expect(this.scheduledJobsHeader).toBeVisible();
   }
 
   async emptyCaseCart() {
