@@ -61,8 +61,8 @@ test.describe('Case listing @case-listing', () => {
     //test data
     const reportData = {
       //numeric, current day of the month
-      dateFrom: dataUtils.getTodaysDayAsDd(),
-      dateTo: dataUtils.getTodaysDayAsDd(),
+      dateFrom: dataUtils.getDayAsDd(0),
+      dateTo: dataUtils.getDayAsDd(1),
 
       locality: viewReportsPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
       location: viewReportsPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
@@ -168,8 +168,8 @@ test.describe('Case listing @case-listing', () => {
     await automaticBookingDashboardPage.assertPreviousPublishExternalListRunsTable(
       jobRun,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
-      dataUtils.getTodaysDayAsDd(),
-      dataUtils.getTodaysDayAsDd(),
+      dataUtils.getDayAsDd(0),
+      dataUtils.getDayAsDd(1),
     );
     //closes the publish external list popup
     await automaticBookingDashboardPage.closePublishExternalListButton.click();
@@ -194,8 +194,8 @@ test.describe('Case listing @case-listing', () => {
     await automaticBookingDashboardPage.assertPreviousPublishExternalListRunsTable(
       jobRun,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
-      dataUtils.getTodaysDayAsDd(),
-      dataUtils.getTodaysDayAsDd(),
+      dataUtils.getDayAsDd(0),
+      dataUtils.getDayAsDd(1),
     );
   });
 });
