@@ -41,9 +41,12 @@ export class DataUtils {
     return formattedDate;
   }
 
-  getTodaysDayAsDd(): string {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
+  // Gets the number day number in the month, padded with a zero if less than 10.
+  // e.g. -1 previous day, 0 today, 1 tomorrow
+  getDayAsDd(offset: number = 0): string {
+    const date = new Date();
+    date.setDate(date.getDate() + offset);
+    const day = String(date.getDate()).padStart(2, '0');
     return day.startsWith('0') ? day.slice(1) : day;
   }
 
