@@ -1,6 +1,7 @@
 #!groovy
 properties([
   pipelineTriggers([cron('H 8 * * 1-5')]),
+  disableConcurrentBuilds(),
   parameters([
     string(
       name: 'FUNCTIONAL_TESTS_WORKERS',
@@ -20,25 +21,21 @@ properties([
   ])
 ])
 
-disableConcurrentBuilds()
-
-stages {
-    stage('Check UK Bank Holiday') {
-      steps {
-        script {
-          def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
-          def holidays = sh(
-            script: "curl -s https://www.gov.uk/bank-holidays.json | jq -r '.\"england-and-wales\".events[].date'",
-            returnStdout: true
-          ).trim().split('\n')
-          if (holidays.contains(today)) {
-            echo "Today (${today}) is a UK bank holiday. Skipping build."
-            currentBuild.result = 'NOT_BUILT'
-            error("Bank holiday - aborting build")
-          }
-        }
+stage('Check UK Bank Holiday') {
+  steps {
+    script {
+      def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
+      def holidays = sh(
+        script: "curl -s https://www.gov.uk/bank-holidays.json | jq -r '.\"england-and-wales\".events[].date'",
+        returnStdout: true
+      ).trim().split('\n')
+      if (holidays.contains(today)) {
+        echo "Today (${today}) is a UK bank holiday. Skipping build."
+        currentBuild.result = 'NOT_BUILT'
+        error("Bank holiday - aborting build")
       }
     }
+  }
 }
 
 @Library("Infrastructure")
