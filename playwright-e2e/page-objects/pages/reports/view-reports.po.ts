@@ -68,16 +68,14 @@ export class ViewReportsPage extends Base {
     await reportsRequestPage.page
       .locator('iframe[name="ReportViewerControl_ctl04_ctl03_ctl02"]')
       .contentFrame()
-      .getByRole('link', { name: `${dateFrom}`, exact: true })
-      .first()
+      .locator(`td.ms-picker-today:has(a[id="${dateFrom}"])`)
       .click();
 
     await reportsRequestPage.dateToCalenderSelect.click();
     await reportsRequestPage.page
       .locator('iframe[name="ReportViewerControl_ctl04_ctl05_ctl02"]')
       .contentFrame()
-      .getByRole('link', { name: `${dateTo}`, exact: true })
-      .first()
+      .locator(`td.ms-picker-daycenter:has(a[id="${dateTo}"])`)
       .click();
 
     //locality drop down select
