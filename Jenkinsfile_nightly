@@ -21,7 +21,7 @@ properties([
   ])
 ])
 
-stage('Check UK Bank Holiday') {
+stage('Check For UK Bank Holiday') {
   node {
     script {
       def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
