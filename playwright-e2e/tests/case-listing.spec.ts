@@ -61,8 +61,8 @@ test.describe('Case listing @case-listing', () => {
     //test data
     const reportData = {
       //numeric, current day of the month
-      dateFrom: dataUtils.getDayAsDd(0),
-      dateTo: dataUtils.getDayAsDd(1),
+      dateFrom: dataUtils.generateDateInYyyyMmDdNoSeparators(0),
+      dateTo: dataUtils.generateDateInYyyyMmDdNoSeparators(1),
 
       locality: viewReportsPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
       location: viewReportsPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
