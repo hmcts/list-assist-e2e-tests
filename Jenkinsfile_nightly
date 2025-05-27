@@ -18,7 +18,6 @@ properties([
         }
       }
     }
-  disableConcurrentBuilds(),
   parameters([
     string(
       name: 'FUNCTIONAL_TESTS_WORKERS',
@@ -37,6 +36,7 @@ properties([
     ),
   ])
 ])
+disableConcurrentBuilds()
 
 @Library("Infrastructure")
 
