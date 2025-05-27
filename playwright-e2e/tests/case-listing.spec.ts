@@ -168,8 +168,8 @@ test.describe('Case listing @case-listing', () => {
     await automaticBookingDashboardPage.assertPreviousPublishExternalListRunsTable(
       jobRun,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
-      dataUtils.getDayAsDd(0),
-      dataUtils.getDayAsDd(1),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
     );
     //closes the publish external list popup
     await automaticBookingDashboardPage.closePublishExternalListButton.click();
@@ -194,8 +194,8 @@ test.describe('Case listing @case-listing', () => {
     await automaticBookingDashboardPage.assertPreviousPublishExternalListRunsTable(
       jobRun,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
-      dataUtils.getDayAsDd(0),
-      dataUtils.getDayAsDd(1),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
     );
   });
 });

@@ -41,7 +41,7 @@ export class DataUtils {
     return formattedDate;
   }
 
-  // Generate a random date of birth in dd/mm/yyyy format with no separators
+  // Generate date in yyyymmdd with no separators
   generateDateInYyyyMmDdNoSeparators(daysFromToday: number): string {
     const date = new Date();
     date.setDate(date.getDate() + daysFromToday);
@@ -49,6 +49,16 @@ export class DataUtils {
     const formattedDate = date
       .toLocaleDateString('en-CA') // 'en-CA' formats the date as yyyy-mm-dd
       .replace(/-/g, ''); // remove dashes to get yyyymmdd
+
+    return formattedDate;
+  }
+
+  // Generate date in yyyy-mm-dd with hyphen separators
+  generateDateInYyyyMmDdWithHypenSeparators(daysFromToday: number): string {
+    const date = new Date();
+    date.setDate(date.getDate() + daysFromToday);
+
+    const formattedDate = date.toLocaleDateString('en-CA'); // 'en-CA' formats the date as yyyy-mm-dd
 
     return formattedDate;
   }
