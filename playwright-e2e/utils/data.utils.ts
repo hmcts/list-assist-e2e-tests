@@ -41,6 +41,28 @@ export class DataUtils {
     return formattedDate;
   }
 
+  // Generate date in yyyymmdd with no separators
+  generateDateInYyyyMmDdNoSeparators(daysFromToday: number): string {
+    const date = new Date();
+    date.setDate(date.getDate() + daysFromToday);
+
+    const formattedDate = date
+      .toLocaleDateString('en-CA') // 'en-CA' formats the date as yyyy-mm-dd
+      .replace(/-/g, ''); // remove dashes to get yyyymmdd
+
+    return formattedDate;
+  }
+
+  // Generate date in yyyy-mm-dd with hyphen separators
+  generateDateInYyyyMmDdWithHypenSeparators(daysFromToday: number): string {
+    const date = new Date();
+    date.setDate(date.getDate() + daysFromToday);
+
+    const formattedDate = date.toLocaleDateString('en-CA'); // 'en-CA' formats the date as yyyy-mm-dd
+
+    return formattedDate;
+  }
+
   // Gets the number day number in the month, padded with a zero if less than 10.
   // e.g. -1 previous day, 0 today, 1 tomorrow
   getDayAsDd(offset: number = 0): string {

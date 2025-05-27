@@ -313,8 +313,8 @@ export class AutomaticBookingDashboardPage extends Base {
 
     //input dates
     await this.dateFilter.click();
-    await this.page.locator('.vc-pane-container span.vc-day-content', { hasText: dateFrom }).first().click();
-    await this.page.locator('.vc-pane-container span.vc-day-content', { hasText: dateTo }).first().click();
+    await this.page.locator(`div.vc-day.id-${dateFrom}`).click();
+    await this.page.locator(`div.vc-day.id-${dateTo}`).click();
 
     await this.publishExternalListRefreshButton.click();
 
