@@ -1,6 +1,6 @@
 #!groovy
 properties([
-  pipelineTriggers([cron('H/30 * * * 1-5')]),
+  pipelineTriggers([cron('H 8 * * 1-5')]),
   disableConcurrentBuilds(),
   parameters([
     string(
