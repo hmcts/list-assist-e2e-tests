@@ -26,7 +26,9 @@ if (currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause'
   node {
     def today = new Date()
     def year = today.format('yyyy', TimeZone.getTimeZone('Europe/London'))
-    def janFirst = Date.parse('yyyy-MM-dd', "${year}-01-01")
+    def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd')
+    sdf.setTimeZone(TimeZone.getTimeZone('Europe/London'))
+    def janFirst = sdf.parse("${year}-01-01")
     def holidaysFile = 'bank-holidays.json'
     def needDownload = false
 
