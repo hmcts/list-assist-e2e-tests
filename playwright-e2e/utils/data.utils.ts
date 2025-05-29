@@ -8,25 +8,13 @@ export class DataUtils {
     const holidaysFile = 'bank-holidays.json';
     const today = new Date();
     const year = today.getFullYear();
-    // Dec 31st of the previous year, 23:59:59 local time
     const dec31PrevYear = new Date(year - 1, 11, 31, 23, 59, 59);
 
-    let needDownload = false;
-
-    if (!existsSync(holidaysFile)) {
-      needDownload = true;
-    } else {
-      const stats = statSync(holidaysFile);
-      const modified = new Date(stats.mtime);
-      // If file was last modified on or before Dec 31st of previous year, and today is Jan 1st or later, update
-      if (modified <= dec31PrevYear && today > dec31PrevYear) {
-        needDownload = true;
-      }
-    }
+    const needDownload =
+      !existsSync(holidaysFile) || (statSync(holidaysFile).mtime <= dec31PrevYear && today > dec31PrevYear);
 
     if (needDownload) {
       execSync('curl -s https://www.gov.uk/bank-holidays.json -o bank-holidays.json');
-      console.log('Downloaded/overwrote bank-holidays.json for year', year);
     }
   }
 
