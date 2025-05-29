@@ -21,42 +21,6 @@ properties([
   ])
 ])
 
-// Only run this as part of the cron schedule and if today is after 31st December
-if (currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause').size() > 0) {
-  node {
-    def today = new Date()
-    def year = today.format('yyyy', TimeZone.getTimeZone('Europe/London'))
-    def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd')
-    sdf.setTimeZone(TimeZone.getTimeZone('Europe/London'))
-    def janFirst = sdf.parse("${year}-01-01")
-    def holidaysFile = 'bank-holidays.json'
-    def needDownload = false
-
-    // Check if file exists
-    if (!fileExists(holidaysFile)) {
-      needDownload = true
-    } else {
-      // Check file's last modified year
-      def lastModified = sh(
-        script: "date -r ${holidaysFile} +%Y",
-        returnStdout: true
-      ).trim()
-      if (lastModified != year && today >= janFirst) {
-        needDownload = true
-      }
-    }
-
-    if (needDownload) {
-      stage('Download UK Bank Holidays JSON') {
-        sh 'curl -s https://www.gov.uk/bank-holidays.json -o bank-holidays.json'
-        echo "Downloaded UK bank holidays to bank-holidays.json"
-      }
-    } else {
-      echo "bank-holidays.json is up to date for ${year}, skipping download."
-    }
-  }
-}
-
 // Only run the UK bank holiday check if triggered by the cron schedule
 if (currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause').size() > 0) {
   stage('Check For UK Bank Holiday') {
