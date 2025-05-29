@@ -1,6 +1,6 @@
 #!groovy
 properties([
-  pipelineTriggers([cron('0,40 * * * 1-5')]),
+  pipelineTriggers([cron('H 8 * * 1-5')]),
   disableConcurrentBuilds(),
   parameters([
     string(
@@ -25,20 +25,17 @@ properties([
 if (currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause').size() > 0) {
   stage('Check For UK Bank Holiday') {
     node {
-      // Ensure we're in the repo root where bank-holidays.json exists
-      dir("${env.WORKSPACE}") {
-        script {
-          def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
-          // Read from the bank-holidays.json file in the repo
-          def holidays = sh(
-            script: "jq -r '.\"england-and-wales\".events[].date' bank-holidays.json",
-            returnStdout: true
-          ).trim().split('\n')
-          if (holidays.contains(today)) {
-            echo "Today (${today}) is a UK bank holiday. Skipping build."
-            currentBuild.result = 'NOT_BUILT'
-            error("Bank holiday - aborting build")
-          }
+      script {
+        def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
+        // Read from the local bank-holidays.json file
+        def holidays = sh(
+          script: "jq -r '.\"england-and-wales\".events[].date' bank-holidays.json",
+          returnStdout: true
+        ).trim().split('\n')
+        if (holidays.contains(today)) {
+          echo "Today (${today}) is a UK bank holiday. Skipping build."
+          currentBuild.result = 'NOT_BUILT'
+          error("Bank holiday - aborting build")
         }
       }
     }
