@@ -75,28 +75,7 @@ withNightlyPipeline(type, product, component, 600) {
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
 
-  // afterAlways('Checkout') {
-  //   stage('Check For UK Bank Holiday') {
-  //     // This block will always run after the 'Checkout' stage, regardless of build result
-  //     node {
-  //       script {
-  //         def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
-  //         // Read from the local bank-holidays.json file
-  //         def holidays = sh(
-  //           script: "jq -r '.\"england-and-wales\".events[].date' bank-holidays.json",
-  //           returnStdout: true
-  //         ).trim().split('\n')
-  //         if (holidays.contains(today)) {
-  //           echo "Today (${today}) is a UK bank holiday. Skipping build."
-  //           currentBuild.result = 'NOT_BUILT'
-  //           error("Bank holiday - aborting build")
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-
-  afterAlways('DependencyCheckNightly') {
+  afterAlways('Checkout') {
     stage('Check For UK Bank Holiday') {
       // This block will always run after the 'Checkout' stage, regardless of build result
       node {
@@ -115,6 +94,9 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
     }
+  }
+
+  afterAlways('DependencyCheckNightly') {
     stage('Set up playwright') {
       try {
         yarnBuilder.yarn('setup')
