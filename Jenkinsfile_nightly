@@ -27,7 +27,7 @@ if (currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause'
     node {
       script {
         def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
-        // Read from the local bank-holidays.json file instead of fetching from the web
+        // Read from the local bank-holidays.json file
         def holidays = sh(
           script: "jq -r '.\"england-and-wales\".events[].date' bank-holidays.json",
           returnStdout: true
