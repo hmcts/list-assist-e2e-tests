@@ -22,6 +22,8 @@ properties([
 ])
 
 stage('Check For UK Bank Holiday') {
+  afterAlways('Checkout') {
+  }
   node {
     script {
       def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
