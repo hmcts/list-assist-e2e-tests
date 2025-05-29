@@ -75,11 +75,12 @@ withNightlyPipeline(type, product, component, 600) {
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
 
-  afterAlways('Checkout') {
+
+  afterAlways('DependencyCheckNightly') {
     stage('Check For UK Bank Holiday') {
       // This block will always run after the 'Checkout' stage, regardless of build result
-      node {
         script {
+          sh('ls -a')
           def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
           // Read from the local bank-holidays.json file
           def holidays = sh(
@@ -92,11 +93,7 @@ withNightlyPipeline(type, product, component, 600) {
             error("Bank holiday - aborting build")
           }
         }
-      }
     }
-  }
-
-  afterAlways('DependencyCheckNightly') {
     stage('Set up playwright') {
       try {
         yarnBuilder.yarn('setup')
