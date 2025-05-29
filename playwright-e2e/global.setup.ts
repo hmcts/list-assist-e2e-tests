@@ -1,11 +1,8 @@
 import { test as setup } from './fixtures';
 import { isSessionValid } from './utils';
-import { DataUtils } from './utils/data.utils';
 
 setup.describe('Global Setup', () => {
-  setup.beforeAll(async () => {
-    // Initialize DataUtils
-    const dataUtils = new DataUtils();
+  setup.beforeAll(async ({ dataUtils }) => {
     // Update bank holidays file if needed
     dataUtils.updateBankHolidaysFileIfNeeded();
   });
