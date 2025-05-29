@@ -77,7 +77,7 @@ withNightlyPipeline(type, product, component, 600) {
 
   afterAlways('DependencyCheckNightly') {
     stage('Check For UK Bank Holiday') {
-      // This block will always run after the 'Checkout' stage, regardless of build result
+      // This block will always run after the 'DependencyCheckNightly' stage, regardless of build result
         script {
           sh('ls -a')
           def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
