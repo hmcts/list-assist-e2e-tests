@@ -78,7 +78,6 @@ withNightlyPipeline(type, product, component, 600) {
   afterAlways('DependencyCheckNightly') {
     stage('Check For UK Bank Holiday') {
         script {
-          sh('ls -a')
           def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
           // Read from the local bank-holidays.json file
           def holidays = sh(
