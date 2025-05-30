@@ -1,5 +1,5 @@
-import { APIRequestContext, expect, request } from '@playwright/test';
-import { config } from './config.utils.js';
+import { APIRequestContext, expect, request } from "@playwright/test";
+import { config } from "./config.utils.js";
 
 export class HmiUtils {
   static async generateOAuthToken(): Promise<string> {
@@ -13,13 +13,13 @@ export class HmiUtils {
     const apiContext = await request.newContext({
       baseURL: config.hmi.tokenUrl,
     });
-    const response = await apiContext.post('', {
+    const response = await apiContext.post("", {
       form: requestBody,
     });
     expect(response.status()).toBe(200);
 
     const responseBody = await response.json();
-    return 'Bearer ' + responseBody.access_token;
+    return "Bearer " + responseBody.access_token;
   }
 
   static async generateContext(): Promise<APIRequestContext> {
@@ -27,13 +27,13 @@ export class HmiUtils {
       baseURL: config.hmi.apiUrl,
       extraHTTPHeaders: {
         Authorization: await this.generateOAuthToken(),
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Source-System': 'CFT',
-        'Destination-System': 'SNL',
-        'Request-Created-At': '2020-10-13T20:20:39Z',
-        'Request-Processed-At': '2018-01-29 20:36:01',
-        'Request-Type': 'THEFT',
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Source-System": "CFT",
+        "Destination-System": "SNL",
+        "Request-Created-At": "2020-10-13T20:20:39Z",
+        "Request-Processed-At": "2018-01-29 20:36:01",
+        "Request-Type": "THEFT",
       },
     });
     return context;
@@ -46,11 +46,11 @@ export class HmiUtils {
     return response.json();
   }
 
-  static async requestHearing(payload: unknown): Promise<unknown> {
+  static async requestHearing(payload: unknown): Promise<void> {
     const context = await this.generateContext();
     const response = await context.post(`/hmi/hearings`, { data: payload });
+    console.log(response);
     expect(response.ok()).toBeTruthy();
-    return response.json();
   }
 
   static async cancelHearing(hearingId: string): Promise<unknown> {
