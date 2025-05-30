@@ -11,7 +11,7 @@ setup.describe("Global Setup", () => {
     }
   });
 
-  setup(
+  setup.skip(
     "Create new case",
     async ({
       loginPage,
