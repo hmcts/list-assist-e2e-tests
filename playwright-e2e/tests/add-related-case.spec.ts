@@ -5,7 +5,7 @@ test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe("Add related case @add-related-case", () => {
+test.describe("Add related case @add-related-case @smoke", () => {
   test.describe.configure({ mode: "serial" });
   test.beforeEach(async ({ page }) => {
     await page.goto(config.urls.baseUrl);
