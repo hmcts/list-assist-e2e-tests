@@ -80,11 +80,9 @@ export class AutomaticBookingDashboardPage extends Base {
   readonly serviceFilterListbox = this.page.getByLabel(this.CONSTANTS.SERVICE_LABEL);
 
   //list name
-  readonly listNameDropDown = this.page
-    .getByRole('combobox')
-    .filter({ hasText: 'Please choose Daily Family' })
-    .locator('div')
-    .first();
+  readonly listNameDropDown = this.page.locator(
+    'div.multiselect[aria-owns="publishExternalLists_Creation_List_listbox"]',
+  );
 
   //version type
   readonly versionTypeDropDown = this.page.locator('#publishExternalLists_Creation_versionType');
@@ -219,7 +217,8 @@ export class AutomaticBookingDashboardPage extends Base {
 
   async selectServiceFilter(service: string) {
     const serviceFilterOption = this.page.locator(
-      `div.multiselect__options-container span[for="publishExternalLists_Creation_Service_getMtrCategoryByJurisdiction_${service}"]`,
+      '#publishExternalLists_Creation_Service_listbox .multiselect__options-item',
+      { hasText: `${service}` },
     );
 
     await this.page
@@ -246,7 +245,9 @@ export class AutomaticBookingDashboardPage extends Base {
 
   async selectListName(listType: string) {
     await this.listNameDropDown.click();
-    await this.page.getByText(listType).click();
+    await this.page
+      .locator('#publishExternalLists_Creation_List_listbox .multiselect__option span', { hasText: `${listType}` })
+      .click();
   }
 
   async selectVersionType(versionType: string) {
