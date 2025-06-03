@@ -3,6 +3,11 @@ import { isSessionValid } from './utils';
 import { HmiUtils } from './utils/hmi.utils.js';
 
 setup.describe('Global Setup', () => {
+  setup.beforeAll(async ({ dataUtils }) => {
+    // Update bank holidays file if needed
+    dataUtils.updateBankHolidaysFileIfNeeded();
+  });
+
   setup('Setup test user', async ({ loginPage, page, config }) => {
     // Test user setup
     const user = config.users.testUser;

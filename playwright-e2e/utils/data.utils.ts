@@ -1,4 +1,23 @@
+import { execSync } from 'child_process';
+import { statSync, existsSync } from 'fs';
+
 export class DataUtils {
+  //updates bank-holidays.json file if it is older than the previous year
+  // and today is Jan 1st or later
+  updateBankHolidaysFileIfNeeded(): void {
+    const holidaysFile = 'bank-holidays.json';
+    const today = new Date();
+    const year = today.getFullYear();
+    const dec31PrevYear = new Date(year - 1, 11, 31, 23, 59, 59);
+
+    const needDownload =
+      !existsSync(holidaysFile) || (statSync(holidaysFile).mtime <= dec31PrevYear && today > dec31PrevYear);
+
+    if (needDownload) {
+      execSync('curl -s https://www.gov.uk/bank-holidays.json -o bank-holidays.json');
+    }
+  }
+
   // Generate a random string of alphabetical characters
   generateRandomAlphabetical(length: number): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
