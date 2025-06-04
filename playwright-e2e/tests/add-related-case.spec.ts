@@ -6,7 +6,6 @@ test.use({
 });
 
 test.describe("Add related case @add-related-case @smoke", () => {
-  test.describe.configure({ mode: "serial" });
   test.beforeEach(async ({ page }) => {
     await page.goto(config.urls.baseUrl);
   });
