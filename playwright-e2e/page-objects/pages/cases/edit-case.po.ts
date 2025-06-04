@@ -46,7 +46,11 @@ export class EditNewCasePage extends Base {
   }
 
   async checkRelatedCaseDisplay(caseName: string) {
-    await expect(this.page.locator('td', { hasText: caseName })).toBeVisible();
+    await expect(
+      this.page
+        .locator('table[aria-label="Related Cases "]')
+        .locator('td', { hasText: caseName })
+    ).toBeVisible();
   }
 
   async createNewParticipant(
