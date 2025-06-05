@@ -132,10 +132,10 @@ export class EditNewCasePage extends Base {
       )
       .toBeTruthy();
 
-    await expect(this.page.getByRole('cell', { name: caseParticipantsType })).toBeVisible();
+    await expect(this.page.getByRole('cell', { name: caseParticipantsType }).last()).toBeVisible();
     await expect(this.page.getByRole('link', { name: caseParticipantsName })).toBeVisible();
     await expect(this.page.getByRole('cell', { name: caseInterpreter }).first()).toBeVisible();
-    await expect(this.page.getByRole('button', { name: 'View/Edit' })).toBeVisible();
-    await expect(this.page.getByRole('button', { name: 'Remove' })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: 'View/Edit' }).last()).toBeVisible();
+    await expect(this.page.getByRole('button', { name: 'Remove' }).last()).toBeVisible();
   }
 }
