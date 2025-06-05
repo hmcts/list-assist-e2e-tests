@@ -2,13 +2,29 @@ import { expect, test } from '../fixtures';
 import { CaseDetailsPage, CaseSearchPage, HearingSchedulePage, HomePage } from '../page-objects/pages';
 import { SessionBookingPage } from '../page-objects/pages/hearings/session-booking.po';
 import { config } from '../utils';
+import fs from 'fs/promises';
+import path from 'path';
 
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
 test.describe('Case listing @case-listing', () => {
+  let caseListingChannelHmctsCaseNumber: string;
+  let caseListingChannelCaseName: string;
+
   test.describe.configure({ mode: 'serial' });
+
+  test.beforeAll(async () => {
+    const userJsonPath = path.resolve(
+      path.dirname(new URL('', import.meta.url).pathname),
+      '../data/case-references.json',
+    );
+    const userJson = JSON.parse(await fs.readFile(userJsonPath, 'utf-8'));
+    caseListingChannelHmctsCaseNumber = userJson.HEARING_CHANNEL_HMCTS_CASE_NUMBER;
+    caseListingChannelCaseName = userJson.HEARING_CHANNEL_CASE_NAME;
+  });
+
   test.beforeEach(async ({ page, hearingSchedulePage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
@@ -42,14 +58,14 @@ test.describe('Case listing @case-listing', () => {
     const roomData = {
       roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-      caseNumber: process.env.HMCTS_CASE_NUMBER as string,
+      caseNumber: caseListingChannelHmctsCaseNumber,
       sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
       cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await createHearingSession(
-      process.env.CASE_NAME as string,
+      caseListingChannelCaseName,
       homePage,
       caseSearchPage,
       caseDetailsPage,
@@ -66,8 +82,8 @@ test.describe('Case listing @case-listing', () => {
 
       locality: viewReportsPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
       location: viewReportsPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-      jurisdiction: viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-      service: viewReportsPage.CONSTANTS.SERVICE_DIVORCE,
+      jurisdiction: viewReportsPage.CONSTANTS.JURISDICTION_CIVIL,
+      service: viewReportsPage.CONSTANTS.SERVICE_DAMAGES,
     };
 
     //open reports menu and check generated report
@@ -119,14 +135,14 @@ test.describe('Case listing @case-listing', () => {
     const roomData = {
       roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-      caseNumber: process.env.HMCTS_CASE_NUMBER as string,
+      caseNumber: caseListingChannelHmctsCaseNumber,
       sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
       cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await createHearingSession(
-      process.env.CASE_NAME as string,
+      caseListingChannelCaseName,
       homePage,
       caseSearchPage,
       caseDetailsPage,
@@ -143,8 +159,8 @@ test.describe('Case listing @case-listing', () => {
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_REGION_WALES,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_FAMILY_JURISDICTION,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_SERVICE_DIVORCE_OPTION,
+      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_JURISDICTION_CIVIL,
+      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_SERVICE_DAMAGES,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_DAILY_MIXED_CAUSE_LIST_SSRS,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_VERSION_TYPE,
     );

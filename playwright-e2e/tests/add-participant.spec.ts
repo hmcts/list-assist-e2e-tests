@@ -1,11 +1,23 @@
 import { expect, test } from '../fixtures';
 import { config } from '../utils';
+import fs from 'fs/promises';
+import path from 'path';
 
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
 test.describe('Add participant @add-participant', () => {
+  let addParticipantCaseName: string;
+
+  test.beforeAll(async () => {
+    const userJsonPath = path.resolve(
+      path.dirname(new URL('', import.meta.url).pathname),
+      '../data/case-references.json',
+    );
+    const userJson = JSON.parse(await fs.readFile(userJsonPath, 'utf-8'));
+    addParticipantCaseName = userJson.ADD_PARTICIPANT_CASE_NAME;
+  });
   test.describe.configure({ mode: 'serial' });
   test.beforeEach(async ({ page }) => {
     await page.goto(config.urls.baseUrl);
@@ -19,7 +31,7 @@ test.describe('Add participant @add-participant', () => {
     homePage,
   }) => {
     await addNewCasePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(process.env.CASE_NAME as string);
+    await caseSearchPage.searchCase(addParticipantCaseName);
 
     //add new participant
     await expect(editNewCasePage.caseParticipantsHeader).toBeVisible();
