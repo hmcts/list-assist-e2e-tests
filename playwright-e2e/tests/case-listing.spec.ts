@@ -8,10 +8,16 @@ test.use({
 });
 
 test.describe('Case listing @case-listing', () => {
-  test.beforeEach(async ({ page, hearingSchedulePage }) => {
+  test.describe.configure({ mode: 'serial' });
+  test.beforeEach(async ({ page, hearingSchedulePage, addNewCasePage, caseSearchPage, dataUtils }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+
+    //searches for case to insert in to context
+    const caseRefData = await dataUtils.getCaseDataFromCaseRefJson();
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.searchCase(caseRefData.caseListingAndReportCaseName);
   });
 
   test('List "Released" session and Generate report via reports menu', async ({
@@ -43,14 +49,14 @@ test.describe('Case listing @case-listing', () => {
     const roomData = {
       roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-      caseNumber: caseRefData.caseListingChannelHmctsCaseNumber,
+      caseNumber: caseRefData.caseListingAndReportHmctsCaseNumber,
       sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
       cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await createHearingSession(
-      caseRefData.caseListingChannelCaseName,
+      caseRefData.caseListingAndReportCaseName,
       homePage,
       caseSearchPage,
       caseDetailsPage,
@@ -122,14 +128,14 @@ test.describe('Case listing @case-listing', () => {
     const roomData = {
       roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-      caseNumber: caseRefData.caseListingChannelHmctsCaseNumber,
+      caseNumber: caseRefData.caseListingAndReportHmctsCaseNumber,
       sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
       cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await createHearingSession(
-      caseRefData.caseListingChannelCaseName,
+      caseRefData.caseListingAndReportCaseName,
       homePage,
       caseSearchPage,
       caseDetailsPage,

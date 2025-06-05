@@ -113,8 +113,8 @@ export class DataUtils {
     addParticipantCaseName: string;
     hearingChannelHmctsCaseNumber: string;
     hearingChannelCaseName: string;
-    caseListingChannelHmctsCaseNumber: string;
-    caseListingChannelCaseName: string;
+    caseListingAndReportHmctsCaseNumber: string;
+    caseListingAndReportCaseName: string;
     addNewCaseCaseName: string;
     addNewHmctsCaseNumber: string;
   }> {
@@ -127,8 +127,8 @@ export class DataUtils {
       addParticipantCaseName: userJson.ADD_PARTICIPANT_CASE_NAME,
       hearingChannelHmctsCaseNumber: userJson.HEARING_CHANNEL_HMCTS_CASE_NUMBER,
       hearingChannelCaseName: userJson.HEARING_CHANNEL_CASE_NAME,
-      caseListingChannelHmctsCaseNumber: userJson.CASE_LISTING_CHANNEL_HMCTS_CASE_NUMBER,
-      caseListingChannelCaseName: userJson.CASE_LISTING_CHANNEL_CASE_NAME,
+      caseListingAndReportHmctsCaseNumber: userJson.CASE_LISTING_HMCTS_CASE_NUMBER,
+      caseListingAndReportCaseName: userJson.CASE_LISTING_CASE_NAME,
       addNewCaseCaseName: userJson.ADD_NEW_CASE_CASE_NAME,
       addNewHmctsCaseNumber: userJson.ADD_NEW_CASE_HMCTS_CASE_NUMBER,
     };
