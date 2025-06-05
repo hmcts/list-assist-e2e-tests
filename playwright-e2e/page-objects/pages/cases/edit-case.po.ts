@@ -30,8 +30,27 @@ export class EditNewCasePage extends Base {
   });
   readonly addNewParticipantButton = this.page.locator('#add_new_party_btn_id');
 
+  // Add related case
+  readonly relatedCasesHeader = this.page.getByRole('heading', {name: 'Related Cases ' });
+  readonly addRelatedCaseBtn =  this.page.locator('#add_mtr_matter_btn_id');
+  readonly quickSearchField =  this.page.getByRole('textbox', { name: 'Quick Search'});
+  readonly addRelatedCaseOkBtn = this.page.getByRole('button', {name: 'OK'});
+  readonly relatedCasesTable =this.page.locator('table[aria-label="Related Cases "]')
+
+
+
   constructor(page: Page) {
     super(page);
+  }
+
+  async clickRelatedCaseResult(caseNumber: string) {
+    await this.page.locator('.tt-suggestion', { hasText: caseNumber }).click();
+  }
+
+  async checkRelatedCaseDisplay(caseName: string) {
+    await expect(
+      this.relatedCasesTable.locator('td', { hasText: caseName })
+    ).toBeVisible();
   }
 
   async createNewParticipant(
