@@ -1,8 +1,7 @@
 import { test, expect } from '../fixtures';
-import { config } from '../utils';
+import { config, isSessionValid } from '../utils';
 import fs from 'fs/promises';
 import path from 'path';
-import { isSessionValid } from '../utils';
 
 test.use({
   storageState: config.users.testUser.sessionFile,
