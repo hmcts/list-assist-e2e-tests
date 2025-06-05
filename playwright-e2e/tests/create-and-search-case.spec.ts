@@ -22,6 +22,8 @@ test.describe('Case creation for all tests @add-new-case', () => {
     } else {
       await page.goto(config.urls.baseUrl);
     }
+
+    //grabs case names and numbers from case-references.json
     const userJsonPath = path.resolve(
       path.dirname(new URL('', import.meta.url).pathname),
       '../data/case-references.json',
