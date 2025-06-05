@@ -35,6 +35,8 @@ export class EditNewCasePage extends Base {
   readonly addRelatedCaseBtn =  this.page.locator('#add_mtr_matter_btn_id');
   readonly quickSearchField =  this.page.getByRole('textbox', { name: 'Quick Search'});
   readonly addRelatedCaseOkBtn = this.page.getByRole('button', {name: 'OK'});
+  readonly relatedCasesTable =this.page.locator('table[aria-label="Related Cases "]')
+
 
 
   constructor(page: Page) {
@@ -47,9 +49,7 @@ export class EditNewCasePage extends Base {
 
   async checkRelatedCaseDisplay(caseName: string) {
     await expect(
-      this.page
-        .locator('table[aria-label="Related Cases "]')
-        .locator('td', { hasText: caseName })
+      this.relatedCasesTable.locator('td', { hasText: caseName })
     ).toBeVisible();
   }
 
