@@ -118,6 +118,23 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
     } else {
+      stage('Chrome - Case Creation And Case Search Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @add-new-case')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Case Creation And Case Search Tests'
+          ])
+        }
+      }
+
       stage('Chrome - Add Participant Tests') {
         try {
           yarnBuilder.yarn('playwright test --project=chrome --grep @add-participant')
@@ -131,23 +148,6 @@ withNightlyPipeline(type, product, component, 600) {
             reportDir: "playwright-report",
             reportFiles: 'index.html',
             reportName: 'Chrome - Add Participant Tests'
-          ])
-        }
-      }
-
-      stage('Chrome - Case Creation Tests') {
-        try {
-          yarnBuilder.yarn('playwright test --project=chrome --grep @add-new-case')
-        } catch (Error) {
-          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-        } finally {
-          publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: "playwright-report",
-            reportFiles: 'index.html',
-            reportName: 'Chrome - Case Creation Tests'
           ])
         }
       }
@@ -203,6 +203,23 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
 
+      stage('Firefox - Case Creation And Case Search Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=firefox --grep @add-new-case')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox - Case Creation And Case Search Tests'
+          ])
+        }
+      }
+
       stage('Firefox - Add Participant Tests') {
         try {
           yarnBuilder.yarn('playwright test --project=firefox --grep @add-participant')
@@ -216,23 +233,6 @@ withNightlyPipeline(type, product, component, 600) {
             reportDir: "playwright-report",
             reportFiles: 'index.html',
             reportName: 'Firefox - Add Participant Tests'
-          ])
-        }
-      }
-
-      stage('Firefox - Case Creation Tests') {
-        try {
-          yarnBuilder.yarn('playwright test --project=firefox --grep @add-new-case')
-        } catch (Error) {
-          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-        } finally {
-          publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: "playwright-report",
-            reportFiles: 'index.html',
-            reportName: 'Firefox - Case Creation Tests'
           ])
         }
       }
