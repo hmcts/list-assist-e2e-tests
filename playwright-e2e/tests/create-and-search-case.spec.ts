@@ -9,10 +9,10 @@ test.use({
 });
 
 test.describe('Case creation and search for case @add-new-case', () => {
+  test.describe.configure({ mode: 'serial' });
+
   let addNewCaseCaseName: string;
   let addNewHmctsCaseNumber: string;
-
-  test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ page, loginPage, config }) => {
     const user = config.users.testUser;
