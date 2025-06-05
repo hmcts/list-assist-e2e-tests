@@ -16,6 +16,7 @@ test.describe('Case listing @case-listing', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeAll(async () => {
+    //grabs case names and numbers from case-references.json
     const userJsonPath = path.resolve(
       path.dirname(new URL('', import.meta.url).pathname),
       '../data/case-references.json',
