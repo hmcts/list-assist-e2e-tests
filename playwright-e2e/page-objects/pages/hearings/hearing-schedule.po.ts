@@ -117,7 +117,7 @@ export class HearingSchedulePage extends Base {
     });
 
     if (await releasedStatusCheck.isVisible()) {
-      // await releasedStatusCheck.click();
+      await releasedStatusCheck.click();
 
       await expect
         .poll(
