@@ -11,9 +11,6 @@ test.use({
 test.describe('Case creation for all tests @add-new-case', () => {
   test.describe.configure({ mode: 'serial' });
 
-  let addNewCaseCaseName: string;
-  let addNewHmctsCaseNumber: string;
-
   test.beforeEach(async ({ page, loginPage, config }) => {
     const user = config.users.testUser;
     if (!isSessionValid(user.sessionFile, user.cookieName!)) {
@@ -22,15 +19,6 @@ test.describe('Case creation for all tests @add-new-case', () => {
     } else {
       await page.goto(config.urls.baseUrl);
     }
-
-    //grabs case names and numbers from case-references.json
-    const userJsonPath = path.resolve(
-      path.dirname(new URL('', import.meta.url).pathname),
-      '../data/case-references.json',
-    );
-    const userJson = JSON.parse(await fs.readFile(userJsonPath, 'utf-8'));
-    addNewCaseCaseName = userJson.ADD_NEW_CASE_CASE_NAME;
-    addNewHmctsCaseNumber = userJson.ADD_NEW_CASE_HMCTS_CASE_NUMBER;
   });
 
   test('Add new cases for all tests', async ({
@@ -80,7 +68,9 @@ test.describe('Case creation for all tests @add-new-case', () => {
     editNewCasePage,
     caseDetailsPage,
     caseSearchPage,
+    dataUtils,
   }) => {
+    const caseRefData = await dataUtils.getCaseDataFromCaseRefJson();
     // Test data
     const caseData = {
       hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
@@ -96,13 +86,13 @@ test.describe('Case creation for all tests @add-new-case', () => {
     };
 
     await addNewCasePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(addNewCaseCaseName);
+    await caseSearchPage.searchCase(caseRefData.addNewCaseCaseName);
 
     //checks case details against known values
     await caseDetailsPage.checkInputtedCaseValues(
       editNewCasePage,
-      addNewHmctsCaseNumber,
-      addNewCaseCaseName,
+      caseRefData.addNewHmctsCaseNumber,
+      caseRefData.addNewCaseCaseName,
       caseData.jurisdiction,
       caseData.service,
       caseData.caseType,

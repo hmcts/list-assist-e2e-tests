@@ -1,5 +1,7 @@
 import { execSync } from 'child_process';
 import { statSync, existsSync } from 'fs';
+import fs from 'fs/promises';
+import path from 'path';
 
 export class DataUtils {
   //updates bank-holidays.json file if it is older than the previous year
@@ -105,5 +107,30 @@ export class DataUtils {
     const year = today.getFullYear();
 
     return `${dayName}, ${day} ${monthName} ${year}`;
+  }
+
+  async getCaseDataFromCaseRefJson(): Promise<{
+    addParticipantCaseName: string;
+    hearingChannelHmctsCaseNumber: string;
+    hearingChannelCaseName: string;
+    caseListingChannelHmctsCaseNumber: string;
+    caseListingChannelCaseName: string;
+    addNewCaseCaseName: string;
+    addNewHmctsCaseNumber: string;
+  }> {
+    const userJsonPath = path.resolve(
+      path.dirname(new URL('', import.meta.url).pathname),
+      '../data/case-references.json',
+    );
+    const userJson = JSON.parse(await fs.readFile(userJsonPath, 'utf-8'));
+    return {
+      addParticipantCaseName: userJson.ADD_PARTICIPANT_CASE_NAME,
+      hearingChannelHmctsCaseNumber: userJson.HEARING_CHANNEL_HMCTS_CASE_NUMBER,
+      hearingChannelCaseName: userJson.HEARING_CHANNEL_CASE_NAME,
+      caseListingChannelHmctsCaseNumber: userJson.CASE_LISTING_CHANNEL_HMCTS_CASE_NUMBER,
+      caseListingChannelCaseName: userJson.CASE_LISTING_CHANNEL_CASE_NAME,
+      addNewCaseCaseName: userJson.ADD_NEW_CASE_CASE_NAME,
+      addNewHmctsCaseNumber: userJson.ADD_NEW_CASE_HMCTS_CASE_NUMBER,
+    };
   }
 }

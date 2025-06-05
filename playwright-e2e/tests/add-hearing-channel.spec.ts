@@ -2,28 +2,12 @@ import { expect, test } from '../fixtures';
 import { HomePage, CaseSearchPage, CaseDetailsPage, HearingSchedulePage } from '../page-objects/pages';
 import { SessionBookingPage } from '../page-objects/pages/hearings/session-booking.po';
 import { config } from '../utils';
-import fs from 'fs/promises';
-import path from 'path';
 
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
 test.describe('Hearing channel test @hearing-channel', () => {
-  let hearingChannelHmctsCaseNumber: string;
-  let hearingChannelCaseName: string;
-
-  test.beforeAll(async () => {
-    //grabs case names and numbers from case-references.json
-    const userJsonPath = path.resolve(
-      path.dirname(new URL('', import.meta.url).pathname),
-      '../data/case-references.json',
-    );
-    const userJson = JSON.parse(await fs.readFile(userJsonPath, 'utf-8'));
-    hearingChannelHmctsCaseNumber = userJson.HEARING_CHANNEL_HMCTS_CASE_NUMBER;
-    hearingChannelCaseName = userJson.HEARING_CHANNEL_CASE_NAME;
-  });
-
   test.beforeEach(async ({ page, hearingSchedulePage, sessionBookingPage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
@@ -45,11 +29,14 @@ test.describe('Hearing channel test @hearing-channel', () => {
     caseSearchPage,
     hearingSchedulePage,
     sessionBookingPage,
+    dataUtils,
   }) => {
+    const caseRefData = await dataUtils.getCaseDataFromCaseRefJson();
+
     const roomData = {
       roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-      caseNumber: hearingChannelHmctsCaseNumber,
+      caseNumber: caseRefData.hearingChannelHmctsCaseNumber,
       sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
       cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
@@ -81,7 +68,7 @@ test.describe('Hearing channel test @hearing-channel', () => {
     await caseDetailsPage.saveButton.click();
 
     await createHearingSession(
-      hearingChannelCaseName,
+      caseRefData.hearingChannelCaseName,
       homePage,
       caseSearchPage,
       caseDetailsPage,
