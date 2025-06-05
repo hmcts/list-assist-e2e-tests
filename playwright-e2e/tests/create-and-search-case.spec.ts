@@ -55,11 +55,11 @@ test.describe('Case creation for all tests @add-new-case', () => {
       await fs.writeFile(userJsonPath, JSON.stringify(userJson, null, 2), 'utf-8');
     }
 
-    // await createCaseAndStoreCaseInJson('ADD_NEW_CASE_HMCTS_CASE_NUMBER', 'ADD_NEW_CASE_CASE_NAME');
-    // await createCaseAndStoreCaseInJson('HEARING_CHANNEL_HMCTS_CASE_NUMBER', 'HEARING_CHANNEL_CASE_NAME');
-    // await createCaseAndStoreCaseInJson('ADD_PARTICIPANT_HMCTS_CASE_NUMBER', 'ADD_PARTICIPANT_CASE_NAME');
-    // await createCaseAndStoreCaseInJson('CASE_LISTING_HMCTS_CASE_NUMBER', 'CASE_LISTING_CASE_NAME');
-    // await createCaseAndStoreCaseInJson('UI_TESTS_HMCTS_CASE_NUMBER', 'UI_TESTS_CASE_NAME');
+    await createCaseAndStoreCaseInJson('ADD_NEW_CASE_HMCTS_CASE_NUMBER', 'ADD_NEW_CASE_CASE_NAME');
+    await createCaseAndStoreCaseInJson('HEARING_CHANNEL_HMCTS_CASE_NUMBER', 'HEARING_CHANNEL_CASE_NAME');
+    await createCaseAndStoreCaseInJson('ADD_PARTICIPANT_HMCTS_CASE_NUMBER', 'ADD_PARTICIPANT_CASE_NAME');
+    await createCaseAndStoreCaseInJson('CASE_LISTING_HMCTS_CASE_NUMBER', 'CASE_LISTING_CASE_NAME');
+    await createCaseAndStoreCaseInJson('UI_TESTS_HMCTS_CASE_NUMBER', 'UI_TESTS_CASE_NAME');
   });
 
   test('Search for case and confirm case details are correct @smoke', async ({
