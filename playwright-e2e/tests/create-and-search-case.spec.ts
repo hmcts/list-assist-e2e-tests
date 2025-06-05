@@ -8,7 +8,7 @@ test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe('Case creation and search for case @add-new-case', () => {
+test.describe('Case creation for all tests @add-new-case', () => {
   test.describe.configure({ mode: 'serial' });
 
   let addNewCaseCaseName: string;
@@ -39,7 +39,7 @@ test.describe('Case creation and search for case @add-new-case', () => {
     hearingSchedulePage,
     dataUtils,
   }) => {
-    // Path to user.json
+    // Path to case-references.json
     const userJsonPath = path.resolve(
       path.dirname(new URL('', import.meta.url).pathname),
       '../data/case-references.json',
