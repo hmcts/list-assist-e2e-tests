@@ -3,6 +3,10 @@ import { CaseDetailsPage, CaseSearchPage, HearingSchedulePage, HomePage } from '
 import { SessionBookingPage } from '../page-objects/pages/hearings/session-booking.po';
 import { config } from '../utils';
 
+test.use({
+  storageState: config.users.testUser.sessionFile,
+});
+
 test.describe('Case listing @case-listing', () => {
   test.describe.configure({ mode: 'serial' });
   test.beforeEach(async ({ page, hearingSchedulePage, addNewCasePage, caseSearchPage, dataUtils }) => {
