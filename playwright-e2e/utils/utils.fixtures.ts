@@ -1,8 +1,9 @@
-import { AxeUtils } from "@hmcts/playwright-common";
-import { Page } from "playwright/test";
-import { BrowserUtils } from "./browser.utils";
-import { config, Config } from "./config.utils";
-import { DataUtils } from "./data.utils";
+import { AxeUtils } from '@hmcts/playwright-common';
+import { Page } from 'playwright/test';
+import { BrowserUtils } from './browser.utils';
+import { config, Config } from './config.utils';
+import { DataUtils } from './data.utils';
+import { CreateCasesUtils } from './create-cases.utils';
 
 export interface UtilsFixtures {
   config: Config;
@@ -10,6 +11,7 @@ export interface UtilsFixtures {
   browserUtils: BrowserUtils;
   lighthousePage: Page;
   dataUtils: DataUtils;
+  createCasesUtils: CreateCasesUtils;
 }
 
 export const utilsFixtures = {
@@ -24,5 +26,8 @@ export const utilsFixtures = {
   },
   dataUtils: async ({}, use) => {
     await use(new DataUtils());
+  },
+  createCasesUtils: async ({}, use) => {
+    await use(new CreateCasesUtils());
   },
 };
