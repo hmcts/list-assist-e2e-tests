@@ -3,14 +3,11 @@ import { HomePage, CaseSearchPage, CaseDetailsPage, HearingSchedulePage } from '
 import { SessionBookingPage } from '../page-objects/pages/hearings/session-booking.po';
 import { config } from '../utils';
 
-test.use({
-  storageState: config.users.testUser.sessionFile,
-});
-
 test.describe('Hearing channel test @hearing-channel', () => {
   test.beforeEach(
-    async ({ page, hearingSchedulePage, sessionBookingPage, addNewCasePage, caseSearchPage, dataUtils }) => {
+    async ({ loginPage, page, hearingSchedulePage, sessionBookingPage, addNewCasePage, caseSearchPage, dataUtils }) => {
       await page.goto(config.urls.baseUrl);
+      await loginPage.login(config.users.testUser, true);
       //empties cart if there is anything present
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
 
