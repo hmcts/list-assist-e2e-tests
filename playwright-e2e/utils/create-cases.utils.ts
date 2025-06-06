@@ -41,7 +41,7 @@ export class CreateCasesUtils {
     await createCaseAndStoreCaseInJson('UI_TESTS_HMCTS_CASE_NUMBER', 'UI_TESTS_CASE_NAME');
   }
 
-  private async createCase({ config, page, homePage, addNewCasePage, hearingSchedulePage, hmctsCaseNumber, caseName }) {
+  async createCase({ config, page, homePage, addNewCasePage, hearingSchedulePage, hmctsCaseNumber, caseName }) {
     await page.goto(config.urls.baseUrl);
 
     // Empties cart if there is anything present
