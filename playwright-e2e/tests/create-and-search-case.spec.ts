@@ -45,6 +45,7 @@ test.describe('Case creation for all tests @add-new-case', () => {
     }
 
     await createCaseAndStoreCaseInJson('ADD_NEW_CASE_HMCTS_CASE_NUMBER', 'ADD_NEW_CASE_CASE_NAME');
+    await createCaseAndStoreCaseInJson('RELATED_CASE_HMCTS_CASE_NUMBER', 'RELATED_CASE_CASE_NAME');
     await createCaseAndStoreCaseInJson('HEARING_CHANNEL_HMCTS_CASE_NUMBER', 'HEARING_CHANNEL_CASE_NAME');
     await createCaseAndStoreCaseInJson('ADD_PARTICIPANT_HMCTS_CASE_NUMBER', 'ADD_PARTICIPANT_CASE_NAME');
     await createCaseAndStoreCaseInJson('CASE_LISTING_HMCTS_CASE_NUMBER', 'CASE_LISTING_CASE_NAME');
