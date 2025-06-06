@@ -14,11 +14,8 @@ export class AddNewCasePage extends Base {
   readonly CONSTANTS = {
     HMCTS_CASE_NUMBER_HEADER_VALUE: 'HMCTS Case Number',
     CASE_NAME_HEADER_VALUE: 'Case Name',
-    JURISDICTION_FAMILY: 'Family',
     JURISDICTION_CIVIL: 'Civil',
-    SERVICE_DIVORCE: 'Divorce',
     SERVICE_DAMAGES: 'Damages',
-    CASE_TYPE_DECREE_ABSOLUTE: 'Decree Absolute',
     CASE_TYPE_SMALL_CLAIMS: 'Small Claims',
     REGION_WALES: 'Wales',
     CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS: 'Wales Civil, Family and Tribunals',
