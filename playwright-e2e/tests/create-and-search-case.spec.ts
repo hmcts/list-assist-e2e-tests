@@ -1,6 +1,4 @@
 import { test, expect } from '../fixtures';
-import fs from 'fs/promises';
-import path from 'path';
 
 test.describe('Case creation for all tests @add-new-case', () => {
   test.describe.configure({ mode: 'serial' });
@@ -13,138 +11,116 @@ test.describe('Case creation for all tests @add-new-case', () => {
     homePage,
     hearingSchedulePage,
     dataUtils,
+    createCasesUtils,
   }) => {
+    // Create cases for tests
+    await createCasesUtils.createAllCases({
+      loginPage,
+      addNewCasePage,
+      config,
+      page,
+      homePage,
+      hearingSchedulePage,
+      dataUtils,
+    });
+  });
+
+  test('Search for case and confirm case details are correct @smoke', async ({
+    homePage,
+    loginPage,
+    config,
+    addNewCasePage,
+    editNewCasePage,
+    caseDetailsPage,
+    caseSearchPage,
+    dataUtils,
+  }) => {
+    const caseRefData = await dataUtils.getCaseDataFromCaseRefJson();
+    // Test data
+    const caseData = {
+      hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
+      jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL,
+      service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
+      caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
+      region: addNewCasePage.CONSTANTS.REGION_WALES,
+      cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+      hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+      currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
+    };
+
     await homePage.page.goto(config.urls.baseUrl);
     await loginPage.login(config.users.testUser, true);
 
-    // Path to case-references.json
-    const userJsonPath = path.resolve(
-      path.dirname(new URL('', import.meta.url).pathname),
-      '../data/case-references.json',
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.searchCase(caseRefData.addNewCaseCaseName);
+
+    //checks case details against known values
+    await caseDetailsPage.checkInputtedCaseValues(
+      editNewCasePage,
+      caseRefData.addNewHmctsCaseNumber,
+      caseRefData.addNewCaseCaseName,
+      caseData.jurisdiction,
+      caseData.service,
+      caseData.caseType,
+      caseData.region,
+      caseData.cluster,
+      caseData.hearingCentre,
     );
-    const userJson = JSON.parse(await fs.readFile(userJsonPath, 'utf-8'));
 
-    // Helper to create a case and update userJson
-    async function createCaseAndStoreCaseInJson(caseNumberKey: string, caseNameKey: string) {
-      const hmctsCaseNumber = 'HMCTS_CN_' + dataUtils.generateRandomAlphabetical(10).toUpperCase();
-      const caseName = 'AUTO_' + dataUtils.generateRandomAlphabetical(10).toUpperCase();
+    //LISTING REQUIREMENTS
+    await editNewCasePage.sidebarComponent.openListingRequirementsPage();
+    //checks header
+    await expect
+      .poll(
+        async () => {
+          return await caseDetailsPage.listingRequirementsHeader.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 60_000,
+        },
+      )
+      .toBeTruthy();
 
-      await createCase({
-        config,
-        page,
-        homePage,
-        addNewCasePage,
-        hearingSchedulePage,
-        hmctsCaseNumber,
-        caseName,
-      });
+    await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
 
-      userJson[caseNumberKey] = hmctsCaseNumber;
-      userJson[caseNameKey] = caseName;
-      await fs.writeFile(userJsonPath, JSON.stringify(userJson, null, 2), 'utf-8');
-    }
+    //select hearing type
+    await caseDetailsPage.hearingTypeSelect.selectOption(caseData.hearingTypeRef);
+    await caseDetailsPage.saveButton.click();
 
-    await createCaseAndStoreCaseInJson('ADD_NEW_CASE_HMCTS_CASE_NUMBER', 'ADD_NEW_CASE_CASE_NAME');
-    await createCaseAndStoreCaseInJson('RELATED_CASE_HMCTS_CASE_NUMBER', 'RELATED_CASE_CASE_NAME');
-    await createCaseAndStoreCaseInJson('HEARING_CHANNEL_HMCTS_CASE_NUMBER', 'HEARING_CHANNEL_CASE_NAME');
-    await createCaseAndStoreCaseInJson('ADD_PARTICIPANT_HMCTS_CASE_NUMBER', 'ADD_PARTICIPANT_CASE_NAME');
-    await createCaseAndStoreCaseInJson('CASE_LISTING_HMCTS_CASE_NUMBER', 'CASE_LISTING_CASE_NAME');
-    await createCaseAndStoreCaseInJson('UI_TESTS_HMCTS_CASE_NUMBER', 'UI_TESTS_CASE_NAME');
+    //CHECK CURRENT DETAILS OF CASE
+    await caseDetailsPage.sidebarComponent.openCaseDetailsEditPage();
+    await expect(caseDetailsPage.currentCaseCurrentStatusField).toHaveText('Current Status ' + caseData.currentStatus);
+  });
+
+  test('Add related case to the existing case', async ({
+    homePage,
+    loginPage,
+    config,
+    addNewCasePage,
+    editNewCasePage,
+    caseSearchPage,
+    dataUtils,
+  }) => {
+    await homePage.page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser, true);
+    //open add new case page
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
+
+    //search for existing case to add related case
+    const caseRefData = await dataUtils.getCaseDataFromCaseRefJson();
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.searchCase(caseRefData.addNewCaseCaseName);
+
+    //add related case
+    await expect(editNewCasePage.relatedCasesHeader).toBeVisible();
+    await expect(editNewCasePage.addRelatedCaseBtn).toBeVisible();
+    await editNewCasePage.addRelatedCaseBtn.click();
+    await editNewCasePage.quickSearchField.fill(caseRefData.relatedCaseHmctsCaseNumber);
+    await editNewCasePage.clickRelatedCaseResult(caseRefData.relatedCaseHmctsCaseNumber);
+    await editNewCasePage.addRelatedCaseOkBtn.click();
+    await editNewCasePage.checkRelatedCaseDisplay(caseRefData.relatedCaseCaseName);
   });
 });
-
-test('Search for case and confirm case details are correct @smoke', async ({
-  homePage,
-  loginPage,
-  config,
-  addNewCasePage,
-  editNewCasePage,
-  caseDetailsPage,
-  caseSearchPage,
-  dataUtils,
-}) => {
-  const caseRefData = await dataUtils.getCaseDataFromCaseRefJson();
-  // Test data
-  const caseData = {
-    hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
-    caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
-    jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL,
-    service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
-    caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
-    region: addNewCasePage.CONSTANTS.REGION_WALES,
-    cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-    hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-    hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-    currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-  };
-
-  await homePage.page.goto(config.urls.baseUrl);
-  await loginPage.login(config.users.testUser, true);
-
-  await addNewCasePage.sidebarComponent.openSearchCasePage();
-  await caseSearchPage.searchCase(caseRefData.addNewCaseCaseName);
-
-  //checks case details against known values
-  await caseDetailsPage.checkInputtedCaseValues(
-    editNewCasePage,
-    caseRefData.addNewHmctsCaseNumber,
-    caseRefData.addNewCaseCaseName,
-    caseData.jurisdiction,
-    caseData.service,
-    caseData.caseType,
-    caseData.region,
-    caseData.cluster,
-    caseData.hearingCentre,
-  );
-
-  //LISTING REQUIREMENTS
-  await editNewCasePage.sidebarComponent.openListingRequirementsPage();
-  //checks header
-  await expect
-    .poll(
-      async () => {
-        return await caseDetailsPage.listingRequirementsHeader.isVisible();
-      },
-      {
-        intervals: [2_000],
-        timeout: 60_000,
-      },
-    )
-    .toBeTruthy();
-
-  await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
-
-  //select hearing type
-  await caseDetailsPage.hearingTypeSelect.selectOption(caseData.hearingTypeRef);
-  await caseDetailsPage.saveButton.click();
-
-  //CHECK CURRENT DETAILS OF CASE
-  await caseDetailsPage.sidebarComponent.openCaseDetailsEditPage();
-  await expect(caseDetailsPage.currentCaseCurrentStatusField).toHaveText('Current Status ' + caseData.currentStatus);
-});
-
-async function createCase({ config, page, homePage, addNewCasePage, hearingSchedulePage, hmctsCaseNumber, caseName }) {
-  await page.goto(config.urls.baseUrl);
-
-  // Empties cart if there is anything present
-  await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-
-  // Navigate to Add New Case page
-  await homePage.sidebarComponent.openAddNewCasePage();
-
-  const caseData = {
-    hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
-    caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
-    jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL,
-    service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
-    caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
-    region: addNewCasePage.CONSTANTS.REGION_WALES,
-    cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-    hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-    hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-    currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-  };
-
-  // Create the new case
-  await addNewCasePage.addNewCaseWithMandatoryData(caseData, hmctsCaseNumber, caseName);
-}
