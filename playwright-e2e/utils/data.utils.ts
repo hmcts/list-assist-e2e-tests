@@ -117,6 +117,8 @@ export class DataUtils {
     caseListingAndReportCaseName: string;
     addNewCaseCaseName: string;
     addNewHmctsCaseNumber: string;
+    relatedCaseHmctsCaseNumber: string;
+    relatedCaseCaseName: string;
   }> {
     const userJsonPath = path.resolve(
       path.dirname(new URL('', import.meta.url).pathname),
@@ -131,6 +133,8 @@ export class DataUtils {
       caseListingAndReportCaseName: userJson.CASE_LISTING_CASE_NAME,
       addNewCaseCaseName: userJson.ADD_NEW_CASE_CASE_NAME,
       addNewHmctsCaseNumber: userJson.ADD_NEW_CASE_HMCTS_CASE_NUMBER,
+      relatedCaseHmctsCaseNumber: userJson.RELATED_CASE_HMCTS_CASE_NUMBER,
+      relatedCaseCaseName: userJson.RELATED_CASE_CASE_NAME,
     };
   }
 }
