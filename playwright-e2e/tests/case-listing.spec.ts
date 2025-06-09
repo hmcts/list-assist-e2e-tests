@@ -66,8 +66,8 @@ test.describe('Case listing @case-listing', () => {
 
       locality: viewReportsPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
       location: viewReportsPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-      jurisdiction: viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-      service: viewReportsPage.CONSTANTS.SERVICE_DIVORCE,
+      jurisdiction: viewReportsPage.CONSTANTS.JURISDICTION_CIVIL,
+      service: viewReportsPage.CONSTANTS.SERVICE_DAMAGES,
     };
 
     //open reports menu and check generated report
@@ -143,8 +143,8 @@ test.describe('Case listing @case-listing', () => {
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_REGION_WALES,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_FAMILY_JURISDICTION,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_SERVICE_DIVORCE_OPTION,
+      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_JURISDICTION_CIVIL,
+      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_SERVICE_DAMAGES,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_DAILY_MIXED_CAUSE_LIST_SSRS,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_VERSION_TYPE,
     );
