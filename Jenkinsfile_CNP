@@ -1,4 +1,26 @@
 #!groovy
+properties([
+  pipelineTriggers([cron('H 8 * * 1-5')]),
+  disableConcurrentBuilds(),
+  parameters([
+    string(
+      name: 'FUNCTIONAL_TESTS_WORKERS',
+      defaultValue: '4',
+      description: 'Number of workers running functional tests'
+    ),
+    string(
+      name: 'TAGS_TO_RUN',
+      defaultValue: '',
+      description: 'Optionally, run a single or multiple tags (comma separated e.g. @cui, @exui)'
+    ),
+    choice(
+      name: 'browser',
+      choices: ['chrome', 'firefox', 'webkit', 'edge'],
+      description: 'Which browser to use'
+    ),
+  ])
+])
+
 @Library("Infrastructure")
 
 def type = "nodejs"
@@ -6,18 +28,282 @@ def product = "snl-automation"
 def component = "e2e-tests"
 def channel = "#list-assist-qa-builds"
 
+static Map<String, Object> secret(String secretName, String envVariable) {
+  [
+    $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    envVariable: envVariable
+  ]
+}
+
+def secrets = [
+  'snl-automation-bts-stg': [
+    secret('test-password', 'TEST_USERNAME'),
+    secret('test-username', 'TEST_PASSWORD'),
+    secret('base-url', 'BASE_URL'),
+    secret('hmi-client-id', 'HMI_CLIENT_ID'),
+    secret('hmi-client-secret', 'HMI_CLIENT_SECRET'),
+    secret('hmi-scope', 'HMI_SCOPE'),
+    secret('hmi-token-url', 'HMI_TOKEN_URL'),
+    secret('hmi-token-tenant', 'HMI_TOKEN_TENANT'),
+    secret('hmi-grant-type', 'HMI_GRANT_TYPE'),
+    secret('hmi-api-url', 'HMI_API_URL'),
+  ]
+]
+
+def buildPlaywrightCommand(tags) {
+  if (tags == null || tags.trim().isEmpty()) {
+    return;
+  }
+  def tagList = tags.split(',').collect { it.trim() }
+  def command = 'playwright test'
+  tagList.each { tag ->
+    if (!tag.isEmpty()) {
+      command += " --grep ${tag} --project ${params.browser}"
+    }
+  }
+  return command
+}
+
 def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
-
-withNightlyPipeline(type, product, component) {
+withNightlyPipeline(type, product, component, 600) {
+  loadVaultSecrets(secrets)
+  env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
+  env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
+  env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
+
   afterAlways('DependencyCheckNightly') {
-    stage('Lint') {
+    stage('Check For UK Bank Holiday') {
+        script {
+          def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
+          // Read from the local bank-holidays.json file
+          def holidays = sh(
+            script: "jq -r '.\"england-and-wales\".events[].date' bank-holidays.json",
+            returnStdout: true
+          ).trim().split('\n')
+          if (holidays.contains(today)) {
+            echo "Today (${today}) is a UK bank holiday. Skipping build."
+            currentBuild.result = 'NOT_BUILT'
+            error("Bank holiday - aborting build")
+          }
+        }
+    }
+    stage('Set up playwright') {
+      try {
+        yarnBuilder.yarn('setup')
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      }
+    }
+
+    if (!TAGS_TO_RUN.isEmpty()) {
+      stage("${TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
-          yarnBuilder.yarn('lint')
+          currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests"
+          yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN))
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: "${TAGS_TO_RUN} E2E Tests ${params.browser}"
+          ])
         }
       }
+    } else {
+      stage('Chrome - Add Participant Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @add-participant')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Add Participant Tests'
+          ])
+        }
+      }
+
+      stage('Chrome - Case Creation Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @add-new-case')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Case Creation Tests'
+          ])
+        }
+      }
+
+      stage('Chrome - Case Listing and Reporting Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @case-listing')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Case Listing and Reporting Tests'
+          ])
+        }
+      }
+
+      stage('Chrome - Hearing Channel Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @hearing-channel')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Hearing Channel Tests'
+          ])
+        }
+      }
+
+      stage('Chrome - UI Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @ui-test')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - UI Tests'
+          ])
+        }
+      }
+
+      stage('Firefox - Add Participant Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=firefox --grep @add-participant')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox - Add Participant Tests'
+          ])
+        }
+      }
+
+      stage('Firefox - Case Creation Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=firefox --grep @add-new-case')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox - Case Creation Tests'
+          ])
+        }
+      }
+
+      stage('Firefox - Case Listing and Reporting Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=firefox --grep @case-listing')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox - Case Listing and Reporting Tests'
+          ])
+        }
+      }
+
+      stage('Firefox - Hearing Channel Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=firefox --grep @hearing-channel')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox - Hearing Channel Tests'
+          ])
+        }
+      }
+
+      stage('Firefox - UI Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=firefox --grep @ui-test')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox - UI Tests'
+          ])
+        }
+      }
+
+      stage('Webkit - Smoke Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=webkit --grep @smoke')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Webkit - Smoke Tests'
+          ])
+        }
+      }
+    }
   }
 }
