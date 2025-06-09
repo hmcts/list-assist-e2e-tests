@@ -11,8 +11,8 @@ export class ViewReportsPage extends Base {
     CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: 'Pontypridd Courtroom 01',
     CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT: 'Pontypridd County Court and',
     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1: 'Newport (South Wales) Chambers 01',
-    JURISDICTION_FAMILY: 'Family',
-    SERVICE_DIVORCE: 'Divorce',
+    JURISDICTION_CIVIL: 'Civil',
+    SERVICE_DAMAGES: 'Damages',
   };
   //reports menu
   readonly reportsMenu = this.page.locator('#reports_menuItem');
