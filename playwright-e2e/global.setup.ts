@@ -35,9 +35,9 @@ setup.describe('Global Setup', () => {
       const caseData = {
         hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
         caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
-        jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
-        service: addNewCasePage.CONSTANTS.SERVICE_DIVORCE,
-        caseType: addNewCasePage.CONSTANTS.DECREE_ABSOLUTE_CASE_TYPE,
+        jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL,
+        service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
+        caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
         region: addNewCasePage.CONSTANTS.REGION_WALES,
         cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
         hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
