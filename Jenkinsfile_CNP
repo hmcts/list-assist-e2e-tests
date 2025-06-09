@@ -1,25 +1,4 @@
 #!groovy
-properties([
-  pipelineTriggers([cron('H 8 * * 1-5')]),
-  disableConcurrentBuilds(),
-  parameters([
-    string(
-      name: 'FUNCTIONAL_TESTS_WORKERS',
-      defaultValue: '4',
-      description: 'Number of workers running functional tests'
-    ),
-    string(
-      name: 'TAGS_TO_RUN',
-      defaultValue: '',
-      description: 'Optionally, run a single or multiple tags (comma separated e.g. @cui, @exui)'
-    ),
-    choice(
-      name: 'browser',
-      choices: ['chrome', 'firefox', 'webkit', 'edge'],
-      description: 'Which browser to use'
-    ),
-  ])
-])
 
 @Library("Infrastructure")
 
