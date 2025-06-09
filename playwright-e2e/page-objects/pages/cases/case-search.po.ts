@@ -3,7 +3,7 @@ import { Base } from '../../base';
 
 export class CaseSearchPage extends Base {
   readonly caseSearchPageHeader = this.page.locator('#CMSHomeHeading');
-  readonly caseNumber = this.page.locator('#mtrMediumTitle');
+  readonly caseNumber = this.page.locator('#mtrMatNumber');
   readonly searchButton = this.page.locator('#submitButton');
 
   constructor(page: Page) {
