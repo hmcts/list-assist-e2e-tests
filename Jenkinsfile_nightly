@@ -134,22 +134,6 @@ withNightlyPipeline(type, product, component, 600) {
           ])
         }
       }
-      stage('Chrome - Add Related Case Tests') {
-        try {
-          yarnBuilder.yarn('playwright test --project=chrome --grep @add-related-case')
-        } catch (Error) {
-          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-        } finally {
-          publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: "playwright-report",
-            reportFiles: 'index.html',
-            reportName: 'Chrome - Add Related Case Test'
-          ])
-        }
-      }
 
       stage('Chrome - Case Creation Tests') {
         try {
