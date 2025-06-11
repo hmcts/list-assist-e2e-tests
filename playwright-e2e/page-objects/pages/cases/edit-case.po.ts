@@ -16,7 +16,7 @@ export class EditNewCasePage extends Base {
   // Edit new case
   readonly newCaseHeader = this.page.locator('h1.header-title.my-2');
   readonly hmctsCaseNumberField = this.page.locator('#matter-detail-mtrNumberAdded');
-  readonly caseNameField = this.page.locator('#matter-detail-mtrAltTitleTxt');
+  readonly caseNameField = this.page.locator('#matter-detail-mtrAltTitleTxt .col-6:nth-of-type(2)');
   readonly jurisdictionField = this.page.locator('#matter-detail-mtrJsCodeId');
   readonly serviceField = this.page.locator('#matter-detail-mtrCategoryId');
   readonly caseTypeField = this.page.locator('#matter-detail-mtrMatterCdId');

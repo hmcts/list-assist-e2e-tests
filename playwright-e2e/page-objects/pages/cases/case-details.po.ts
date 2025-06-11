@@ -59,7 +59,7 @@ export class CaseDetailsPage extends Base {
     //HMCTS case number
     await expect.soft(editNewCasePage.hmctsCaseNumberField).toHaveText('HMCTS Case Number ' + hmctsCaseNumber);
     //Case name
-    await expect.soft(editNewCasePage.caseNameField).toHaveText('Case Name ' + caseName);
+    await expect.soft(editNewCasePage.caseNameField).toHaveText(caseName);
     //Jurisdiction
     await expect.soft(editNewCasePage.jurisdictionField).toHaveText('Jurisdiction ' + jurisdictionType);
     //Service
