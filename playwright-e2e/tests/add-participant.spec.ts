@@ -1,17 +1,17 @@
-import { expect, test } from '../fixtures';
-import { config } from '../utils';
+import { expect, test } from "../fixtures";
+import { config } from "../utils";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe('Add participant @add-participant', () => {
-  test.describe.configure({ mode: 'serial' });
+test.describe("Add participant @add-participant", () => {
+  test.describe.configure({ mode: "serial" });
   test.beforeEach(async ({ page }) => {
     await page.goto(config.urls.baseUrl);
   });
 
-  test('Add new participant via Case Participants menu to case and then close participant using topbar UI', async ({
+  test("Add new participant via Case Participants menu to case and then close participant using topbar UI", async ({
     addNewCasePage,
     editNewCasePage,
     caseSearchPage,
@@ -35,7 +35,9 @@ test.describe('Add participant @add-participant', () => {
       givenName,
       lastName,
       editNewCasePage.CONSTANTS.PARTICIPANT_GENDER_MALE,
-      dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(dataUtils.getRandomNumberBetween1And50()),
+      dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(
+        dataUtils.getRandomNumberBetween1And50(),
+      ),
       editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
       editNewCasePage.CONSTANTS.PARTICIPANT_ROLE_APPLICANT,
     );
@@ -47,14 +49,16 @@ test.describe('Add participant @add-participant', () => {
     );
 
     //use close participant button
-    await expect(editNewCasePage.upperbarComponent.closeParticipantButton).toBeVisible();
+    await expect(
+      editNewCasePage.upperbarComponent.closeParticipantButton,
+    ).toBeVisible();
     await editNewCasePage.upperbarComponent.closeParticipantButton.click();
 
     //wait for homepage to load
     await homePage.waitForHomePageLoad();
   });
 
-  test('Add new participant via Participants menu and close via topbar UI', async ({
+  test("Add new participant via Participants menu and close via topbar UI", async ({
     homePage,
     dataUtils,
     newParticipantsPage,
@@ -64,7 +68,9 @@ test.describe('Add participant @add-participant', () => {
 
     await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
 
-    await expect(homePage.upperbarComponent.closeParticipantButton).toBeVisible();
+    await expect(
+      homePage.upperbarComponent.closeParticipantButton,
+    ).toBeVisible();
 
     // Add new participant
     await homePage.sidebarComponent.openAddNewParticipantPage();
@@ -78,14 +84,18 @@ test.describe('Add participant @add-participant', () => {
     await newParticipantsPage.checkEditParticipantHeader();
 
     //checks current participant drop down menu
-    await expect(homePage.upperbarComponent.currentParticipantDropdownButton).toBeVisible();
+    await expect(
+      homePage.upperbarComponent.currentParticipantDropdownButton,
+    ).toBeVisible();
     await homePage.upperbarComponent.currentParticipantDropdownButton.click();
-    await expect(homePage.upperbarComponent.currentParticipantDropdownList).toContainText(
-      homePage.upperbarComponent.currentParticipantDropDownItems,
-    );
+    await expect(
+      homePage.upperbarComponent.currentParticipantDropdownList,
+    ).toContainText(homePage.upperbarComponent.currentParticipantDropDownItems);
 
     //use close participant button
-    await expect(homePage.upperbarComponent.closeParticipantButton).toBeVisible();
+    await expect(
+      homePage.upperbarComponent.closeParticipantButton,
+    ).toBeVisible();
     await homePage.upperbarComponent.closeParticipantButton.click();
 
     //wait for homepage to load

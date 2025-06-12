@@ -36,7 +36,7 @@ export class SessionBookingPage extends Base {
   readonly listingDuration = this.page.locator("#defListingDuration");
   readonly durationDropdownButton = this.page.locator("#defListingDuration");
   readonly sessionStatusDropdown = this.page.getByLabel(
-    "Session Status: This field is"
+    "Session Status: This field is",
   );
   readonly sessionHearingChannel = this.page.getByRole("button", {
     name: "Hearing Channel:",
@@ -49,13 +49,13 @@ export class SessionBookingPage extends Base {
     .filter({ hasText: "Video - CVP" });
   readonly saveButton = this.page.locator("#svb");
   readonly allIcons = this.page.locator(
-    ".booking-icon-group > span.booking-icon"
+    ".booking-icon-group > span.booking-icon",
   );
   readonly phoneIcons = this.page.locator(
-    ".booking-icon-group > span.booking-icon > i.glyphicon-earphone"
+    ".booking-icon-group > span.booking-icon > i.glyphicon-earphone",
   );
   readonly interpreterLanguageIcon = this.page.locator(
-    ".booking-icon-group > span.booking-icon > i.glyphicon-globe"
+    ".booking-icon-group > span.booking-icon > i.glyphicon-globe",
   );
   readonly listingSaveButton = this.page
     .locator('iframe[name="addAssociation"]')
@@ -63,7 +63,7 @@ export class SessionBookingPage extends Base {
     .getByRole("button", { name: "Save", exact: true });
   readonly deleteButton = this.page.locator("#dvb");
   readonly popupFrame = this.page.frameLocator(
-    "#container iframe[name='addAssociation']"
+    "#container iframe[name='addAssociation']",
   );
 
   readonly popup = {
@@ -91,7 +91,7 @@ export class SessionBookingPage extends Base {
     "header#advancedFilter___BV_modal_header_ h2.header-title",
     {
       hasText: "HS Advanced Filters",
-    }
+    },
   );
   readonly clearAdvanceFilterButton = this.page
     .getByRole("dialog", { name: "Advanced Filter" })
@@ -179,7 +179,7 @@ export class SessionBookingPage extends Base {
         {
           intervals: [2_000],
           timeout: 60_000,
-        }
+        },
       )
       .toBeTruthy();
   }
@@ -193,14 +193,14 @@ export class SessionBookingPage extends Base {
         {
           intervals: [2_000],
           timeout: 60_000,
-        }
+        },
       )
       .toBeTruthy();
   }
 
   async checkingListingIframe() {
     const listingIframe = this.page.locator(
-      '#container iframe[name="addAssociation"]'
+      '#container iframe[name="addAssociation"]',
     );
 
     // Wait for the iframe to be visible
@@ -212,7 +212,7 @@ export class SessionBookingPage extends Base {
         {
           intervals: [1_000],
           timeout: 20_000,
-        }
+        },
       )
       .toBeTruthy();
 
@@ -222,7 +222,7 @@ export class SessionBookingPage extends Base {
     }
 
     await expect(
-      listingIframe.contentFrame().getByLabel("Hearing Type")
+      listingIframe.contentFrame().getByLabel("Hearing Type"),
     ).toBeVisible();
     const hearingTypeBtn = listingIframe
       .contentFrame()
@@ -247,7 +247,7 @@ export class SessionBookingPage extends Base {
     region: string,
     cluster: string,
     locality: string,
-    location
+    location,
   ) {
     await this.advancedFiltersButton.click();
     await expect(this.advancedFiltersHeader).toBeVisible();
