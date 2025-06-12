@@ -1,7 +1,7 @@
-import {test} from "../fixtures.js";
-import {HmiUtils} from "../utils/hmi.utils.js";
-import {config} from "../utils";
-import {expect} from "@playwright/test";
+import { test } from "../fixtures.js";
+import { HmiUtils } from "../utils/hmi.utils.js";
+import { config } from "../utils";
+import { expect } from "@playwright/test";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
@@ -9,20 +9,22 @@ test.use({
 
 test.describe("HMI Amend API tests before listing @Amend-Api-test", () => {
   test("Amended participants and their hearing method should display as expected", async ({
-                                                                                            editNewCasePage,
-                                                                                            page,
-                                                                                            config,
-                                                                                            caseSearchPage,
-                                                                                            dataUtils,
-                                                                                            homePage,
-                                                                                            listingRequirementsPage,
-                                                                                            caseDetailsPage,
-                                                                                          }) => {
+    editNewCasePage,
+    page,
+    config,
+    caseSearchPage,
+    dataUtils,
+    homePage,
+    listingRequirementsPage,
+    caseDetailsPage,
+  }) => {
     // We are expecting the env var SKIP_CREATE_CASE to be true so that case creation is skipped.
     // If this is not the case, the test will run redundant steps unnecessarily.
 
-    const CASE_ID = "CASE_ID" + dataUtils.generateRandomAlphabetical(10).toUpperCase();
-    const CASE_NAME = "CASE_NAME" + dataUtils.generateRandomAlphabetical(10).toUpperCase();
+    const CASE_ID =
+      "CASE_ID" + dataUtils.generateRandomAlphabetical(10).toUpperCase();
+    const CASE_NAME =
+      "CASE_NAME" + dataUtils.generateRandomAlphabetical(10).toUpperCase();
 
     const payload = config.data.hearingRequest;
     payload["hearingRequest"]["_case"]["caseIdHMCTS"] = CASE_ID;
@@ -47,12 +49,15 @@ test.describe("HMI Amend API tests before listing @Amend-Api-test", () => {
     await caseDetailsPage.listingRequirementLink.click();
 
     // Assert main hearing channel after amend
-    const selectedHearingChannels = await listingRequirementsPage.getSelectedHearingMethods();
+    const selectedHearingChannels =
+      await listingRequirementsPage.getSelectedHearingMethods();
     expect(selectedHearingChannels.length).toBe(1);
     expect(selectedHearingChannels).toEqual(["TEL"]);
 
     // Assert participant hearing methods after amend
-    await expect(listingRequirementsPage.participantMethodsLocator).toHaveCount(3);
+    await expect(listingRequirementsPage.participantMethodsLocator).toHaveCount(
+      3,
+    );
     await listingRequirementsPage.assertHearingMethodValueAt(0, "VID");
     await listingRequirementsPage.assertHearingMethodValueAt(1, "VID");
     await listingRequirementsPage.assertHearingMethodValueAt(2, "");
