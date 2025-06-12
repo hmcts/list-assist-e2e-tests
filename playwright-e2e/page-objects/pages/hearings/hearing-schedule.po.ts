@@ -1,6 +1,6 @@
-import { Locator, Page, expect } from '@playwright/test';
-import { Base } from '../../base';
-import { SessionBookingPage } from './session-booking.po.ts';
+import { Locator, Page, expect } from "@playwright/test";
+import { Base } from "../../base";
+import { SessionBookingPage } from "./session-booking.po.ts";
 
 interface TableRow {
   roomName: string;
@@ -15,31 +15,55 @@ interface TableRow {
 export class HearingSchedulePage extends Base {
   private sessionBookingPage: SessionBookingPage;
 
-  readonly container = this.page.locator('#pageContent');
-  readonly header = this.page.locator('#hs-header');
-  readonly tabList = this.page.locator('#joh-tabs');
-  readonly table = this.page.locator('#membersOrRoomsTable');
-  readonly tableHeaders = this.table.locator('thead th');
+  readonly container = this.page.locator("#pageContent");
+  readonly header = this.page.locator("#hs-header");
+  readonly tabList = this.page.locator("#joh-tabs");
+  readonly table = this.page.locator("#membersOrRoomsTable");
+  readonly tableHeaders = this.table.locator("thead th");
   readonly schedulePopup = {
-    createSession: this.page.locator('#createSession'),
-    roomUnavailability: this.page.locator('#createTimeOffOrRoomUnavailability'),
-    basketItem: this.page.locator('#venueBookingList').getByLabel('Go to session details page'),
+    createSession: this.page.locator("#createSession"),
+    roomUnavailability: this.page.locator("#createTimeOffOrRoomUnavailability"),
+    basketItem: this.page
+      .locator("#venueBookingList")
+      .getByLabel("Go to session details page"),
   };
   readonly scheduleSelector = 'div[booking="item"]';
-  readonly siblingRow = '+ tr';
-  readonly separatorValue = '--------------------------';
-  readonly confirmListingReleasedStatus = this.page.locator('button[title="Show booking details"] .hs-session-status', {
-    hasText: 'Released',
-  });
+  readonly siblingRow = "+ tr";
+  readonly separatorValue = "--------------------------";
+  readonly confirmListingReleasedStatus = this.page.locator(
+    'button[title="Show booking details"] .hs-session-status',
+    {
+      hasText: "Released",
+    },
+  );
+  readonly addBookingButton = this.page
+    .locator("div.droparea.addBooking > button.btn.text-center")
+    .first();
+
+  readonly createSessionButton = this.page.locator("#createSession");
+
+  //multi-day listings
+  readonly recurranceCheckbox = this.page.locator("#recurrenceCheckbox");
+  readonly recurranceWeeksTextbox = this.page.locator("#recWeeks");
+
+  readonly saveButton = this.page.locator("#svb");
+  readonly recurranceDateUntilTextBox = this.page.locator("#bbb");
+
+  //all locations in grid that contain the word 'Released'
+  readonly cellsWithReleasedStatus = this.page.locator(
+    'button[title="Show booking details"]:has(span.hs-session-status:text("Released"))',
+  );
 
   //scheduling
-  readonly goToSessionDetailsButton = this.page.getByRole('button', {
-    name: 'Go to Session Details screen',
+  readonly goToSessionDetailsButton = this.page.getByRole("button", {
+    name: "Go to Session Details screen",
   });
-  readonly deleteSessionButton = this.page.getByRole('button', {
-    name: 'Delete',
+  readonly deleteSessionButton = this.page.getByRole("button", {
+    name: "Delete",
   });
-  readonly deleteSessionInSessionDetailsButton = this.page.locator('#handleListingImgId').nth(1);
+  readonly deleteSessionInSessionDetailsButton = this.page
+    .locator("#handleListingImgId")
+    .nth(1);
 
   constructor(page: Page) {
     super(page);
@@ -62,32 +86,40 @@ export class HearingSchedulePage extends Base {
 
   async mapTable(): Promise<TableRow[]> {
     const table: TableRow[] = [];
-    const rows = await this.table.locator('tbody > tr').all();
+    const rows = await this.table.locator("tbody > tr").all();
 
     for (const row of rows) {
       // Filter out expanded rows
-      const firstCell = (await row.locator('td').first().textContent())?.trim();
+      const firstCell = (await row.locator("td").first().textContent())?.trim();
       if (firstCell?.includes(this.separatorValue) || !firstCell) continue;
 
-      const roomName = await row.locator('td').first().locator('b').textContent();
+      const roomName = await row
+        .locator("td")
+        .first()
+        .locator("b")
+        .textContent();
       if (!roomName) {
-        throw new Error('Row or room not found');
+        throw new Error("Row or room not found");
       }
 
       table.push({
         roomName: roomName,
         row: row,
-        columnOne: row.locator('td').nth(1),
-        columnTwo: row.locator('td').nth(2),
-        columnThree: row.locator('td').nth(3),
-        columnFour: row.locator('td').nth(4),
-        columnFive: row.locator('td').nth(5),
+        columnOne: row.locator("td").nth(1),
+        columnTwo: row.locator("td").nth(2),
+        columnThree: row.locator("td").nth(3),
+        columnFour: row.locator("td").nth(4),
+        columnFive: row.locator("td").nth(5),
       });
     }
     return table;
   }
 
-  async scheduleHearingWithBasket(roomName: string, column: string, caseName: string): Promise<void> {
+  async scheduleHearingWithBasket(
+    roomName: string,
+    column: string,
+    caseName: string,
+  ): Promise<void> {
     const table: TableRow[] = await this.mapTable();
     const row = table.filter((row) => row.roomName === roomName)[0];
     await row[column].locator(`${this.scheduleSelector}`).click();
@@ -102,8 +134,14 @@ export class HearingSchedulePage extends Base {
     return row;
   }
 
-  async clearDownSchedule(cancellationCode: string, room: string): Promise<void> {
-    const scheduleButton = this.page.locator('div.droparea span.sessionHeader', { hasText: room });
+  async clearDownSchedule(
+    cancellationCode: string,
+    room: string,
+  ): Promise<void> {
+    const scheduleButton = this.page.locator(
+      "div.droparea span.sessionHeader",
+      { hasText: room },
+    );
 
     //go to hearing schedule page
     await expect(this.sidebarComponent.sidebar).toBeVisible();
@@ -112,9 +150,12 @@ export class HearingSchedulePage extends Base {
     //schedule hearing
     await this.waitForLoad();
 
-    const releasedStatusCheck = this.page.locator('button[title="Show booking details"] .hs-session-status', {
-      hasText: 'Released',
-    });
+    const releasedStatusCheck = this.page.locator(
+      'button[title="Show booking details"] .hs-session-status',
+      {
+        hasText: "Released",
+      },
+    );
 
     if (await releasedStatusCheck.isVisible()) {
       await releasedStatusCheck.click();
@@ -149,13 +190,86 @@ export class HearingSchedulePage extends Base {
       //delete session from inside of session details page, if available
       if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
         await this.deleteSessionInSessionDetailsButton.click();
-        await this.page.locator('#cancellationCode').click();
-        await this.page.locator('#cancellationCode').selectOption(cancellationCode);
-        await this.page.getByRole('button', { name: 'Yes' }).click();
+        await this.page.locator("#cancellationCode").click();
+        await this.page
+          .locator("#cancellationCode")
+          .selectOption(cancellationCode);
+        await this.page.getByRole("button", { name: "Yes" }).click();
       }
       //delete session from schedule page
       await expect(this.deleteSessionButton).toBeVisible();
       await this.deleteSessionButton.click();
+      await expect(this.header).toBeVisible();
+    }
+  }
+
+  async clearDownMultiDaySchedule(
+    cancellationCode: string,
+    room: string,
+  ): Promise<void> {
+    const scheduleButton = this.page.locator(
+      "div.droparea span.sessionHeader",
+      { hasText: room },
+    );
+
+    //schedule hearing
+    await this.waitForLoad();
+
+    const count = await this.cellsWithReleasedStatus.count();
+    console.log(count);
+    for (let i = 0; i < count; i++) {
+      if (i === 0) {
+        return;
+      }
+
+      // For i >= 1, continue with the rest of the method
+      await this.cellsWithReleasedStatus.nth(i).click();
+
+      await expect
+        .poll(
+          async () => {
+            return await scheduleButton.first().isVisible();
+          },
+          {
+            intervals: [2_000],
+            timeout: 10_000,
+          },
+        )
+        .toBeTruthy();
+
+      await scheduleButton.first().click();
+      await this.goToSessionDetailsButton.click();
+
+      await expect
+        .poll(
+          async () => {
+            return await this.sessionBookingPage.heading.isVisible();
+          },
+          {
+            intervals: [2_000],
+            timeout: 10_000,
+          },
+        )
+        .toBeTruthy();
+
+      //delete session from inside of session details page, if available
+      if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
+        await this.deleteSessionInSessionDetailsButton.click();
+        await this.page.locator("#cancellationCode").click();
+        await this.page
+          .locator("#cancellationCode")
+          .selectOption(cancellationCode);
+        await this.page.getByRole("button", { name: "Yes" }).click();
+      }
+      //delete session from schedule page
+      await expect(this.deleteSessionButton).toBeVisible();
+      await this.deleteSessionButton.click();
+      await this.page
+        .locator(
+          '#recVenueBookingDelAlert input[type="radio"][name="delRecVb"][value="true"]',
+        )
+        .click();
+      await this.page.locator("#recVenueBookingDelAlert #ok_btn_id").click();
       await expect(this.header).toBeVisible();
     }
   }
