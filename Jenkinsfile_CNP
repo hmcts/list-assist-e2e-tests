@@ -203,8 +203,9 @@ withNightlyPipeline(type, product, component, 600) {
       }
       stage('Chrome - Amend Api Tests') {
         try {
-          process.env.SKIP_CREATE_CASE = true;
+          withEnv(['SKIP_CREATE_CASE=true']) {
           yarnBuilder.yarn('playwright test --project=chrome --grep @Amend-Api-test')
+          }
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -216,7 +217,6 @@ withNightlyPipeline(type, product, component, 600) {
             reportFiles: 'index.html',
             reportName: 'Chrome - Amend Api Tests'
           ])
-          process.env.SKIP_CREATE_CASE = false;
 
         }
       }
