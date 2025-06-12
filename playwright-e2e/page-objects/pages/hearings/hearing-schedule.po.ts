@@ -51,7 +51,7 @@ export class HearingSchedulePage extends Base {
 
   //all locations in grid that contain the word 'Released'
   readonly cellsWithReleasedStatus = this.page.locator(
-    'button[title="Show booking details"]:has(span.hs-session-status:text("Released"))',
+    'span.hs-session-status:text("Released")',
   );
 
   //scheduling
@@ -150,15 +150,8 @@ export class HearingSchedulePage extends Base {
     //schedule hearing
     await this.waitForLoad();
 
-    const releasedStatusCheck = this.page.locator(
-      'button[title="Show booking details"] .hs-session-status',
-      {
-        hasText: "Released",
-      },
-    );
-
-    if (await releasedStatusCheck.isVisible()) {
-      await releasedStatusCheck.click();
+    if (await this.confirmListingReleasedStatus.isVisible()) {
+      await this.confirmListingReleasedStatus.click();
 
       await expect
         .poll(
@@ -212,18 +205,22 @@ export class HearingSchedulePage extends Base {
       { hasText: room },
     );
 
+    //go to hearing schedule page
+    await expect(this.sidebarComponent.sidebar).toBeVisible();
+    await this.sidebarComponent.openHearingSchedulePage();
+
     //schedule hearing
     await this.waitForLoad();
 
-    const count = await this.cellsWithReleasedStatus.count();
-    console.log(count);
-    for (let i = 0; i < count; i++) {
-      if (i === 0) {
-        return;
-      }
+    const releasedStatusCheck = this.page.locator(
+      'button[title="Show booking details"] .hs-session-status',
+      {
+        hasText: "Released",
+      },
+    );
 
-      // For i >= 1, continue with the rest of the method
-      await this.cellsWithReleasedStatus.nth(i).click();
+    if (await releasedStatusCheck.first().isVisible()) {
+      await releasedStatusCheck.first().click();
 
       await expect
         .poll(
@@ -238,7 +235,7 @@ export class HearingSchedulePage extends Base {
         .toBeTruthy();
 
       await scheduleButton.first().click();
-      await this.goToSessionDetailsButton.click();
+      await this.goToSessionDetailsButton.first().click();
 
       await expect
         .poll(
@@ -271,6 +268,8 @@ export class HearingSchedulePage extends Base {
         .click();
       await this.page.locator("#recVenueBookingDelAlert #ok_btn_id").click();
       await expect(this.header).toBeVisible();
+    } else {
+      return;
     }
   }
 }
