@@ -136,6 +136,9 @@ test.describe("Multi-Day Case Listing and Reporting @multi-day-case-listing-and-
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
     );
     await hearingSchedulePage.saveButton.click();
+    await hearingSchedulePage.waitForLoad();
+
+    await hearingSchedulePage.confirmListingReleasedStatus.first().isVisible();
   });
 
   test.describe("Case listing and reporting @case-listing-and-reporting", () => {
