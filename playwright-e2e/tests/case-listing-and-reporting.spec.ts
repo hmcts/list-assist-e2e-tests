@@ -100,19 +100,6 @@ test.describe("Multi-Day Case Listing and Reporting @multi-day-case-listing-and-
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1,
     );
 
-    const roomData = {
-      roomName:
-        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1,
-      column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-      caseNumber: process.env.HMCTS_CASE_NUMBER as string,
-      sessionDuration:
-        sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-      hearingType:
-        sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-      cancelReason:
-        sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
-    };
-
     await hearingSchedulePage.addBookingButton.click();
     await hearingSchedulePage.createSessionButton.click();
 
@@ -138,7 +125,10 @@ test.describe("Multi-Day Case Listing and Reporting @multi-day-case-listing-and-
     await hearingSchedulePage.saveButton.click();
     await hearingSchedulePage.waitForLoad();
 
-    await hearingSchedulePage.confirmListingReleasedStatus.first().isVisible();
+    const releaseStatusCount =
+      await hearingSchedulePage.confirmListingReleasedStatus.count();
+    expect(releaseStatusCount).toBeGreaterThan(1);
+    expect(releaseStatusCount).toBeLessThanOrEqual(5);
   });
 
   test.describe("Case listing and reporting @case-listing-and-reporting", () => {
