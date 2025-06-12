@@ -19,6 +19,8 @@ export class CaseDetailsPage extends Base {
   readonly closeCaseButton = this.page.getByRole('link', {
     name: 'Close Case from top navigation',
   });
+  readonly listingRequirementLink = this.page
+    .locator('div#keyEventCard a:has-text("Listing Requirements - Listing Requirements")');
 
   constructor(page: Page) {
     super(page);
@@ -57,7 +59,7 @@ export class CaseDetailsPage extends Base {
     //HMCTS case number
     await expect.soft(editNewCasePage.hmctsCaseNumberField).toHaveText('HMCTS Case Number ' + hmctsCaseNumber);
     //Case name
-    await expect.soft(editNewCasePage.caseNameField).toHaveText('Case Name ' + caseName);
+    await expect.soft(editNewCasePage.caseNameField).toHaveText(caseName);
     //Jurisdiction
     await expect.soft(editNewCasePage.jurisdictionField).toHaveText('Jurisdiction ' + jurisdictionType);
     //Service
