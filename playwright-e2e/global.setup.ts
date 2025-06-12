@@ -19,7 +19,10 @@ setup.describe('Global Setup', () => {
   setup(
     'Create new case',
     async ({ loginPage, config, page, homePage, addNewCasePage, hearingSchedulePage, dataUtils }) => {
-      setup.skip(process.env.SKIP_CREATE_CASE !== 'true');
+      if (process.env.SKIP_CREATE_CASE) {
+        setup.skip(process.env.SKIP_CREATE_CASE == true);
+      }
+
       await page.goto(config.urls.baseUrl);
       await loginPage.login(config.users.testUser);
 
