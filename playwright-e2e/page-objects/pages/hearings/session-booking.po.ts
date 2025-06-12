@@ -11,10 +11,15 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
     CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT:
       "Pontypridd County Court and",
+    CASE_LISTING_LOCALITY_CAERNARFON_JC: "Caernarfon Justice Centre",
+    CASE_LISTING_LOCALITY_ABERYSTWYTH_JC: "Aberystwyth Justice Centre",
+    CASE_LISTING_LOCATION_LOCATION_CAERNARFON_CHMBRS_5:
+      "Caernarfon Chambers 05",
     CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC:
       "Newport (South Wales) County Court and Family Court",
     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
       "Newport (South Wales) Chambers 01",
+    CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1: "Aberystwyth Courtroom 01",
     CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
     CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: "4",
     CASE_LISTING_SESSION_DURATION_1_00: "60",
@@ -36,7 +41,7 @@ export class SessionBookingPage extends Base {
   readonly listingDuration = this.page.locator("#defListingDuration");
   readonly durationDropdownButton = this.page.locator("#defListingDuration");
   readonly sessionStatusDropdown = this.page.getByLabel(
-    "Session Status: This field is"
+    "Session Status: This field is",
   );
   readonly sessionHearingChannel = this.page.getByRole("button", {
     name: "Hearing Channel:",
@@ -49,13 +54,13 @@ export class SessionBookingPage extends Base {
     .filter({ hasText: "Video - CVP" });
   readonly saveButton = this.page.locator("#svb");
   readonly allIcons = this.page.locator(
-    ".booking-icon-group > span.booking-icon"
+    ".booking-icon-group > span.booking-icon",
   );
   readonly phoneIcons = this.page.locator(
-    ".booking-icon-group > span.booking-icon > i.glyphicon-earphone"
+    ".booking-icon-group > span.booking-icon > i.glyphicon-earphone",
   );
   readonly interpreterLanguageIcon = this.page.locator(
-    ".booking-icon-group > span.booking-icon > i.glyphicon-globe"
+    ".booking-icon-group > span.booking-icon > i.glyphicon-globe",
   );
   readonly listingSaveButton = this.page
     .locator('iframe[name="addAssociation"]')
@@ -63,7 +68,7 @@ export class SessionBookingPage extends Base {
     .getByRole("button", { name: "Save", exact: true });
   readonly deleteButton = this.page.locator("#dvb");
   readonly popupFrame = this.page.frameLocator(
-    "#container iframe[name='addAssociation']"
+    "#container iframe[name='addAssociation']",
   );
 
   readonly popup = {
@@ -91,7 +96,7 @@ export class SessionBookingPage extends Base {
     "header#advancedFilter___BV_modal_header_ h2.header-title",
     {
       hasText: "HS Advanced Filters",
-    }
+    },
   );
   readonly clearAdvanceFilterButton = this.page
     .getByRole("dialog", { name: "Advanced Filter" })
@@ -179,7 +184,7 @@ export class SessionBookingPage extends Base {
         {
           intervals: [2_000],
           timeout: 60_000,
-        }
+        },
       )
       .toBeTruthy();
   }
@@ -193,14 +198,14 @@ export class SessionBookingPage extends Base {
         {
           intervals: [2_000],
           timeout: 60_000,
-        }
+        },
       )
       .toBeTruthy();
   }
 
   async checkingListingIframe() {
     const listingIframe = this.page.locator(
-      '#container iframe[name="addAssociation"]'
+      '#container iframe[name="addAssociation"]',
     );
 
     // Wait for the iframe to be visible
@@ -212,7 +217,7 @@ export class SessionBookingPage extends Base {
         {
           intervals: [1_000],
           timeout: 20_000,
-        }
+        },
       )
       .toBeTruthy();
 
@@ -222,7 +227,7 @@ export class SessionBookingPage extends Base {
     }
 
     await expect(
-      listingIframe.contentFrame().getByLabel("Hearing Type")
+      listingIframe.contentFrame().getByLabel("Hearing Type"),
     ).toBeVisible();
     const hearingTypeBtn = listingIframe
       .contentFrame()
@@ -247,7 +252,7 @@ export class SessionBookingPage extends Base {
     region: string,
     cluster: string,
     locality: string,
-    location
+    location,
   ) {
     await this.advancedFiltersButton.click();
     await expect(this.advancedFiltersHeader).toBeVisible();
