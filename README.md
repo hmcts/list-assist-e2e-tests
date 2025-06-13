@@ -1,5 +1,6 @@
 # Playwright Project Template
 
+
 This repository contains the E2E tests used to validate and verify List Assist deployments.
 
 ## Project Structure

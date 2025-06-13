@@ -32,7 +32,7 @@ test.describe("Case creation @add-new-case", () => {
     };
 
     await addNewCasePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(process.env.CASE_NAME as string);
+    await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
 
     //checks case details against known values
     await caseDetailsPage.checkInputtedCaseValues(
@@ -116,7 +116,7 @@ test.describe("Case creation @add-new-case", () => {
       RELATED_CASE_NAME,
     );
     await addNewCasePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(process.env.CASE_NAME as string);
+    await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
 
     //add related case
     await expect(editNewCasePage.relatedCasesHeader).toBeVisible();

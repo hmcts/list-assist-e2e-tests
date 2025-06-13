@@ -19,7 +19,7 @@ test.describe("Add participant @add-participant", () => {
     homePage,
   }) => {
     await addNewCasePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(process.env.CASE_NAME as string);
+    await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
 
     //add new participant
     await expect(editNewCasePage.caseParticipantsHeader).toBeVisible();
