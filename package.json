@@ -18,6 +18,7 @@
     "eslint-plugin-playwright": "^1.6.2",
     "get-port": "^7.1.0",
     "globals": "^15.10.0",
+    "husky": "^9.1.7",
     "lighthouse": "^12.2.1",
     "playwright": "^1.48.2",
     "playwright-core": "^1.48.2",
@@ -26,6 +27,7 @@
     "typescript-eslint": "^8.8.0"
   },
   "scripts": {
+    "prepare": "husky",
     "lint": "prettier --write . && yarn tsc -p tsconfig.json && yarn eslint .",
     "setup": "yarn playwright install --with-deps",
     "load-secrets": "yarn node scripts/get-secrets.js",
