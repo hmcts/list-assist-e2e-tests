@@ -1,27 +1,30 @@
-import { execSync } from 'child_process';
-import { statSync, existsSync } from 'fs';
+import { execSync } from "child_process";
+import { statSync, existsSync } from "fs";
 
 export class DataUtils {
   //updates bank-holidays.json file if it is older than the previous year
   // and today is Jan 1st or later
   updateBankHolidaysFileIfNeeded(): void {
-    const holidaysFile = 'bank-holidays.json';
+    const holidaysFile = "bank-holidays.json";
     const today = new Date();
     const year = today.getFullYear();
     const dec31PrevYear = new Date(year - 1, 11, 31, 23, 59, 59);
 
     const needDownload =
-      !existsSync(holidaysFile) || (statSync(holidaysFile).mtime <= dec31PrevYear && today > dec31PrevYear);
+      !existsSync(holidaysFile) ||
+      (statSync(holidaysFile).mtime <= dec31PrevYear && today > dec31PrevYear);
 
     if (needDownload) {
-      execSync('curl -s https://www.gov.uk/bank-holidays.json -o bank-holidays.json');
+      execSync(
+        "curl -s https://www.gov.uk/bank-holidays.json -o bank-holidays.json",
+      );
     }
   }
 
   // Generate a random string of alphabetical characters
   generateRandomAlphabetical(length: number): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    let result = '';
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    let result = "";
     for (let i = 0; i < length; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -30,8 +33,9 @@ export class DataUtils {
 
   // Generate a random string of alphanumeric characters
   generateRandomAlphanumeric(length: number): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
     for (let i = 0; i < length; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -52,10 +56,14 @@ export class DataUtils {
   // Generate a random date of birth in dd/mm/yyyy format
   generateDobInDdMmYyyyForwardSlashSeparators(yearsInThePast: number): string {
     const today = new Date();
-    const pastDate = new Date(today.setFullYear(today.getFullYear() - yearsInThePast));
+    const pastDate = new Date(
+      today.setFullYear(today.getFullYear() - yearsInThePast),
+    );
 
     // Format the date as dd/mm/yyyy using toLocaleDateString
-    const formattedDate = pastDate.toLocaleDateString('en-GB').replace(/\//g, '/');
+    const formattedDate = pastDate
+      .toLocaleDateString("en-GB")
+      .replace(/\//g, "/");
 
     return formattedDate;
   }
@@ -66,8 +74,8 @@ export class DataUtils {
     date.setDate(date.getDate() + daysFromToday);
 
     const formattedDate = date
-      .toLocaleDateString('en-CA') // 'en-CA' formats the date as yyyy-mm-dd
-      .replace(/-/g, ''); // remove dashes to get yyyymmdd
+      .toLocaleDateString("en-CA") // 'en-CA' formats the date as yyyy-mm-dd
+      .replace(/-/g, ""); // remove dashes to get yyyymmdd
 
     return formattedDate;
   }
@@ -77,7 +85,7 @@ export class DataUtils {
     const date = new Date();
     date.setDate(date.getDate() + daysFromToday);
 
-    const formattedDate = date.toLocaleDateString('en-CA'); // 'en-CA' formats the date as yyyy-mm-dd
+    const formattedDate = date.toLocaleDateString("en-CA"); // 'en-CA' formats the date as yyyy-mm-dd
 
     return formattedDate;
   }
@@ -87,21 +95,21 @@ export class DataUtils {
   getDayAsDd(offset: number = 0): string {
     const date = new Date();
     date.setDate(date.getDate() + offset);
-    const day = String(date.getDate()).padStart(2, '0');
-    return day.startsWith('0') ? day.slice(1) : day;
+    const day = String(date.getDate()).padStart(2, "0");
+    return day.startsWith("0") ? day.slice(1) : day;
   }
 
   getCurrentMonthAsString(): string {
     const today = new Date();
-    return today.toLocaleString('en-UK', { month: 'long' });
+    return today.toLocaleString("en-UK", { month: "long" });
   }
 
   getFormattedDateForReportAssertion(): string {
     const today = new Date();
 
-    const dayName = today.toLocaleString('en-UK', { weekday: 'long' });
+    const dayName = today.toLocaleString("en-UK", { weekday: "long" });
     const day = today.getDate();
-    const monthName = today.toLocaleString('en-UK', { month: 'long' });
+    const monthName = today.toLocaleString("en-UK", { month: "long" });
     const year = today.getFullYear();
 
     return `${dayName}, ${day} ${monthName} ${year}`;
