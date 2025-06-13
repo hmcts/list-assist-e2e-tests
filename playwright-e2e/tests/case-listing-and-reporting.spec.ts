@@ -296,7 +296,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
 
     await addNewCasePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(process.env.CASE_NAME as string);
+    await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
     await caseSearchPage.addToCartButton.click();
 
     //LISTING REQUIREMENTS
@@ -361,7 +361,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     await hearingSchedulePage.waitForLoad();
 
     //confirms that there are more than 1 and less than or equal to 5 sessions created
-    const releaseStatusCount =
+    let releaseStatusCount =
       await hearingSchedulePage.confirmListingReleasedStatus.count();
     expect(releaseStatusCount).toBeGreaterThan(1);
     expect(releaseStatusCount).toBeLessThanOrEqual(5);
@@ -385,72 +385,119 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1,
     );
 
+    await multiDayCartPage.selectCaseFromSelectDropDown(
+      process.env.HMCTS_CASE_NUMBER as string,
+    );
+
+    const lrString =
+      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0) + " Open";
+    await multiDayCartPage.waitForlistingRequirementsSelectionToBePopulated(
+      lrString,
+    );
+    await multiDayCartPage.applyFilterButton.click();
     await multiDayCartPage.bulkListCheckBox.click();
     await multiDayCartPage.submitButton.click();
+
+    //click ok on multi-day validation popup
+    const pagePromise = multiDayCartPage.page.waitForEvent("popup", {
+      timeout: 2000,
+    });
+    await multiDayCartPage.okbuttonOnValidationPopup.click();
+
+    // //additional listing data page
+    // await expect(
+
+    //listing validation popup
+    const validationPopup = await pagePromise;
+    await validationPopup.waitForLoadState("domcontentloaded");
+    // interacting with validation popup
+    await validationPopup
+      .getByRole("combobox", { name: "Reason to override rule/s *" })
+      .selectOption({
+        label:
+          sessionBookingPage.CONSTANTS
+            .CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON,
+      });
+    await validationPopup
+      .getByRole("button", { name: "SAVE & CONTINUE LISTING" })
+      .click();
+
+    await multiDayCartPage.additionalListingDataPageHeader.isVisible();
+    await multiDayCartPage.createListingsOnlyButton.click();
+
+    await hearingSchedulePage.waitForLoad();
+
+    //confirms that there are more than 1 and less than or equal to 5 sessions created
+    releaseStatusCount =
+      await hearingSchedulePage.confirmListingReleasedStatus.count();
+    expect(releaseStatusCount).toBeGreaterThan(1);
+    expect(releaseStatusCount).toBeLessThanOrEqual(5);
   });
-});
 
-async function createHearingSession(
-  caseName: string,
-  homePage: HomePage,
-  caseSearchPage: CaseSearchPage,
-  caseDetailsPage: CaseDetailsPage,
-  hearingSchedulePage: HearingSchedulePage,
-  roomData: {
-    roomName: string;
-    column: string;
-    caseNumber: string;
-    sessionDuration: string;
-    hearingType: string;
-    cancelReason: string;
-  },
-  sessionBookingPage: SessionBookingPage,
-) {
-  // Check if the close case button in upper bar is present
-  await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
-  //check current case drop down menu in upper bar
-  await expect(
-    homePage.upperbarComponent.currentCaseDropdownButton,
-  ).toBeVisible();
-  await homePage.upperbarComponent.currentCaseDropdownButton.click();
+  async function createHearingSession(
+    caseName: string,
+    homePage: HomePage,
+    caseSearchPage: CaseSearchPage,
+    caseDetailsPage: CaseDetailsPage,
+    hearingSchedulePage: HearingSchedulePage,
+    roomData: {
+      roomName: string;
+      column: string;
+      caseNumber: string;
+      sessionDuration: string;
+      hearingType: string;
+      cancelReason: string;
+    },
+    sessionBookingPage: SessionBookingPage,
+  ) {
+    // Check if the close case button in upper bar is present
+    await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
+    //check current case drop down menu in upper bar
+    await expect(
+      homePage.upperbarComponent.currentCaseDropdownButton,
+    ).toBeVisible();
+    await homePage.upperbarComponent.currentCaseDropdownButton.click();
 
-  await expect(
-    homePage.upperbarComponent.currentCaseDropdownList,
-  ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
+    await expect(
+      homePage.upperbarComponent.currentCaseDropdownList,
+    ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
 
-  //add case to cart
-  await caseSearchPage.sidebarComponent.openSearchCasePage();
-  await caseSearchPage.searchCase(caseName);
+    //add case to cart
+    await caseSearchPage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.searchCase(caseName);
 
-  await expect(caseDetailsPage.addToCartButton).toBeVisible();
-  await caseDetailsPage.addToCartButton.click();
-  await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
+    await expect(caseDetailsPage.addToCartButton).toBeVisible();
+    await caseDetailsPage.addToCartButton.click();
+    await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
 
-  //go to hearing schedule page
-  await expect(hearingSchedulePage.sidebarComponent.sidebar).toBeVisible();
-  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+    //go to hearing schedule page
+    await expect(hearingSchedulePage.sidebarComponent.sidebar).toBeVisible();
+    await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
 
-  //schedule hearing
-  await hearingSchedulePage.waitForLoad();
+    //schedule hearing
+    await hearingSchedulePage.waitForLoad();
 
-  await hearingSchedulePage.scheduleHearingWithBasket(
-    roomData.roomName,
-    roomData.column,
-    roomData.caseNumber,
-  );
+    await hearingSchedulePage.scheduleHearingWithBasket(
+      roomData.roomName,
+      roomData.column,
+      roomData.caseNumber,
+    );
 
-  //session booking page
-  await sessionBookingPage.bookSession(
-    sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-    sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-  );
+    //session booking page
+    await sessionBookingPage.bookSession(
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+    );
 
-  //confirm listing
-  await expect(hearingSchedulePage.confirmListingReleasedStatus).toBeVisible();
-}
-
-async function checkWeekdayRecurringCheckboxes(page) {
-  for (const day of [2, 3, 4, 5, 6]) {
-    await page.check(`#venueBooking\\.recurringDay${day}`);
+    //confirm listing
+    await expect(
+      hearingSchedulePage.confirmListingReleasedStatus,
+    ).toBeVisible();
   }
-}
+
+  async function checkWeekdayRecurringCheckboxes(page) {
+    for (const day of [2, 3, 4, 5, 6]) {
+      await page.check(`#venueBooking\\.recurringDay${day}`);
+    }
+  }
+});
