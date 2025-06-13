@@ -1,16 +1,16 @@
-import { expect, test } from '../fixtures';
-import { config } from '../utils';
+import { expect, test } from "../fixtures";
+import { config } from "../utils";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe('Case creation @add-new-case', () => {
+test.describe("Case creation @add-new-case", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(config.urls.baseUrl);
   });
 
-  test('Search for case and confirm case details are correct @smoke', async ({
+  test("Search for case and confirm case details are correct @smoke", async ({
     addNewCasePage,
     editNewCasePage,
     caseDetailsPage,
@@ -18,7 +18,8 @@ test.describe('Case creation @add-new-case', () => {
   }) => {
     // Test data
     const caseData = {
-      hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      hmctsCaseNumberHeaderValue:
+        addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
       caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
       jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL,
       service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
@@ -31,7 +32,7 @@ test.describe('Case creation @add-new-case', () => {
     };
 
     await addNewCasePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(process.env.CASE_NAME as string);
+    await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
 
     //checks case details against known values
     await caseDetailsPage.checkInputtedCaseValues(
@@ -64,15 +65,19 @@ test.describe('Case creation @add-new-case', () => {
     await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
 
     //select hearing type
-    await caseDetailsPage.hearingTypeSelect.selectOption(caseData.hearingTypeRef);
+    await caseDetailsPage.hearingTypeSelect.selectOption(
+      caseData.hearingTypeRef,
+    );
     await caseDetailsPage.saveButton.click();
 
     //CHECK CURRENT DETAILS OF CASE
     await caseDetailsPage.sidebarComponent.openCaseDetailsEditPage();
-    await expect(caseDetailsPage.currentCaseCurrentStatusField).toHaveText('Current Status ' + caseData.currentStatus);
+    await expect(caseDetailsPage.currentCaseCurrentStatusField).toHaveText(
+      "Current Status " + caseData.currentStatus,
+    );
   });
 
-  test('Search for and add related case to the existing case', async ({
+  test("Search for and add related case to the existing case", async ({
     addNewCasePage,
     editNewCasePage,
     caseSearchPage,
@@ -84,11 +89,15 @@ test.describe('Case creation @add-new-case', () => {
     await homePage.sidebarComponent.openAddNewCasePage();
 
     // Generate case details
-    const RELATED_HMCTS_CASE_NUMBER = 'RELATED_HMCTS_CN_' + dataUtils.generateRandomAlphabetical(10).toUpperCase();
-    const RELATED_CASE_NAME = 'RELATED_AUTO_' + dataUtils.generateRandomAlphabetical(10).toUpperCase();
+    const RELATED_HMCTS_CASE_NUMBER =
+      "RELATED_HMCTS_CN_" +
+      dataUtils.generateRandomAlphabetical(10).toUpperCase();
+    const RELATED_CASE_NAME =
+      "RELATED_AUTO_" + dataUtils.generateRandomAlphabetical(10).toUpperCase();
 
     const caseData = {
-      hmctsCaseNumberHeaderValue: addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      hmctsCaseNumberHeaderValue:
+        addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
       caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
       jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL,
       service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
@@ -101,9 +110,13 @@ test.describe('Case creation @add-new-case', () => {
     };
 
     // Create the new case
-    await addNewCasePage.addNewCaseWithMandatoryData(caseData, RELATED_HMCTS_CASE_NUMBER, RELATED_CASE_NAME);
+    await addNewCasePage.addNewCaseWithMandatoryData(
+      caseData,
+      RELATED_HMCTS_CASE_NUMBER,
+      RELATED_CASE_NAME,
+    );
     await addNewCasePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(process.env.CASE_NAME as string);
+    await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
 
     //add related case
     await expect(editNewCasePage.relatedCasesHeader).toBeVisible();

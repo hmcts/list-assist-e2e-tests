@@ -14,6 +14,38 @@ export class ListingRequirementsPage extends Base {
     .locator("span")
     .filter({ hasText: "In Person (parent) Not" })
     .getByRole("button");
+  readonly participantMethodsLocator = this.page.locator(
+    "table.table-bordered >> tr:not(:first-child) td:nth-child(4) select.form-control",
+  );
+
+  readonly hearingChannelLocator = this.page.locator("#evtHearingMethodCd");
+
+  async getSelectedHearingMethods(): Promise<string[]> {
+    return await this.hearingChannelLocator.evaluate(
+      (select: HTMLSelectElement) =>
+        Array.from(select.selectedOptions).map((option) => option.value),
+    );
+  }
+
+  async getHearingMethodValueAt(index: number): Promise<string> {
+    return await this.participantMethodsLocator
+      .nth(index)
+      .evaluate((el: HTMLSelectElement) => el.value);
+  }
+
+  async assertHearingMethodValueAt(
+    index: number,
+    expectedValue: string,
+  ): Promise<void> {
+    const actualValue = await this.getHearingMethodValueAt(index);
+    if (actualValue !== expectedValue) {
+      throw new Error(
+        `Expected value at row ${
+          index + 1
+        } to be "${expectedValue}", but got "${actualValue}"`,
+      );
+    }
+  }
 
   constructor(page: Page) {
     super(page);
