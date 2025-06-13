@@ -5,5 +5,5 @@ export default tseslint.config(
   LintingConfig.tseslintRecommended,
   LintingConfig.ignored,
   LintingConfig.tseslintPlugin,
-  LintingConfig.playwright
+  LintingConfig.playwright,
 );

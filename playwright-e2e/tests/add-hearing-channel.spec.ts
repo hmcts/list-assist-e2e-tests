@@ -1,13 +1,18 @@
-import { expect, test } from '../fixtures';
-import { HomePage, CaseSearchPage, CaseDetailsPage, HearingSchedulePage } from '../page-objects/pages';
-import { SessionBookingPage } from '../page-objects/pages/hearings/session-booking.po';
-import { config } from '../utils';
+import { expect, test } from "../fixtures";
+import {
+  HomePage,
+  CaseSearchPage,
+  CaseDetailsPage,
+  HearingSchedulePage,
+} from "../page-objects/pages";
+import { SessionBookingPage } from "../page-objects/pages/hearings/session-booking.po";
+import { config } from "../utils";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe('Hearing channel test @hearing-channel', () => {
+test.describe("Hearing channel test @hearing-channel", () => {
   test.beforeEach(async ({ page, hearingSchedulePage, sessionBookingPage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
@@ -20,7 +25,7 @@ test.describe('Hearing channel test @hearing-channel', () => {
     );
   });
 
-  test('Only the session-supported hearing channels should be displayed', async ({
+  test("Only the session-supported hearing channels should be displayed", async ({
     editNewCasePage,
     caseDetailsPage,
     addNewCasePage,
@@ -31,12 +36,16 @@ test.describe('Hearing channel test @hearing-channel', () => {
     sessionBookingPage,
   }) => {
     const roomData = {
-      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
+      roomName:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       caseNumber: process.env.HMCTS_CASE_NUMBER as string,
-      sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-      hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-      cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
+      sessionDuration:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      hearingType:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
+      cancelReason:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     //LISTING REQUIREMENTS
@@ -56,12 +65,18 @@ test.describe('Hearing channel test @hearing-channel', () => {
     await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
 
     //select hearing type
-    await caseDetailsPage.hearingTypeSelect.selectOption(addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF);
+    await caseDetailsPage.hearingTypeSelect.selectOption(
+      addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+    );
 
     //select hearing channel
     await listingRequirementsPage.parentHearingChannel.click();
-    await listingRequirementsPage.setHearingChannel(listingRequirementsPage.CONSTANTS.PARENT_HEARING_CHANNEL_IN_PERSON);
-    await listingRequirementsPage.setHearingChannel(listingRequirementsPage.CONSTANTS.PARENT_HEARING_CHANNEL_TELEPHONE);
+    await listingRequirementsPage.setHearingChannel(
+      listingRequirementsPage.CONSTANTS.PARENT_HEARING_CHANNEL_IN_PERSON,
+    );
+    await listingRequirementsPage.setHearingChannel(
+      listingRequirementsPage.CONSTANTS.PARENT_HEARING_CHANNEL_TELEPHONE,
+    );
     await caseDetailsPage.saveButton.click();
 
     await createHearingSession(
@@ -97,9 +112,9 @@ async function createHearingSession(
 
   //check current case drop down menu in upper bar
   await homePage.upperbarComponent.currentCaseDropdownButton.click();
-  await expect(homePage.upperbarComponent.currentCaseDropdownList).toContainText(
-    homePage.upperbarComponent.currentCaseDropDownItems,
-  );
+  await expect(
+    homePage.upperbarComponent.currentCaseDropdownList,
+  ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
 
   //add case to cart.
   await caseSearchPage.sidebarComponent.openSearchCasePage();
@@ -114,7 +129,11 @@ async function createHearingSession(
   //schedule hearing
   await hearingSchedulePage.waitForLoad();
 
-  await hearingSchedulePage.scheduleHearingWithBasket(roomData.roomName, roomData.column, roomData.caseNumber);
+  await hearingSchedulePage.scheduleHearingWithBasket(
+    roomData.roomName,
+    roomData.column,
+    roomData.caseNumber,
+  );
 
   //session booking page
   await sessionBookingPage.bookSession(
@@ -128,7 +147,8 @@ async function createHearingSession(
 
   // asserting that only phone icon is displayed
   const allIcons = await sessionBookingPage.allIcons.count();
-  const interpreterIcons = await sessionBookingPage.interpreterLanguageIcon.count();
+  const interpreterIcons =
+    await sessionBookingPage.interpreterLanguageIcon.count();
   const phoneIcons = await sessionBookingPage.phoneIcons.count();
 
   expect(phoneIcons).toBe(1);
@@ -139,5 +159,4 @@ async function createHearingSession(
     expect(interpreterIcons).toBe(0);
     expect(allIcons).toBe(1);
   }
-
 }

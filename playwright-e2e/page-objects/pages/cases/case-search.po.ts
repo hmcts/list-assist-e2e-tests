@@ -1,14 +1,15 @@
-import {expect, Page} from '@playwright/test';
-import { Base } from '../../base';
+import { expect, Page } from "@playwright/test";
+import { Base } from "../../base";
 
 export class CaseSearchPage extends Base {
-  readonly caseSearchPageHeader = this.page.locator('#CMSHomeHeading');
-  readonly caseNumber = this.page.locator('#mtrMatNumber');
-  readonly searchButton = this.page.locator('#submitButton');
-  readonly caseName = this.page.locator('#mtrMediumTitle');
-  readonly caseSearchResultRow = this.page.locator('#matterSearchResultGrid > tbody > tr > td:nth-of-type(3)');
+  readonly caseSearchPageHeader = this.page.locator("#CMSHomeHeading");
+  readonly caseNumber = this.page.locator("#mtrMatNumber");
+  readonly searchButton = this.page.locator("#submitButton");
+  readonly caseName = this.page.locator("#mtrMediumTitle");
+  readonly caseSearchResultRow = this.page.locator(
+    "#matterSearchResultGrid > tbody > tr > td:nth-of-type(3)",
+  );
   readonly addToCartButton = this.page.locator("#header-bar-add-to-cart-icon");
-
 
   constructor(page: Page) {
     super(page);
@@ -28,7 +29,10 @@ export class CaseSearchPage extends Base {
           await this.searchButton.click();
           // Wait for the addToCartButton
           try {
-            await this.addToCartButton.waitFor({ state: 'visible', timeout: 5000 });
+            await this.addToCartButton.waitFor({
+              state: "visible",
+              timeout: 5000,
+            });
             return true;
           } catch {
             return false;

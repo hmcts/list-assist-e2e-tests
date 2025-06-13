@@ -1,14 +1,19 @@
-import { expect, test } from '../fixtures';
-import { CaseDetailsPage, CaseSearchPage, HearingSchedulePage, HomePage } from '../page-objects/pages';
-import { SessionBookingPage } from '../page-objects/pages/hearings/session-booking.po';
-import { config } from '../utils';
+import { expect, test } from "../fixtures";
+import {
+  CaseDetailsPage,
+  CaseSearchPage,
+  HearingSchedulePage,
+  HomePage,
+} from "../page-objects/pages";
+import { SessionBookingPage } from "../page-objects/pages/hearings/session-booking.po";
+import { config } from "../utils";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe('Case listing @case-listing', () => {
-  test.describe.configure({ mode: 'serial' });
+test.describe("Case listing @case-listing", () => {
+  test.describe.configure({ mode: "serial" });
   test.beforeEach(async ({ page, hearingSchedulePage }) => {
     await page.goto(config.urls.baseUrl);
     //empties cart if there is anything present
@@ -28,8 +33,10 @@ test.describe('Case listing @case-listing', () => {
 
     await sessionBookingPage.updateAdvancedFilterConfig(
       sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
     );
 
@@ -40,12 +47,16 @@ test.describe('Case listing @case-listing', () => {
 
     // Test data
     const roomData = {
-      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+      roomName:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       caseNumber: process.env.HMCTS_CASE_NUMBER as string,
-      sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-      hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-      cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
+      sessionDuration:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      hearingType:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
+      cancelReason:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await createHearingSession(
@@ -64,8 +75,10 @@ test.describe('Case listing @case-listing', () => {
       dateFrom: dataUtils.generateDateInYyyyMmDdNoSeparators(0),
       dateTo: dataUtils.generateDateInYyyyMmDdNoSeparators(1),
 
-      locality: viewReportsPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-      location: viewReportsPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+      locality:
+        viewReportsPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+      location:
+        viewReportsPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
       jurisdiction: viewReportsPage.CONSTANTS.JURISDICTION_CIVIL,
       service: viewReportsPage.CONSTANTS.SERVICE_DAMAGES,
     };
@@ -95,14 +108,18 @@ test.describe('Case listing @case-listing', () => {
 
     await sessionBookingPage.updateAdvancedFilterConfig(
       sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
     );
 
     await hearingSchedulePage.clearDownSchedule(
       sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
     );
 
     //run scheduled jobs so there are no queued reports
@@ -110,19 +127,25 @@ test.describe('Case listing @case-listing', () => {
     await automaticBookingDashboardPage.sidebarComponent.openScheduledJobsPage();
     //run the job
     await automaticBookingDashboardPage.clickRunForAutomaticBookingQueueJob(
-      automaticBookingDashboardPage.CONSTANTS.SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB,
+      automaticBookingDashboardPage.CONSTANTS
+        .SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB,
     );
     //check the header is present after page has refreshed
     await automaticBookingDashboardPage.sidebarComponent.scheduledJobsHeader.isVisible();
 
     // Test data
     const roomData = {
-      roomName: sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
+      roomName:
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       caseNumber: process.env.HMCTS_CASE_NUMBER as string,
-      sessionDuration: sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-      hearingType: sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-      cancelReason: sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
+      sessionDuration:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      hearingType:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
+      cancelReason:
+        sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await createHearingSession(
@@ -141,11 +164,14 @@ test.describe('Case listing @case-listing', () => {
 
     await automaticBookingDashboardPage.populateCreatePublishExternalListsForm(
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_REGION_WALES,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+      automaticBookingDashboardPage.CONSTANTS
+        .AUTO_CREATION_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      automaticBookingDashboardPage.CONSTANTS
+        .AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_JURISDICTION_CIVIL,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_SERVICE_DAMAGES,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_DAILY_MIXED_CAUSE_LIST_SSRS,
+      automaticBookingDashboardPage.CONSTANTS
+        .AUTO_CREATION_DAILY_MIXED_CAUSE_LIST_SSRS,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_VERSION_TYPE,
     );
 
@@ -153,10 +179,11 @@ test.describe('Case listing @case-listing', () => {
     await automaticBookingDashboardPage.assertPreviewReport(
       dataUtils.getFormattedDateForReportAssertion(),
       automaticBookingDashboardPage.CONSTANTS.CIVIL_AND_FAMILY_DAILY_CAUSE_LIST,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
+      automaticBookingDashboardPage.CONSTANTS
+        .AUTO_CREATION_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
     );
 
-    let jobRun = 'false';
+    let jobRun = "false";
 
     //assert publish button is now visible
     await expect(automaticBookingDashboardPage.publishButton).toBeVisible();
@@ -167,7 +194,8 @@ test.describe('Case listing @case-listing', () => {
     //checks that report is queued
     await automaticBookingDashboardPage.assertPreviousPublishExternalListRunsTable(
       jobRun,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+      automaticBookingDashboardPage.CONSTANTS
+        .AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
     );
@@ -179,9 +207,10 @@ test.describe('Case listing @case-listing', () => {
     await automaticBookingDashboardPage.sidebarComponent.openScheduledJobsPage();
     //run the job
     await automaticBookingDashboardPage.clickRunForAutomaticBookingQueueJob(
-      automaticBookingDashboardPage.CONSTANTS.SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB,
+      automaticBookingDashboardPage.CONSTANTS
+        .SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB,
     );
-    jobRun = 'true';
+    jobRun = "true";
 
     //check the header is present after page has refreshed
     await automaticBookingDashboardPage.sidebarComponent.scheduledJobsHeader.isVisible();
@@ -193,7 +222,8 @@ test.describe('Case listing @case-listing', () => {
     await automaticBookingDashboardPage.waitForPublishExternalListRunsToBeVisible();
     await automaticBookingDashboardPage.assertPreviousPublishExternalListRunsTable(
       jobRun,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+      automaticBookingDashboardPage.CONSTANTS
+        .AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
     );
@@ -219,12 +249,14 @@ async function createHearingSession(
   // Check if the close case button in upper bar is present
   await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
   //check current case drop down menu in upper bar
-  await expect(homePage.upperbarComponent.currentCaseDropdownButton).toBeVisible();
+  await expect(
+    homePage.upperbarComponent.currentCaseDropdownButton,
+  ).toBeVisible();
   await homePage.upperbarComponent.currentCaseDropdownButton.click();
 
-  await expect(homePage.upperbarComponent.currentCaseDropdownList).toContainText(
-    homePage.upperbarComponent.currentCaseDropDownItems,
-  );
+  await expect(
+    homePage.upperbarComponent.currentCaseDropdownList,
+  ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
 
   //add case to cart
   await caseSearchPage.sidebarComponent.openSearchCasePage();
@@ -241,7 +273,11 @@ async function createHearingSession(
   //schedule hearing
   await hearingSchedulePage.waitForLoad();
 
-  await hearingSchedulePage.scheduleHearingWithBasket(roomData.roomName, roomData.column, roomData.caseNumber);
+  await hearingSchedulePage.scheduleHearingWithBasket(
+    roomData.roomName,
+    roomData.column,
+    roomData.caseNumber,
+  );
 
   //session booking page
   await sessionBookingPage.bookSession(
