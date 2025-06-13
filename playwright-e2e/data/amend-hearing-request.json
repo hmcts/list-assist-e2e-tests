@@ -10,7 +10,7 @@
       "listingComments": "test",
       "listingPrivateFlag": false,
       "listingJohTiers": ["30"],
-      "listingHearingChannels": ["INTER", "VID", "TEL"],
+      "listingHearingChannels": ["TEL"],
       "listingLocations": [
         {
           "locationType": "Court",
@@ -18,7 +18,8 @@
           "locationReferenceType": "EPIMS"
         }
       ],
-      "listingRoomAttributes": ["6"]
+      "amendReasonCode": "AMEND",
+      "listingRoomAttributes": ["11"]
     },
     "entities": [
       {
@@ -43,7 +44,7 @@
             "entityCommunicationType": "PHONE"
           }
         ],
-        "entityHearingChannel": "INTER"
+        "entityHearingChannel": "VID"
       },
       {
         "entityId": "0d730a9e-74bf-468c-ac27-2f6cc9c9acef",
@@ -60,27 +61,7 @@
             "entityCommunicationType": "EMAIL"
           }
         ],
-        "entityHearingChannel": "TEL"
-      },
-      {
-        "entityId": "a2b211f4-6072-4970-9c34-08a47ff6ec9c",
-        "entityTypeCode": "IND",
-        "entityRoleCode": "RESP",
-        "entitySubType": {
-          "entityClassCode": "PERSON",
-          "entityFirstName": "Elise",
-          "entityLastName": "Lynn",
-          "entitySensitiveClient": false,
-          "entityAlertMessage": "",
-          "entityInterpreterLanguage": ""
-        },
-        "entityCommunications": [
-          {
-            "entityCommunicationDetails": "repondent1@example.net",
-            "entityCommunicationType": "EMAIL"
-          }
-        ],
-        "entityHearingChannel": "TEL"
+        "entityHearingChannel": "VID"
       },
       {
         "entityId": "c90440e6-22a4-4625-baa7-76a6fcb8309b",
@@ -93,7 +74,7 @@
       }
     ],
     "_case": {
-      "caseListingRequestId": "HMI_1234522",
+      "caseListingRequestId": "HMI-Multi-0061",
       "caseTitle": "test",
       "caseJurisdiction": "AB",
       "caseRegistered": "2023-08-18T00:00:00Z",
@@ -111,16 +92,16 @@
       ],
       "caseInterpreterRequiredFlag": false,
       "caseRestrictedFlag": false,
-      "caseVersionId": 1,
+      "caseVersionId": 5,
       "caseLinks": [
         {
           "url": "https://test.com#Case File View"
         }
       ],
-      "casePublishedName": "Smith and Lynn",
+      "casePublishedName": "",
       "caseAdditionalSecurityFlag": false,
       "linkedHearingGroupStatus": "Not Required",
-      "caseIdHMCTS": "HMI_1234"
+      "caseIdHMCTS": "HMI-Multi-0061"
     }
   }
 }

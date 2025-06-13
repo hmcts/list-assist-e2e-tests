@@ -1,45 +1,82 @@
-import { Page, expect } from '@playwright/test';
-import { Base } from '../../base';
+import { Page, expect } from "@playwright/test";
+import { Base } from "../../base";
 
 export class ViewReportsPage extends Base {
   readonly CONSTANTS = {
-    LOCALITY_LEICESTER_COMBINED_COURT: 'Leicester Combined Court',
-    LOCATION_LEICESTER_COUNTY_COURTROOM_07: 'Leicester County Courtroom 07',
-    CASE_LISTING_REGION_WALES: 'Wales',
-    CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS: 'Wales Civil, Family and Tribunals',
-    CASE_LISTING_LOCATION_LEICESTER_CC_7: 'Leicester County Courtroom 07',
-    CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: 'Pontypridd Courtroom 01',
-    CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT: 'Pontypridd County Court and',
-    CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1: 'Newport (South Wales) Chambers 01',
-    JURISDICTION_CIVIL: 'Civil',
-    SERVICE_DAMAGES: 'Damages',
+    LOCALITY_LEICESTER_COMBINED_COURT: "Leicester Combined Court",
+    LOCATION_LEICESTER_COUNTY_COURTROOM_07: "Leicester County Courtroom 07",
+    CASE_LISTING_REGION_WALES: "Wales",
+    CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS:
+      "Wales Civil, Family and Tribunals",
+    CASE_LISTING_LOCATION_LEICESTER_CC_7: "Leicester County Courtroom 07",
+    CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
+    CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT:
+      "Pontypridd County Court and",
+    CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
+      "Newport (South Wales) Chambers 01",
+    JURISDICTION_CIVIL: "Civil",
+    SERVICE_DAMAGES: "Damages",
   };
   //reports menu
-  readonly reportsMenu = this.page.locator('#reports_menuItem');
-  readonly reportsMenuInternalHearingList = this.page.getByRole('link', { name: 'Opens Internal Hearing List' });
+  readonly reportsMenu = this.page.locator("#reports_menuItem");
+  readonly reportsMenuInternalHearingList = this.page.getByRole("link", {
+    name: "Opens Internal Hearing List",
+  });
 
   //reports request page
-  readonly viewReportButton = this.page.locator('input#ReportViewerControl_ctl04_ctl00');
-  readonly dateFromCalenderSelect = this.page.getByRole('button', { name: 'Date From:' });
-  readonly dateFromPicker = this.page.locator('iframe[name="ReportViewerControl_ctl04_ctl03_ctl02"]');
-  readonly dateToPicker = this.page.locator('iframe[name="ReportViewerControl_ctl04_ctl03_ctl02"]');
-  readonly dateToCalenderSelect = this.page.getByRole('button', { name: 'Date To:' });
-  readonly localityDropDown = this.page.getByRole('textbox', { name: 'Locality:' });
-  readonly localityChevronButton = this.page.locator('#ReportViewerControl_ctl04_ctl07_ctl01');
-  readonly locationDropDown = this.page.getByRole('button', { name: 'Location (Room):' });
-  readonly locationChevronButton = this.page.locator('#ReportViewerControl_ctl04_ctl09_ctl01');
-  readonly judicialOfficerHolderDropDown = this.page.getByRole('button', { name: 'Judicial Officer Holder:' });
+  readonly viewReportButton = this.page.locator(
+    "input#ReportViewerControl_ctl04_ctl00",
+  );
+  readonly dateFromCalenderSelect = this.page.getByRole("button", {
+    name: "Date From:",
+  });
+  readonly dateFromPicker = this.page.locator(
+    'iframe[name="ReportViewerControl_ctl04_ctl03_ctl02"]',
+  );
+  readonly dateToPicker = this.page.locator(
+    'iframe[name="ReportViewerControl_ctl04_ctl03_ctl02"]',
+  );
+  readonly dateToCalenderSelect = this.page.getByRole("button", {
+    name: "Date To:",
+  });
+  readonly localityDropDown = this.page.getByRole("textbox", {
+    name: "Locality:",
+  });
+  readonly localityChevronButton = this.page.locator(
+    "#ReportViewerControl_ctl04_ctl07_ctl01",
+  );
+  readonly locationDropDown = this.page.getByRole("button", {
+    name: "Location (Room):",
+  });
+  readonly locationChevronButton = this.page.locator(
+    "#ReportViewerControl_ctl04_ctl09_ctl01",
+  );
+  readonly judicialOfficerHolderDropDown = this.page.getByRole("button", {
+    name: "Judicial Officer Holder:",
+  });
   readonly judicialOfficerHolderDropDownSelectAll = this.page.locator(
     'input#ReportViewerControl_ctl04_ctl11_divDropDown_ctl00[type="checkbox"]',
   );
-  readonly judicialOfficerHolderChevronButton = this.page.locator('#ReportViewerControl_ctl04_ctl11_ctl01');
-  readonly jurisdictionDropDown = this.page.getByRole('button', { name: 'Jurisdiction:' });
-  readonly jurisdictionChevronButton = this.page.locator('#ReportViewerControl_ctl04_ctl13_ctl01');
-  readonly serviceDropDown = this.page.getByRole('button', { name: 'Service:' });
-  readonly serviceChevronButton = this.page.locator('#ReportViewerControl_ctl04_ctl17_ctl01');
+  readonly judicialOfficerHolderChevronButton = this.page.locator(
+    "#ReportViewerControl_ctl04_ctl11_ctl01",
+  );
+  readonly jurisdictionDropDown = this.page.getByRole("button", {
+    name: "Jurisdiction:",
+  });
+  readonly jurisdictionChevronButton = this.page.locator(
+    "#ReportViewerControl_ctl04_ctl13_ctl01",
+  );
+  readonly serviceDropDown = this.page.getByRole("button", {
+    name: "Service:",
+  });
+  readonly serviceChevronButton = this.page.locator(
+    "#ReportViewerControl_ctl04_ctl17_ctl01",
+  );
 
   //report
-  readonly reportBody = this.page.locator('div#VisibleReportContentReportViewerControl_ctl09');
+  readonly reportBody = this.page.locator(
+    "div#VisibleReportContentReportViewerControl_ctl09",
+  );
 
   constructor(page: Page) {
     super(page);
@@ -58,7 +95,7 @@ export class ViewReportsPage extends Base {
     await this.reportsMenu.click();
     await expect(this.reportsMenuInternalHearingList).toBeVisible();
     await this.reportsMenuInternalHearingList.click();
-    const popup = await this.page.waitForEvent('popup');
+    const popup = await this.page.waitForEvent("popup");
 
     const reportsRequestPage = new ViewReportsPage(popup);
     await expect(reportsRequestPage.viewReportButton).toBeVisible();
@@ -79,7 +116,10 @@ export class ViewReportsPage extends Base {
       .click();
 
     //locality drop down select
-    const localityDropDownSelect = reportsRequestPage.page.getByRole('checkbox', { name: locality });
+    const localityDropDownSelect = reportsRequestPage.page.getByRole(
+      "checkbox",
+      { name: locality },
+    );
 
     await reportsRequestPage.localityDropDown.click();
     await expect
@@ -99,7 +139,10 @@ export class ViewReportsPage extends Base {
     await reportsRequestPage.localityChevronButton.click();
 
     //location drop down select
-    const locationDropDownSelect = reportsRequestPage.page.getByRole('checkbox', { name: location });
+    const locationDropDownSelect = reportsRequestPage.page.getByRole(
+      "checkbox",
+      { name: location },
+    );
     await reportsRequestPage.locationChevronButton.isEnabled();
     await expect
       .poll(
@@ -123,7 +166,8 @@ export class ViewReportsPage extends Base {
         async () => {
           await reportsRequestPage.judicialOfficerHolderChevronButton.isVisible();
           await reportsRequestPage.judicialOfficerHolderChevronButton.click();
-          return await reportsRequestPage.judicialOfficerHolderDropDownSelectAll.isVisible;
+          return await reportsRequestPage.judicialOfficerHolderDropDownSelectAll
+            .isVisible;
         },
         {
           intervals: [2_000],
@@ -136,7 +180,8 @@ export class ViewReportsPage extends Base {
       .poll(
         async () => {
           await reportsRequestPage.judicialOfficerHolderDropDownSelectAll.check();
-          return await reportsRequestPage.judicialOfficerHolderDropDownSelectAll.isChecked;
+          return await reportsRequestPage.judicialOfficerHolderDropDownSelectAll
+            .isChecked;
         },
         {
           intervals: [2_000],
@@ -146,10 +191,13 @@ export class ViewReportsPage extends Base {
       .toBeTruthy();
 
     //jurisdiction drop down select
-    const jurisdictionDropDownSelect = reportsRequestPage.page.getByRole('checkbox', {
-      name: `${jurisdiction}`,
-      exact: true,
-    });
+    const jurisdictionDropDownSelect = reportsRequestPage.page.getByRole(
+      "checkbox",
+      {
+        name: `${jurisdiction}`,
+        exact: true,
+      },
+    );
 
     await expect
       .poll(
@@ -181,7 +229,10 @@ export class ViewReportsPage extends Base {
     await reportsRequestPage.jurisdictionChevronButton.click();
 
     //service drop down select
-    const serviceDropDownSelect = reportsRequestPage.page.getByRole('checkbox', { name: `${service}`, exact: true });
+    const serviceDropDownSelect = reportsRequestPage.page.getByRole(
+      "checkbox",
+      { name: `${service}`, exact: true },
+    );
 
     await expect
       .poll(
@@ -228,7 +279,9 @@ export class ViewReportsPage extends Base {
       .toBeTruthy();
 
     await expect(reportsRequestPage.reportBody).toContainText(locality);
-    await expect(reportsRequestPage.reportBody).toContainText('DAILY CAUSE LIST');
+    await expect(reportsRequestPage.reportBody).toContainText(
+      "DAILY CAUSE LIST",
+    );
     await expect(reportsRequestPage.reportBody).toContainText(reportDate);
   }
 }
