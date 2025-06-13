@@ -60,7 +60,7 @@
             "entityCommunicationType": "EMAIL"
           }
         ],
-        "entityHearingChannel": "VID"
+        "entityHearingChannel": "TEL"
       },
       {
         "entityId": "a2b211f4-6072-4970-9c34-08a47ff6ec9c",
@@ -93,8 +93,8 @@
       }
     ],
     "_case": {
-      "caseListingRequestId": "HMI_1234",
-      "caseTitle": "1692379629241323_John Smith",
+      "caseListingRequestId": "HMI_1234522",
+      "caseTitle": "test",
       "caseJurisdiction": "AB",
       "caseRegistered": "2023-08-18T00:00:00Z",
       "caseCourt": {

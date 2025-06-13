@@ -260,7 +260,7 @@ async function createHearingSession(
 
   //add case to cart
   await caseSearchPage.sidebarComponent.openSearchCasePage();
-  await caseSearchPage.searchCase(caseName);
+  await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
 
   await expect(caseDetailsPage.addToCartButton).toBeVisible();
   await caseDetailsPage.addToCartButton.click();

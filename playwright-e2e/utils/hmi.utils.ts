@@ -46,11 +46,18 @@ export class HmiUtils {
     return response.json();
   }
 
-  static async requestHearing(payload: unknown): Promise<unknown> {
+  static async requestHearing(payload: unknown): Promise<void> {
     const context = await this.generateContext();
     const response = await context.post(`/hmi/hearings`, { data: payload });
+    console.error('Status:', response.status());
     expect(response.ok()).toBeTruthy();
-    return response.json();
+  }
+
+  static async requestAmendHearing(payload: unknown, caseID: string): Promise<void> {
+    const context = await this.generateContext();
+    const response = await context.put(`/hmi/hearings/` + caseID, { data: payload });
+    console.error('Status:', response.status());
+    expect(response.ok()).toBeTruthy();
   }
 
   static async cancelHearing(hearingId: string): Promise<unknown> {
