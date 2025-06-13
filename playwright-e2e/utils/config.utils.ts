@@ -74,7 +74,7 @@ export const config: Config = {
     ),
     amendHearingRequest: readJsonFile(
       path.join(fileURLToPath(import.meta.url), "../../data/") +
-      `amend-hearing-request.json`
+        `amend-hearing-request.json`,
     ),
   },
 };

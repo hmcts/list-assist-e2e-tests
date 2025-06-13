@@ -23,8 +23,9 @@ export class CaseDetailsPage extends Base {
   readonly closeCaseButton = this.page.getByRole("link", {
     name: "Close Case from top navigation",
   });
-  readonly listingRequirementLink = this.page
-    .locator('div#keyEventCard a:has-text("Listing Requirements - Listing Requirements")');
+  readonly listingRequirementLink = this.page.locator(
+    'div#keyEventCard a:has-text("Listing Requirements - Listing Requirements")',
+  );
 
   constructor(page: Page) {
     super(page);
