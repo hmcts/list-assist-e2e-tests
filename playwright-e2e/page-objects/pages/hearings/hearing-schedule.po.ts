@@ -36,6 +36,7 @@ export class HearingSchedulePage extends Base {
       hasText: "Released",
     },
   );
+  readonly rowWithHmctsCn = this.page.locator('tr[role="row"]');
   readonly addBookingButton = this.page
     .locator("div.droparea.addBooking > button.btn.text-center")
     .first();
@@ -64,6 +65,44 @@ export class HearingSchedulePage extends Base {
   readonly deleteSessionInSessionDetailsButton = this.page
     .locator("#handleListingImgId")
     .nth(1);
+
+  //multi-day
+  readonly multiDayLink = this.page.locator("td a", { hasText: "Multi-Day" });
+  readonly multiDaysEditPageHeader = this.page.locator(
+    "div.card-header h1.header-title",
+    { hasText: "Multi Days Edit" },
+  );
+  readonly selectAllCancelListingsCheckbox = this.page.locator(
+    "#cancelListingSelectAll_checkmark",
+  );
+
+  readonly cancelListingButton = this.page.locator(
+    'button:has(span.mcms-btn-label:text("Cancel Listings"))',
+  );
+  readonly confirmationCanxAdv = this.page.locator(
+    'div.modal-content#\\__BVID__53___BV_modal_content_:has(.header-title:has-text("Confirmation"))',
+  );
+
+  readonly confirmationCanxAdvConfirm = this.page.locator(
+    'div.modal-content#\\__BVID__49___BV_modal_content_:has(.header-title:has-text("Confirmation"))',
+  );
+  readonly confirmationCanxYesButton = this.confirmationCanxAdv.locator(
+    'button.btn.mr-2.mcms-btn-solid-danger:has(span.mcms-btn-label:text("Yes"))',
+  );
+
+  readonly confirmationCanxConfirmYesButton =
+    this.confirmationCanxAdvConfirm.locator(
+      'button.btn.mr-2.mcms-btn-solid-danger:has(span.mcms-btn-label:text("Yes"))',
+    );
+
+  readonly cancelRescheduleReasonModel = this.page.locator(
+    'div.modal-content#\\__BVID__34___BV_modal_content_:has(h2.header-title:text("Cancel/Reschedule Reason"))',
+  );
+
+  readonly cancelReasonDropDown =
+    this.cancelRescheduleReasonModel.locator("#cancelReason");
+
+  readonly multiDayEditTable = this.page.locator("table#vuetable");
 
   constructor(page: Page) {
     super(page);
@@ -189,6 +228,7 @@ export class HearingSchedulePage extends Base {
           .selectOption(cancellationCode);
         await this.page.getByRole("button", { name: "Yes" }).click();
       }
+
       //delete session from schedule page
       await expect(this.deleteSessionButton).toBeVisible();
       await this.deleteSessionButton.click();
@@ -196,10 +236,7 @@ export class HearingSchedulePage extends Base {
     }
   }
 
-  async clearDownMultiDaySchedule(
-    cancellationCode: string,
-    room: string,
-  ): Promise<void> {
+  async clearDownMultiDaySchedule(room: string): Promise<void> {
     const scheduleButton = this.page.locator(
       "div.droparea span.sessionHeader",
       { hasText: room },
@@ -223,51 +260,45 @@ export class HearingSchedulePage extends Base {
       await releasedStatusCheck.first().click();
 
       await expect
-        .poll(
-          async () => {
-            return await scheduleButton.first().isVisible();
-          },
-          {
-            intervals: [2_000],
-            timeout: 10_000,
-          },
-        )
+        .poll(async () => await scheduleButton.first().isVisible(), {
+          intervals: [2_000],
+          timeout: 10_000,
+        })
         .toBeTruthy();
 
       await scheduleButton.first().click();
       await this.goToSessionDetailsButton.first().click();
 
       await expect
-        .poll(
-          async () => {
-            return await this.sessionBookingPage.heading.isVisible();
-          },
-          {
-            intervals: [2_000],
-            timeout: 10_000,
-          },
-        )
+        .poll(async () => await this.sessionBookingPage.heading.isVisible(), {
+          intervals: [2_000],
+          timeout: 10_000,
+        })
         .toBeTruthy();
 
-      //delete session from inside of session details page, if available
-      if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
-        await this.deleteSessionInSessionDetailsButton.click();
-        await this.page.locator("#cancellationCode").click();
-        await this.page
-          .locator("#cancellationCode")
-          .selectOption(cancellationCode);
-        await this.page.getByRole("button", { name: "Yes" }).click();
-      }
-      //delete session from schedule page
-      await expect(this.deleteSessionButton).toBeVisible();
-      await this.deleteSessionButton.click();
-      await this.page
-        .locator(
-          '#recVenueBookingDelAlert input[type="radio"][name="delRecVb"][value="true"]',
-        )
-        .click();
-      await this.page.locator("#recVenueBookingDelAlert #ok_btn_id").click();
-      await expect(this.header).toBeVisible();
+      await this.deleteExistingMultiDayListings();
+    }
+  }
+  async deleteExistingMultiDayListings(): Promise<void> {
+    if (await this.multiDayLink.isVisible()) {
+      await this.multiDayLink.click();
+      await expect(this.multiDaysEditPageHeader).toBeVisible();
+      await this.selectAllCancelListingsCheckbox.click();
+      await expect(this.cancelListingButton.first()).toBeVisible();
+      await this.cancelListingButton.first().click();
+      await expect(this.confirmationCanxAdv).toBeVisible();
+      await this.confirmationCanxYesButton.click();
+      await expect(this.cancelRescheduleReasonModel).toBeVisible();
+      await this.cancelReasonDropDown.selectOption("CNCL");
+
+      await expect(this.confirmationCanxAdvConfirm).toBeAttached();
+      await expect(this.confirmationCanxAdvConfirm).toBeVisible();
+      await expect(this.confirmationCanxConfirmYesButton).toBeVisible();
+      await this.confirmationCanxConfirmYesButton.click();
+
+      //confirm no data in table
+      await expect(this.multiDayEditTable).toBeVisible();
+      await expect(this.multiDayEditTable).toContainText("No Data Available");
     } else {
       return;
     }
