@@ -12,30 +12,6 @@ test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-// test.describe("Multi-Day Case Listing and Reporting @multi-day-case-listing-and-reporting", () => {
-//   test.describe.configure({ mode: "serial" });
-//   test.beforeEach(async ({ page, hearingSchedulePage, sessionBookingPage }) => {
-//     await page.goto(config.urls.baseUrl);
-//     //empties cart if there is anything present
-//     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-
-//     //will need to use this to clear down the schedule
-//     await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
-
-//     await sessionBookingPage.updateAdvancedFilterConfig(
-//       sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-//       sessionBookingPage.CONSTANTS
-//         .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-//       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_ABERYSTWYTH_JC,
-//       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1,
-//     );
-
-//     await hearingSchedulePage.clearDownMultiDaySchedule(
-//       sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-//       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1,
-//     );
-//   });
-
 test.describe("Case listing and reporting @case-listing-and-reporting", () => {
   test.describe.configure({ mode: "serial" });
   test.beforeEach(async ({ page, hearingSchedulePage }) => {
@@ -402,9 +378,6 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       timeout: 2000,
     });
     await multiDayCartPage.okbuttonOnValidationPopup.click();
-
-    // //additional listing data page
-    // await expect(
 
     //listing validation popup
     const validationPopup = await pagePromise;

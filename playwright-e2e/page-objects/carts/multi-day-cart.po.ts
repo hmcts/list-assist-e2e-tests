@@ -3,7 +3,8 @@ import { Base } from "./../base";
 
 export class MultiDayCartPage extends Base {
   readonly multiDaysCartHeader = this.page.locator(
-    "div.card-header h1.header-title",
+    "div.card.mcms-card-margins.mcms-card-shadows h1.header-title",
+    { hasText: "Multi Days Cart" },
   );
   readonly bulkListTable = this.page.locator("table#vuetable.table.mcms-thead");
   readonly bulkListCheckBox = this.page.locator("#checkAllBulk_checkmark");
@@ -53,7 +54,6 @@ export class MultiDayCartPage extends Base {
       )
       .toBeTruthy();
 
-    await expect(this.multiDaysCartHeader).toHaveText("Multi Days Cart");
     await expect(this.bulkListTable).toBeVisible();
   }
 
