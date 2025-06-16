@@ -1,3 +1,4 @@
+import cssEscape from "css.escape";
 import { Locator, Page, expect } from "@playwright/test";
 import { Base } from "../../base";
 import { SessionBookingPage } from "./session-booking.po.ts";
@@ -47,6 +48,22 @@ export class HearingSchedulePage extends Base {
   readonly recurranceCheckbox = this.page.locator("#recurrenceCheckbox");
   readonly recurranceWeeksTextbox = this.page.locator("#recWeeks");
 
+  readonly deleteSessionBookingModalHeader = this.page.locator(
+    "#recVenueBookingDelAlert #CMSHomeHeading",
+  );
+
+  readonly clearAllASessionsRadioButton = this.page.locator(
+    '.clsPopup input[type="radio"][name="delRecVb"][value="true"]',
+  );
+
+  readonly clearAllSessionsOkButton = this.page.locator(
+    "#recVenueBookingDelAlert #ok_btn_id",
+  );
+
+  readonly deleteHearingButton = this.page.locator(
+    'input[type="button"]#dvb[name="Delete"][value="Delete"]',
+  );
+
   readonly saveButton = this.page.locator("#svb");
   readonly recurranceDateUntilTextBox = this.page.locator("#bbb");
 
@@ -65,6 +82,13 @@ export class HearingSchedulePage extends Base {
   readonly deleteSessionInSessionDetailsButton = this.page
     .locator("#handleListingImgId")
     .nth(1);
+
+  readonly releasedStatusCheck = this.page.locator(
+    'button[title="Show booking details"] .hs-session-status',
+    {
+      hasText: "Released",
+    },
+  );
 
   //multi-day
   readonly multiDayLink = this.page.locator("td a", { hasText: "Multi-Day" });
@@ -236,11 +260,8 @@ export class HearingSchedulePage extends Base {
     }
   }
 
-  async clearDownMultiDaySchedule(room: string): Promise<void> {
-    const scheduleButton = this.page.locator(
-      "div.droparea span.sessionHeader",
-      { hasText: room },
-    );
+  async clearDownMultiDaySchedule(room: string, date: string): Promise<void> {
+    const scheduleButton = await this.bookingSessionId(room, date, this.page);
 
     //go to hearing schedule page
     await expect(this.sidebarComponent.sidebar).toBeVisible();
@@ -259,14 +280,16 @@ export class HearingSchedulePage extends Base {
     if (await releasedStatusCheck.first().isVisible()) {
       await releasedStatusCheck.first().click();
 
+      await this.waitForLoad();
+
       await expect
-        .poll(async () => await scheduleButton.first().isVisible(), {
+        .poll(async () => await scheduleButton.isVisible(), {
           intervals: [2_000],
           timeout: 10_000,
         })
         .toBeTruthy();
 
-      await scheduleButton.first().click();
+      await scheduleButton.click();
       await this.goToSessionDetailsButton.first().click();
 
       await expect
@@ -277,6 +300,35 @@ export class HearingSchedulePage extends Base {
         .toBeTruthy();
 
       await this.deleteExistingMultiDayListings();
+
+      //go to hearing schedule page
+      await expect(this.sidebarComponent.sidebar).toBeVisible();
+      await this.sidebarComponent.openHearingSchedulePage();
+
+      if (await releasedStatusCheck.first().isVisible()) {
+        await releasedStatusCheck.first().click();
+
+        await this.waitForLoad();
+
+        await expect
+          .poll(async () => await scheduleButton.isVisible(), {
+            intervals: [2_000],
+            timeout: 10_000,
+          })
+          .toBeTruthy();
+      }
+
+      await scheduleButton.click();
+      await this.goToSessionDetailsButton.first().click();
+
+      await expect
+        .poll(async () => await this.sessionBookingPage.heading.isVisible(), {
+          intervals: [2_000],
+          timeout: 10_000,
+        })
+        .toBeTruthy();
+
+      await this.deleteMultiDayListingsPlaceholders();
     }
   }
   async deleteExistingMultiDayListings(): Promise<void> {
@@ -302,5 +354,29 @@ export class HearingSchedulePage extends Base {
     } else {
       return;
     }
+  }
+
+  async deleteMultiDayListingsPlaceholders(): Promise<void> {
+    if (await this.deleteHearingButton.isVisible()) {
+      await this.deleteHearingButton.click();
+      await expect(this.deleteSessionBookingModalHeader).toBeVisible();
+      await expect(this.deleteSessionBookingModalHeader).toContainText(
+        "Delete Session Booking",
+      );
+      await expect(this.clearAllASessionsRadioButton).toBeVisible();
+      await this.clearAllASessionsRadioButton.click();
+      await expect(this.clearAllSessionsOkButton).toBeVisible();
+      await this.clearAllSessionsOkButton.click();
+
+      await this.waitForLoad();
+    } else {
+      return;
+    }
+  }
+
+  async bookingSessionId(roomName: string, date, page) {
+    const id = `addBookingColor${roomName}_${date}`;
+    const selector = `#${cssEscape(id)}`;
+    return page.locator(selector);
   }
 }
