@@ -84,7 +84,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     };
 
     await createHearingSession(
-      process.env.CASE_NAME as string,
+      roomData.caseNumber,
       homePage,
       caseSearchPage,
       caseDetailsPage,
@@ -173,7 +173,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     };
 
     await createHearingSession(
-      process.env.CASE_NAME as string,
+      roomData.caseNumber,
       homePage,
       caseSearchPage,
       caseDetailsPage,
@@ -253,7 +253,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
   });
 
-  test.only("Multi-day case listing and reporting", async ({
+  test("Multi-day case listing and reporting", async ({
     addNewCasePage,
     caseSearchPage,
     editNewCasePage,
@@ -291,8 +291,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
 
     await hearingSchedulePage.clearDownMultiDaySchedule(
-      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1,
+      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
     );
 
     await addNewCasePage.sidebarComponent.openSearchCasePage();
@@ -348,7 +348,6 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     await hearingSchedulePage.recurranceWeeksTextbox.fill("1");
 
     //input recurrance until date
-    console.log(dataUtils.generateDateInDdMmYyyyWithHypenSeparators(7));
     await hearingSchedulePage.recurranceDateUntilTextBox.fill(
       dataUtils.generateDateInDdMmYyyyWithHypenSeparators(7),
     );
