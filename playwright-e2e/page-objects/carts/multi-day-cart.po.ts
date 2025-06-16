@@ -63,7 +63,6 @@ export class MultiDayCartPage extends Base {
   ) {
     const rows = await this.bulkListTable.locator("tbody tr").count();
     for (let i = 0; i < rows; i++) {
-      // Use nth-child(2) for Locality and nth-child(3) for Location
       const localityLocator = this.bulkListTable.locator(
         `tbody tr:nth-child(${i + 1}) td:nth-child(2)`,
       );
@@ -78,14 +77,12 @@ export class MultiDayCartPage extends Base {
   async selectCaseFromSelectDropDown(caseName: string) {
     await this.selectCaseBoxSelect.click();
 
-    // Use a unique locator for the correct dropdown's content wrapper
-    const optionsWrapper = this.selectCaseBoxSelect.locator(
+    const options = this.selectCaseBoxSelect.locator(
       "div.multiselect__content-wrapper",
     );
-    await expect(optionsWrapper).toBeVisible();
+    await expect(options).toBeVisible();
 
-    // Use a robust locator for the option
-    const caseOption = optionsWrapper
+    const caseOption = options
       .locator(".multiselect__element span.multiselect__option")
       .filter({ hasText: caseName });
     await expect(caseOption).toBeVisible();
