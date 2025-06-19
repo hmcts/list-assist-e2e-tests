@@ -1,4 +1,4 @@
-import { expect, Page } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 import { Base } from "../../base";
 
 export class CaseSearchPage extends Base {
@@ -17,7 +17,30 @@ export class CaseSearchPage extends Base {
 
   async searchCase(caseNumber: string): Promise<void> {
     await this.caseNumber.fill(caseNumber);
-    await this.searchButton.click();
+
+    await expect
+      .poll(
+        async () => {
+          await this.searchButton.click();
+          // Wait for the addToCartButton
+          try {
+            await this.addToCartButton.waitFor({
+              state: "visible",
+              timeout: 5000,
+            });
+            return true;
+          } catch {
+            return false;
+          }
+        },
+        {
+          intervals: [1000],
+          timeout: 60000,
+        },
+      )
+      .toBe(true);
+
+    await expect(this.addToCartButton).toBeVisible();
   }
 
   async searchCaseByName(caseName: string): Promise<void> {
