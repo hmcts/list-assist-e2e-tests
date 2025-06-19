@@ -10,7 +10,7 @@ import { NewParticipantPage } from "./participants/new-participants.po.ts";
 import { EditParticipantPage } from "./participants/edit-participants.po.ts";
 import { ViewReportsPage } from "./reports/view-reports.po.ts";
 import { AutomaticBookingDashboardPage } from "./administration/automatic-booking-dashboard.po.ts";
-import { ListingRequirementsPage } from "./cases/listing-requirments.po.ts";
+import { ListingRequirementsPage } from "./cases/listing-requirements.po.ts";
 import { MultiDayCartPage } from "../carts/multi-day-cart.po.ts";
 
 export interface PageFixtures {

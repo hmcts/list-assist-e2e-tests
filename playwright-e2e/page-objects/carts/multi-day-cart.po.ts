@@ -24,7 +24,7 @@ export class MultiDayCartPage extends Base {
 
   //validation popup
   readonly okbuttonOnValidationPopup = this.page.locator(
-    "div.modal-content#\\__BVID__100___BV_modal_content_ button#confirmMultiDayValidationPopup",
+    "#confirmMultiDayValidationPopup",
   );
 
   //addition listing data page
