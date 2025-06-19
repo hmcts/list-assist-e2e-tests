@@ -199,11 +199,9 @@ export class HearingSchedulePage extends Base {
   async clearDownSchedule(
     cancellationCode: string,
     room: string,
+    date: string,
   ): Promise<void> {
-    const scheduleButton = this.page.locator(
-      "div.droparea span.sessionHeader",
-      { hasText: room },
-    );
+    const scheduleButton = await this.bookingSessionId(room, date, this.page);
 
     //go to hearing schedule page
     await expect(this.sidebarComponent.sidebar).toBeVisible();

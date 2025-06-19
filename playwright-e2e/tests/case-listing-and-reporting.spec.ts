@@ -43,6 +43,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     await hearingSchedulePage.clearDownSchedule(
       sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
     );
 
     // Test data
@@ -120,6 +121,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
       sessionBookingPage.CONSTANTS
         .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
+      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
     );
 
     //run scheduled jobs so there are no queued reports
