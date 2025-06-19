@@ -229,7 +229,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
   });
 
-  test("Multi-day case listing and reporting", async ({
+  test.only("Multi-day case listing and reporting", async ({
     addNewCasePage,
     caseSearchPage,
     editNewCasePage,

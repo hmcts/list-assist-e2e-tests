@@ -408,13 +408,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/css.escape@npm:^1":
-  version: 1.5.2
-  resolution: "@types/css.escape@npm:1.5.2"
-  checksum: 10/7bbd68cd94ed56717eddc1175022d11b644f088419993c97dc3cd23b05e26b82e9e137fa4aecbd398db84a11f8cc215e1673e2ffda1067f3894fd974f89fc68a
-  languageName: node
-  linkType: hard
-
 "@types/estree@npm:^1.0.6":
   version: 1.0.7
   resolution: "@types/estree@npm:1.0.7"
@@ -982,13 +975,6 @@ __metadata:
   version: 1.1.5
   resolution: "csp_evaluator@npm:1.1.5"
   checksum: 10/8e2b7a7b3f462b3c69229ec52353b12acf5ec26db7697a14f629e41fc7efc2b0554376056440f0a9bea52f2c58c4edcb68b85e760d9a9639ec8c275118146ddb
-  languageName: node
-  linkType: hard
-
-"css.escape@npm:^1.5.1":
-  version: 1.5.1
-  resolution: "css.escape@npm:1.5.1"
-  checksum: 10/f6d38088d870a961794a2580b2b2af1027731bb43261cfdce14f19238a88664b351cc8978abc20f06cc6bbde725699dec8deb6fe9816b139fc3f2af28719e774
   languageName: node
   linkType: hard
 
@@ -2947,11 +2933,9 @@ __metadata:
     "@eslint/js": "npm:^9.11.1"
     "@hmcts/playwright-common": "npm:^1.0.17"
     "@playwright/test": "npm:^1.52.0"
-    "@types/css.escape": "npm:^1"
     "@types/node": "npm:^22.6.1"
     "@typescript-eslint/eslint-plugin": "npm:^8.8.0"
     cross-env: "npm:^7.0.3"
-    css.escape: "npm:^1.5.1"
     dotenv: "npm:^16.4.7"
     eslint: "npm:^9.11.1"
     eslint-plugin-playwright: "npm:^1.6.2"

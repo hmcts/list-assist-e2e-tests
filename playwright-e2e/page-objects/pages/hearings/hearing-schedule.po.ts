@@ -1,4 +1,3 @@
-import cssEscape from "css.escape";
 import { Locator, Page, expect } from "@playwright/test";
 import { Base } from "../../base";
 import { SessionBookingPage } from "./session-booking.po.ts";
@@ -375,8 +374,7 @@ export class HearingSchedulePage extends Base {
   }
 
   async bookingSessionId(roomName: string, date, page) {
-    const id = `addBookingColor${roomName}_${date}`;
-    const selector = `#${cssEscape(id)}`;
-    return page.locator(selector);
+    const id = `[id*="addBookingColor"][id*="${roomName}"][id*="${date}"]`;
+    return page.locator(id);
   }
 }
