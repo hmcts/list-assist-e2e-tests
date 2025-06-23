@@ -48,6 +48,7 @@ test.describe("HMI Amend API tests after listing @Amend-Api-test-after-listing",
     await hearingSchedulePage.clearDownSchedule(
       sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
+      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
     );
 
     const roomData = {
