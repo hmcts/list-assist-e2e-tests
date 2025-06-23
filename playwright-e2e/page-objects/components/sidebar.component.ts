@@ -52,6 +52,20 @@ export class SidebarComponent {
   });
   readonly cartButton = this.page.locator("#cart");
 
+  //multi-day case cart
+  readonly multiDayCartSidebarButton = this.page.locator(
+    'a#multiDayCart_menuItem[title="Multi Day Cart"]',
+  );
+  readonly multiDayCartSubMenuButton = this.page.locator(
+    'div.sidebar-submenu ul.sidebar-submenu__content a#multiDay[title="Multi Day"]',
+  );
+  readonly emptyMultiSessionCartButton = this.page.locator(
+    'a#emptySessionCart[title="Empty Session Cart"]',
+  );
+  readonly multiDayCartCounterLabel = this.page.locator(
+    ".cart-counter .cart-counter-label",
+  );
+
   constructor(
     private root: Locator,
     private page: Page,
@@ -237,5 +251,47 @@ export class SidebarComponent {
         },
       )
       .toBeFalsy();
+  }
+
+  async checkMultiDayCartButtonEnabled() {
+    await expect
+      .poll(
+        async () => {
+          return await this.multiDayCartCounterLabel.first().isEnabled();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+  }
+
+  async checkMultiDayCartNumberIsPresent() {
+    // Assert that the label contains a number between 1 and 5
+    const count = parseInt(
+      (await this.multiDayCartCounterLabel.first().textContent()) || "",
+      10,
+    );
+    expect(count).toBeGreaterThanOrEqual(1);
+    expect(count).toBeLessThanOrEqual(5);
+  }
+
+  async openMultiDayCart() {
+    await this.multiDayCartSidebarButton.click();
+
+    await expect
+      .poll(
+        async () => {
+          return await this.multiDayCartSubMenuButton.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
+    await this.multiDayCartSubMenuButton.click();
   }
 }

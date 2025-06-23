@@ -154,7 +154,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Chrome - Case Listing and Reporting Tests') {
         try {
-          yarnBuilder.yarn('playwright test --project=chrome --grep @case-listing')
+          yarnBuilder.yarn('playwright test --project=chrome --grep @case-listing-and-reporting')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -275,7 +275,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Firefox - Case Listing and Reporting Tests') {
         try {
-          yarnBuilder.yarn('playwright test --project=firefox --grep @case-listing')
+          yarnBuilder.yarn('playwright test --project=firefox --grep @case-listing-and-reporting')
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {

@@ -11,10 +11,15 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
     CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT:
       "Pontypridd County Court and",
+    CASE_LISTING_LOCALITY_CAERNARFON_JC: "Caernarfon Justice Centre",
+    CASE_LISTING_LOCALITY_ABERYSTWYTH_JC: "Aberystwyth Justice Centre",
+    CASE_LISTING_LOCATION_LOCATION_CAERNARFON_CHMBRS_5:
+      "Caernarfon Chambers 05",
     CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC:
       "Newport (South Wales) County Court and Family Court",
     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
       "Newport (South Wales) Chambers 01",
+    CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1: "Aberystwyth Courtroom 01",
     CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
     CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: "4",
     CASE_LISTING_SESSION_DURATION_1_00: "60",
