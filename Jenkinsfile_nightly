@@ -220,6 +220,24 @@ withNightlyPipeline(type, product, component, 600) {
           process.env.SKIP_CREATE_CASE = false;
         }
       }
+      stage('Chrome - Amend Api test after listing') {
+        try {
+          env.SKIP_CREATE_CASE = 'true';
+          yarnBuilder.yarn('playwright test --project=chrome --grep @Amend-Api-test-after-listing')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+                  allowMissing: true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll: true,
+                  reportDir: "playwright-report",
+                  reportFiles: 'index.html',
+                  reportName: 'Chrome - Amend Api Tests after listing'
+          ])
+        }
+        env.SKIP_CREATE_CASE = null;
+      }
 
       stage('Firefox - Add Participant Tests') {
         try {

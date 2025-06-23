@@ -7,7 +7,7 @@
       "listingDate": "2023-11-28T00:00:00Z",
       "listingDuration": 120,
       "listingNumberAttendees": 0,
-      "listingComments": "test",
+      "listingComments": "",
       "listingPrivateFlag": false,
       "listingJohTiers": ["30"],
       "listingHearingChannels": ["INTER", "VID", "TEL"],
@@ -94,7 +94,7 @@
     ],
     "_case": {
       "caseListingRequestId": "HMI_1234522",
-      "caseTitle": "test",
+      "caseTitle": "HMCTS-CASE",
       "caseJurisdiction": "AB",
       "caseRegistered": "2023-08-18T00:00:00Z",
       "caseCourt": {

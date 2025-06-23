@@ -54,9 +54,17 @@ export class SessionBookingPage extends Base {
   readonly phoneIcons = this.page.locator(
     ".booking-icon-group > span.booking-icon > i.glyphicon-earphone",
   );
+
   readonly interpreterLanguageIcon = this.page.locator(
     ".booking-icon-group > span.booking-icon > i.glyphicon-globe",
   );
+  readonly videoIcons = this.page.locator(
+    ".booking-icon-group > span.booking-icon > i.glyphicon-facetime-video",
+  );
+  readonly inPersonIcons = this.page.locator(
+    ".booking-icon-group > span.booking-icon > i.glyphicon-user",
+  );
+
   readonly listingSaveButton = this.page
     .locator('iframe[name="addAssociation"]')
     .contentFrame()
@@ -109,6 +117,18 @@ export class SessionBookingPage extends Base {
     .getByRole("dialog", { name: "Advanced Filter" })
     .getByLabel("Apply filter criteria");
 
+  readonly sessionSummaryHearingChannel = this.page
+    .locator("#bookingList tbody tr td")
+    .nth(3);
+  readonly bookingRow = this.page.locator("#bookingList tbody tr");
+  readonly partiesColumn = this.bookingRow.locator("td").nth(4);
+  readonly sessionSummaryAttendees = this.partiesColumn.locator("div");
+
+  readonly scheduleButton = this.page.locator(
+    "div.droparea span.sessionHeader",
+    { hasText: this.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7 },
+  );
+
   constructor(page: Page) {
     super(page);
   }
@@ -117,8 +137,7 @@ export class SessionBookingPage extends Base {
     const roomsButton = this.page.locator('button[title="Rooms"]');
     const icon = roomsButton.locator("i");
     const iconClass = await icon.getAttribute("class");
-
-    if (iconClass?.includes("glyphicon-menu-right")) await roomsButton.click();
+    if (!iconClass?.includes("down")) await roomsButton.click();
   }
 
   async bookSession(duration: string, sessionStatus: string) {
