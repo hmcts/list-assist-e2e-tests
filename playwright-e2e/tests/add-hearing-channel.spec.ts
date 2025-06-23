@@ -13,17 +13,20 @@ test.use({
 });
 
 test.describe("Hearing channel test @hearing-channel", () => {
-  test.beforeEach(async ({ page, hearingSchedulePage, sessionBookingPage }) => {
-    await page.goto(config.urls.baseUrl);
-    //empties cart if there is anything present
-    await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+  test.beforeEach(
+    async ({ page, hearingSchedulePage, sessionBookingPage, dataUtils }) => {
+      await page.goto(config.urls.baseUrl);
+      //empties cart if there is anything present
+      await hearingSchedulePage.sidebarComponent.emptyCaseCart();
 
-    //clears sessions at start of test class but then does not when sessions created as part of tests in the class
-    await hearingSchedulePage.clearDownSchedule(
-      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
-    );
-  });
+      //clears sessions at start of test class but then does not when sessions created as part of tests in the class
+      await hearingSchedulePage.clearDownSchedule(
+        sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
+        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+      );
+    },
+  );
 
   test("Only the session-supported hearing channels should be displayed", async ({
     editNewCasePage,

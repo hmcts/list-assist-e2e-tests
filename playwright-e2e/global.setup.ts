@@ -25,7 +25,6 @@ setup.describe("Global Setup", () => {
       homePage,
       addNewCasePage,
       hearingSchedulePage,
-      dataUtils,
     }) => {
       setup.skip(process.env.SKIP_CREATE_CASE == "true");
 
@@ -40,9 +39,8 @@ setup.describe("Global Setup", () => {
 
       // Generate case details
       process.env.HMCTS_CASE_NUMBER =
-        "HMCTS_CN_" + dataUtils.generateRandomAlphabetical(10).toUpperCase();
-      process.env.CASE_NAME =
-        "AUTO_" + dataUtils.generateRandomAlphabetical(10).toUpperCase();
+        "HMCTS_CN_" + crypto.randomUUID().toUpperCase();
+      process.env.CASE_NAME = "AUTO_" + crypto.randomUUID().toUpperCase();
 
       const caseData = {
         hmctsCaseNumberHeaderValue:

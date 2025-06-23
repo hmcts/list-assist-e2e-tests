@@ -2,6 +2,8 @@ import { Page } from "@playwright/test";
 import { Base } from "../../base";
 
 export class ListingRequirementsPage extends Base {
+  readonly multidayHearingDaysTextBox = this.page.locator("#multidayHearing");
+
   readonly CONSTANTS = {
     PARENT_HEARING_CHANNEL_IN_PERSON: "In Person (parent)",
     PARENT_HEARING_CHANNEL_TELEPHONE: "Telephone",

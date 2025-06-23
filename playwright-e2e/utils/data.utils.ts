@@ -90,6 +90,16 @@ export class DataUtils {
     return formattedDate;
   }
 
+  // Generate date in DD-MM-YYYY with hyphen separators
+  generateDateInDdMmYyyyWithHypenSeparators(daysFromToday: number): string {
+    const date = new Date();
+    date.setDate(date.getDate() + daysFromToday);
+
+    const formattedDate = date.toLocaleDateString("en-GB").replace(/\//g, "-");
+
+    return formattedDate;
+  }
+
   // Gets the number day number in the month, padded with a zero if less than 10.
   // e.g. -1 previous day, 0 today, 1 tomorrow
   getDayAsDd(offset: number = 0): string {
