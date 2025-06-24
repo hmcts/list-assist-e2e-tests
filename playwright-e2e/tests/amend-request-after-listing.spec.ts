@@ -10,6 +10,7 @@ import {
 import { SessionBookingPage } from "../page-objects/pages/hearings/session-booking.po.ts";
 
 test.describe("HMI Amend API tests after listing @Amend-Api-test-after-listing", () => {
+  //using test.slow() because this test takes longer than 3 minutes to complete
   test.slow();
   test("Amended participants and their hearing method should display as expected after listing", async ({
     editNewCasePage,
@@ -167,7 +168,7 @@ test.describe("HMI Amend API tests after listing @Amend-Api-test-after-listing",
       "- Telephone - Other",
     );
 
-    //TODO: uncomment these assertions once the bug is fixed
+    //TODO: uncomment these assertions once the bug is fixed. I'll update the comment with the bug ticket number once it's created.
 
     /*await expect(sessionBookingPage.sessionSummaryAttendees).toHaveCount(3);
 
