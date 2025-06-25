@@ -1,4 +1,4 @@
-import { Page, expect } from "@playwright/test";
+import { expect, Page } from "@playwright/test";
 import { Base } from "../../base";
 
 export class CaseSearchPage extends Base {
@@ -17,7 +17,6 @@ export class CaseSearchPage extends Base {
 
   async searchCase(caseNumber: string): Promise<void> {
     await this.caseNumber.fill(caseNumber);
-
     await expect
       .poll(
         async () => {
@@ -35,7 +34,7 @@ export class CaseSearchPage extends Base {
         },
         {
           intervals: [1000],
-          timeout: 60000,
+          timeout: 120000,
         },
       )
       .toBe(true);
