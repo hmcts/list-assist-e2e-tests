@@ -1,16 +1,12 @@
 import { test } from "../fixtures.js";
 import { HmiUtils } from "../utils/hmi.utils.js";
-import { config } from "../utils";
 import { expect } from "@playwright/test";
 
-test.use({
-  storageState: config.users.testUser.sessionFile,
-});
-
 test.describe("HMI Amend API tests before listing @Amend-Api-test", () => {
-  test("Amended participants and their hearing method should display as expected", async ({
+  test("Amended participants and their hearing method should display as expected before listing", async ({
     editNewCasePage,
     page,
+    loginPage,
     config,
     caseSearchPage,
     dataUtils,
@@ -41,6 +37,7 @@ test.describe("HMI Amend API tests before listing @Amend-Api-test", () => {
     await HmiUtils.requestAmendHearing(amendPayload, CASE_ID);
 
     await page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser, true);
 
     await homePage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCaseByName(CASE_NAME);
