@@ -17,6 +17,11 @@ properties([
       choices: ['chrome', 'firefox', 'webkit', 'edge'],
       description: 'Which browser to use'
     ),
+    booleanParam(
+      name: 'RUN_ALL_TESTS',
+      defaultValue: false,
+      description: 'Run the entire test suite (ignores TAGS_TO_RUN)'
+    ),
   ])
 ])
 
