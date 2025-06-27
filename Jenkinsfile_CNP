@@ -98,12 +98,30 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
-    if (!TAGS_TO_RUN.isEmpty()) {
-      stage("${TAGS_TO_RUN} E2E Tests ${params.browser}") {
+    if (params.RUN_ALL_TESTS) {
+      stage("Run All E2E Tests (${params.browser})") {
         try {
-          currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests"
-          yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN))
-        } catch (Error) {
+          currentBuild.displayName = "All E2E Tests"
+          yarnBuilder.yarn("playwright test --project=${params.browser}")
+        } catch (err) {
+          unstable(message: "${STAGE_NAME} is unstable: ${err.toString()}")
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: "All E2E Tests ${params.browser}"
+          ])
+        }
+      }
+    } else if (!params.TAGS_TO_RUN.isEmpty()) {
+      stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
+        try {
+          currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
+          yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
+        } catch (err) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
           publishHTML([
@@ -112,7 +130,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: "${TAGS_TO_RUN} E2E Tests ${params.browser}"
+            reportName: "${params.TAGS_TO_RUN} E2E Tests ${params.browser}"
           ])
         }
       }
