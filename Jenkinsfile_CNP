@@ -120,7 +120,7 @@ withNightlyPipeline(type, product, component, 600) {
       stage('Smoke Test - Add case via API and create listing') {
         try {
           env.SKIP_CREATE_CASE = 'true'
-          yarnBuilder.yarn('playwright test --project=chrome --grep @add-case-and-create-listing-smoke-tes')
+          yarnBuilder.yarn('playwright test --project=chrome --grep @add-case-and-create-listing-smoke-test')
         } catch (err) {
           unstable(message: "${STAGE_NAME} is unstable: ${err.toString()}")
         } finally {
