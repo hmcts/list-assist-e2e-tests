@@ -104,12 +104,11 @@ withNightlyPipeline(type, product, component, 600) {
     }
 
     if (params.RUN_ALL_TESTS) {
-      stage("Run All E2E Tests (${params.browser})") {
+      stage('Chrome - Add Participant Tests') {
         try {
-          currentBuild.displayName = "All E2E Tests"
-          yarnBuilder.yarn("playwright test --project=${params.browser}")
-        } catch (err) {
-          unstable(message: "${STAGE_NAME} is unstable: ${err.toString()}")
+          yarnBuilder.yarn('playwright test --project=chrome --grep @add-participant')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
           publishHTML([
             allowMissing: true,
@@ -117,9 +116,113 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: "All E2E Tests ${params.browser}"
+            reportName: 'Chrome - Add Participant Tests'
           ])
         }
+      }
+
+      stage('Chrome - Case Creation Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @add-new-case')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Case Creation Tests'
+          ])
+        }
+      }
+
+      stage('Chrome - Case Listing and Reporting Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @case-listing-and-reporting')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Case Listing and Reporting Tests'
+          ])
+        }
+      }
+
+      stage('Chrome - Hearing Channel Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @hearing-channel')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Hearing Channel Tests'
+          ])
+        }
+      }
+
+      stage('Chrome - UI Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @ui-test')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - UI Tests'
+          ])
+        }
+      }
+      stage('Chrome - Amend api test before listing') {
+        try {
+          process.env.SKIP_CREATE_CASE = true;
+          yarnBuilder.yarn('playwright test --project=chrome --grep @Amend-Api-test')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Amend api test before listing'
+          ])
+          process.env.SKIP_CREATE_CASE = false;
+        }
+      }
+      stage('Chrome - Amend Api test after listing') {
+        try {
+          env.SKIP_CREATE_CASE = 'true';
+          yarnBuilder.yarn('playwright test --project=chrome --grep @Amend-Api-test-after-listing')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+                  allowMissing: true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll: true,
+                  reportDir: "playwright-report",
+                  reportFiles: 'index.html',
+                  reportName: 'Chrome - Amend Api Tests after listing'
+          ])
+        }
+        env.SKIP_CREATE_CASE = null;
       }
     } else if (!params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
