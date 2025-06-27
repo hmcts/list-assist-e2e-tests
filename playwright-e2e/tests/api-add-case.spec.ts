@@ -3,7 +3,7 @@ import { HmiUtils } from "../utils/hmi.utils.js";
 import { expect } from "@playwright/test";
 
 test.describe("Add case via API @add-case-and-create-listing-smoke-test", () => {
-  test("Add case via API", async ({
+  test("Add case via API and create listing", async ({
     addNewCasePage,
     page,
     loginPage,
