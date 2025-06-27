@@ -118,29 +118,29 @@ withNightlyPipeline(type, product, component, 600) {
       }
     } else {
       stage('Chrome - Smoke Test - Add case via API and create listing') {
-  try {
-    env.SKIP_CREATE_CASE = 'true'
-    yarnBuilder.yarn('playwright test --project=chrome --grep @add-case-and-create-listing-smoke-tes')
-  } catch (err) {
-    unstable(message: "${STAGE_NAME} is unstable: ${err.toString()}")
-  } finally {
-    publishHTML([
-      allowMissing: true,
-      alwaysLinkToLastBuild: true,
-      keepAll: true,
-      reportDir: "playwright-report",
-      reportFiles: 'index.html',
-      reportName: 'Chrome - Smoke Test - Add case via API and create listing'
-    ])
-    env.SKIP_CREATE_CASE = 'false'
-  }
-}
+        try {
+          env.SKIP_CREATE_CASE = 'true'
+          yarnBuilder.yarn('playwright test --project=chrome --grep @add-case-and-create-listing-smoke-tes')
+        } catch (err) {
+          unstable(message: "${STAGE_NAME} is unstable: ${err.toString()}")
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Smoke Test - Add case via API and create listing'
+          ])
+          env.SKIP_CREATE_CASE = 'false'
+        }
+      }
       stage('Firefox - Smoke Test - Add case via API and create listing') {
         try {
-          process.env.SKIP_CREATE_CASE = true;
+          env.SKIP_CREATE_CASE = 'true'
           yarnBuilder.yarn('playwright test --project=firefox --grep @add-case-and-create-listing-smoke-test')
-        } catch (Error) {
-          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } catch (err) {
+          unstable(message: "${STAGE_NAME} is unstable: ${err.toString()}")
         } finally {
           publishHTML([
             allowMissing: true,
@@ -150,7 +150,7 @@ withNightlyPipeline(type, product, component, 600) {
             reportFiles: 'index.html',
             reportName: 'Firefox - Smoke Test - Add case via API and create listing'
           ])
-          process.env.SKIP_CREATE_CASE = false;
+          env.SKIP_CREATE_CASE = 'false'
         }
       }
     }
