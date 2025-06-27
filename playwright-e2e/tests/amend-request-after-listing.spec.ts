@@ -38,7 +38,6 @@ test.describe("HMI Amend API tests after listing @Amend-Api-test-after-listing",
     payload["hearingRequest"]["_case"]["caseListingRequestId"] = CASE_ID;
 
     await HmiUtils.requestHearing(payload);
-    console.log("\ncase id = " + CASE_ID);
 
     await page.goto(config.urls.baseUrl);
     await loginPage.login(config.users.testUser, true);

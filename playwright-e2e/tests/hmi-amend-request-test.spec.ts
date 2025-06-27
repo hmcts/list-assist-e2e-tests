@@ -2,7 +2,7 @@ import { test } from "../fixtures.js";
 import { HmiUtils } from "../utils/hmi.utils.js";
 import { expect } from "@playwright/test";
 
-test.describe("HMI Amend API tests before listing @Amend-Api-test", () => {
+test.describe("HMI Amend API tests before listing @amend-api-test", () => {
   test("Amended participants and their hearing method should display as expected before listing", async ({
     editNewCasePage,
     page,
@@ -27,7 +27,6 @@ test.describe("HMI Amend API tests before listing @Amend-Api-test", () => {
     payload["hearingRequest"]["_case"]["caseListingRequestId"] = CASE_ID;
 
     await HmiUtils.requestHearing(payload);
-    console.log("\ncase id = " + CASE_ID);
 
     // Amend request
     const amendPayload = config.data.amendHearingRequest;
@@ -38,6 +37,13 @@ test.describe("HMI Amend API tests before listing @Amend-Api-test", () => {
 
     await page.goto(config.urls.baseUrl);
     await loginPage.login(config.users.testUser, true);
+
+    //pushes amend request through
+    await caseDetailsPage.sidebarComponent.openScheduledJobsPage();
+    await caseDetailsPage.sidebarComponent.hmiAmendListingJobButton.click();
+    await expect(
+      caseDetailsPage.sidebarComponent.scheduledJobsHeader,
+    ).toBeVisible();
 
     await homePage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCaseByName(CASE_NAME);
