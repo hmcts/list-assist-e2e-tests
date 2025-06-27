@@ -37,13 +37,17 @@ export class SidebarComponent {
   readonly automaticBookingDashboardButton = this.root.locator(
     "#automaticBookingDashboard_subMenuItem",
   );
+
+  //scheduled jobs
   readonly scheduledJobsButton = this.root.locator(
     "#scheduledJobs_subMenuItem",
   );
   readonly scheduledJobsHeader = this.root.locator("#CMSHomeHeading", {
     hasText: "Scheduled Jobs",
   });
-
+  readonly hmiCreateMatterFromXMLJobButton = this.page.locator(
+    'tr:has(td:text("HmiCreateMatterFromXMLJob")) a.link-class:text("Run")',
+  );
   //case cart
   readonly modal = this.page.locator(".modal-content");
   readonly cartCounterLabel = this.page.locator(".cart-counter-label");
