@@ -114,7 +114,6 @@ test.describe("Add case via API @add-case-and-create-listing-smoke-test", () => 
     payload["hearingRequest"]["_case"]["casePublishedName"] =
       `Acme Vs ${dataUtils.generateRandomAlphabetical(10).toUpperCase()}`;
 
-    console.log(JSON.stringify(payload, null, 2));
     await HmiUtils.requestHearing(payload);
 
     //run the job to pull through created case
