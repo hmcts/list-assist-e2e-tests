@@ -45,8 +45,14 @@ export class SidebarComponent {
   readonly scheduledJobsHeader = this.root.locator("#CMSHomeHeading", {
     hasText: "Scheduled Jobs",
   });
+
+  //scheduled jobs run buttons
   readonly hmiCreateMatterFromXMLJobButton = this.page.locator(
     'tr:has(td:text("HmiCreateMatterFromXMLJob")) a.link-class:text("Run")',
+  );
+
+  readonly hmiAmendListingJobButton = this.page.locator(
+    'tr:has(td:text("HmiAmendListingJob")) a.link-class:text("Run")',
   );
   //case cart
   readonly modal = this.page.locator(".modal-content");
