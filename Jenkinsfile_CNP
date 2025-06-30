@@ -17,6 +17,11 @@ properties([
       choices: ['chrome', 'firefox', 'webkit', 'edge'],
       description: 'Which browser to use'
     ),
+    string(
+      name: 'GIT_BRANCH',
+      defaultValue: 'master',
+      description: 'Git branch to run the pipeline against'
+    ),
   ])
 ])
 
@@ -73,6 +78,18 @@ withNightlyPipeline(type, product, component, 600) {
   env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
+
+  stage('Checkout Branch') {
+    steps {
+      script {
+        checkout([
+          $class: 'GitSCM',
+          branches: [[name: "*/${params.GIT_BRANCH}"]],
+          userRemoteConfigs: scm.userRemoteConfigs
+        ])
+      }
+    }
+  }
 
   afterAlways('DependencyCheckNightly') {
     stage('Check For UK Bank Holiday') {
