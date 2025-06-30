@@ -96,11 +96,7 @@ withNightlyPipeline(type, product, component, 600) {
         }
     }
     stage('Checkout Branch') {
-      checkout([
-        $class: 'GitSCM',
-        branches: [[name: "*/${params.GIT_BRANCH}"]],
-        userRemoteConfigs: scm.userRemoteConfigs
-      ])
+        git branch: "${params.GIT_BRANCH}", url: 'https://github.com/HMCTS/list-assist-e2e-tests.git'
     }
 
     stage('Set up playwright') {
