@@ -72,24 +72,15 @@ def buildPlaywrightCommand(tags) {
 
 def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
-node {
-  withNightlyPipeline(type, product, component, 600) {
-    loadVaultSecrets(secrets)
-    env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
-    env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
-    env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
-    enableSlackNotifications(channel)
+withNightlyPipeline(type, product, component, 600) {
+  loadVaultSecrets(secrets)
+  env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
+  env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
+  env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
+  enableSlackNotifications(channel)
 
-    stage('Checkout Branch') {
-      checkout([
-        $class: 'GitSCM',
-        branches: [[name: "*/${params.GIT_BRANCH}"]],
-        userRemoteConfigs: scm.userRemoteConfigs
-      ])
-    }
-
-    afterAlways('DependencyCheckNightly') {
-      stage('Check For UK Bank Holiday') {
+  afterAlways('DependencyCheckNightly') {
+    stage('Check For UK Bank Holiday') {
         script {
           def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
           // Read from the local bank-holidays.json file
@@ -103,254 +94,261 @@ node {
             error("Bank holiday - aborting build")
           }
         }
+    }
+    stage('Checkout Branch') {
+      checkout([
+        $class: 'GitSCM',
+        branches: [[name: "*/${params.GIT_BRANCH}"]],
+        userRemoteConfigs: scm.userRemoteConfigs
+      ])
+    }
+
+    stage('Set up playwright') {
+      try {
+        yarnBuilder.yarn('setup')
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       }
-      stage('Set up playwright') {
+    }
+
+    if (!TAGS_TO_RUN.isEmpty()) {
+      stage("${TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
-          yarnBuilder.yarn('setup')
+          currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests"
+          yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN))
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: "${TAGS_TO_RUN} E2E Tests ${params.browser}"
+          ])
+        }
+      }
+    } else {
+      stage('Chrome - Add Participant Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @add-participant')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Add Participant Tests'
+          ])
         }
       }
 
-      if (!TAGS_TO_RUN.isEmpty()) {
-        stage("${TAGS_TO_RUN} E2E Tests ${params.browser}") {
-          try {
-            currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests"
-            yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN))
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: "${TAGS_TO_RUN} E2E Tests ${params.browser}"
-            ])
-          }
+      stage('Chrome - Case Creation Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @add-new-case')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Case Creation Tests'
+          ])
         }
-      } else {
-        stage('Chrome - Add Participant Tests') {
-          try {
-            yarnBuilder.yarn('playwright test --project=chrome --grep @add-participant')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Chrome - Add Participant Tests'
-            ])
-          }
-        }
+      }
 
-        stage('Chrome - Case Creation Tests') {
-          try {
-            yarnBuilder.yarn('playwright test --project=chrome --grep @add-new-case')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Chrome - Case Creation Tests'
-            ])
-          }
+      stage('Chrome - Case Listing and Reporting Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @case-listing-and-reporting')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Case Listing and Reporting Tests'
+          ])
         }
+      }
 
-        stage('Chrome - Case Listing and Reporting Tests') {
-          try {
-            yarnBuilder.yarn('playwright test --project=chrome --grep @case-listing-and-reporting')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Chrome - Case Listing and Reporting Tests'
-            ])
-          }
+      stage('Chrome - Hearing Channel Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @hearing-channel')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Hearing Channel Tests'
+          ])
         }
+      }
 
-        stage('Chrome - Hearing Channel Tests') {
-          try {
-            yarnBuilder.yarn('playwright test --project=chrome --grep @hearing-channel')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Chrome - Hearing Channel Tests'
-            ])
-          }
+      stage('Chrome - UI Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @ui-test')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - UI Tests'
+          ])
         }
+      }
+      stage('Chrome - Amend Api Tests before listing') {
+        try {
+          env.SKIP_CREATE_CASE = 'true';
+          yarnBuilder.yarn('playwright test --project=chrome --grep @amend-api-test')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome - Amend Api Tests'
+          ])
+        }
+        env.SKIP_CREATE_CASE = null;
+      }
+      stage('Chrome - Amend Api test after listing') {
+        try {
+          env.SKIP_CREATE_CASE = 'true';
+          yarnBuilder.yarn('playwright test --project=chrome --grep @amend-api-test-after-listing')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+                  allowMissing: true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll: true,
+                  reportDir: "playwright-report",
+                  reportFiles: 'index.html',
+                  reportName: 'Chrome - Amend Api Tests after listing'
+          ])
+        }
+        env.SKIP_CREATE_CASE = null;
+      }
+      stage('Firefox - Add Participant Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=firefox --grep @add-participant')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox - Add Participant Tests'
+          ])
+        }
+      }
 
-        stage('Chrome - UI Tests') {
-          try {
-            yarnBuilder.yarn('playwright test --project=chrome --grep @ui-test')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Chrome - UI Tests'
-            ])
-          }
+      stage('Firefox - Case Creation Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=firefox --grep @add-new-case')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox - Case Creation Tests'
+          ])
         }
-        stage('Chrome - Amend Api Tests before listing') {
-          try {
-            env.SKIP_CREATE_CASE = 'true';
-            yarnBuilder.yarn('playwright test --project=chrome --grep @amend-api-test')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Chrome - Amend Api Tests'
-            ])
-          }
-          env.SKIP_CREATE_CASE = null;
-        }
-        stage('Chrome - Amend Api test after listing') {
-          try {
-            env.SKIP_CREATE_CASE = 'true';
-            yarnBuilder.yarn('playwright test --project=chrome --grep @amend-api-test-after-listing')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Chrome - Amend Api Tests after listing'
-            ])
-          }
-          env.SKIP_CREATE_CASE = null;
-        }
-        stage('Firefox - Add Participant Tests') {
-          try {
-            yarnBuilder.yarn('playwright test --project=firefox --grep @add-participant')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Firefox - Add Participant Tests'
-            ])
-          }
-        }
+      }
 
-        stage('Firefox - Case Creation Tests') {
-          try {
-            yarnBuilder.yarn('playwright test --project=firefox --grep @add-new-case')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Firefox - Case Creation Tests'
-            ])
-          }
+      stage('Firefox - Case Listing and Reporting Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=firefox --grep @case-listing-and-reporting')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox - Case Listing and Reporting Tests'
+          ])
         }
+      }
 
-        stage('Firefox - Case Listing and Reporting Tests') {
-          try {
-            yarnBuilder.yarn('playwright test --project=firefox --grep @case-listing-and-reporting')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Firefox - Case Listing and Reporting Tests'
-            ])
-          }
+      stage('Firefox - Hearing Channel Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=firefox --grep @hearing-channel')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox - Hearing Channel Tests'
+          ])
         }
+      }
 
-        stage('Firefox - Hearing Channel Tests') {
-          try {
-            yarnBuilder.yarn('playwright test --project=firefox --grep @hearing-channel')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Firefox - Hearing Channel Tests'
-            ])
-          }
+      stage('Firefox - UI Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=firefox --grep @ui-test')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox - UI Tests'
+          ])
         }
+      }
 
-        stage('Firefox - UI Tests') {
-          try {
-            yarnBuilder.yarn('playwright test --project=firefox --grep @ui-test')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Firefox - UI Tests'
-            ])
-          }
-        }
-
-        stage('Webkit - Smoke Tests') {
-          try {
-            yarnBuilder.yarn('playwright test --project=webkit --grep @smoke')
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: 'Webkit - Smoke Tests'
-            ])
-          }
+      stage('Webkit - Smoke Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=webkit --grep @smoke')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Webkit - Smoke Tests'
+          ])
         }
       }
     }
