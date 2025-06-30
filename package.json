@@ -30,6 +30,7 @@
     "prepare": "husky",
     "lint": "prettier --write . && yarn tsc -p tsconfig.json && yarn eslint .",
     "setup": "yarn playwright install --with-deps",
+    "build": "tsc",
     "load-secrets": "yarn node scripts/get-secrets.js",
     "test:chrome": "yarn playwright test tests/ --project=chrome --grep-invert='(@a11y)|(@performance)'",
     "test:firefox": "yarn playwright test tests/ --project=firefox --grep-invert='(@a11y)|(@performance)'",
