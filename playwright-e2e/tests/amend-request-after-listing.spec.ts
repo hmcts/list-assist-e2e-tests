@@ -9,7 +9,7 @@ import {
 } from "../page-objects/pages";
 import { SessionBookingPage } from "../page-objects/pages/hearings/session-booking.po.ts";
 
-test.describe("HMI Amend API tests after listing @Amend-Api-test-after-listing", () => {
+test.describe("HMI Amend API tests after listing @amend-api-test-after-listing", () => {
   //using test.slow() because this test takes longer than 3 minutes to complete
   test.slow();
   test("Amended participants and their hearing method should display as expected after listing", async ({
