@@ -75,6 +75,8 @@ test.describe("Case creation @add-new-case", () => {
     await expect(caseDetailsPage.currentCaseCurrentStatusField).toHaveText(
       "Current Status " + caseData.currentStatus,
     );
+
+    console.log("this is the test branch");
   });
 
   test("Search for and add related case to the existing case", async ({
