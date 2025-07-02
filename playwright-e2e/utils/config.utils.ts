@@ -30,6 +30,7 @@ interface Hmi {
 interface Data {
   hearingRequest: JSON;
   amendHearingRequest: JSON;
+  addCase: JSON;
 }
 
 export interface Config {
@@ -75,6 +76,10 @@ export const config: Config = {
     amendHearingRequest: readJsonFile(
       path.join(fileURLToPath(import.meta.url), "../../data/") +
         `amend-hearing-request.json`,
+    ),
+    addCase: readJsonFile(
+      path.join(fileURLToPath(import.meta.url), "../../data/") +
+        `api-add-case.json`,
     ),
   },
 };
