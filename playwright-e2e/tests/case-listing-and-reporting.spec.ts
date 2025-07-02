@@ -1,4 +1,5 @@
 import { expect, test } from "../fixtures";
+import { HmiUtils } from "../utils/hmi.utils.js";
 import {
   CaseDetailsPage,
   CaseSearchPage,
@@ -8,14 +9,11 @@ import {
 import { SessionBookingPage } from "../page-objects/pages/hearings/session-booking.po";
 import { config } from "../utils";
 
-test.use({
-  storageState: config.users.testUser.sessionFile,
-});
-
 test.describe("Case listing and reporting @case-listing-and-reporting", () => {
   test.describe.configure({ mode: "serial" });
-  test.beforeEach(async ({ page, hearingSchedulePage }) => {
+  test.beforeEach(async ({ page, loginPage, hearingSchedulePage }) => {
     await page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser);
     //empties cart if there is anything present
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
   });
@@ -97,6 +95,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
   });
 
   test('List "Released" session and Generate report via P&I Dashboard. Run and confirm scheduled job is completed', async ({
+    addNewCasePage,
+    editNewCasePage,
     sessionBookingPage,
     caseSearchPage,
     caseDetailsPage,
@@ -105,6 +105,10 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     automaticBookingDashboardPage,
     dataUtils,
   }) => {
+    // Generate case details
+    const HMCTS_CASE_NUMBER = "HMCTS_CN_" + crypto.randomUUID().toUpperCase();
+    const CASE_NAME = "AUTO_" + crypto.randomUUID().toUpperCase();
+
     await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
     await sessionBookingPage.updateAdvancedFilterConfig(
@@ -135,13 +139,100 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     //check the header is present after page has refreshed
     await automaticBookingDashboardPage.sidebarComponent.scheduledJobsHeader.isVisible();
 
+    const caseData = {
+      hmctsCaseNumberHeaderValue:
+        addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+      caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
+      listingType: addNewCasePage.CONSTANTS.LISTING_TYPE_DAMAGES,
+      jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL_REFERENCE,
+      service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES_REFERENCE,
+      caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS_REFERENCE,
+      region: addNewCasePage.CONSTANTS.REGION_WALES,
+      locationId: addNewCasePage.CONSTANTS.LOCATION_ID_CARDIFF_CCJGC,
+      cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+      hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+      currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
+    };
+
+    const payload = config.data.addCase;
+    payload["hearingRequest"]["_case"]["caseListingRequestId"] =
+      HMCTS_CASE_NUMBER;
+    payload["hearingRequest"]["_case"]["caseIdHMCTS"] = HMCTS_CASE_NUMBER;
+    payload["hearingRequest"]["_case"]["caseTitle"] = CASE_NAME;
+    payload["hearingRequest"]["_case"]["caseRegistered"] =
+      dataUtils.getCurrentDateTimeUTC();
+    payload["hearingRequest"]["_case"]["caseCourt"]["locationId"] =
+      caseData.locationId;
+
+    //listing block
+    payload["hearingRequest"]["listing"]["listingType"] = caseData.listingType;
+    payload["hearingRequest"]["listing"]["listingLocations"]["locationId"] =
+      caseData.locationId;
+    payload["hearingRequest"]["listing"]["listingLocations"][
+      "locationReferenceType"
+    ] = addNewCasePage.CONSTANTS.LOCATION_TYPE_REFERENCE_EPIMS;
+    payload["hearingRequest"]["listing"]["listingDate"] =
+      dataUtils.getCurrentDateTimeUTC();
+
+    //entities block
+    //claimant
+    payload["hearingRequest"]["entities"][0]["entityId"] = crypto.randomUUID();
+    payload["hearingRequest"]["entities"][0]["entityTypeCode"] =
+      addNewCasePage.CONSTANTS.ENTITY_TYPE_CODE_IND;
+    payload["hearingRequest"]["entities"][0]["entityRoleCode"] =
+      addNewCasePage.CONSTANTS.ENTITY_ROLE_CODE_CLAI;
+    //defendant
+    payload["hearingRequest"]["entities"][1]["entityId"] = crypto.randomUUID();
+    payload["hearingRequest"]["entities"][1]["entityTypeCode"] =
+      addNewCasePage.CONSTANTS.ENTITY_TYPE_CODE_ORG;
+    payload["hearingRequest"]["entities"][1]["entityRoleCode"] =
+      addNewCasePage.CONSTANTS.ENTITY_ROLE_CODE_DEFE;
+    payload["hearingRequest"]["entities"][1]["entitySubType"][
+      "entityClassCode"
+    ] = addNewCasePage.CONSTANTS.ENTITY_TYPE_CODE_ORG;
+    payload["hearingRequest"]["entities"][1]["entitySubType"][
+      "entityCompanyName"
+    ] = "Acme Corporation";
+
+    //_case block
+    payload["hearingRequest"]["_case"]["caseJurisdiction"] =
+      caseData.jurisdiction;
+    payload["hearingRequest"]["_case"]["caseClassifications"][
+      "caseClassificationService"
+    ] = caseData.service;
+    payload["hearingRequest"]["_case"]["caseClassifications"][
+      "caseClassificationType"
+    ] = caseData.caseType;
+    payload["hearingRequest"]["_case"]["caseClassifications"][
+      "caseClassificationSubType"
+    ] = caseData.caseType;
+
+    //misc
+    payload["hearingRequest"]["_case"]["casePublishedName"] =
+      `Acme Vs ${dataUtils.generateRandomAlphabetical(10).toUpperCase()}`;
+
+    await HmiUtils.requestHearing(payload);
+
+    //run the job to pull through created case
+    await addNewCasePage.sidebarComponent.openScheduledJobsPage();
+    await addNewCasePage.sidebarComponent.hmiCreateMatterFromXMLJobButton.click();
+    await expect(
+      addNewCasePage.sidebarComponent.scheduledJobsHeader,
+    ).toBeVisible();
+
+    //search for the case
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.searchCase(HMCTS_CASE_NUMBER);
+    await expect(editNewCasePage.caseNameField).toHaveText(CASE_NAME);
+
     // Test data
     const roomData = {
       roomName:
         sessionBookingPage.CONSTANTS
           .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-      caseNumber: process.env.HMCTS_CASE_NUMBER as string,
+      caseNumber: HMCTS_CASE_NUMBER as string,
       sessionDuration:
         sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       hearingType:
