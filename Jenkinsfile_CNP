@@ -121,9 +121,9 @@ withNightlyPipeline(type, product, component, 600) {
 
     // Only run @pr-test tagged tests if this is a PR build
     if (env.CHANGE_ID) {
-      stage('PR - Run @pr-test tagged tests') {
+      stage('PR Tests') {
         try {
-          yarnBuilder.yarn("playwright test --grep @pr-test --project=${params.browser}")
+          yarnBuilder.yarn("playwright test --project=chrome --grep @pr-test")
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -133,7 +133,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: "PR - @pr-test Tests"
+            reportName: "PR Tests"
           ])
         }
       }
