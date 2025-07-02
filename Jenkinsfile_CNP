@@ -81,37 +81,35 @@ withNightlyPipeline(type, product, component, 600) {
 
   afterAlways('DependencyCheckNightly') {
     stage('Check For UK Bank Holiday') {
-        script {
-          def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
-          // Read from the local bank-holidays.json file
-          def holidays = sh(
-            script: "jq -r '.\"england-and-wales\".events[].date' bank-holidays.json",
-            returnStdout: true
-          ).trim().split('\n')
-          if (holidays.contains(today)) {
-            echo "Today (${today}) is a UK bank holiday. Skipping build."
-            currentBuild.result = 'NOT_BUILT'
-            error("Bank holiday - aborting build")
-          }
+      script {
+        def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
+        def holidays = sh(
+          script: "jq -r '.\"england-and-wales\".events[].date' bank-holidays.json",
+          returnStdout: true
+        ).trim().split('\n')
+        if (holidays.contains(today)) {
+          echo "Today (${today}) is a UK bank holiday. Skipping build."
+          currentBuild.result = 'NOT_BUILT'
+          error("Bank holiday - aborting build")
         }
+      }
     }
     stage('Checkout Test Branch') {
-        if (params.GIT_BRANCH == 'master') {
-            echo "GIT_BRANCH is 'master', skipping this stage."
-        } else {
-            git branch: "${params.GIT_BRANCH}", url: 'https://github.com/HMCTS/list-assist-e2e-tests.git'
+      if (params.GIT_BRANCH == 'master') {
+        echo "GIT_BRANCH is 'master', skipping this stage."
+      } else {
+        git branch: "${params.GIT_BRANCH}", url: 'https://github.com/HMCTS/list-assist-e2e-tests.git'
       }
     }
 
     stage('Build Test Branch') {
-    if (params.GIT_BRANCH != 'master') {
+      if (params.GIT_BRANCH != 'master') {
         echo "Building branch: ${params.GIT_BRANCH}"
-        // Add your build steps here, for example:
         yarnBuilder.yarn('build')
-    } else {
+      } else {
         echo "GIT_BRANCH is 'master', skipping build branch stage."
+      }
     }
-  }
 
     stage('Set up playwright') {
       try {
@@ -121,11 +119,11 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
-    if (!TAGS_TO_RUN.isEmpty()) {
-      stage("${TAGS_TO_RUN} E2E Tests ${params.browser}") {
+    // Only run @pr-test tagged tests if this is a PR build
+    if (env.CHANGE_ID) {
+      stage('PR - Run @pr-test tagged tests') {
         try {
-          currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests"
-          yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN))
+          yarnBuilder.yarn("playwright test --grep @pr-test --project=${params.browser}")
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -135,7 +133,25 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: "${TAGS_TO_RUN} E2E Tests ${params.browser}"
+            reportName: "PR - @pr-test Tests"
+          ])
+        }
+      }
+    } else if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
+      stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
+        try {
+          currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
+          yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: "${params.TAGS_TO_RUN} E2E Tests ${params.browser}"
           ])
         }
       }
