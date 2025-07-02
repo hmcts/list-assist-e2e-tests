@@ -119,8 +119,8 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
-    // Only run @pr-test tagged tests if this is a PR build
-    if (env.CHANGE_ID) {
+    // Only run @pr-test tagged tests if this is a PR build and TAGS_TO_RUN is empty
+    if (env.CHANGE_ID && (!params.TAGS_TO_RUN || params.TAGS_TO_RUN.isEmpty())) {
       stage('PR Tests') {
         try {
           yarnBuilder.yarn("playwright test --project=chrome --grep @pr-test")
