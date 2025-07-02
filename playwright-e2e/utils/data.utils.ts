@@ -124,4 +124,9 @@ export class DataUtils {
 
     return `${dayName}, ${day} ${monthName} ${year}`;
   }
+
+  getCurrentDateTimeUTC(): string {
+    const now = new Date();
+    return now.toISOString().replace(/\.\d{3}Z$/, "Z");
+  }
 }
