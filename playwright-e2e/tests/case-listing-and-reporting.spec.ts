@@ -94,7 +94,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
   });
 
-  test('List "Released" session and Generate report via P&I Dashboard. Run and confirm scheduled job is completed', async ({
+  test('List "Released" session and Generate report via P&I Dashboard. Run and confirm scheduled job is completed @pr-test', async ({
     addNewCasePage,
     editNewCasePage,
     sessionBookingPage,
