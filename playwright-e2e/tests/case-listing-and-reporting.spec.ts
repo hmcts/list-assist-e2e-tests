@@ -11,12 +11,27 @@ import { config } from "../utils";
 
 test.describe("Case listing and reporting @case-listing-and-reporting", () => {
   test.describe.configure({ mode: "serial" });
-  test.beforeEach(async ({ page, loginPage, hearingSchedulePage }) => {
-    await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser);
-    //empties cart if there is anything present
-    await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-  });
+  test.beforeEach(
+    async ({
+      page,
+      loginPage,
+      addNewCasePage,
+      caseSearchPage,
+      editNewCasePage,
+      hearingSchedulePage,
+    }) => {
+      await page.goto(config.urls.baseUrl);
+      await loginPage.login(config.users.testUser);
+      //empties cart if there is anything present
+      await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+      //search for the case
+      await addNewCasePage.sidebarComponent.openSearchCasePage();
+      await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
+      await expect(editNewCasePage.caseNameField).toHaveText(
+        process.env.CASE_NAME as string,
+      );
+    },
+  );
 
   test('List "Released" session and Generate report via reports menu', async ({
     sessionBookingPage,
