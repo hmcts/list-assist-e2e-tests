@@ -39,6 +39,13 @@ test.describe("HMI Amend API tests before listing @amend-api-test", () => {
     await page.goto(config.urls.baseUrl);
     await loginPage.login(config.users.testUser, true);
 
+    //pushes amend request through
+    await caseDetailsPage.sidebarComponent.openScheduledJobsPage();
+    await caseDetailsPage.sidebarComponent.hmiAmendListingJobButton.click();
+    await expect(
+      caseDetailsPage.sidebarComponent.scheduledJobsHeader,
+    ).toBeVisible();
+
     await homePage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCaseByName(CASE_NAME);
 

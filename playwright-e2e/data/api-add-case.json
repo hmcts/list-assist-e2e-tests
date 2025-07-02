@@ -1,0 +1,100 @@
+{
+  "hearingRequest": {
+    "listing": {
+      "listingAutoCreateFlag": false,
+      "listingPriority": "Standard",
+      "listingType": "AA",
+      "listingDate": "2023-11-28T00:00:00Z",
+      "listingDuration": 60,
+      "listingNumberAttendees": 0,
+      "listingComments": "This has been created via the API",
+      "listingPrivateFlag": false,
+      "listingJohTiers": ["30"],
+      "listingHearingChannels": ["INTER", "VID", "TEL"],
+      "listingLocations": [
+        {
+          "locationType": "Court",
+          "locationId": "234850",
+          "locationReferenceType": "EPIMS"
+        }
+      ],
+      "listingRoomAttributes": ["6"]
+    },
+    "entities": [
+      {
+        "entityId": "f2847b15-dbb8-4df0-868a-420d9de11d29",
+        "entityTypeCode": "IND",
+        "entityRoleCode": "CLAI",
+        "entitySubType": {
+          "entityClassCode": "PERSON",
+          "entityFirstName": "John",
+          "entityLastName": "Smith",
+          "entitySensitiveClient": false,
+          "entityAlertMessage": "",
+          "entityInterpreterLanguage": ""
+        },
+        "entityCommunications": [
+          {
+            "entityCommunicationDetails": "applicant1@example.net",
+            "entityCommunicationType": "EMAIL"
+          },
+          {
+            "entityCommunicationDetails": "07405123456",
+            "entityCommunicationType": "PHONE"
+          }
+        ],
+        "entityHearingChannel": "INTER"
+      },
+      {
+        "entityId": "f2847b15-dbb8-4df0-868a-420d9de11d29",
+        "entityTypeCode": "ORG",
+        "entityRoleCode": "DEFE",
+        "entitySubType": {
+          "entityClassCode": "ORG",
+          "entityCompanyName": "SOME ORGANISATION"
+        },
+        "entityCommunications": [
+          {
+            "entityCommunicationDetails": "applicant1@example.COM",
+            "entityCommunicationType": "EMAIL"
+          },
+          {
+            "entityCommunicationDetails": "07405123456",
+            "entityCommunicationType": "PHONE"
+          }
+        ],
+        "entityHearingChannel": "INTER"
+      }
+    ],
+    "_case": {
+      "caseListingRequestId": "HMI_1234",
+      "caseTitle": "1692379629241323_John Smith",
+      "caseJurisdiction": "AA",
+      "caseRegistered": "2023-08-18T00:00:00Z",
+      "caseCourt": {
+        "locationType": "Court",
+        "locationId": "234850",
+        "locationReferenceType": "EPIMS"
+      },
+      "caseClassifications": [
+        {
+          "caseClassificationService": "AAA7",
+          "caseClassificationType": "AAA7-SMALL_CLAIM",
+          "caseClassificationSubType": "AAA7-SMALL_CLAIM"
+        }
+      ],
+      "caseInterpreterRequiredFlag": false,
+      "caseRestrictedFlag": false,
+      "caseVersionId": 1,
+      "caseLinks": [
+        {
+          "url": "https://test.com#Case File View"
+        }
+      ],
+      "casePublishedName": "Wispa vs Starbar",
+      "caseAdditionalSecurityFlag": false,
+      "linkedHearingGroupStatus": "Not Required",
+      "caseIdHMCTS": "HMI_1234"
+    }
+  }
+}
