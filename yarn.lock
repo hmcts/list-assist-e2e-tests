@@ -171,12 +171,11 @@ __metadata:
   linkType: hard
 
 "@hmcts/playwright-common@npm:^1.0.17":
-  version: 1.0.27
-  resolution: "@hmcts/playwright-common@npm:1.0.27"
+  version: 1.0.29
+  resolution: "@hmcts/playwright-common@npm:1.0.29"
   dependencies:
     "@axe-core/playwright": "npm:^4.10.0"
     "@eslint/js": "npm:^9.11.1"
-    "@types/node": "npm:^22.6.1"
     "@typescript-eslint/eslint-plugin": "npm:^8.8.0"
     eslint: "npm:^9.11.1"
     eslint-plugin-playwright: "npm:^1.6.2"
@@ -187,8 +186,8 @@ __metadata:
     typescript: "npm:^5.6.2"
     typescript-eslint: "npm:^8.8.0"
   peerDependencies:
-    "@playwright/test": ^1.49.0
-  checksum: 10/f1efbc69fe18bac8bff9acf2aec166b349ea641551712cfadd4839c21ffce7cf01a6f408697db453c46cd30dde2ffbe8a45a5d290764a3945bc94ec3a56d1477
+    "@playwright/test": ^1.53.0
+  checksum: 10/397feb0bcca06371b60aec0dc270771d2f0559acce425fbbced968b6dd4e81fa48abc95242acbd7c4d23387ffa40211e96d09a8d8e4c2778838372c2e0fcc9ea
   languageName: node
   linkType: hard
 
@@ -2487,8 +2486,8 @@ __metadata:
   linkType: hard
 
 "lighthouse@npm:^12.2.1":
-  version: 12.7.0
-  resolution: "lighthouse@npm:12.7.0"
+  version: 12.7.1
+  resolution: "lighthouse@npm:12.7.1"
   dependencies:
     "@paulirish/trace_engine": "npm:0.0.56"
     "@sentry/node": "npm:^9.28.1"
@@ -2522,7 +2521,7 @@ __metadata:
     chrome-debug: core/scripts/manual-chrome-launcher.js
     lighthouse: cli/index.js
     smokehouse: cli/test/smokehouse/frontends/smokehouse-bin.js
-  checksum: 10/8247e3cfab160ff4a86b62a86d69db2c334d6534ba420cea61063385af34a44319e25bd9fe0f69213a8bc693dcf290b5382a058053c1a01561a8743deb017a2c
+  checksum: 10/25689438224cf03bea8a92c876c932463dcbd6fc337e89d1497c4a0b2c204c419be4f71a5d8152a5908d851a249f76eda255b0ca6cf4cf891b3d45806c9e4fb5
   languageName: node
   linkType: hard
 
