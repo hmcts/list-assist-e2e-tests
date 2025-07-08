@@ -363,6 +363,23 @@ withNightlyPipeline(type, product, component, 600) {
           ])
         }
       }
+
+      stage('Edge - Smoke Tests') {
+        try {
+          yarnBuilder.yarn('playwright test --project=edge --grep @smoke')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Edge - Smoke Tests'
+          ])
+        }
+      }
     }
   }
 }
