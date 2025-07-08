@@ -125,6 +125,7 @@ withNightlyPipeline(type, product, component, 600) {
       stage("${TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
           currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests"
+          if (params.BROWSER_TO_RUN == 'edge') yarnBuilder.yarn('setup:edge')
           yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN))
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
