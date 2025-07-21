@@ -38,6 +38,13 @@ export class SidebarComponent {
     "#automaticBookingDashboard_subMenuItem",
   );
 
+  //User menu
+  readonly userMenu = this.root.locator("#users_subMenuItem");
+
+  // code manager menu
+
+  readonly codeManagerMenu = this.root.locator("#codeManager_subMenuItem");
+
   //scheduled jobs menu
   readonly scheduledJobsButton = this.root.locator(
     "#scheduledJobs_subMenuItem",
@@ -75,6 +82,12 @@ export class SidebarComponent {
   );
   readonly multiDayCartCounterLabel = this.page.locator(
     ".cart-counter .cart-counter-label",
+  );
+
+  readonly cacheRefreshBtn = this.page.locator("#refreshCacheButton");
+
+  readonly cacheRefreshMessage = this.page.locator(
+    "text=Cache has been refreshed. It took",
   );
 
   constructor(
@@ -304,5 +317,19 @@ export class SidebarComponent {
       .toBeTruthy();
 
     await this.multiDayCartSubMenuButton.click();
+  }
+
+  async waitCacheRefresh(): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          return await this.cacheRefreshMessage.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 20_000,
+        },
+      )
+      .toBeTruthy();
   }
 }
