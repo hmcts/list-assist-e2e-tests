@@ -17,11 +17,6 @@ properties([
       choices: ['chrome', 'firefox', 'webkit', 'edge'],
       description: 'Which browser to use'
     ),
-    string(
-      name: 'GIT_BRANCH',
-      defaultValue: 'master',
-      description: 'Git branch to run the pipeline against'
-    ),
   ])
 ])
 
@@ -94,23 +89,6 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
     }
-    stage('Checkout Test Branch') {
-      if (params.GIT_BRANCH == 'master') {
-        echo "GIT_BRANCH is 'master', skipping this stage."
-      } else {
-        git branch: "${params.GIT_BRANCH}", url: 'https://github.com/HMCTS/list-assist-e2e-tests.git'
-      }
-    }
-
-    stage('Build Test Branch') {
-      if (params.GIT_BRANCH != 'master') {
-        echo "Building branch: ${params.GIT_BRANCH}"
-        yarnBuilder.yarn('build')
-      } else {
-        echo "GIT_BRANCH is 'master', skipping build branch stage."
-      }
-    }
-
     stage('Set up playwright') {
       try {
         yarnBuilder.yarn('setup')
