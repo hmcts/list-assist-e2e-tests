@@ -23,8 +23,10 @@ test.describe("Add user @add-user", () => {
 
     await createUserPage.userLoginId.fill(userLoginId);
     await createUserPage.userEmail.fill("test@email.com");
-    await createUserPage.userPassword.fill(process.env.TEST_PASSWORD);
-    await createUserPage.userConfirmPassword.fill(process.env.TEST_PASSWORD);
+    await createUserPage.userPassword.fill(process.env.TEST_PASSWORD as string);
+    await createUserPage.userConfirmPassword.fill(
+      process.env.TEST_PASSWORD as string,
+    );
     await createUserPage.userGivenName.fill("Auto");
     await createUserPage.userSurName.fill("User");
 
@@ -90,7 +92,7 @@ test.describe("Add user @add-user", () => {
 
     // login with new user
     await loginPage.usernameInput.fill(userLoginId);
-    await loginPage.passwordInput.fill(process.env.TEST_PASSWORD);
+    await loginPage.passwordInput.fill(process.env.TEST_PASSWORD as string);
     await loginPage.submitBtn.click();
 
     // assert new user welcome message
