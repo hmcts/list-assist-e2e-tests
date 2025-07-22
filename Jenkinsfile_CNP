@@ -95,27 +95,7 @@ withNightlyPipeline(type, product, component, 600) {
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       }
-    }
-
-    // Only run @pr-test tagged tests if this is a PR build and TAGS_TO_RUN is empty
-    if (env.CHANGE_ID && (!params.TAGS_TO_RUN || params.TAGS_TO_RUN.isEmpty())) {
-      stage('PR Tests') {
-        try {
-          yarnBuilder.yarn("playwright test --project=chrome --grep @pr-test")
-        } catch (Error) {
-          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-        } finally {
-          publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: "playwright-report",
-            reportFiles: 'index.html',
-            reportName: "PR Tests"
-          ])
-        }
-      }
-    } else if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
+    } if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
           currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
