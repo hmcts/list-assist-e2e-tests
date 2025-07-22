@@ -95,7 +95,8 @@ withNightlyPipeline(type, product, component, 600) {
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       }
-    } if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
+    }
+    if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
           currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
