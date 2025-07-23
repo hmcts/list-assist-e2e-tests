@@ -235,6 +235,42 @@ withNightlyPipeline(type, product, component, 600) {
         }
         env.SKIP_CREATE_CASE = null;
       }
+      stage('Chrome - Add new user test') {
+        try {
+          env.SKIP_CREATE_CASE = 'true';
+          yarnBuilder.yarn('playwright test --project=chrome --grep @add-user')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+                  allowMissing: true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll: true,
+                  reportDir: "playwright-report",
+                  reportFiles: 'index.html',
+                  reportName: 'Chrome - Add new user test'
+          ])
+        }
+        env.SKIP_CREATE_CASE = null;
+      }
+      stage('Firefox - Add new user test') {
+        try {
+          env.SKIP_CREATE_CASE = 'true';
+          yarnBuilder.yarn('playwright test --project=firefox --grep @add-user')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+                  allowMissing: true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll: true,
+                  reportDir: "playwright-report",
+                  reportFiles: 'index.html',
+                  reportName: 'Firefox - Add new user test'
+          ])
+        }
+        env.SKIP_CREATE_CASE = null;
+      }
       stage('Firefox - Add Participant Tests') {
         try {
           yarnBuilder.yarn('playwright test --project=firefox --grep @add-participant')

@@ -12,6 +12,7 @@ import { ViewReportsPage } from "./reports/view-reports.po.ts";
 import { AutomaticBookingDashboardPage } from "./administration/automatic-booking-dashboard.po.ts";
 import { ListingRequirementsPage } from "./cases/listing-requirements.po.ts";
 import { MultiDayCartPage } from "../carts/multi-day-cart.po.ts";
+import { CreateUserPage } from "./administration/add-user.po.ts";
 
 export interface PageFixtures {
   loginPage: LoginPage;
@@ -28,6 +29,7 @@ export interface PageFixtures {
   automaticBookingDashboardPage: AutomaticBookingDashboardPage;
   listingRequirementsPage: ListingRequirementsPage;
   multiDayCartPage: MultiDayCartPage;
+  createUserPage: CreateUserPage;
 }
 
 export const pageFixtures = {
@@ -36,6 +38,9 @@ export const pageFixtures = {
   },
   homePage: async ({ page }, use) => {
     await use(new HomePage(page));
+  },
+  createUserPage: async ({ page }, use) => {
+    await use(new CreateUserPage(page));
   },
   hearingSchedulePage: async ({ page }, use) => {
     await use(new HearingSchedulePage(page));
