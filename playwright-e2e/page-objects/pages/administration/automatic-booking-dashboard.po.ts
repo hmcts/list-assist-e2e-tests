@@ -402,6 +402,15 @@ export class AutomaticBookingDashboardPage extends Base {
     } else if (jobRun === "true") {
       await expect(firstRow.getByText("Queued")).toHaveCount(0);
       await expect(firstRow.getByText("Queued")).toBeHidden();
+
+      if (await firstRow.getByText("View error").isVisible()) {
+        console.warn(
+          "⚠️ Known bug: 'View error' present – failing test intentionally.",
+        );
+        throw new Error(
+          "'View error' indicates backend failure – please investigate.",
+        );
+      }
     }
   }
 }
