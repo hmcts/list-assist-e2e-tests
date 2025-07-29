@@ -106,7 +106,7 @@ export class DataUtils {
     return DateTime.utc().toISO({ suppressMilliseconds: true });
   }
 
-  getCurrentDateIfFormatDayNumericDateMonthNumericYear(): string {
+  getCurrentDateWithDayMonthYear(): string {
     // Use luxon to format as 'Tuesday 29 July 2025'
     const today = DateTime.now();
     return today.toFormat("cccc dd LLLL yyyy");
