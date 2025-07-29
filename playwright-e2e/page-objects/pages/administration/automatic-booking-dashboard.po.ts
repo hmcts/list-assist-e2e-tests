@@ -406,8 +406,7 @@ export class AutomaticBookingDashboardPage extends Base {
       await expect(firstRow.getByText("Queued")).toBeHidden();
 
       const dataUtils = new DataUtils();
-      const runDate =
-        dataUtils.getCurrentDateIfFormatDayNumericDateMonthNumericYear();
+      const runDate = dataUtils.getCurrentDateWithDayMonthYear();
       const runTime = dataUtils.getCurrentTimeInFormatHHMM();
 
       const viewErrorVisible = await firstRow
