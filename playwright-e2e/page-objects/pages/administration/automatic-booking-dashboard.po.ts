@@ -1,6 +1,7 @@
 import { expect, Page } from "@playwright/test";
 import { Base } from "../../base";
 import { DataUtils } from "../../../utils/data.utils";
+import { DateTime } from "luxon";
 
 export class AutomaticBookingDashboardPage extends Base {
   readonly CONSTANTS = {
@@ -404,11 +405,11 @@ export class AutomaticBookingDashboardPage extends Base {
       await expect(firstRow.getByText("Queued")).toHaveCount(0);
       await expect(firstRow.getByText("Queued")).toBeHidden();
 
-      // If 'View error' is present, also check runDate and runTime are present and runTime is within last 10 minutes
       const dataUtils = new DataUtils();
       const runDate =
         dataUtils.getCurrentDateIfFormatDayNumericDateMonthNumericYear();
       const runTime = dataUtils.getCurrentTimeInFormatHHMM();
+
       const viewErrorVisible = await firstRow
         .getByText("View error")
         .first()
@@ -420,26 +421,14 @@ export class AutomaticBookingDashboardPage extends Base {
           firstRow.getByText(runTime).isVisible(),
         ]);
 
-        // Helper to parse "HH:mm" to Date
-        const parseTime = (timeStr: string): Date => {
-          const [hour, minute] = timeStr.split(":").map(Number);
-          const now = new Date();
-          return new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate(),
-            hour,
-            minute,
-          );
+        const isWithin10Minutes = (): boolean => {
+          const now = DateTime.local();
+          const reported = DateTime.fromFormat(runTime, "HH:mm");
+          const diff = now.diff(reported, "minutes").as("minutes");
+          return Math.abs(diff) <= 10;
         };
 
-        const diffMs = Math.abs(
-          parseTime(dataUtils.getCurrentTimeInFormatHHMM()).getTime() -
-            parseTime(runTime).getTime(),
-        );
-        const within10Minutes = diffMs <= 10 * 60 * 1000;
-
-        if (runDateVisible && runTimeVisible && within10Minutes) {
+        if (runDateVisible && runTimeVisible && isWithin10Minutes()) {
           console.warn(
             "Known bug: 'View error' present – failing test intentionally.",
           );
