@@ -7,13 +7,19 @@ export class DataUtils {
   // and today is Jan 1st or later
   updateBankHolidaysFileIfNeeded(): void {
     const holidaysFile = "bank-holidays.json";
-    const today = new Date();
-    const year = today.getFullYear();
-    const dec31PrevYear = new Date(year - 1, 11, 31, 23, 59, 59);
+    const today = DateTime.now();
+    const dec31PrevYear = today.minus({ years: 1 }).endOf("year");
 
-    const needDownload =
-      !existsSync(holidaysFile) ||
-      (statSync(holidaysFile).mtime <= dec31PrevYear && today > dec31PrevYear);
+    const fileExists = existsSync(holidaysFile);
+    let needDownload = false;
+    if (!fileExists) {
+      needDownload = true;
+    } else {
+      const fileMTime = DateTime.fromJSDate(statSync(holidaysFile).mtime);
+      if (fileMTime <= dec31PrevYear && today > dec31PrevYear) {
+        needDownload = true;
+      }
+    }
 
     if (needDownload) {
       execSync(
