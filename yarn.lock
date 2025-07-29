@@ -840,6 +840,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/luxon@npm:^3":
+  version: 3.7.0
+  resolution: "@types/luxon@npm:3.7.0"
+  checksum: 10/6924bdb5afd06abcef746bcb15aba0851add10bb253f2247a1ec19230348fa538825c99da16920530c50c6923521ba378429e0134c9ef718a481e449f03c23c9
+  languageName: node
+  linkType: hard
+
 "@types/mysql@npm:2.15.26":
   version: 2.15.26
   resolution: "@types/mysql@npm:2.15.26"
@@ -2579,6 +2586,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"luxon@npm:^3.7.1":
+  version: 3.7.1
+  resolution: "luxon@npm:3.7.1"
+  checksum: 10/3582460c0e2d4a88f6f0c11df30cac70c7e09a3d595b66b1d04543759a38afe6e5be28c601c4d81ee73d2e8602c65f825e2c8a8542392cc564624f2bf7d6301f
+  languageName: node
+  linkType: hard
+
 "make-fetch-happen@npm:^13.0.0":
   version: 13.0.1
   resolution: "make-fetch-happen@npm:13.0.1"
@@ -3534,6 +3548,7 @@ __metadata:
     "@eslint/js": "npm:^9.11.1"
     "@hmcts/playwright-common": "npm:^1.0.17"
     "@playwright/test": "npm:^1.52.0"
+    "@types/luxon": "npm:^3"
     "@types/node": "npm:^22.6.1"
     "@typescript-eslint/eslint-plugin": "npm:^8.8.0"
     cross-env: "npm:^7.0.3"
@@ -3544,6 +3559,7 @@ __metadata:
     globals: "npm:^15.10.0"
     husky: "npm:^9.1.7"
     lighthouse: "npm:^12.2.1"
+    luxon: "npm:^3.7.1"
     playwright: "npm:^1.48.2"
     playwright-core: "npm:^1.48.2"
     playwright-lighthouse: "npm:^4.0.0"

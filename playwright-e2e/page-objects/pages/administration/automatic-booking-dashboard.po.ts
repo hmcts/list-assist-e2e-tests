@@ -1,5 +1,7 @@
 import { expect, Page } from "@playwright/test";
 import { Base } from "../../base";
+import { DataUtils } from "../../../utils/data.utils";
+import { DateTime } from "luxon";
 
 export class AutomaticBookingDashboardPage extends Base {
   readonly CONSTANTS = {
@@ -385,8 +387,8 @@ export class AutomaticBookingDashboardPage extends Base {
 
     //input dates
     await this.dateFilter.click();
-    await this.page.locator(`div.vc-day.id-${dateFrom}`).click();
-    await this.page.locator(`div.vc-day.id-${dateTo}`).click();
+    await this.page.locator(`div.vc-day.id-${dateFrom}`).first().click();
+    await this.page.locator(`div.vc-day.id-${dateTo}`).first().click();
 
     await this.publishExternalListRefreshButton.click();
 
@@ -402,6 +404,38 @@ export class AutomaticBookingDashboardPage extends Base {
     } else if (jobRun === "true") {
       await expect(firstRow.getByText("Queued")).toHaveCount(0);
       await expect(firstRow.getByText("Queued")).toBeHidden();
+
+      const dataUtils = new DataUtils();
+      const runDate = dataUtils.getCurrentDateWithDayMonthYear();
+      const runTime = dataUtils.getCurrentTimeInFormatHHMM();
+
+      const viewErrorVisible = await firstRow
+        .getByText("View error")
+        .first()
+        .isVisible();
+
+      if (viewErrorVisible) {
+        const [runDateVisible, runTimeVisible] = await Promise.all([
+          firstRow.getByText(runDate).isVisible(),
+          firstRow.getByText(runTime).isVisible(),
+        ]);
+
+        const isWithin10Minutes = (): boolean => {
+          const now = DateTime.local();
+          const reported = DateTime.fromFormat(runTime, "HH:mm");
+          const diff = now.diff(reported, "minutes").as("minutes");
+          return Math.abs(diff) <= 10;
+        };
+
+        if (runDateVisible && runTimeVisible && isWithin10Minutes()) {
+          console.warn(
+            "Known bug: 'View error' present – failing test intentionally.",
+          );
+          throw new Error(
+            "'View error' indicated failure with report generation",
+          );
+        }
+      }
     }
   }
 }

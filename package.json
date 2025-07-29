@@ -10,6 +10,7 @@
     "@eslint/js": "^9.11.1",
     "@hmcts/playwright-common": "^1.0.17",
     "@playwright/test": "^1.52.0",
+    "@types/luxon": "^3",
     "@types/node": "^22.6.1",
     "@typescript-eslint/eslint-plugin": "^8.8.0",
     "cross-env": "^7.0.3",
@@ -42,6 +43,7 @@
   },
   "packageManager": "yarn@4.9.2",
   "dependencies": {
+    "luxon": "^3.7.1",
     "prettier": "^3.5.3"
   }
 }
