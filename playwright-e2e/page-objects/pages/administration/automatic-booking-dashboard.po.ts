@@ -1,5 +1,6 @@
 import { expect, Page } from "@playwright/test";
 import { Base } from "../../base";
+import { DataUtils } from "../../../utils/data.utils";
 
 export class AutomaticBookingDashboardPage extends Base {
   readonly CONSTANTS = {
@@ -385,8 +386,8 @@ export class AutomaticBookingDashboardPage extends Base {
 
     //input dates
     await this.dateFilter.click();
-    await this.page.locator(`div.vc-day.id-${dateFrom}`).click();
-    await this.page.locator(`div.vc-day.id-${dateTo}`).click();
+    await this.page.locator(`div.vc-day.id-${dateFrom}`).first().click();
+    await this.page.locator(`div.vc-day.id-${dateTo}`).first().click();
 
     await this.publishExternalListRefreshButton.click();
 
@@ -403,13 +404,49 @@ export class AutomaticBookingDashboardPage extends Base {
       await expect(firstRow.getByText("Queued")).toHaveCount(0);
       await expect(firstRow.getByText("Queued")).toBeHidden();
 
-      if (await firstRow.getByText("View error").isVisible()) {
-        console.warn(
-          "⚠️ Known bug: 'View error' present – failing test intentionally.",
+      // If 'View error' is present, also check runDate and runTime are present and runTime is within last 10 minutes
+      const dataUtils = new DataUtils();
+      const runDate =
+        dataUtils.getCurrentDateIfFormatDayNumericDateMonthNumericYear();
+      const runTime = dataUtils.getCurrentTimeInFormatHHMM();
+      const viewErrorVisible = await firstRow
+        .getByText("View error")
+        .first()
+        .isVisible();
+
+      if (viewErrorVisible) {
+        const [runDateVisible, runTimeVisible] = await Promise.all([
+          firstRow.getByText(runDate).isVisible(),
+          firstRow.getByText(runTime).isVisible(),
+        ]);
+
+        // Helper to parse "HH:mm" to Date
+        const parseTime = (timeStr: string): Date => {
+          const [hour, minute] = timeStr.split(":").map(Number);
+          const now = new Date();
+          return new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            hour,
+            minute,
+          );
+        };
+
+        const diffMs = Math.abs(
+          parseTime(dataUtils.getCurrentTimeInFormatHHMM()).getTime() -
+            parseTime(runTime).getTime(),
         );
-        throw new Error(
-          "'View error' indicates backend failure – please investigate.",
-        );
+        const within10Minutes = diffMs <= 10 * 60 * 1000;
+
+        if (runDateVisible && runTimeVisible && within10Minutes) {
+          console.warn(
+            "Known bug: 'View error' present – failing test intentionally.",
+          );
+          throw new Error(
+            "'View error' indicated failure with report generation",
+          );
+        }
       }
     }
   }

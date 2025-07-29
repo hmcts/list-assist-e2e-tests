@@ -129,4 +129,27 @@ export class DataUtils {
     const now = new Date();
     return now.toISOString().replace(/\.\d{3}Z$/, "Z");
   }
+
+  getCurrentDateIfFormatDayNumericDateMonthNumericYear(): string {
+    const today = new Date();
+    const options = {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    } as const;
+    // This will return e.g. 'Tuesday 29 July 2025'
+    return today.toLocaleDateString("en-GB", options).replace(", ", " ");
+  }
+
+  getCurrentTimeInFormatHHMM(): string {
+    const today = new Date();
+    const options = {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    } as const;
+    // This will return e.g. '14:30'
+    return today.toLocaleTimeString("en-GB", options);
+  }
 }
