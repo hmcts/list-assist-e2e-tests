@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
 import { statSync, existsSync } from "fs";
+import { DateTime } from "luxon";
 
 export class DataUtils {
   //updates bank-holidays.json file if it is older than the previous year
@@ -55,101 +56,58 @@ export class DataUtils {
 
   // Generate a random date of birth in dd/mm/yyyy format
   generateDobInDdMmYyyyForwardSlashSeparators(yearsInThePast: number): string {
-    const today = new Date();
-    const pastDate = new Date(
-      today.setFullYear(today.getFullYear() - yearsInThePast),
-    );
-
-    // Format the date as dd/mm/yyyy using toLocaleDateString
-    const formattedDate = pastDate
-      .toLocaleDateString("en-GB")
-      .replace(/\//g, "/");
-
-    return formattedDate;
+    const dob = DateTime.now().minus({ years: yearsInThePast });
+    return dob.toFormat("dd/MM/yyyy");
   }
 
   // Generate date in yyyymmdd with no separators
   generateDateInYyyyMmDdNoSeparators(daysFromToday: number): string {
-    const date = new Date();
-    date.setDate(date.getDate() + daysFromToday);
-
-    const formattedDate = date
-      .toLocaleDateString("en-CA") // 'en-CA' formats the date as yyyy-mm-dd
-      .replace(/-/g, ""); // remove dashes to get yyyymmdd
-
-    return formattedDate;
+    const date = DateTime.now().plus({ days: daysFromToday });
+    return date.toFormat("yyyyMMdd");
   }
 
   // Generate date in yyyy-mm-dd with hyphen separators
   generateDateInYyyyMmDdWithHypenSeparators(daysFromToday: number): string {
-    const date = new Date();
-    date.setDate(date.getDate() + daysFromToday);
-
-    const formattedDate = date.toLocaleDateString("en-CA"); // 'en-CA' formats the date as yyyy-mm-dd
-
-    return formattedDate;
+    const date = DateTime.now().plus({ days: daysFromToday });
+    return date.toFormat("yyyy-MM-dd");
   }
 
   // Generate date in DD-MM-YYYY with hyphen separators
   generateDateInDdMmYyyyWithHypenSeparators(daysFromToday: number): string {
-    const date = new Date();
-    date.setDate(date.getDate() + daysFromToday);
-
-    const formattedDate = date.toLocaleDateString("en-GB").replace(/\//g, "-");
-
-    return formattedDate;
+    const date = DateTime.now().plus({ days: daysFromToday });
+    return date.toFormat("dd-MM-yyyy");
   }
 
   // Gets the number day number in the month, padded with a zero if less than 10.
   // e.g. -1 previous day, 0 today, 1 tomorrow
   getDayAsDd(offset: number = 0): string {
-    const date = new Date();
-    date.setDate(date.getDate() + offset);
-    const day = String(date.getDate()).padStart(2, "0");
-    return day.startsWith("0") ? day.slice(1) : day;
+    const date = DateTime.now().plus({ days: offset });
+    return date.toFormat("d");
   }
 
   getCurrentMonthAsString(): string {
-    const today = new Date();
-    return today.toLocaleString("en-UK", { month: "long" });
+    return DateTime.now().toFormat("LLLL");
   }
 
   getFormattedDateForReportAssertion(): string {
-    const today = new Date();
-
-    const dayName = today.toLocaleString("en-UK", { weekday: "long" });
-    const day = today.getDate();
-    const monthName = today.toLocaleString("en-UK", { month: "long" });
-    const year = today.getFullYear();
-
-    return `${dayName}, ${day} ${monthName} ${year}`;
+    // Use luxon to format as 'Tuesday, 29 July 2025'
+    const today = DateTime.now();
+    return today.toFormat("cccc, d LLLL yyyy");
   }
 
   getCurrentDateTimeUTC(): string {
-    const now = new Date();
-    return now.toISOString().replace(/\.\d{3}Z$/, "Z");
+    // Use luxon to get UTC ISO string without milliseconds
+    return DateTime.utc().toISO({ suppressMilliseconds: true });
   }
 
   getCurrentDateIfFormatDayNumericDateMonthNumericYear(): string {
-    const today = new Date();
-    const options = {
-      weekday: "long",
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    } as const;
-    // This will return e.g. 'Tuesday 29 July 2025'
-    return today.toLocaleDateString("en-GB", options).replace(", ", " ");
+    // Use luxon to format as 'Tuesday 29 July 2025'
+    const today = DateTime.now();
+    return today.toFormat("cccc dd LLLL yyyy");
   }
 
   getCurrentTimeInFormatHHMM(): string {
-    const today = new Date();
-    const options = {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    } as const;
-    // This will return e.g. '14:30'
-    return today.toLocaleTimeString("en-GB", options);
+    const now = DateTime.now();
+    return now.toFormat("HH:mm");
   }
 }
