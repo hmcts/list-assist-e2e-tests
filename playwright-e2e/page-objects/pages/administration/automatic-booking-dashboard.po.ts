@@ -2,6 +2,7 @@ import { expect, Page } from "@playwright/test";
 import { Base } from "../../base";
 import { DataUtils } from "../../../utils/data.utils";
 import { DateTime } from "luxon";
+import { report } from "process";
 
 export class AutomaticBookingDashboardPage extends Base {
   readonly CONSTANTS = {
@@ -409,33 +410,63 @@ export class AutomaticBookingDashboardPage extends Base {
       const runDate = dataUtils.getCurrentDateWithDayMonthYear();
       const runTime = dataUtils.getCurrentTimeInFormatHHMM();
 
-      const viewErrorVisible = await firstRow
-        .getByText("View error")
+      // Check for either 'View error' or 'Retry' in the first row
+      const reportStatus = await firstRow
+        .locator(':text("View error"), :text("Retry")')
         .first()
         .isVisible();
 
-      if (viewErrorVisible) {
-        const [runDateVisible, runTimeVisible] = await Promise.all([
-          firstRow.getByText(runDate).isVisible(),
-          firstRow.getByText(runTime).isVisible(),
-        ]);
+      if (reportStatus) {
+        const dateCell = this.page
+          .locator("#publishExternalLists td.vuetable-slot > span")
+          .first();
+        const cellText = await dateCell.innerText();
+        const expectedDateTime = `${runDate} ${runTime}`;
+        const reported = DateTime.fromFormat(
+          cellText,
+          "cccc dd LLLL yyyy HH:mm",
+        );
+        const now = DateTime.local();
+        const diff = now.diff(reported, "minutes").as("minutes");
 
-        const isWithin10Minutes = (): boolean => {
-          const now = DateTime.local();
-          const reported = DateTime.fromFormat(runTime, "HH:mm");
-          const diff = now.diff(reported, "minutes").as("minutes");
-          return Math.abs(diff) <= 10;
-        };
-
-        if (runDateVisible && runTimeVisible && isWithin10Minutes()) {
-          console.warn(
-            "Known bug: 'View error' present – failing test intentionally.",
+        if (cellText === expectedDateTime && diff >= 0 && diff <= 10) {
+          console.log(
+            "Known bug: 'View error' or 'Retry' that corresponds with test run present – failing test intentionally.",
           );
           throw new Error(
-            "'View error' indicated failure with report generation",
+            "'View error' or 'Retry' that corresponds with test run. Failure indicated with report generation",
+          );
+        } else {
+          console.log(
+            `Date: (${cellText}), does not correspond with current test run, so skipping error check.`,
           );
         }
       }
     }
+
+    // if (reportStatus) {
+    //   //Cheecks that date time is visible and date is current date
+    //   const runDateTimeVisible = await firstRow.getByText(runDate).isVisible();
+    //   console.log('Failure date is todays date')
+
+    //   const isWithin10Minutes = (): boolean => {
+    //     // Combine runDate and runTime into a single DateTime
+    //     const reported = DateTime.fromFormat(`${runDate} ${runTime}`, "cccc dd LLLL yyyy HH:mm");
+    //     const now = DateTime.local();
+    //     const diff = now.diff(reported, "minutes").as("minutes");
+    //     return Math.abs(diff) <= 10;
+    //   };
+
+    //   if (runDateTimeVisible && isWithin10Minutes()) {
+    //     console.log(
+    //       "Known bug: 'View error' or 'Retry' that corresponds with test run present – failing test intentionally.",
+    //     );
+    //     throw new Error(
+    //       "'View error' or 'Retry' that corresponds with test run. Failure indicated with report generation",
+    //     );
+    //   } else if (runDateTimeVisible) {
+    //     console.log(`Date: (${runDate} ${runTime}), does not correspond with current test run, so skipping error check.`);
+    //   }
+    // }
   }
 }
