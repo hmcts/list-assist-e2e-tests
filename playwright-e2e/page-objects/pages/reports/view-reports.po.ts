@@ -20,17 +20,7 @@ export class ViewReportsPage extends Base {
 
   //reports menu
   readonly reportsMenu = this.page.locator("#reports_menuItem");
-  // readonly reportsMenuInternalHearingList = this.page.getByRole("link", {
-  //   name: "Opens Internal Hearing List",
-  // });
-
-  //private reportSubMenu: Locator | null = null;
-
   private reportSubMenu!: Locator;
-
-  // readonly reportsMenuInternalHearingList = this.page.getByRole("link", {
-  //     name: "External Hearing List v2.0 (SSRS)",
-  // });
 
   //reports request page
   readonly viewReportButton = this.page.locator(
