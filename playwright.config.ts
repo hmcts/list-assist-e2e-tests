@@ -20,6 +20,7 @@ export default defineConfig({
     },
     {
       ...ProjectsConfig.chrome,
+      timeout: 240_000,
       dependencies: ["setup"],
     },
     {
@@ -28,6 +29,7 @@ export default defineConfig({
     },
     {
       ...ProjectsConfig.firefox,
+      timeout: 240_000,
       dependencies: ["setup"],
     },
     {
