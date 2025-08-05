@@ -42,9 +42,9 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     viewReportsPage,
     dataUtils,
   }) => {
-    await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
-
-    await sessionBookingPage.updateAdvancedFilterConfig(
+    await openHearingSchedulePageWithStep(sessionBookingPage);
+    await updateAdvancedFilterConfigWithStep(
+      sessionBookingPage,
       sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
       sessionBookingPage.CONSTANTS
         .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
@@ -52,14 +52,13 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
         .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
     );
-
-    await hearingSchedulePage.clearDownSchedule(
+    await clearDownScheduleWithStep(
+      hearingSchedulePage,
       sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
       dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
     );
 
-    // Test data
     const roomData = {
       roomName:
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
@@ -73,22 +72,21 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
         sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
-    await createHearingSession(
-      roomData.caseNumber,
-      homePage,
-      caseSearchPage,
-      caseDetailsPage,
-      hearingSchedulePage,
-      roomData,
-      sessionBookingPage,
-    );
+    await test.step("Create hearing session", async () => {
+      await createHearingSession(
+        roomData.caseNumber,
+        homePage,
+        caseSearchPage,
+        caseDetailsPage,
+        hearingSchedulePage,
+        roomData,
+        sessionBookingPage,
+      );
+    });
 
-    //test data
     const reportData = {
-      //numeric, current day of the month
       dateFrom: dataUtils.generateDateInYyyyMmDdNoSeparators(0),
       dateTo: dataUtils.generateDateInYyyyMmDdNoSeparators(1),
-
       locality:
         viewReportsPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
       location:
@@ -97,16 +95,17 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       service: viewReportsPage.CONSTANTS.SERVICE_DAMAGES,
     };
 
-    //open reports menu and check generated report
-    await viewReportsPage.reportRequestPageActions(
-      reportData.dateFrom,
-      reportData.dateTo,
-      reportData.locality,
-      reportData.location,
-      reportData.jurisdiction,
-      reportData.service,
-      dataUtils.getFormattedDateForReportAssertion(),
-    );
+    await test.step("Open reports menu and check generated report", async () => {
+      await viewReportsPage.reportRequestPageActions(
+        reportData.dateFrom,
+        reportData.dateTo,
+        reportData.locality,
+        reportData.location,
+        reportData.jurisdiction,
+        reportData.service,
+        dataUtils.getFormattedDateForReportAssertion(),
+      );
+    });
   });
 
   test('List "Released" session and Generate report via P&I Dashboard. Run and confirm scheduled job is completed @pr-test', async ({
@@ -120,13 +119,12 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     automaticBookingDashboardPage,
     dataUtils,
   }) => {
-    // Generate case details
     const HMCTS_CASE_NUMBER = "HMCTS_CN_" + crypto.randomUUID().toUpperCase();
     const CASE_NAME = "AUTO_" + crypto.randomUUID().toUpperCase();
 
-    await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
-
-    await sessionBookingPage.updateAdvancedFilterConfig(
+    await openHearingSchedulePageWithStep(sessionBookingPage);
+    await updateAdvancedFilterConfigWithStep(
+      sessionBookingPage,
       sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
       sessionBookingPage.CONSTANTS
         .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
@@ -135,113 +133,111 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       sessionBookingPage.CONSTANTS
         .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
     );
-
-    await hearingSchedulePage.clearDownSchedule(
+    await clearDownScheduleWithStep(
+      hearingSchedulePage,
       sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
       sessionBookingPage.CONSTANTS
         .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
       dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
     );
 
-    //run scheduled jobs so there are no queued reports
-    //open scheduled jobs page
-    await automaticBookingDashboardPage.sidebarComponent.openScheduledJobsPage();
-    //run the job
-    await automaticBookingDashboardPage.clickRunForAutomaticBookingQueueJob(
-      automaticBookingDashboardPage.CONSTANTS
-        .SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB,
-    );
-    //check the header is present after page has refreshed
-    await automaticBookingDashboardPage.sidebarComponent.scheduledJobsHeader.isVisible();
+    await test.step("Run scheduled jobs to clear queue", async () => {
+      await automaticBookingDashboardPage.sidebarComponent.openScheduledJobsPage();
+      await automaticBookingDashboardPage.clickRunForAutomaticBookingQueueJob(
+        automaticBookingDashboardPage.CONSTANTS
+          .SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB,
+      );
+      await automaticBookingDashboardPage.sidebarComponent.scheduledJobsHeader.isVisible();
+    });
 
-    const caseData = {
-      hmctsCaseNumberHeaderValue:
-        addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
-      caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
-      listingType: addNewCasePage.CONSTANTS.LISTING_TYPE_DAMAGES,
-      jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL_REFERENCE,
-      service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES_REFERENCE,
-      caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS_REFERENCE,
-      region: addNewCasePage.CONSTANTS.REGION_WALES,
-      locationId: addNewCasePage.CONSTANTS.LOCATION_ID_CARDIFF_CCJGC,
-      cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-      hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-      hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-      currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-    };
+    let caseData;
+    let payload;
+    await test.step("Prepare case data and payload", async () => {
+      caseData = {
+        hmctsCaseNumberHeaderValue:
+          addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
+        caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
+        listingType: addNewCasePage.CONSTANTS.LISTING_TYPE_DAMAGES,
+        jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL_REFERENCE,
+        service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES_REFERENCE,
+        caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS_REFERENCE,
+        region: addNewCasePage.CONSTANTS.REGION_WALES,
+        locationId: addNewCasePage.CONSTANTS.LOCATION_ID_CARDIFF_CCJGC,
+        cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+        hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+        hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+        currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
+      };
 
-    const payload = config.data.addCase;
-    payload["hearingRequest"]["_case"]["caseListingRequestId"] =
-      HMCTS_CASE_NUMBER;
-    payload["hearingRequest"]["_case"]["caseIdHMCTS"] = HMCTS_CASE_NUMBER;
-    payload["hearingRequest"]["_case"]["caseTitle"] = CASE_NAME;
-    payload["hearingRequest"]["_case"]["caseRegistered"] =
-      dataUtils.getCurrentDateTimeUTC();
-    payload["hearingRequest"]["_case"]["caseCourt"]["locationId"] =
-      caseData.locationId;
+      payload = config.data.addCase;
+      payload["hearingRequest"]["_case"]["caseListingRequestId"] =
+        HMCTS_CASE_NUMBER;
+      payload["hearingRequest"]["_case"]["caseIdHMCTS"] = HMCTS_CASE_NUMBER;
+      payload["hearingRequest"]["_case"]["caseTitle"] = CASE_NAME;
+      payload["hearingRequest"]["_case"]["caseRegistered"] =
+        dataUtils.getCurrentDateTimeUTC();
+      payload["hearingRequest"]["_case"]["caseCourt"]["locationId"] =
+        caseData.locationId;
+      payload["hearingRequest"]["listing"]["listingType"] =
+        caseData.listingType;
+      payload["hearingRequest"]["listing"]["listingLocations"]["locationId"] =
+        caseData.locationId;
+      payload["hearingRequest"]["listing"]["listingLocations"][
+        "locationReferenceType"
+      ] = addNewCasePage.CONSTANTS.LOCATION_TYPE_REFERENCE_EPIMS;
+      payload["hearingRequest"]["listing"]["listingDate"] =
+        dataUtils.getCurrentDateTimeUTC();
+      payload["hearingRequest"]["entities"][0]["entityId"] =
+        crypto.randomUUID();
+      payload["hearingRequest"]["entities"][0]["entityTypeCode"] =
+        addNewCasePage.CONSTANTS.ENTITY_TYPE_CODE_IND;
+      payload["hearingRequest"]["entities"][0]["entityRoleCode"] =
+        addNewCasePage.CONSTANTS.ENTITY_ROLE_CODE_CLAI;
+      payload["hearingRequest"]["entities"][1]["entityId"] =
+        crypto.randomUUID();
+      payload["hearingRequest"]["entities"][1]["entityTypeCode"] =
+        addNewCasePage.CONSTANTS.ENTITY_TYPE_CODE_ORG;
+      payload["hearingRequest"]["entities"][1]["entityRoleCode"] =
+        addNewCasePage.CONSTANTS.ENTITY_ROLE_CODE_DEFE;
+      payload["hearingRequest"]["entities"][1]["entitySubType"][
+        "entityClassCode"
+      ] = addNewCasePage.CONSTANTS.ENTITY_TYPE_CODE_ORG;
+      payload["hearingRequest"]["entities"][1]["entitySubType"][
+        "entityCompanyName"
+      ] = "Acme Corporation";
+      payload["hearingRequest"]["_case"]["caseJurisdiction"] =
+        caseData.jurisdiction;
+      payload["hearingRequest"]["_case"]["caseClassifications"][
+        "caseClassificationService"
+      ] = caseData.service;
+      payload["hearingRequest"]["_case"]["caseClassifications"][
+        "caseClassificationType"
+      ] = caseData.caseType;
+      payload["hearingRequest"]["_case"]["caseClassifications"][
+        "caseClassificationSubType"
+      ] = caseData.caseType;
+      payload["hearingRequest"]["_case"]["casePublishedName"] =
+        `Acme Vs ${dataUtils.generateRandomAlphabetical(10).toUpperCase()}`;
+    });
 
-    //listing block
-    payload["hearingRequest"]["listing"]["listingType"] = caseData.listingType;
-    payload["hearingRequest"]["listing"]["listingLocations"]["locationId"] =
-      caseData.locationId;
-    payload["hearingRequest"]["listing"]["listingLocations"][
-      "locationReferenceType"
-    ] = addNewCasePage.CONSTANTS.LOCATION_TYPE_REFERENCE_EPIMS;
-    payload["hearingRequest"]["listing"]["listingDate"] =
-      dataUtils.getCurrentDateTimeUTC();
+    await test.step("Request hearing via HMI", async () => {
+      await HmiUtils.requestHearing(payload);
+    });
 
-    //entities block
-    //claimant
-    payload["hearingRequest"]["entities"][0]["entityId"] = crypto.randomUUID();
-    payload["hearingRequest"]["entities"][0]["entityTypeCode"] =
-      addNewCasePage.CONSTANTS.ENTITY_TYPE_CODE_IND;
-    payload["hearingRequest"]["entities"][0]["entityRoleCode"] =
-      addNewCasePage.CONSTANTS.ENTITY_ROLE_CODE_CLAI;
-    //defendant
-    payload["hearingRequest"]["entities"][1]["entityId"] = crypto.randomUUID();
-    payload["hearingRequest"]["entities"][1]["entityTypeCode"] =
-      addNewCasePage.CONSTANTS.ENTITY_TYPE_CODE_ORG;
-    payload["hearingRequest"]["entities"][1]["entityRoleCode"] =
-      addNewCasePage.CONSTANTS.ENTITY_ROLE_CODE_DEFE;
-    payload["hearingRequest"]["entities"][1]["entitySubType"][
-      "entityClassCode"
-    ] = addNewCasePage.CONSTANTS.ENTITY_TYPE_CODE_ORG;
-    payload["hearingRequest"]["entities"][1]["entitySubType"][
-      "entityCompanyName"
-    ] = "Acme Corporation";
+    await test.step("Run job to pull through created case", async () => {
+      await addNewCasePage.sidebarComponent.openScheduledJobsPage();
+      await addNewCasePage.sidebarComponent.hmiCreateMatterFromXMLJobButton.click();
+      await expect(
+        addNewCasePage.sidebarComponent.scheduledJobsHeader,
+      ).toBeVisible();
+    });
 
-    //_case block
-    payload["hearingRequest"]["_case"]["caseJurisdiction"] =
-      caseData.jurisdiction;
-    payload["hearingRequest"]["_case"]["caseClassifications"][
-      "caseClassificationService"
-    ] = caseData.service;
-    payload["hearingRequest"]["_case"]["caseClassifications"][
-      "caseClassificationType"
-    ] = caseData.caseType;
-    payload["hearingRequest"]["_case"]["caseClassifications"][
-      "caseClassificationSubType"
-    ] = caseData.caseType;
+    await test.step("Search for the case and verify", async () => {
+      await addNewCasePage.sidebarComponent.openSearchCasePage();
+      await caseSearchPage.searchCase(HMCTS_CASE_NUMBER);
+      await expect(editNewCasePage.caseNameField).toHaveText(CASE_NAME);
+    });
 
-    //misc
-    payload["hearingRequest"]["_case"]["casePublishedName"] =
-      `Acme Vs ${dataUtils.generateRandomAlphabetical(10).toUpperCase()}`;
-
-    await HmiUtils.requestHearing(payload);
-
-    //run the job to pull through created case
-    await addNewCasePage.sidebarComponent.openScheduledJobsPage();
-    await addNewCasePage.sidebarComponent.hmiCreateMatterFromXMLJobButton.click();
-    await expect(
-      addNewCasePage.sidebarComponent.scheduledJobsHeader,
-    ).toBeVisible();
-
-    //search for the case
-    await addNewCasePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(HMCTS_CASE_NUMBER);
-    await expect(editNewCasePage.caseNameField).toHaveText(CASE_NAME);
-
-    // Test data
     const roomData = {
       roomName:
         sessionBookingPage.CONSTANTS
@@ -256,85 +252,85 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
         sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
-    await createHearingSession(
-      roomData.caseNumber,
-      homePage,
-      caseSearchPage,
-      caseDetailsPage,
-      hearingSchedulePage,
-      roomData,
-      sessionBookingPage,
-    );
+    await test.step("Create hearing session", async () => {
+      await createHearingSession(
+        roomData.caseNumber,
+        homePage,
+        caseSearchPage,
+        caseDetailsPage,
+        hearingSchedulePage,
+        roomData,
+        sessionBookingPage,
+      );
+    });
 
-    await homePage.sidebarComponent.openAutomaticBookingDashboard();
-    await automaticBookingDashboardPage.createPublishExternalListsHeader.isVisible();
-    await automaticBookingDashboardPage.publishExternalListsCreate.click();
+    await test.step("Open Automatic Booking Dashboard and create publish external list", async () => {
+      await homePage.sidebarComponent.openAutomaticBookingDashboard();
+      await automaticBookingDashboardPage.createPublishExternalListsHeader.isVisible();
+      await automaticBookingDashboardPage.publishExternalListsCreate.click();
+      await automaticBookingDashboardPage.populateCreatePublishExternalListsForm(
+        automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_REGION_WALES,
+        automaticBookingDashboardPage.CONSTANTS
+          .AUTO_CREATION_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+        automaticBookingDashboardPage.CONSTANTS
+          .AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+        automaticBookingDashboardPage.CONSTANTS
+          .AUTO_CREATION_JURISDICTION_CIVIL,
+        automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_SERVICE_DAMAGES,
+        automaticBookingDashboardPage.CONSTANTS
+          .AUTO_CREATION_DAILY_MIXED_CAUSE_LIST_SSRS,
+        automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_VERSION_TYPE,
+      );
+    });
 
-    await automaticBookingDashboardPage.populateCreatePublishExternalListsForm(
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_REGION_WALES,
-      automaticBookingDashboardPage.CONSTANTS
-        .AUTO_CREATION_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-      automaticBookingDashboardPage.CONSTANTS
-        .AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_JURISDICTION_CIVIL,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_SERVICE_DAMAGES,
-      automaticBookingDashboardPage.CONSTANTS
-        .AUTO_CREATION_DAILY_MIXED_CAUSE_LIST_SSRS,
-      automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_VERSION_TYPE,
-    );
-
-    //assert that the report preview is generated and contains expected elements
-    await automaticBookingDashboardPage.assertPreviewReport(
-      dataUtils.getFormattedDateForReportAssertion(),
-      automaticBookingDashboardPage.CONSTANTS.CIVIL_AND_FAMILY_DAILY_CAUSE_LIST,
-      automaticBookingDashboardPage.CONSTANTS
-        .AUTO_CREATION_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
-    );
+    await test.step("Assert report preview is generated", async () => {
+      await automaticBookingDashboardPage.assertPreviewReport(
+        dataUtils.getFormattedDateForReportAssertion(),
+        automaticBookingDashboardPage.CONSTANTS
+          .CIVIL_AND_FAMILY_DAILY_CAUSE_LIST,
+        automaticBookingDashboardPage.CONSTANTS
+          .AUTO_CREATION_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
+      );
+    });
 
     let jobRun = "false";
 
-    //assert publish button is now visible
-    await expect(automaticBookingDashboardPage.publishButton).toBeVisible();
-    //click publish button
-    await automaticBookingDashboardPage.publishButton.click();
-    //wait for 'Previous Publish External List header' to be visible
-    await automaticBookingDashboardPage.waitForPublishExternalListRunsToBeVisible();
-    //checks that report is queued
-    await automaticBookingDashboardPage.assertPreviousPublishExternalListRunsTable(
-      jobRun,
-      automaticBookingDashboardPage.CONSTANTS
-        .AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
-    );
-    //closes the publish external list popup
-    await automaticBookingDashboardPage.closePublishExternalListButton.click();
+    await test.step("Publish report and check it is queued", async () => {
+      await expect(automaticBookingDashboardPage.publishButton).toBeVisible();
+      await automaticBookingDashboardPage.publishButton.click();
+      await automaticBookingDashboardPage.waitForPublishExternalListRunsToBeVisible();
+      await automaticBookingDashboardPage.assertPreviousPublishExternalListRunsTable(
+        jobRun,
+        automaticBookingDashboardPage.CONSTANTS
+          .AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+      );
+      await automaticBookingDashboardPage.closePublishExternalListButton.click();
+    });
 
-    //run scheduled jobs
-    //open scheduled jobs page
-    await automaticBookingDashboardPage.sidebarComponent.openScheduledJobsPage();
-    //run the job
-    await automaticBookingDashboardPage.clickRunForAutomaticBookingQueueJob(
-      automaticBookingDashboardPage.CONSTANTS
-        .SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB,
-    );
-    jobRun = "true";
+    await test.step("Run scheduled jobs to process report", async () => {
+      await automaticBookingDashboardPage.sidebarComponent.openScheduledJobsPage();
+      await automaticBookingDashboardPage.clickRunForAutomaticBookingQueueJob(
+        automaticBookingDashboardPage.CONSTANTS
+          .SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB,
+      );
+      jobRun = "true";
+      await automaticBookingDashboardPage.sidebarComponent.scheduledJobsHeader.isVisible();
+    });
 
-    //check the header is present after page has refreshed
-    await automaticBookingDashboardPage.sidebarComponent.scheduledJobsHeader.isVisible();
-
-    //checks that report has now been removed from queue
-    await automaticBookingDashboardPage.sidebarComponent.openAutomaticBookingDashboard();
-    await automaticBookingDashboardPage.publishExternalListsView.click();
-    //wait for 'Previous Publish External List header' to be visible
-    await automaticBookingDashboardPage.waitForPublishExternalListRunsToBeVisible();
-    await automaticBookingDashboardPage.assertPreviousPublishExternalListRunsTable(
-      jobRun,
-      automaticBookingDashboardPage.CONSTANTS
-        .AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
-    );
+    await test.step("Check report has been removed from queue", async () => {
+      await automaticBookingDashboardPage.sidebarComponent.openAutomaticBookingDashboard();
+      await automaticBookingDashboardPage.publishExternalListsView.click();
+      await automaticBookingDashboardPage.waitForPublishExternalListRunsToBeVisible();
+      await automaticBookingDashboardPage.assertPreviousPublishExternalListRunsTable(
+        jobRun,
+        automaticBookingDashboardPage.CONSTANTS
+          .AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+      );
+    });
   });
 
   test("Multi-day case listing and reporting", async ({
@@ -348,7 +344,6 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     multiDayCartPage,
     dataUtils,
   }) => {
-    // Test data
     const caseData = {
       hmctsCaseNumberHeaderValue:
         addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
@@ -363,155 +358,147 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
     };
 
-    //will need to use this to clear down the schedule
-    await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
-
-    await sessionBookingPage.updateAdvancedFilterConfig(
+    await openHearingSchedulePageWithStep(sessionBookingPage);
+    await updateAdvancedFilterConfigWithStep(
+      sessionBookingPage,
       sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
       sessionBookingPage.CONSTANTS
         .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_ABERYSTWYTH_JC,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1,
     );
-
-    await hearingSchedulePage.clearDownMultiDaySchedule(
+    await clearDownMultiDayScheduleWithStep(
+      hearingSchedulePage,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1,
       dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
     );
 
-    await addNewCasePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
-    await caseSearchPage.addToCartButton.click();
+    await test.step("Search for case and add to cart", async () => {
+      await addNewCasePage.sidebarComponent.openSearchCasePage();
+      await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
+      await caseSearchPage.addToCartButton.click();
+    });
 
-    //LISTING REQUIREMENTS
-    await editNewCasePage.sidebarComponent.openListingRequirementsPage();
-    //checks header
-    await expect
-      .poll(
-        async () => {
-          return await caseDetailsPage.listingRequirementsHeader.isVisible();
-        },
-        {
-          intervals: [2_000],
-          timeout: 60_000,
-        },
-      )
-      .toBeTruthy();
+    await test.step("Open listing requirements and set up", async () => {
+      await editNewCasePage.sidebarComponent.openListingRequirementsPage();
+      await expect
+        .poll(
+          async () => {
+            return await caseDetailsPage.listingRequirementsHeader.isVisible();
+          },
+          {
+            intervals: [2_000],
+            timeout: 60_000,
+          },
+        )
+        .toBeTruthy();
+      await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
+      await caseDetailsPage.hearingTypeSelect.selectOption(
+        caseData.hearingTypeRef,
+      );
+      await listingRequirementsPage.multidayHearingDaysTextBox.fill("3");
+      await caseDetailsPage.saveButton.click();
+    });
 
-    await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
+    await openHearingSchedulePageWithStep(sessionBookingPage);
 
-    //select hearing type
-    await caseDetailsPage.hearingTypeSelect.selectOption(
-      caseData.hearingTypeRef,
-    );
-    await listingRequirementsPage.multidayHearingDaysTextBox.fill("3");
-    await caseDetailsPage.saveButton.click();
-
-    //open hearing schedule page
-    await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
-
-    //look for unique location/locality
-    await sessionBookingPage.updateAdvancedFilterConfig(
+    await updateAdvancedFilterConfigWithStep(
+      sessionBookingPage,
       sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
       sessionBookingPage.CONSTANTS
         .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_ABERYSTWYTH_JC,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1,
+      "Update advanced filter config for unique location/locality",
     );
 
-    await hearingSchedulePage.addBookingButton.click();
-    await hearingSchedulePage.createSessionButton.click();
-
-    //checks recurrance checkbox
-    await expect(hearingSchedulePage.recurranceCheckbox).toBeVisible();
-    await hearingSchedulePage.recurranceCheckbox.check();
-
-    await checkWeekdayRecurringCheckboxes(hearingSchedulePage.page);
-
-    //input recurrance in weeks
-    await hearingSchedulePage.recurranceWeeksTextbox.fill("1");
-
-    //input recurrance until date
-    await hearingSchedulePage.recurranceDateUntilTextBox.fill(
-      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(7),
-    );
-    //inputs duration of session
-    await sessionBookingPage.durationDropdownButton.click();
-    await sessionBookingPage.selectListingDuration(
-      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-    );
-    await hearingSchedulePage.saveButton.click();
-    await hearingSchedulePage.waitForLoad();
-
-    //confirms that there are more than 1 and less than or equal to 5 sessions created
-    let releaseStatusCount =
-      await hearingSchedulePage.confirmListingReleasedStatus.count();
-    expect(releaseStatusCount).toBeGreaterThan(1);
-    expect(releaseStatusCount).toBeLessThanOrEqual(5);
-
-    //cart all sessions
-    const cartAllSessionsButton = hearingSchedulePage.page.locator(
-      `button[title="Cart all sessions of room: ${sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1}"][aria-label="Cart all sessions of room: ${sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1}"]`,
-    );
-    await expect(cartAllSessionsButton).toBeVisible();
-    await cartAllSessionsButton.click();
-
-    //check multi-day cart is populated
-    await hearingSchedulePage.sidebarComponent.checkMultiDayCartButtonEnabled();
-    await hearingSchedulePage.sidebarComponent.checkMultiDayCartNumberIsPresent();
-
-    //checks multi-day cart page is opened
-    await hearingSchedulePage.sidebarComponent.openMultiDayCart();
-    await multiDayCartPage.assertMultiDaysCartPageHasLoaded();
-    await multiDayCartPage.assertAllLinesInMultiDaysCartTableHaveCorrectLocalityAndLocation(
-      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_ABERYSTWYTH_JC,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1,
-    );
-
-    await multiDayCartPage.selectCaseFromSelectDropDown(
-      process.env.HMCTS_CASE_NUMBER as string,
-    );
-
-    const lrString =
-      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0) + " Open";
-    await multiDayCartPage.waitForlistingRequirementsSelectionToBePopulated(
-      lrString,
-    );
-    await multiDayCartPage.applyFilterButton.click();
-    await multiDayCartPage.bulkListCheckBox.click();
-    await multiDayCartPage.submitButton.click();
-
-    //click ok on multi-day validation popup
-    const pagePromise = multiDayCartPage.page.waitForEvent("popup", {
-      timeout: 2000,
+    await test.step("Create multi-day session", async () => {
+      await hearingSchedulePage.addBookingButton.click();
+      await hearingSchedulePage.createSessionButton.click();
+      await expect(hearingSchedulePage.recurranceCheckbox).toBeVisible();
+      await hearingSchedulePage.recurranceCheckbox.check();
+      await checkWeekdayRecurringCheckboxes(hearingSchedulePage.page);
+      await hearingSchedulePage.recurranceWeeksTextbox.fill("1");
+      await hearingSchedulePage.recurranceDateUntilTextBox.fill(
+        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(7),
+      );
+      await sessionBookingPage.durationDropdownButton.click();
+      await sessionBookingPage.selectListingDuration(
+        sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      );
+      await hearingSchedulePage.saveButton.click();
+      await hearingSchedulePage.waitForLoad();
     });
-    await multiDayCartPage.okbuttonOnValidationPopup.click();
 
-    //listing validation popup
-    const validationPopup = await pagePromise;
-    await validationPopup.waitForLoadState("domcontentloaded");
-    // interacting with validation popup
-    await validationPopup
-      .getByRole("combobox", { name: "Reason to override rule/s *" })
-      .selectOption({
-        label:
-          sessionBookingPage.CONSTANTS
-            .CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON,
+    await confirmSessionsCreatedWithStep(hearingSchedulePage);
+
+    await test.step("Cart all sessions", async () => {
+      const cartAllSessionsButton = hearingSchedulePage.page.locator(
+        `button[title="Cart all sessions of room: ${sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1}"][aria-label="Cart all sessions of room: ${sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1}"]`,
+      );
+      await expect(cartAllSessionsButton).toBeVisible();
+      await cartAllSessionsButton.click();
+    });
+
+    await test.step("Check multi-day cart is populated", async () => {
+      await hearingSchedulePage.sidebarComponent.checkMultiDayCartButtonEnabled();
+      await hearingSchedulePage.sidebarComponent.checkMultiDayCartNumberIsPresent();
+    });
+
+    await test.step("Open multi-day cart and assert table", async () => {
+      await hearingSchedulePage.sidebarComponent.openMultiDayCart();
+      await multiDayCartPage.assertMultiDaysCartPageHasLoaded();
+      await multiDayCartPage.assertAllLinesInMultiDaysCartTableHaveCorrectLocalityAndLocation(
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_ABERYSTWYTH_JC,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1,
+      );
+    });
+
+    await test.step("Select case from dropdown and apply filter", async () => {
+      await multiDayCartPage.selectCaseFromSelectDropDown(
+        process.env.HMCTS_CASE_NUMBER as string,
+      );
+      const lrString =
+        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0) + " Open";
+      await multiDayCartPage.waitForlistingRequirementsSelectionToBePopulated(
+        lrString,
+      );
+      await multiDayCartPage.applyFilterButton.click();
+      await multiDayCartPage.bulkListCheckBox.click();
+      await multiDayCartPage.submitButton.click();
+    });
+
+    await test.step("Handle multi-day validation popup", async () => {
+      const pagePromise = multiDayCartPage.page.waitForEvent("popup", {
+        timeout: 2000,
       });
-    await validationPopup
-      .getByRole("button", { name: "SAVE & CONTINUE LISTING" })
-      .click();
+      await multiDayCartPage.okbuttonOnValidationPopup.click();
+      const validationPopup = await pagePromise;
+      await validationPopup.waitForLoadState("domcontentloaded");
+      await validationPopup
+        .getByRole("combobox", { name: "Reason to override rule/s *" })
+        .selectOption({
+          label:
+            sessionBookingPage.CONSTANTS
+              .CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON,
+        });
+      await validationPopup
+        .getByRole("button", { name: "SAVE & CONTINUE LISTING" })
+        .click();
+    });
 
-    await multiDayCartPage.additionalListingDataPageHeader.isVisible();
-    await multiDayCartPage.createListingsOnlyButton.click();
+    await test.step("Create listings only and wait for load", async () => {
+      await multiDayCartPage.additionalListingDataPageHeader.isVisible();
+      await multiDayCartPage.createListingsOnlyButton.click();
+      await hearingSchedulePage.waitForLoad();
+    });
 
-    await hearingSchedulePage.waitForLoad();
-
-    //confirms that there are more than 1 and less than or equal to 5 sessions created
-    releaseStatusCount =
-      await hearingSchedulePage.confirmListingReleasedStatus.count();
-    expect(releaseStatusCount).toBeGreaterThan(1);
-    expect(releaseStatusCount).toBeLessThanOrEqual(5);
+    await confirmSessionsCreatedWithStep(
+      hearingSchedulePage,
+      1,
+      5,
+      "Confirm sessions created after listing",
+    );
   });
 
   async function createHearingSession(
@@ -581,3 +568,64 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     }
   }
 });
+
+// Helper functions
+async function openHearingSchedulePageWithStep(sessionBookingPage) {
+  await test.step("Open hearing schedule page", async () => {
+    await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
+  });
+}
+
+async function updateAdvancedFilterConfigWithStep(
+  sessionBookingPage,
+  region,
+  cluster,
+  locality,
+  location,
+  stepLabel = "Update advanced filter config",
+) {
+  await test.step(stepLabel, async () => {
+    await sessionBookingPage.updateAdvancedFilterConfig(
+      region,
+      cluster,
+      locality,
+      location,
+    );
+  });
+}
+
+async function clearDownScheduleWithStep(
+  hearingSchedulePage,
+  cancelCode,
+  location,
+  date,
+  stepLabel = "Clear down schedule",
+) {
+  await test.step(stepLabel, async () => {
+    await hearingSchedulePage.clearDownSchedule(cancelCode, location, date);
+  });
+}
+
+async function clearDownMultiDayScheduleWithStep(
+  hearingSchedulePage,
+  location,
+  date,
+) {
+  await test.step("Clear down multi-day schedule", async () => {
+    await hearingSchedulePage.clearDownMultiDaySchedule(location, date);
+  });
+}
+
+async function confirmSessionsCreatedWithStep(
+  hearingSchedulePage,
+  min = 1,
+  max = 5,
+  stepLabel = "Confirm sessions created",
+) {
+  await test.step(stepLabel, async () => {
+    const count =
+      await hearingSchedulePage.confirmListingReleasedStatus.count();
+    expect(count).toBeGreaterThan(min - 1);
+    expect(count).toBeLessThanOrEqual(max);
+  });
+}
