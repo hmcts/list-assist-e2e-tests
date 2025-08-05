@@ -109,6 +109,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
   });
 
+  //increasing test timeout to 10 minutes as this test is slow in firefox
+  test.slow();
   test('List "Released" session and Generate report via P&I Dashboard. Run and confirm scheduled job is completed @pr-test', async ({
     addNewCasePage,
     editNewCasePage,
