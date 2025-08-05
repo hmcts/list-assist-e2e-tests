@@ -350,7 +350,7 @@ export class AutomaticBookingDashboardPage extends Base {
         },
         {
           intervals: [2000],
-          timeout: 120_000,
+          timeout: 90_000,
         },
       )
       .toBeTruthy();
