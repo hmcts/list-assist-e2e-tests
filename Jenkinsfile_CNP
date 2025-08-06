@@ -253,6 +253,22 @@ withNightlyPipeline(type, product, component, 600) {
         }
         env.SKIP_CREATE_CASE = null;
       }
+      stage('Chrome - Daily cause reports test') {
+        try {
+          yarnBuilder.yarn('playwright test --project=chrome --grep @daily-cause-list-tests')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+                  allowMissing: true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll: true,
+                  reportDir: "playwright-report",
+                  reportFiles: 'index.html',
+                  reportName: 'Chrome - Daily cause reports test'
+          ])
+        }
+      }
       stage('Firefox - Add new user test') {
         try {
           env.SKIP_CREATE_CASE = 'true';
@@ -335,6 +351,22 @@ withNightlyPipeline(type, product, component, 600) {
             reportDir: "playwright-report",
             reportFiles: 'index.html',
             reportName: 'Firefox - Hearing Channel Tests'
+          ])
+        }
+      }
+      stage('Firefox - Daily cause reports test') {
+        try {
+          yarnBuilder.yarn('playwright test --project=firefox --grep @daily-cause-list-tests')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+                  allowMissing: true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll: true,
+                  reportDir: "playwright-report",
+                  reportFiles: 'index.html',
+                  reportName: 'Firefox - Daily cause reports test'
           ])
         }
       }
