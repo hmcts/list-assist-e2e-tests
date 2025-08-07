@@ -446,6 +446,9 @@ export class AutomaticBookingDashboardPage extends Base {
 
         const now = DateTime.local();
         const diff = now.diff(reported, "minutes").as("minutes");
+        console.log("cellText = " + cellText);
+        console.log("expectedDateTime = " + expectedDateTime);
+        console.log("diff = " + diff);
 
         if (Math.abs(diff) <= 10) {
           console.log(
