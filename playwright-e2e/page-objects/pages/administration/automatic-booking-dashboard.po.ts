@@ -20,8 +20,10 @@ export class AutomaticBookingDashboardPage extends Base {
       "Pontypridd County Court and",
     AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC:
       "Newport (South Wales) County Court and Family Court",
+
     AUTO_CREATION_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
       "Newport (South Wales) Chambers 01",
+
     REGION_FILTER_LIST_BUTTON: "Region filter list with 0",
     CLUSTER_FILTER_LIST_BUTTON: "Cluster filter list with 0",
     JURISDICTION_FILTER_LIST_BUTTON: "Jurisdictions filter list",
@@ -29,11 +31,14 @@ export class AutomaticBookingDashboardPage extends Base {
     SERVICE_FILTER_LIST_BUTTON: "Service filter list with 0",
     SELECT_AN_ITEM_BUTTON_TEXT: "Select an item",
     CLOSE_LISTBOX_NAME: "Close listbox",
+
     AUTO_CREATION_DAILY_MIXED_CAUSE_LIST_SSRS:
       "Daily Mixed Cause List Publish (SSRS)",
+
     LIST_OF_VERSION_TYPES_LABEL: "List of Version Types",
     AUTO_CREATION_VERSION_TYPE: "FINAL",
     CIVIL_AND_FAMILY_DAILY_CAUSE_LIST: "CIVIL AND FAMILY DAILY CAUSE LIST",
+
     LOCATION_LEICESTER_COUNTY_COURTROOM_07: "Leicester County Courtroom 07",
     LOCALITY_LEICESTER_COMBINED_COURT: "Leicester Combined Court",
     JURISDICTION_FAMILY: "Family",
@@ -170,6 +175,17 @@ export class AutomaticBookingDashboardPage extends Base {
   readonly publishExternalListLocalityFilter = this.page
     .getByRole("group", { name: "Localities filter list with 0" })
     .getByLabel("Open listbox");
+
+  readonly retryStatusInRow = this.page
+    .locator(
+      "#publishExternalLists td.vuetable-slot.table-actions.text-center > span.mcms-text-danger",
+      { hasText: "Retry" },
+    )
+    .first();
+  readonly viewErrorButtonInRow = this.page.locator(
+    "#publishExternalLists td.vuetable-slot.table-actions.text-center button span.mcms-btn-label",
+    { hasText: "View Error" },
+  );
 
   constructor(page: Page) {
     super(page);
@@ -318,7 +334,7 @@ export class AutomaticBookingDashboardPage extends Base {
     location: string,
   ) {
     const reportPopup = await this.page.waitForEvent("popup");
-    await this.previewButton.click();
+    //await this.previewButton.click();
     const report = reportPopup;
     await expect(report.getByText(listType)).toBeVisible();
     await expect(report.getByText(formattedDate)).toBeVisible();
@@ -409,30 +425,39 @@ export class AutomaticBookingDashboardPage extends Base {
       const runDate = dataUtils.getCurrentDateWithDayMonthYear();
       const runTime = dataUtils.getCurrentTimeInFormatHHMM();
 
-      const viewErrorVisible = await firstRow
-        .getByText("View error")
+      // Check for either 'View error' button or 'Retry' status in the first row
+      const retryVisible = await this.retryStatusInRow.first().isVisible();
+      const viewErrorVisible = await this.viewErrorButtonInRow
         .first()
         .isVisible();
+      const reportStatus = retryVisible || viewErrorVisible;
 
-      if (viewErrorVisible) {
-        const [runDateVisible, runTimeVisible] = await Promise.all([
-          firstRow.getByText(runDate).isVisible(),
-          firstRow.getByText(runTime).isVisible(),
-        ]);
+      if (reportStatus) {
+        const dateCell = this.page
+          .locator("#publishExternalLists td.vuetable-slot > span")
+          .first();
+        const cellText = await dateCell.innerText();
+        const expectedDateTime = `${runDate} ${runTime}`;
 
-        const isWithin10Minutes = (): boolean => {
-          const now = DateTime.local();
-          const reported = DateTime.fromFormat(runTime, "HH:mm");
-          const diff = now.diff(reported, "minutes").as("minutes");
-          return Math.abs(diff) <= 10;
-        };
+        const reported = DateTime.fromFormat(
+          cellText,
+          "cccc d LLLL yyyy HH:mm",
+        );
 
-        if (runDateVisible && runTimeVisible && isWithin10Minutes()) {
-          console.warn(
-            "Known bug: 'View error' present – failing test intentionally.",
+        const now = DateTime.local();
+        const diff = now.diff(reported, "minutes").as("minutes");
+
+        if (Math.abs(diff) <= 10) {
+          console.log(
+            "Known bug: 'View error' or 'Retry' that corresponds with test run present – failing test intentionally.",
           );
           throw new Error(
-            "'View error' indicated failure with report generation",
+            "'View error' or 'Retry' that corresponds with test run. Failure indicated with report generation",
+          );
+        } else {
+          console.log(
+            `Test Run Date/Time: (${expectedDateTime}), does not correspond with current test run, so skipping error check.`,
+            `Date/Time Of Report: (${cellText}), does not correspond with current test run, so skipping error check.`,
           );
         }
       }
