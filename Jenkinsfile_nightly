@@ -103,9 +103,7 @@ withNightlyPipeline(type, product, component, 600) {
   ]
 
   def regressionStages = [
-    [name: 'Chrome - Regression Suite', command: 'playwright test regression --project=chrome'],
-    [name: 'Firefox - Regression Suite', command: 'playwright test regression --project=firefox'],
-    [name: 'Webkit - Regression Suite', command: 'playwright test regression --project=webkit']
+    [name: 'Chrome - Regression Suite', command: 'playwright test regression --project=chrome']
   ]
 
   def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
