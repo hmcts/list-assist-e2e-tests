@@ -17,6 +17,12 @@ properties([
       choices: ['chrome', 'firefox', 'webkit', 'edge'],
       description: 'Which browser to use'
     ),
+    choice(
+      name: 'TEST_SUITE',
+      choices: ['bvt', 'regression', 'bvt_and_regression'],
+      description: 'Select which test suite(s) to run',
+      defaultValue: 'bvt'
+    ),
   ])
 ])
 
@@ -115,6 +121,43 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
     } else {
+      // Run suites based on TEST_SUITE selection
+      if (params.TEST_SUITE == 'bvt' || params.TEST_SUITE == 'bvt_and_regression') {
+        stage('BVT Suite') {
+          try {
+            yarnBuilder.yarn('playwright test bvt')
+          } catch (Error) {
+            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          } finally {
+            publishHTML([
+              allowMissing: true,
+              alwaysLinkToLastBuild: true,
+              keepAll: true,
+              reportDir: "playwright-report",
+              reportFiles: 'index.html',
+              reportName: 'BVT Suite'
+            ])
+          }
+        }
+      }
+      if (params.TEST_SUITE == 'regression' || params.TEST_SUITE == 'bvt_and_regression') {
+        stage('Regression Suite') {
+          try {
+            yarnBuilder.yarn('playwright test regression')
+          } catch (Error) {
+            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          } finally {
+            publishHTML([
+              allowMissing: true,
+              alwaysLinkToLastBuild: true,
+              keepAll: true,
+              reportDir: "playwright-report",
+              reportFiles: 'index.html',
+              reportName: 'Regression Suite'
+            ])
+          }
+        }
+      }
       stage('Chrome - Add Participant Tests') {
         try {
           yarnBuilder.yarn('playwright test --project=chrome --grep @add-participant')
