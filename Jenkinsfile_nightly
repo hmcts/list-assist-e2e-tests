@@ -437,7 +437,7 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
       if (params.TEST_SUITE == 'bvt_and_regression') {
-        // Run all the existing stages (BVT flow)
+        // Run all the existing BVT stages first
         stage('Chrome - Add Participant Tests') {
           try {
             yarnBuilder.yarn('playwright test --project=chrome --grep @add-participant')
@@ -724,6 +724,24 @@ withNightlyPipeline(type, product, component, 600) {
               reportDir: "playwright-report",
               reportFiles: 'index.html',
               reportName: 'Webkit - Smoke Tests'
+            ])
+          }
+        }
+
+        // Then run regression tests
+        stage('Regression Suite') {
+          try {
+            yarnBuilder.yarn('playwright test regression')
+          } catch (Error) {
+            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          } finally {
+            publishHTML([
+              allowMissing: true,
+              alwaysLinkToLastBuild: true,
+              keepAll: true,
+              reportDir: "playwright-report",
+              reportFiles: 'index.html',
+              reportName: 'Regression Suite'
             ])
           }
         }
