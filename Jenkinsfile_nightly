@@ -73,49 +73,14 @@ def buildPlaywrightCommand(tags) {
   return command
 }
 
-def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
-
-def runPlaywrightStage(stageName, command, reportName, skipCreateCase = null) {
-  stage(stageName) {
-    try {
-      if (skipCreateCase != null) {
-        env.SKIP_CREATE_CASE = skipCreateCase
-      }
-      yarnBuilder.yarn(command)
-    } catch (Error) {
-      unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-    } finally {
-      publishHTML([
-        allowMissing: true,
-        alwaysLinkToLastBuild: true,
-        keepAll: true,
-        reportDir: "playwright-report",
-        reportFiles: 'index.html',
-        reportName: reportName
-      ])
-      if (skipCreateCase != null) {
-        env.SKIP_CREATE_CASE = null
-      }
-    }
-  }
-}
-
-def runBvtStages(bvtStages) {
-  bvtStages.each { s ->
-    runPlaywrightStage(s.name, s.command, s.name, s.skip ?: null)
-  }
-}
-
-def runRegressionStage() {
-  runPlaywrightStage('Regression Suite', 'playwright test regression', 'Regression Suite')
-}
-
 withNightlyPipeline(type, product, component, 600) {
   loadVaultSecrets(secrets)
   env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
   env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
+
+  def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
   def bvtStages = [
     [name: 'Chrome - Add Participant Tests', command: 'playwright test --project=chrome --grep @add-participant'],
@@ -136,6 +101,41 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Firefox - UI Tests', command: 'playwright test --project=firefox --grep @ui-test'],
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke']
   ]
+
+  def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
+    stage(stageName) {
+      try {
+        if (skipCreateCase != null) {
+          env.SKIP_CREATE_CASE = skipCreateCase
+        }
+        yarnBuilder.yarn(command)
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      } finally {
+        publishHTML([
+          allowMissing: true,
+          alwaysLinkToLastBuild: true,
+          keepAll: true,
+          reportDir: "playwright-report",
+          reportFiles: 'index.html',
+          reportName: reportName
+        ])
+        if (skipCreateCase != null) {
+          env.SKIP_CREATE_CASE = null
+        }
+      }
+    }
+  }
+
+  def runBvtStages = { stages ->
+    stages.each { s ->
+      runPlaywrightStage(s.name, s.command, s.name, s.skip ?: null)
+    }
+  }
+
+  def runRegressionStage = {
+    runPlaywrightStage('Regression Suite', 'playwright test regression', 'Regression Suite')
+  }
 
   afterAlways('DependencyCheckNightly') {
     stage('Check For UK Bank Holiday') {
