@@ -1,4 +1,5 @@
 #!groovy
+
 properties([
   disableConcurrentBuilds(),
   parameters([
@@ -98,27 +99,7 @@ def runPlaywrightStage(stageName, command, reportName, skipCreateCase = null) {
   }
 }
 
-def bvtStages = [
-  [name: 'Chrome - Add Participant Tests', command: 'playwright test --project=chrome --grep @add-participant'],
-  [name: 'Chrome - Case Creation Tests', command: 'playwright test --project=chrome --grep @add-new-case'],
-  [name: 'Chrome - Case Listing and Reporting Tests', command: 'playwright test --project=chrome --grep @case-listing-and-reporting'],
-  [name: 'Chrome - Hearing Channel Tests', command: 'playwright test --project=chrome --grep @hearing-channel'],
-  [name: 'Chrome - UI Tests', command: 'playwright test --project=chrome --grep @ui-test'],
-  [name: 'Chrome - Amend Api Tests before listing', command: 'playwright test --project=chrome --grep @amend-api-test', skip: 'true'],
-  [name: 'Chrome - Amend Api test after listing', command: 'playwright test --project=chrome --grep @amend-api-test-after-listing', skip: 'true'],
-  [name: 'Chrome - Add new user test', command: 'playwright test --project=chrome --grep @add-user', skip: 'true'],
-  [name: 'Chrome - Daily cause reports test', command: 'playwright test --project=chrome --grep @daily-cause-list-tests'],
-  [name: 'Firefox - Add new user test', command: 'playwright test --project=firefox --grep @add-user', skip: 'true'],
-  [name: 'Firefox - Add Participant Tests', command: 'playwright test --project=firefox --grep @add-participant'],
-  [name: 'Firefox - Case Creation Tests', command: 'playwright test --project=firefox --grep @add-new-case'],
-  [name: 'Firefox - Case Listing and Reporting Tests', command: 'playwright test --project=firefox --grep @case-listing-and-reporting'],
-  [name: 'Firefox - Hearing Channel Tests', command: 'playwright test --project=firefox --grep @hearing-channel'],
-  [name: 'Firefox - Daily cause reports test', command: 'playwright test --project=firefox --grep @daily-cause-list-tests'],
-  [name: 'Firefox - UI Tests', command: 'playwright test --project=firefox --grep @ui-test'],
-  [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke']
-]
-
-def runBvtStages() {
+def runBvtStages(bvtStages) {
   bvtStages.each { s ->
     runPlaywrightStage(s.name, s.command, s.name, s.skip ?: null)
   }
@@ -128,13 +109,32 @@ def runRegressionStage() {
   runPlaywrightStage('Regression Suite', 'playwright test regression', 'Regression Suite')
 }
 
-// Now your pipeline block
 withNightlyPipeline(type, product, component, 600) {
   loadVaultSecrets(secrets)
   env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
   env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
+
+  def bvtStages = [
+    [name: 'Chrome - Add Participant Tests', command: 'playwright test --project=chrome --grep @add-participant'],
+    [name: 'Chrome - Case Creation Tests', command: 'playwright test --project=chrome --grep @add-new-case'],
+    [name: 'Chrome - Case Listing and Reporting Tests', command: 'playwright test --project=chrome --grep @case-listing-and-reporting'],
+    [name: 'Chrome - Hearing Channel Tests', command: 'playwright test --project=chrome --grep @hearing-channel'],
+    [name: 'Chrome - UI Tests', command: 'playwright test --project=chrome --grep @ui-test'],
+    [name: 'Chrome - Amend Api Tests before listing', command: 'playwright test --project=chrome --grep @amend-api-test', skip: 'true'],
+    [name: 'Chrome - Amend Api test after listing', command: 'playwright test --project=chrome --grep @amend-api-test-after-listing', skip: 'true'],
+    [name: 'Chrome - Add new user test', command: 'playwright test --project=chrome --grep @add-user', skip: 'true'],
+    [name: 'Chrome - Daily cause reports test', command: 'playwright test --project=chrome --grep @daily-cause-list-tests'],
+    [name: 'Firefox - Add new user test', command: 'playwright test --project=firefox --grep @add-user', skip: 'true'],
+    [name: 'Firefox - Add Participant Tests', command: 'playwright test --project=firefox --grep @add-participant'],
+    [name: 'Firefox - Case Creation Tests', command: 'playwright test --project=firefox --grep @add-new-case'],
+    [name: 'Firefox - Case Listing and Reporting Tests', command: 'playwright test --project=firefox --grep @case-listing-and-reporting'],
+    [name: 'Firefox - Hearing Channel Tests', command: 'playwright test --project=firefox --grep @hearing-channel'],
+    [name: 'Firefox - Daily cause reports test', command: 'playwright test --project=firefox --grep @daily-cause-list-tests'],
+    [name: 'Firefox - UI Tests', command: 'playwright test --project=firefox --grep @ui-test'],
+    [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke']
+  ]
 
   afterAlways('DependencyCheckNightly') {
     stage('Check For UK Bank Holiday') {
@@ -151,6 +151,7 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
     }
+
     stage('Set up playwright') {
       try {
         yarnBuilder.yarn('setup')
@@ -158,6 +159,7 @@ withNightlyPipeline(type, product, component, 600) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       }
     }
+
     if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
@@ -178,13 +180,13 @@ withNightlyPipeline(type, product, component, 600) {
       }
     } else {
       if (params.TEST_SUITE == 'bvt') {
-        runBvtStages()
+        runBvtStages(bvtStages)
       }
       if (params.TEST_SUITE == 'regression') {
         runRegressionStage()
       }
       if (params.TEST_SUITE == 'bvt_and_regression') {
-        runBvtStages()
+        runBvtStages(bvtStages)
         runRegressionStage()
       }
     }
