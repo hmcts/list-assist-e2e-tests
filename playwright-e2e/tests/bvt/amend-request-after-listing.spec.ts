@@ -1,13 +1,13 @@
-import { test } from "../fixtures.js";
-import { HmiUtils } from "../utils/hmi.utils.js";
+import { test } from "../../fixtures.js";
+import { HmiUtils } from "../../utils/hmi.utils.js";
 import { expect } from "@playwright/test";
 import {
   CaseDetailsPage,
   CaseSearchPage,
   HearingSchedulePage,
   HomePage,
-} from "../page-objects/pages";
-import { SessionBookingPage } from "../page-objects/pages/hearings/session-booking.po.ts";
+} from "../../page-objects/pages/index.ts";
+import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
 
 test.describe("HMI Amend API tests after listing @amend-api-test-after-listing", () => {
   //using test.slow() because this test takes longer than 3 minutes to complete
