@@ -101,6 +101,10 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke']
   ]
 
+  def regressionStages = [
+    [name: 'Chrome - Regression Suite Test Example', command: 'playwright test regression --project=chrome'],
+  ]
+
   def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
     stage(stageName) {
       try {
@@ -132,8 +136,10 @@ withNightlyPipeline(type, product, component, 600) {
     }
   }
 
-  def runRegressionStage = {
-    runPlaywrightStage('Regression Suite', 'playwright test regression --project=chromen', 'Regression Suite')
+  def runRegressionStages = { stages ->
+    stages.each { s ->
+      runPlaywrightStage(s.name, s.command, s.name)
+    }
   }
 
   afterAlways('DependencyCheckNightly') {
@@ -183,11 +189,11 @@ withNightlyPipeline(type, product, component, 600) {
         runBvtStages(bvtStages)
       }
       if (params.TEST_SUITE == 'regression') {
-        runRegressionStage()
+        runRegressionStages(regressionStages)
       }
       if (params.TEST_SUITE == 'bvt_and_regression') {
         runBvtStages(bvtStages)
-        runRegressionStage()
+        runRegressionStages(regressionStages)
       }
     }
   }
