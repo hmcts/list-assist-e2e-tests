@@ -1,12 +1,12 @@
-import { expect, test } from "../fixtures";
-import { config } from "../utils";
+import { expect, test } from "../../fixtures.ts";
+import { config } from "../../utils/index.ts";
 import {
   CaseDetailsPage,
   CaseSearchPage,
   HearingSchedulePage,
   HomePage,
-} from "../page-objects/pages";
-import { SessionBookingPage } from "../page-objects/pages/hearings/session-booking.po.ts";
+} from "../../page-objects/pages/index.ts";
+import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
 
 test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
   test.slow();

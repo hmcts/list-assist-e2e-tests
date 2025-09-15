@@ -1,13 +1,13 @@
-import { expect, test } from "../fixtures";
-import { HmiUtils } from "../utils/hmi.utils.js";
+import { expect, test } from "../../fixtures.js";
+import { HmiUtils } from "../../utils/hmi.utils.js";
 import {
   CaseDetailsPage,
   CaseSearchPage,
   HearingSchedulePage,
   HomePage,
-} from "../page-objects/pages";
-import { SessionBookingPage } from "../page-objects/pages/hearings/session-booking.po";
-import { config } from "../utils";
+} from "../../page-objects/pages/index.js";
+import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.js";
+import { config } from "../../utils/index.js";
 
 test.describe("Case listing and reporting @case-listing-and-reporting", () => {
   test.describe.configure({ mode: "serial" });
