@@ -73,6 +73,62 @@ def buildPlaywrightCommand(tags) {
 
 def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
+def runPlaywrightStage(stageName, command, reportName, skipCreateCase = null) {
+  stage(stageName) {
+    try {
+      if (skipCreateCase != null) {
+        env.SKIP_CREATE_CASE = skipCreateCase
+      }
+      yarnBuilder.yarn(command)
+    } catch (Error) {
+      unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+    } finally {
+      publishHTML([
+        allowMissing: true,
+        alwaysLinkToLastBuild: true,
+        keepAll: true,
+        reportDir: "playwright-report",
+        reportFiles: 'index.html',
+        reportName: reportName
+      ])
+      if (skipCreateCase != null) {
+        env.SKIP_CREATE_CASE = null
+      }
+    }
+  }
+}
+
+def bvtStages = [
+  [name: 'Chrome - Add Participant Tests', command: 'playwright test --project=chrome --grep @add-participant'],
+  [name: 'Chrome - Case Creation Tests', command: 'playwright test --project=chrome --grep @add-new-case'],
+  [name: 'Chrome - Case Listing and Reporting Tests', command: 'playwright test --project=chrome --grep @case-listing-and-reporting'],
+  [name: 'Chrome - Hearing Channel Tests', command: 'playwright test --project=chrome --grep @hearing-channel'],
+  [name: 'Chrome - UI Tests', command: 'playwright test --project=chrome --grep @ui-test'],
+  [name: 'Chrome - Amend Api Tests before listing', command: 'playwright test --project=chrome --grep @amend-api-test', skip: 'true'],
+  [name: 'Chrome - Amend Api test after listing', command: 'playwright test --project=chrome --grep @amend-api-test-after-listing', skip: 'true'],
+  [name: 'Chrome - Add new user test', command: 'playwright test --project=chrome --grep @add-user', skip: 'true'],
+  [name: 'Chrome - Daily cause reports test', command: 'playwright test --project=chrome --grep @daily-cause-list-tests'],
+  [name: 'Firefox - Add new user test', command: 'playwright test --project=firefox --grep @add-user', skip: 'true'],
+  [name: 'Firefox - Add Participant Tests', command: 'playwright test --project=firefox --grep @add-participant'],
+  [name: 'Firefox - Case Creation Tests', command: 'playwright test --project=firefox --grep @add-new-case'],
+  [name: 'Firefox - Case Listing and Reporting Tests', command: 'playwright test --project=firefox --grep @case-listing-and-reporting'],
+  [name: 'Firefox - Hearing Channel Tests', command: 'playwright test --project=firefox --grep @hearing-channel'],
+  [name: 'Firefox - Daily cause reports test', command: 'playwright test --project=firefox --grep @daily-cause-list-tests'],
+  [name: 'Firefox - UI Tests', command: 'playwright test --project=firefox --grep @ui-test'],
+  [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke']
+]
+
+def runBvtStages() {
+  bvtStages.each { s ->
+    runPlaywrightStage(s.name, s.command, s.name, s.skip ?: null)
+  }
+}
+
+def runRegressionStage() {
+  runPlaywrightStage('Regression Suite', 'playwright test regression', 'Regression Suite')
+}
+
+// Now your pipeline block
 withNightlyPipeline(type, product, component, 600) {
   loadVaultSecrets(secrets)
   env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
@@ -133,59 +189,4 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
   }
-}
-
-def runPlaywrightStage(stageName, command, reportName, skipCreateCase = null) {
-  stage(stageName) {
-    try {
-      if (skipCreateCase != null) {
-        env.SKIP_CREATE_CASE = skipCreateCase
-      }
-      yarnBuilder.yarn(command)
-    } catch (Error) {
-      unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-    } finally {
-      publishHTML([
-        allowMissing: true,
-        alwaysLinkToLastBuild: true,
-        keepAll: true,
-        reportDir: "playwright-report",
-        reportFiles: 'index.html',
-        reportName: reportName
-      ])
-      if (skipCreateCase != null) {
-        env.SKIP_CREATE_CASE = null
-      }
-    }
-  }
-}
-
-def bvtStages = [
-  [name: 'Chrome - Add Participant Tests', command: 'playwright test --project=chrome --grep @add-participant'],
-  [name: 'Chrome - Case Creation Tests', command: 'playwright test --project=chrome --grep @add-new-case'],
-  [name: 'Chrome - Case Listing and Reporting Tests', command: 'playwright test --project=chrome --grep @case-listing-and-reporting'],
-  [name: 'Chrome - Hearing Channel Tests', command: 'playwright test --project=chrome --grep @hearing-channel'],
-  [name: 'Chrome - UI Tests', command: 'playwright test --project=chrome --grep @ui-test'],
-  [name: 'Chrome - Amend Api Tests before listing', command: 'playwright test --project=chrome --grep @amend-api-test', skip: 'true'],
-  [name: 'Chrome - Amend Api test after listing', command: 'playwright test --project=chrome --grep @amend-api-test-after-listing', skip: 'true'],
-  [name: 'Chrome - Add new user test', command: 'playwright test --project=chrome --grep @add-user', skip: 'true'],
-  [name: 'Chrome - Daily cause reports test', command: 'playwright test --project=chrome --grep @daily-cause-list-tests'],
-  [name: 'Firefox - Add new user test', command: 'playwright test --project=firefox --grep @add-user', skip: 'true'],
-  [name: 'Firefox - Add Participant Tests', command: 'playwright test --project=firefox --grep @add-participant'],
-  [name: 'Firefox - Case Creation Tests', command: 'playwright test --project=firefox --grep @add-new-case'],
-  [name: 'Firefox - Case Listing and Reporting Tests', command: 'playwright test --project=firefox --grep @case-listing-and-reporting'],
-  [name: 'Firefox - Hearing Channel Tests', command: 'playwright test --project=firefox --grep @hearing-channel'],
-  [name: 'Firefox - Daily cause reports test', command: 'playwright test --project=firefox --grep @daily-cause-list-tests'],
-  [name: 'Firefox - UI Tests', command: 'playwright test --project=firefox --grep @ui-test'],
-  [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke']
-]
-
-def runBvtStages() {
-  bvtStages.each { s ->
-    runPlaywrightStage(s.name, s.command, s.name, s.skip ?: null)
-  }
-}
-
-def runRegressionStage() {
-  runPlaywrightStage('Regression Suite', 'playwright test regression', 'Regression Suite')
 }
