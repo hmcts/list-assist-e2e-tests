@@ -134,7 +134,7 @@ withNightlyPipeline(type, product, component, 600) {
   }
 
   def runRegressionStage = {
-    runPlaywrightStage('Regression Suite', 'playwright test regression', 'Regression Suite')
+    runPlaywrightStage('Regression Suite', 'playwright test regression --project=chromen', 'Regression Suite')
   }
 
   afterAlways('DependencyCheckNightly') {
