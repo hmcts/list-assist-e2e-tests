@@ -1,5 +1,5 @@
-import { expect, test } from "../fixtures";
-import { config } from "../utils";
+import { expect, test } from "../../fixtures";
+import { config } from "../../utils";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
