@@ -1,12 +1,12 @@
-import { expect, test } from "../fixtures";
+import { expect, test } from "../../fixtures";
 import {
   HomePage,
   CaseSearchPage,
   CaseDetailsPage,
   HearingSchedulePage,
-} from "../page-objects/pages";
-import { SessionBookingPage } from "../page-objects/pages/hearings/session-booking.po";
-import { config } from "../utils";
+} from "../../page-objects/pages";
+import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po";
+import { config } from "../../utils";
 
 test.use({
   storageState: config.users.testUser.sessionFile,

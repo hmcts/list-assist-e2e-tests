@@ -1,5 +1,5 @@
-import { expect, test } from "../fixtures";
-import { config } from "../utils";
+import { expect, test } from "../../fixtures";
+import { config } from "../../utils";
 
 test.describe("Add user @add-user", () => {
   test("Add new user as Listing Officer", async ({
