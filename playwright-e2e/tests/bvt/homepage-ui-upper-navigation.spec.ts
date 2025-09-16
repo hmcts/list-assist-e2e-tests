@@ -1,5 +1,5 @@
-import { expect, test } from "../fixtures";
-import { config } from "../utils";
+import { expect, test } from "../../fixtures";
+import { config } from "../../utils";
 
 test.describe("Logout functionality @ui-test @nightly @smoke", () => {
   test("Logout button is present and functions as expected @smoke", async ({

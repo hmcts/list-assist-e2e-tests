@@ -1,5 +1,5 @@
-import { test } from "../fixtures.js";
-import { HmiUtils } from "../utils/hmi.utils.js";
+import { test } from "../../fixtures.js";
+import { HmiUtils } from "../../utils/hmi.utils.js";
 import { expect } from "@playwright/test";
 
 test.describe("HMI Amend API tests before listing @amend-api-test", () => {
