@@ -144,21 +144,6 @@ withNightlyPipeline(type, product, component, 600) {
   }
 
   afterAlways('DependencyCheckNightly') {
-    // stage('Check For UK Bank Holiday') {
-    //   script {
-    //     def today = new Date().format('yyyy-MM-dd', TimeZone.getTimeZone('Europe/London'))
-    //     def holidays = sh(
-    //       script: "jq -r '.\"england-and-wales\".events[].date' bank-holidays.json",
-    //       returnStdout: true
-    //     ).trim().split('\n')
-    //     if (holidays.contains(today)) {
-    //       echo "Today (${today}) is a UK bank holiday. Skipping build."
-    //       currentBuild.result = 'NOT_BUILT'
-    //       error("Bank holiday - aborting build")
-    //     }
-    //   }
-    // }
-
     stage('Set up playwright') {
       try {
         yarnBuilder.yarn('setup')
