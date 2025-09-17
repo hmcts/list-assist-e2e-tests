@@ -21,12 +21,6 @@ export default defineConfig({
     {
       ...ProjectsConfig.chrome,
       timeout: 240_000,
-      use: {
-        ...ProjectsConfig.chrome.use,
-        launchOptions: {
-          slowMo: 4000,
-        },
-      },
       dependencies: ["setup"],
     },
     {
