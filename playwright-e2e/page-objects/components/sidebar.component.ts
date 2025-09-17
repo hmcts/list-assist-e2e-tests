@@ -368,7 +368,6 @@ export class SidebarComponent {
              .poll(
                  async () => {
 
-                     //await page.locator('.note-editable').isVisible();
                      return await this.page.locator('.note-editable').isVisible();
                  },
                  {
