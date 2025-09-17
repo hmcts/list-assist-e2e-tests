@@ -28,11 +28,11 @@ export class SidebarComponent {
   readonly caseHeader = this.page.locator("#CMSHomeHeading");
 
 
-    readonly evetCodeSortButton= this.page.getByRole('gridcell', {name: 'Event Code: activate to sort',});
-    readonly caseComment= this.page.getByRole('gridcell', { name: 'test comment', exact: true });
-    readonly rows = this.page.locator('tbody > tr');
-    readonly col = this.rows.locator('td:nth-child(2)');
-    readonly nonEmptyCol2 = this.col.filter({ hasText: /\S/ });
+  readonly eventCodeSortButton= this.page.getByRole('gridcell', {name: 'Event Code: activate to sort',});
+  readonly caseComment= this.page.getByRole('gridcell', { name: 'test comment', exact: true });
+  readonly caseHistoryRows = this.page.locator('tbody > tr');
+  readonly caseHistoryCol = this.caseHistoryRows.locator('td:nth-child(2)');
+  readonly nonEmptyCol = this.caseHistoryCol.filter({ hasText: /\S/ });
 
   //listing requirements menu
   readonly listingRequirementsSubmenu = this.root.locator(
@@ -344,7 +344,6 @@ export class SidebarComponent {
       .toBeTruthy();
   }
 
-
     async caseFileNotesPage() {
 
         await expect
@@ -364,11 +363,6 @@ export class SidebarComponent {
         await this.currentCaseFileNote.click();
     }
 
-
-
-
-
-
      async addCaseFileNotes() {
          await expect
              .poll(
@@ -383,9 +377,7 @@ export class SidebarComponent {
                  },
              )
              .toBeTruthy();
-
          await this.page.locator('.note-editable').fill('test comment');
-
 
      }
 
