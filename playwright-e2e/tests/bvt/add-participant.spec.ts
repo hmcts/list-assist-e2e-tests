@@ -17,6 +17,7 @@ test.describe("Add participant @add-participant", () => {
     caseSearchPage,
     dataUtils,
     homePage,
+
   }) => {
     await addNewCasePage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
@@ -100,5 +101,25 @@ test.describe("Add participant @add-participant", () => {
 
     //wait for homepage to load
     await homePage.waitForHomePageLoad();
+  });
+
+test("Case history should display correct event codes", async ({
+                                                                  homePage})=> {
+  console.log(process.env.HMCTS_CASE_NUMBER)
+  await homePage.sidebarComponent.caseFileNotesPage();
+
+    await homePage.sidebarComponent.currentCaseEventType.selectOption({ label: 'File Note' });
+
+   await homePage.sidebarComponent.addCaseFileNotes();
+   await homePage.sidebarComponent.fileNoteSaveButton.click();
+
+   await homePage.sidebarComponent.evetCodeSortButton.click();
+   await homePage.sidebarComponent.caseComment.click();
+   await expect(homePage.sidebarComponent.nonEmptyCol2).toHaveText(
+       [
+         'Allocate',
+         'File Note',
+         'Registration',
+       ]);
   });
 });

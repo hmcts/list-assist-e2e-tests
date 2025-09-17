@@ -13,7 +13,7 @@ export class SidebarComponent {
     "#hearingSchedule_subMenuItem",
   );
 
-  //cases manu
+//cases manu
   readonly casesMenu = this.root.locator("#matter_menuItem");
   readonly caseSearchSubMenu = this.root.locator("#search_subMenuItem");
   readonly caseAddNew = this.root.locator("#addNew_subMenuItem");
@@ -21,7 +21,18 @@ export class SidebarComponent {
   readonly currentCaseDetailsEdit = this.root.locator(
     "#detailsEdit_subMenuItem",
   );
+  readonly currentCaseFileNote =  this.page.getByRole('link', { name: 'File Note' });
+
+  readonly currentCaseEventType = this.page.locator('#event\\.evtEventTypeId');
+  readonly fileNoteSaveButton = this.page.getByRole('button', { name: 'Save', exact: true });
   readonly caseHeader = this.page.locator("#CMSHomeHeading");
+
+
+    readonly evetCodeSortButton= this.page.getByRole('gridcell', {name: 'Event Code: activate to sort',});
+    readonly caseComment= this.page.getByRole('gridcell', { name: 'test comment', exact: true });
+    readonly rows = this.page.locator('tbody > tr');
+    readonly col = this.rows.locator('td:nth-child(2)');
+    readonly nonEmptyCol2 = this.col.filter({ hasText: /\S/ });
 
   //listing requirements menu
   readonly listingRequirementsSubmenu = this.root.locator(
@@ -332,4 +343,50 @@ export class SidebarComponent {
       )
       .toBeTruthy();
   }
+
+
+    async caseFileNotesPage() {
+
+        await expect
+            .poll(
+                async () => {
+                    await this.casesMenu.click();
+                    return await this.currentCaseSubMenu.isVisible();
+                },
+                {
+                    intervals: [2_000],
+                    timeout: 10_000,
+                },
+            )
+            .toBeTruthy();
+
+        await this.currentCaseSubMenu.click();
+        await this.currentCaseFileNote.click();
+    }
+
+
+
+
+
+
+     async addCaseFileNotes() {
+         await expect
+             .poll(
+                 async () => {
+
+                     //await page.locator('.note-editable').isVisible();
+                     return await this.page.locator('.note-editable').isVisible();
+                 },
+                 {
+                     intervals: [2_000],
+                     timeout: 60_000,
+                 },
+             )
+             .toBeTruthy();
+
+         await this.page.locator('.note-editable').fill('test comment');
+
+
+     }
+
 }
