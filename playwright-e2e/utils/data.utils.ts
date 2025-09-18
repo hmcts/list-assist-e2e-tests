@@ -1,33 +1,6 @@
-import { execSync } from "child_process";
-import { statSync, existsSync } from "fs";
 import { DateTime } from "luxon";
 
 export class DataUtils {
-  //updates bank-holidays.json file if it is older than the previous year
-  // and today is Jan 1st or later
-  updateBankHolidaysFileIfNeeded(): void {
-    const holidaysFile = "bank-holidays.json";
-    const today = DateTime.now();
-    const dec31PrevYear = today.minus({ years: 1 }).endOf("year");
-
-    const fileExists = existsSync(holidaysFile);
-    let needDownload = false;
-    if (!fileExists) {
-      needDownload = true;
-    } else {
-      const fileMTime = DateTime.fromJSDate(statSync(holidaysFile).mtime);
-      if (fileMTime <= dec31PrevYear && today > dec31PrevYear) {
-        needDownload = true;
-      }
-    }
-
-    if (needDownload) {
-      execSync(
-        "curl -s https://www.gov.uk/bank-holidays.json -o bank-holidays.json",
-      );
-    }
-  }
-
   // Generate a random string of alphabetical characters
   generateRandomAlphabetical(length: number): string {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";

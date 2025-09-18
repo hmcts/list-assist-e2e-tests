@@ -2,11 +2,6 @@ import { test as setup } from "./fixtures";
 import { isSessionValid } from "./utils";
 
 setup.describe("Global Setup", () => {
-  setup.beforeAll(async ({ dataUtils }) => {
-    // Update bank holidays file if needed
-    dataUtils.updateBankHolidaysFileIfNeeded();
-  });
-
   setup("Setup test user", async ({ loginPage, page, config }) => {
     // Test user setup
     const user = config.users.testUser;
