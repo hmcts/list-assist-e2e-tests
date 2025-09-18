@@ -89,14 +89,17 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting'],
     [name: 'Hearing Channel Tests', grep: '@hearing-channel'],
     [name: 'UI Tests', grep: '@ui-test'],
-    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skip: 'true'],
-    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skip: 'true'],
     [name: 'Add new user test', grep: '@add-user', skip: 'true'],
-    [name: 'Daily cause reports test', grep: '@daily-cause-list-tests']
+    [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
+
+    // Only run Amend Api Tests before listing in Chrome
+    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skip: 'true', browsers: ['chrome']],
+    // Only run Amend Api test after listing in Chrome
+    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skip: 'true', browsers: ['chrome']]
   ]
 
   def bvtStages = browsers.collectMany { browser ->
-    testConfigs.collect { cfg ->
+    testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
       [
         name: "${browser.capitalize()} - ${cfg.name}",
         command: "playwright test --project=${browser} --grep ${cfg.grep}",
