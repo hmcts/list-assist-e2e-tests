@@ -82,29 +82,50 @@ withNightlyPipeline(type, product, component, 600) {
 
   def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
-  def bvtStages = [
-    [name: 'Chrome - Add Participant Tests', command: 'playwright test --project=chrome --grep @add-participant'],
-    [name: 'Chrome - Case Creation Tests', command: 'playwright test --project=chrome --grep @add-new-case'],
-    [name: 'Chrome - Case Listing and Reporting Tests', command: 'playwright test --project=chrome --grep @case-listing-and-reporting'],
-    [name: 'Chrome - Hearing Channel Tests', command: 'playwright test --project=chrome --grep @hearing-channel'],
-    [name: 'Chrome - UI Tests', command: 'playwright test --project=chrome --grep @ui-test'],
-    [name: 'Chrome - Amend Api Tests before listing', command: 'playwright test --project=chrome --grep @amend-api-test', skip: 'true'],
-    [name: 'Chrome - Amend Api test after listing', command: 'playwright test --project=chrome --grep @amend-api-test-after-listing', skip: 'true'],
-    [name: 'Chrome - Add new user test', command: 'playwright test --project=chrome --grep @add-user', skip: 'true'],
-    [name: 'Chrome - Daily cause reports test', command: 'playwright test --project=chrome --grep @daily-cause-list-tests'],
-    [name: 'Firefox - Add new user test', command: 'playwright test --project=firefox --grep @add-user', skip: 'true'],
-    [name: 'Firefox - Add Participant Tests', command: 'playwright test --project=firefox --grep @add-participant'],
-    [name: 'Firefox - Case Creation Tests', command: 'playwright test --project=firefox --grep @add-new-case'],
-    [name: 'Firefox - Case Listing and Reporting Tests', command: 'playwright test --project=firefox --grep @case-listing-and-reporting'],
-    [name: 'Firefox - Hearing Channel Tests', command: 'playwright test --project=firefox --grep @hearing-channel'],
-    [name: 'Firefox - Daily cause reports test', command: 'playwright test --project=firefox --grep @daily-cause-list-tests'],
-    [name: 'Firefox - UI Tests', command: 'playwright test --project=firefox --grep @ui-test'],
+  def browsers = ['chrome', 'firefox']
+  def testConfigs = [
+    [name: 'Add Participant Tests', grep: '@add-participant'],
+    [name: 'Case Creation Tests', grep: '@add-new-case'],
+    [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting'],
+    [name: 'Hearing Channel Tests', grep: '@hearing-channel'],
+    [name: 'UI Tests', grep: '@ui-test'],
+    [name: 'Add new user test', grep: '@add-user', skip: 'true'],
+    [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
+
+    // Only run Amend Api Tests before listing in Chrome
+    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skip: 'true', browsers: ['chrome']],
+    // Only run Amend Api test after listing in Chrome
+    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skip: 'true', browsers: ['chrome']]
+  ]
+
+  def bvtStages = browsers.collectMany { browser ->
+    testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
+      [
+        name: "${browser.capitalize()} - ${cfg.name}",
+        command: "playwright test --project=${browser} --grep ${cfg.grep}",
+        skip: cfg.skip
+      ]
+    }
+  } + [
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke']
   ]
 
-  def regressionStages = [
-    [name: 'Chrome - Regression Suite', command: 'playwright test regression --project=chrome --grep @regression-smoke']
+  def regressionBrowsers = ['chrome'] // Add more browsers as required
+
+  def regressionConfigs = [
+    [name: 'Regression Suite', grep: '@regression-smoke', path: 'regression'],
+    // Add more regression test configs here when written, e.g.:
+    // [name: 'Another Regression Test', grep: '@another-regression', path: 'regression']
   ]
+
+  def regressionStages = regressionBrowsers.collectMany { browser ->
+    regressionConfigs.collect { cfg ->
+      [
+        name: "${browser.capitalize()} - ${cfg.name}",
+        command: "playwright test ${cfg.path} --project=${browser} --grep ${cfg.grep}"
+      ]
+    }
+  }
 
   def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
     stage(stageName) {
