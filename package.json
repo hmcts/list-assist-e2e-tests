@@ -41,7 +41,7 @@
     "test:tabletwebkit": "yarn playwright test tests/ --project=tabletwebkit --grep-invert='(@a11y)|(@performance)'",
     "test:a11y": "yarn playwright test tests/ --grep @a11y --project=chrome"
   },
-  "packageManager": "yarn@4.10.0",
+  "packageManager": "yarn@4.10.3",
   "dependencies": {
     "luxon": "^3.7.1",
     "prettier": "^3.5.3"
