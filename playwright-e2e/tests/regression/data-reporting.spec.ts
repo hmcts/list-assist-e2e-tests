@@ -5,7 +5,7 @@ test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
-test.describe("Data Reporting", () => {
+test.describe("Data Reporting @data-reporting", () => {
   test("Invalid Mailbox report", async ({
     page,
     createUserPage,
