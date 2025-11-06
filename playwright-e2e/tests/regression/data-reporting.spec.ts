@@ -1,0 +1,49 @@
+import { test, expect } from "../../fixtures.js";
+import { config } from "../../utils/index.js";
+
+test.use({
+  storageState: config.users.testUser.sessionFile,
+});
+
+test.describe("Data Reporting", () => {
+  test("Invalid Mailbox report", async ({
+    page,
+    createUserPage,
+    homePage,
+    viewReportsPage,
+  }) => {
+    // Navigate to User Management Page
+    await page.goto(config.urls.baseUrl);
+    await homePage.sidebarComponent.openUserManagementPage();
+
+    //look for invalidmailbox loginId
+    await createUserPage.editUserButton.first().waitFor({ state: "visible" });
+    await page.locator("#searchUser").fill("invalidmailbox");
+
+    //checks the table has the correct data
+    await expect(page.locator("#usersTable tbody")).toContainText(
+      "invalidmailbox",
+    );
+    //click edit button
+    await createUserPage.editUserButton.first().click();
+
+    //confirms correct user details are shown
+    await page
+      .locator("#personalDetails_givenNames")
+      .waitFor({ state: "visible" });
+    await expect(page.locator("#personalDetails_givenNames")).toHaveValue(
+      viewReportsPage.CONSTANTS.INVALID_MAILBOX_USER_GIVEN_NAME,
+    );
+    await expect(page.locator("#personalDetails_surname")).toHaveValue(
+      viewReportsPage.CONSTANTS.INVALID_MAILBOX_USER_LAST_NAME,
+    );
+
+    await viewReportsPage.setInvalidMailboxCheckbox(true);
+
+    await viewReportsPage.openInvalidMailboxReportFormAndGenerateReport(true);
+
+    await viewReportsPage.setInvalidMailboxCheckbox(false);
+
+    await viewReportsPage.openInvalidMailboxReportFormAndGenerateReport(false);
+  });
+});

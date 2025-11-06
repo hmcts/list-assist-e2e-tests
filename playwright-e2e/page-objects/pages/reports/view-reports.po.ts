@@ -16,6 +16,9 @@ export class ViewReportsPage extends Base {
       "Newport (South Wales) Chambers 01",
     JURISDICTION_CIVIL: "Civil",
     SERVICE_DAMAGES: "Damages",
+    INVALID_MAILBOX_USER_LAST_NAME: "MAILBOX",
+    INVALID_MAILBOX_USER_GIVEN_NAME: "INVALID",
+    INVALID_MAILBOX_USER_EMAIL: "invalidmailbox@test.com",
   };
 
   //reports menu
@@ -76,6 +79,24 @@ export class ViewReportsPage extends Base {
   readonly reportBody = this.page.locator(
     "div#VisibleReportContentReportViewerControl_ctl09",
   );
+
+  //save user
+  readonly saveUserButton = this.page.locator(
+    "button#saveUser.btn.mcms-btn-solid",
+  );
+
+  //resource manageement
+  readonly resourceManagementHeader = this.page.locator(
+    "div.card-header h1.header-title",
+  );
+
+  //invalid mailbox report
+  readonly invalidMailboxMenuOption = this.page.getByRole("link", {
+    name: "Opens Invalid Mailboxes (SSRS)",
+  });
+  readonly invalidMailboxCheckbox = this.page.getByRole("checkbox", {
+    name: "Invalid Mailbox Invalid",
+  });
 
   constructor(page: Page) {
     super(page);
@@ -295,5 +316,141 @@ export class ViewReportsPage extends Base {
       "DAILY CAUSE LIST",
     );
     await expect(reportsRequestPage.reportBody).toContainText(reportDate);
+  }
+
+  async setInvalidMailboxCheckbox(checked: boolean) {
+    const isChecked = await this.invalidMailboxCheckbox.isChecked();
+
+    if (isChecked === checked) {
+      console.log(
+        `Checkbox already ${checked ? "checked" : "unchecked"}, skipping action and Save User step.`,
+      );
+      return;
+    }
+
+    await expect
+      .poll(async () => await this.invalidMailboxCheckbox.isVisible(), {
+        timeout: 10000,
+        intervals: [500],
+      })
+      .toBe(true);
+
+    if (checked) {
+      await this.invalidMailboxCheckbox.check();
+      await expect(this.invalidMailboxCheckbox).toBeChecked();
+    } else {
+      await this.invalidMailboxCheckbox.uncheck();
+      await expect(this.invalidMailboxCheckbox).not.toBeChecked();
+    }
+
+    await this.saveUserButton.click();
+
+    await expect
+      .poll(async () => await this.resourceManagementHeader.isVisible(), {
+        timeout: 10000,
+        intervals: [500],
+      })
+      .toBe(true);
+    await expect(this.resourceManagementHeader).toHaveText(
+      "Resource Management - INVALID MAILBOX",
+    );
+  }
+
+  async openInvalidMailboxReportFormAndGenerateReport(
+    shouldFindRecord: boolean,
+  ) {
+    await expect
+      .poll(
+        async () => {
+          await this.reportsMenu.click();
+          return await this.invalidMailboxMenuOption;
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
+    // Wait for the popup when clicking the link
+    const [popup] = await Promise.all([
+      this.page.waitForEvent("popup"),
+      this.invalidMailboxMenuOption.click(),
+    ]);
+
+    // Now you can interact with the popup as a Page object
+    const mailboxLabel = popup.locator(
+      'label[for="ReportViewerControl_ctl04_ctl07_ddValue"]',
+    );
+    await expect
+      .poll(async () => await mailboxLabel.isVisible(), {
+        intervals: [500],
+        timeout: 10_000,
+      })
+      .toBeTruthy();
+
+    await popup.getByRole("button", { name: "User:" }).click();
+
+    const selectAllCheckbox = popup.locator(
+      'input#ReportViewerControl_ctl04_ctl03_divDropDown_ctl00[type="checkbox"][name="ReportViewerControl$ctl04$ctl03$divDropDown$ctl00"]',
+    );
+    await expect
+      .poll(async () => await selectAllCheckbox.isVisible(), {
+        intervals: [500],
+        timeout: 10_000,
+      })
+      .toBeTruthy();
+    await selectAllCheckbox.check();
+    await expect(selectAllCheckbox).toBeChecked();
+
+    const viewReportButton = popup.locator(
+      'input#ReportViewerControl_ctl04_ctl00[type="submit"][value="View Report"].SubmitButton',
+    );
+    await viewReportButton.click();
+
+    const invalidMailboxesText = popup.getByText("Invalid Mailboxes", {
+      exact: true,
+    });
+    await expect
+      .poll(async () => await invalidMailboxesText.isVisible(), {
+        intervals: [500],
+        timeout: 90_000,
+      })
+      .toBeTruthy();
+
+    // Locate the report container
+    const reportContainer = popup.locator(
+      "#VisibleReportContentReportViewerControl_ctl09",
+    );
+
+    // Wait for the report container
+    await expect(reportContainer).toBeVisible({ timeout: 20000 });
+
+    // Get all tables in the report
+    const allTables = await reportContainer.locator("table").all();
+
+    let found = false;
+    for (const tbl of allTables) {
+      // Get all rows except header
+      const rows = await tbl.locator("tr").all();
+      for (const row of rows) {
+        const cells = await row.locator("td").all();
+        if (cells.length >= 4) {
+          const lastName = (await cells[1].innerText()).trim();
+          const givenName = (await cells[2].innerText()).trim();
+          const email = (await cells[3].innerText()).trim();
+          if (
+            lastName === this.CONSTANTS.INVALID_MAILBOX_USER_LAST_NAME &&
+            givenName === this.CONSTANTS.INVALID_MAILBOX_USER_GIVEN_NAME &&
+            email === this.CONSTANTS.INVALID_MAILBOX_USER_EMAIL
+          ) {
+            found = true;
+            break;
+          }
+        }
+      }
+      if (found) break;
+    }
+    expect(found).toBe(shouldFindRecord);
   }
 }
