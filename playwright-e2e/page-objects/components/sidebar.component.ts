@@ -62,7 +62,6 @@ export class SidebarComponent {
   readonly userMenu = this.root.locator("#users_subMenuItem");
 
   // code manager menu
-
   readonly codeManagerMenu = this.root.locator("#codeManager_subMenuItem");
 
   //scheduled jobs menu
@@ -267,6 +266,22 @@ export class SidebarComponent {
       await expect(this.cartCounterLabel).toBeHidden();
       await this.backToMenuButton.click();
     }
+  }
+
+  async openUserManagementPage() {
+    await expect
+      .poll(
+        async () => {
+          await this.administrationMenu.click();
+          return await this.userMenu.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 80_000,
+        },
+      )
+      .toBeTruthy();
+    await this.userMenu.click();
   }
 
   async checkCartButtonEnabled() {

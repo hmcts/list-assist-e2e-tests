@@ -26,6 +26,10 @@ export class CreateUserPage extends Base {
   );
   readonly userDetailSaveButton = this.page.locator("#saveUserDetails");
   readonly userSystemDetailSaveButton = this.page.locator("#saveUser");
+  readonly editUserButton = this.page.locator(
+    '#usersList .vuetable-slot.table-actions button[role="link"]',
+    { hasText: "Edit" },
+  );
 
   constructor(page: Page) {
     super(page);
