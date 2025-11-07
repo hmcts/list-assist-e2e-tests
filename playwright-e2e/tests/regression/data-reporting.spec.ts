@@ -41,7 +41,10 @@ test.describe("Data Reporting @data-reporting", () => {
     );
 
     //set invalid mailbox flag and generate report
-    await viewReportsPage.setInvalidMailboxCheckbox(true);
+    await viewReportsPage.setInvalidMailboxCheckbox(
+      true,
+      createUserPage.CONSTANTS.INVALID_MAILBOX_RESOURCE_MANAGEMENT,
+    );
     await viewReportsPage.openInvalidMailboxReportFormAndGenerateReport(
       true,
       createUserPage.CONSTANTS.INVALID_MAILBOX_USER_GIVEN_NAME,
@@ -50,7 +53,10 @@ test.describe("Data Reporting @data-reporting", () => {
     );
 
     //reset invalid mailbox flag for user and generate report
-    await viewReportsPage.setInvalidMailboxCheckbox(false);
+    await viewReportsPage.setInvalidMailboxCheckbox(
+      false,
+      createUserPage.CONSTANTS.INVALID_MAILBOX_RESOURCE_MANAGEMENT,
+    );
     await viewReportsPage.openInvalidMailboxReportFormAndGenerateReport(
       false,
       createUserPage.CONSTANTS.INVALID_MAILBOX_USER_GIVEN_NAME,
