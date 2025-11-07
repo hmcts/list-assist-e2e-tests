@@ -112,7 +112,6 @@ withNightlyPipeline(type, product, component, 600) {
   def regressionBrowsers = ['chrome']
   def regressionConfigs = [
     [name: 'Data Reporting Test', grep: '@data-reporting', path: 'regression'],
-    // Add more regression test configs here as needed
   ]
 
   def regressionStages = regressionBrowsers.collectMany { browser ->
