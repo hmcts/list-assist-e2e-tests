@@ -38,12 +38,12 @@ test.describe("Data Reporting @data-reporting", () => {
       viewReportsPage.CONSTANTS.INVALID_MAILBOX_USER_LAST_NAME,
     );
 
+    //set ibinvalid mailbox flag and generate report
     await viewReportsPage.setInvalidMailboxCheckbox(true);
-
     await viewReportsPage.openInvalidMailboxReportFormAndGenerateReport(true);
 
+    //reset invalid mailbox flag for user and generate report
     await viewReportsPage.setInvalidMailboxCheckbox(false);
-
     await viewReportsPage.openInvalidMailboxReportFormAndGenerateReport(false);
   });
 });
