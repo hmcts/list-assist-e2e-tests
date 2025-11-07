@@ -18,11 +18,13 @@ test.describe("Data Reporting @data-reporting", () => {
 
     //look for invalidmailbox loginId
     await createUserPage.editUserButton.first().waitFor({ state: "visible" });
-    await page.locator("#searchUser").fill("invalidmailbox");
+    await createUserPage.searchUserTxt.fill(
+      createUserPage.CONSTANTS.INVALID_MAILBOX_USER,
+    );
 
     //checks the table has the correct data
-    await expect(page.locator("#usersTable tbody")).toContainText(
-      "invalidmailbox",
+    await expect(createUserPage.usersTable).toContainText(
+      createUserPage.CONSTANTS.INVALID_MAILBOX_USER,
     );
     //click edit button
     await createUserPage.editUserButton.first().click();
@@ -32,18 +34,28 @@ test.describe("Data Reporting @data-reporting", () => {
       .locator("#personalDetails_givenNames")
       .waitFor({ state: "visible" });
     await expect(page.locator("#personalDetails_givenNames")).toHaveValue(
-      viewReportsPage.CONSTANTS.INVALID_MAILBOX_USER_GIVEN_NAME,
+      createUserPage.CONSTANTS.INVALID_MAILBOX_USER_GIVEN_NAME,
     );
     await expect(page.locator("#personalDetails_surname")).toHaveValue(
-      viewReportsPage.CONSTANTS.INVALID_MAILBOX_USER_LAST_NAME,
+      createUserPage.CONSTANTS.INVALID_MAILBOX_USER_LAST_NAME,
     );
 
-    //set ibinvalid mailbox flag and generate report
+    //set invalid mailbox flag and generate report
     await viewReportsPage.setInvalidMailboxCheckbox(true);
-    await viewReportsPage.openInvalidMailboxReportFormAndGenerateReport(true);
+    await viewReportsPage.openInvalidMailboxReportFormAndGenerateReport(
+      true,
+      createUserPage.CONSTANTS.INVALID_MAILBOX_USER_GIVEN_NAME,
+      createUserPage.CONSTANTS.INVALID_MAILBOX_USER_LAST_NAME,
+      createUserPage.CONSTANTS.INVALID_MAILBOX_USER_EMAIL,
+    );
 
     //reset invalid mailbox flag for user and generate report
     await viewReportsPage.setInvalidMailboxCheckbox(false);
-    await viewReportsPage.openInvalidMailboxReportFormAndGenerateReport(false);
+    await viewReportsPage.openInvalidMailboxReportFormAndGenerateReport(
+      false,
+      createUserPage.CONSTANTS.INVALID_MAILBOX_USER_GIVEN_NAME,
+      createUserPage.CONSTANTS.INVALID_MAILBOX_USER_LAST_NAME,
+      createUserPage.CONSTANTS.INVALID_MAILBOX_USER_EMAIL,
+    );
   });
 });

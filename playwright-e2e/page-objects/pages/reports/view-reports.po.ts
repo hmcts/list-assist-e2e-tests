@@ -16,9 +16,6 @@ export class ViewReportsPage extends Base {
       "Newport (South Wales) Chambers 01",
     JURISDICTION_CIVIL: "Civil",
     SERVICE_DAMAGES: "Damages",
-    INVALID_MAILBOX_USER_LAST_NAME: "MAILBOX",
-    INVALID_MAILBOX_USER_GIVEN_NAME: "INVALID",
-    INVALID_MAILBOX_USER_EMAIL: "invalidmailbox@test.com",
   };
 
   //reports menu
@@ -358,6 +355,9 @@ export class ViewReportsPage extends Base {
 
   async openInvalidMailboxReportFormAndGenerateReport(
     shouldFindRecord: boolean,
+    mailboxUserGivenName: string,
+    mailboxUserLastName: string,
+    mailboxUserEmail: string,
   ) {
     await expect
       .poll(
@@ -431,22 +431,17 @@ export class ViewReportsPage extends Base {
 
     let found = false;
     for (const tbl of allTables) {
-      // Get all rows except header
       const rows = await tbl.locator("tr").all();
       for (const row of rows) {
         const cells = await row.locator("td").all();
-        if (cells.length >= 4) {
-          const lastName = (await cells[1].innerText()).trim();
-          const givenName = (await cells[2].innerText()).trim();
-          const email = (await cells[3].innerText()).trim();
-          if (
-            lastName === this.CONSTANTS.INVALID_MAILBOX_USER_LAST_NAME &&
-            givenName === this.CONSTANTS.INVALID_MAILBOX_USER_GIVEN_NAME &&
-            email === this.CONSTANTS.INVALID_MAILBOX_USER_EMAIL
-          ) {
-            found = true;
-            break;
-          }
+        if (
+          cells.length >= 4 &&
+          (await cells[1].innerText()).trim() === mailboxUserLastName &&
+          (await cells[2].innerText()).trim() === mailboxUserGivenName &&
+          (await cells[3].innerText()).trim() === mailboxUserEmail
+        ) {
+          found = true;
+          break;
         }
       }
       if (found) break;

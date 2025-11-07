@@ -2,6 +2,15 @@ import { Page } from "@playwright/test";
 import { Base } from "../../base";
 
 export class CreateUserPage extends Base {
+  readonly CONSTANTS = {
+    INVALID_MAILBOX_USER_LAST_NAME: "MAILBOX",
+    INVALID_MAILBOX_USER_GIVEN_NAME: "INVALID",
+    INVALID_MAILBOX_USER_EMAIL: "invalidmailbox@test.com",
+    INVALID_MAILBOX_USER: "invalidmailbox",
+  };
+
+  //users table
+  readonly usersTable = this.page.locator("#usersTable tbody");
   //user details
   readonly createUserButton = this.page.locator("#createNewUser");
   readonly userLoginId = this.page.locator("#userDetailsLoginID");
