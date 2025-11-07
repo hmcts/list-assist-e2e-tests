@@ -3,6 +3,7 @@ import { Base } from "../../base";
 
 export class CreateUserPage extends Base {
   readonly CONSTANTS = {
+    INVALID_MAILBOX_RESOURCE_MANAGEMENT: "INVALID MAILBOX",
     INVALID_MAILBOX_USER_LAST_NAME: "MAILBOX",
     INVALID_MAILBOX_USER_GIVEN_NAME: "INVALID",
     INVALID_MAILBOX_USER_EMAIL: "invalidmailbox@test.com",

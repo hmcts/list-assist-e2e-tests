@@ -315,7 +315,7 @@ export class ViewReportsPage extends Base {
     await expect(reportsRequestPage.reportBody).toContainText(reportDate);
   }
 
-  async setInvalidMailboxCheckbox(checked: boolean) {
+  async setInvalidMailboxCheckbox(checked: boolean, user: string) {
     const isChecked = await this.invalidMailboxCheckbox.isChecked();
 
     if (isChecked === checked) {
@@ -349,7 +349,7 @@ export class ViewReportsPage extends Base {
       })
       .toBe(true);
     await expect(this.resourceManagementHeader).toHaveText(
-      "Resource Management - INVALID MAILBOX",
+      `Resource Management - ${user}`,
     );
   }
 
