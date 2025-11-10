@@ -58,15 +58,6 @@ def secrets = [
   ]
 ]
 
-def regressionBlockChanged = false
-if (env.CHANGE_ID) { // Only for PRs
-  def diff = sh(
-    script: "git diff origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} --unified=0 Jenkinsfile_CNP | grep -E '^@@.*\\+112,4'",
-    returnStatus: true
-  )
-  regressionBlockChanged = (diff == 0)
-}
-
 def buildPlaywrightCommand(tags) {
   if (tags == null || tags.trim().isEmpty()) {
     return;
@@ -89,6 +80,15 @@ withNightlyPipeline(type, product, component, 600) {
   enableSlackNotifications(channel)
 
   def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
+
+  def regressionBlockChanged = false
+if (env.CHANGE_ID) { // Only for PRs
+  def diff = sh(
+    script: "git diff origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} --unified=0 Jenkinsfile_CNP | grep -E '^@@.*\\+112,4'",
+    returnStatus: true
+  )
+  regressionBlockChanged = (diff == 0)
+}
 
   def browsers = ['chrome', 'firefox']
   def testConfigs = [

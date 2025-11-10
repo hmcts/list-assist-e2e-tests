@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures.js";
+import { test } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
 
 process.env.SKIP_CREATE_CASE = "true";
