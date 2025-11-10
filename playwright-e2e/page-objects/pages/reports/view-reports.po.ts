@@ -429,18 +429,22 @@ export class ViewReportsPage extends Base {
     // Get all tables in the report
     const allTables = await reportContainer.locator("table").all();
 
+    // Loop through all tables in the report container
     let found = false;
     for (const tbl of allTables) {
+      // Get all rows in the current table
       const rows = await tbl.locator("tr").all();
       for (const row of rows) {
+        // Get all cells in the current row
         const cells = await row.locator("td").all();
+        // Check if the row has at least 4 cells and if the 2nd, 3rd, and 4th cells match the expected user details
         if (
           cells.length >= 4 &&
           (await cells[1].innerText()).trim() === mailboxUserLastName &&
           (await cells[2].innerText()).trim() === mailboxUserGivenName &&
           (await cells[3].innerText()).trim() === mailboxUserEmail
         ) {
-          found = true;
+          found = true; // Mark as found if all details match
           break;
         }
       }
