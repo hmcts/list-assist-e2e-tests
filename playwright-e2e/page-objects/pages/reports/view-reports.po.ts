@@ -377,7 +377,7 @@ export class ViewReportsPage extends Base {
       )
       .toBeTruthy();
 
-    // Wait for the popup when clicking the link
+    // Wait for the new tab when clicking the link
     const [popup] = await Promise.all([
       this.page.waitForEvent("popup"),
       this.invalidMailboxMenuOption.click(),
