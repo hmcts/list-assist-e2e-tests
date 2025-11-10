@@ -317,15 +317,6 @@ export class ViewReportsPage extends Base {
 
   //looks for invalid mailbox checkbox and sets/unsets it based on boolean value passed
   async setInvalidMailboxCheckbox(checked: boolean, user: string) {
-    const isChecked = await this.invalidMailboxCheckbox.isChecked();
-
-    if (isChecked === checked) {
-      console.log(
-        `Checkbox already ${checked ? "checked" : "unchecked"}, skipping action and Save User step.`,
-      );
-      return;
-    }
-
     await expect
       .poll(async () => await this.invalidMailboxCheckbox.isVisible(), {
         timeout: 10000,
