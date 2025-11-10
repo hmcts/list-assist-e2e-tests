@@ -315,6 +315,7 @@ export class ViewReportsPage extends Base {
     await expect(reportsRequestPage.reportBody).toContainText(reportDate);
   }
 
+  //looks for invalid mailbox checkbox and sets/unsets it based on boolean value passed
   async setInvalidMailboxCheckbox(checked: boolean, user: string) {
     const isChecked = await this.invalidMailboxCheckbox.isChecked();
 
@@ -353,6 +354,10 @@ export class ViewReportsPage extends Base {
     );
   }
 
+  //opens invalid mailbox report form, selects all and generates report,
+  //then checks for user details in report based on shouldFindRecord boolean
+
+  //checks both when record is expected and when it is not
   async openInvalidMailboxReportFormAndGenerateReport(
     shouldFindRecord: boolean,
     mailboxUserGivenName: string,
