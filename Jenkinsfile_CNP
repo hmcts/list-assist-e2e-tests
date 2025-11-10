@@ -58,6 +58,15 @@ def secrets = [
   ]
 ]
 
+def regressionBlockChanged = false
+if (env.CHANGE_ID) { // Only for PRs
+  def diff = sh(
+    script: "git diff origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} --unified=0 Jenkinsfile_CNP | grep -E '^@@.*\\+112,4'",
+    returnStatus: true
+  )
+  regressionBlockChanged = (diff == 0)
+}
+
 def buildPlaywrightCommand(tags) {
   if (tags == null || tags.trim().isEmpty()) {
     return;
@@ -111,6 +120,7 @@ withNightlyPipeline(type, product, component, 600) {
 
   def regressionBrowsers = ['chrome']
   def regressionConfigs = [
+    [name: 'Example Test', grep: '@example', path: 'regression'],
     [name: 'Data Reporting Test', grep: '@data-reporting', path: 'regression'],
   ]
 
@@ -187,6 +197,9 @@ withNightlyPipeline(type, product, component, 600) {
           ])
         }
       }
+    } else if (regressionBlockChanged) {
+      runBvtStages(bvtStages)
+      runRegressionStages(regressionStages)
     } else {
       if (params.TEST_SUITE == 'bvt') {
         runBvtStages(bvtStages)
