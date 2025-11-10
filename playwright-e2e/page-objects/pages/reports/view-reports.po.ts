@@ -378,13 +378,13 @@ export class ViewReportsPage extends Base {
       .toBeTruthy();
 
     // Wait for the new tab when clicking the link
-    const [popup] = await Promise.all([
+    const [newTab] = await Promise.all([
       this.page.waitForEvent("popup"),
       this.invalidMailboxMenuOption.click(),
     ]);
 
-    // Now you can interact with the popup as a Page object
-    const mailboxLabel = popup.locator(
+    // Now you can interact with the new tab as a Page object
+    const mailboxLabel = newTab.locator(
       'label[for="ReportViewerControl_ctl04_ctl07_ddValue"]',
     );
     await expect
@@ -394,9 +394,9 @@ export class ViewReportsPage extends Base {
       })
       .toBeTruthy();
 
-    await popup.getByRole("button", { name: "User:" }).click();
+    await newTab.getByRole("button", { name: "User:" }).click();
 
-    const selectAllCheckbox = popup.locator(
+    const selectAllCheckbox = newTab.locator(
       'input#ReportViewerControl_ctl04_ctl03_divDropDown_ctl00[type="checkbox"][name="ReportViewerControl$ctl04$ctl03$divDropDown$ctl00"]',
     );
     await expect
@@ -408,12 +408,12 @@ export class ViewReportsPage extends Base {
     await selectAllCheckbox.check();
     await expect(selectAllCheckbox).toBeChecked();
 
-    const viewReportButton = popup.locator(
+    const viewReportButton = newTab.locator(
       'input#ReportViewerControl_ctl04_ctl00[type="submit"][value="View Report"].SubmitButton',
     );
     await viewReportButton.click();
 
-    const invalidMailboxesText = popup.getByText("Invalid Mailboxes", {
+    const invalidMailboxesText = newTab.getByText("Invalid Mailboxes", {
       exact: true,
     });
     await expect
@@ -424,7 +424,7 @@ export class ViewReportsPage extends Base {
       .toBeTruthy();
 
     // Locate the report container
-    const reportContainer = popup.locator(
+    const reportContainer = newTab.locator(
       "#VisibleReportContentReportViewerControl_ctl09",
     );
 
