@@ -111,7 +111,6 @@ withNightlyPipeline(type, product, component, 600) {
 
   def regressionBrowsers = ['chrome']
   def regressionConfigs = [
-    [name: 'Example Test', grep: '@example', path: 'regression'],
     [name: 'Data Reporting Test', grep: '@data-reporting', path: 'regression'],
   ]
 
