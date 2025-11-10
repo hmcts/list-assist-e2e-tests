@@ -73,6 +73,17 @@ def buildPlaywrightCommand(tags) {
 }
 
 withNightlyPipeline(type, product, component, 600) {
+  def regressionBlockChanged = false
+
+  stage('Detect Regression Block Change For PR') {
+    if (env.CHANGE_ID) {
+      def diff = sh(
+        script: "git diff origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} --unified=0 Jenkinsfile_CNP | grep -E '^@@.*\\+112,4'",
+        returnStatus: true
+      )
+      regressionBlockChanged = (diff == 0)
+    }
+  }
   loadVaultSecrets(secrets)
   env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
   env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
@@ -121,16 +132,6 @@ withNightlyPipeline(type, product, component, 600) {
         name: "${browser.capitalize()} - ${cfg.name}",
         command: "playwright test ${cfg.path} --project=${browser} --grep ${cfg.grep}"
       ]
-    }
-  }
-
-  stage('Detect Regression Block Change') {
-    if (env.CHANGE_ID) { // Only for PRs
-      def diff = sh(
-        script: "git diff origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} --unified=0 Jenkinsfile_CNP | grep -E '^@@.*\\+112,4'",
-        returnStatus: true
-      )
-      regressionBlockChanged = (diff == 0)
     }
   }
 
