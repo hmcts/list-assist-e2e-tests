@@ -8,7 +8,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.10.0",
     "@eslint/js": "^9.11.1",
-    "@hmcts/playwright-common": "1.0.37",
+    "@hmcts/playwright-common": "1.0.38",
     "@playwright/test": "^1.52.0",
     "@types/luxon": "^3",
     "@types/node": "^22.6.1",
@@ -41,7 +41,7 @@
     "test:tabletwebkit": "yarn playwright test tests/ --project=tabletwebkit --grep-invert='(@a11y)|(@performance)'",
     "test:a11y": "yarn playwright test tests/ --grep @a11y --project=chrome"
   },
-  "packageManager": "yarn@4.10.3",
+  "packageManager": "yarn@4.11.0",
   "dependencies": {
     "luxon": "^3.7.1",
     "prettier": "^3.5.3"
