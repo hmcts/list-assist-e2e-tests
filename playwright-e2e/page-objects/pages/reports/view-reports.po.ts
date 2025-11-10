@@ -77,6 +77,24 @@ export class ViewReportsPage extends Base {
     "div#VisibleReportContentReportViewerControl_ctl09",
   );
 
+  //save user
+  readonly saveUserButton = this.page.locator(
+    "button#saveUser.btn.mcms-btn-solid",
+  );
+
+  //resource manageement
+  readonly resourceManagementHeader = this.page.locator(
+    "div.card-header h1.header-title",
+  );
+
+  //invalid mailbox report
+  readonly invalidMailboxMenuOption = this.page.getByRole("link", {
+    name: "Opens Invalid Mailboxes (SSRS)",
+  });
+  readonly invalidMailboxCheckbox = this.page.getByRole("checkbox", {
+    name: "Invalid Mailbox Invalid",
+  });
+
   constructor(page: Page) {
     super(page);
   }
@@ -295,5 +313,139 @@ export class ViewReportsPage extends Base {
       "DAILY CAUSE LIST",
     );
     await expect(reportsRequestPage.reportBody).toContainText(reportDate);
+  }
+
+  //looks for invalid mailbox checkbox and sets/unsets it based on boolean value passed
+  async setInvalidMailboxCheckbox(checked: boolean, user: string) {
+    await expect
+      .poll(async () => await this.invalidMailboxCheckbox.isVisible(), {
+        timeout: 10000,
+        intervals: [500],
+      })
+      .toBe(true);
+
+    if (checked) {
+      await this.invalidMailboxCheckbox.check();
+      await expect(this.invalidMailboxCheckbox).toBeChecked();
+    } else {
+      await this.invalidMailboxCheckbox.uncheck();
+      await expect(this.invalidMailboxCheckbox).not.toBeChecked();
+    }
+
+    await this.saveUserButton.click();
+
+    await expect
+      .poll(async () => await this.resourceManagementHeader.isVisible(), {
+        timeout: 10000,
+        intervals: [500],
+      })
+      .toBe(true);
+    await expect(this.resourceManagementHeader).toHaveText(
+      `Resource Management - ${user}`,
+    );
+  }
+
+  //opens invalid mailbox report form, selects all and generates report,
+  //then checks for user details in report based on shouldFindRecord boolean
+
+  //checks both when record is expected and when it is not
+  async openInvalidMailboxReportFormAndGenerateReport(
+    shouldFindRecord: boolean,
+    mailboxUserGivenName: string,
+    mailboxUserLastName: string,
+    mailboxUserEmail: string,
+  ) {
+    await expect
+      .poll(
+        async () => {
+          await this.reportsMenu.click();
+          return await this.invalidMailboxMenuOption;
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
+    // Wait for the new tab when clicking the link
+    const [newTab] = await Promise.all([
+      this.page.waitForEvent("popup"),
+      this.invalidMailboxMenuOption.click(),
+    ]);
+
+    // Now you can interact with the new tab as a Page object
+    const mailboxLabel = newTab.locator(
+      'label[for="ReportViewerControl_ctl04_ctl07_ddValue"]',
+    );
+    await expect
+      .poll(async () => await mailboxLabel.isVisible(), {
+        intervals: [500],
+        timeout: 10_000,
+      })
+      .toBeTruthy();
+
+    await newTab.getByRole("button", { name: "User:" }).click();
+
+    const selectAllCheckbox = newTab.locator(
+      'input#ReportViewerControl_ctl04_ctl03_divDropDown_ctl00[type="checkbox"][name="ReportViewerControl$ctl04$ctl03$divDropDown$ctl00"]',
+    );
+    await expect
+      .poll(async () => await selectAllCheckbox.isVisible(), {
+        intervals: [500],
+        timeout: 10_000,
+      })
+      .toBeTruthy();
+    await selectAllCheckbox.check();
+    await expect(selectAllCheckbox).toBeChecked();
+
+    const viewReportButton = newTab.locator(
+      'input#ReportViewerControl_ctl04_ctl00[type="submit"][value="View Report"].SubmitButton',
+    );
+    await viewReportButton.click();
+
+    const invalidMailboxesText = newTab.getByText("Invalid Mailboxes", {
+      exact: true,
+    });
+    await expect
+      .poll(async () => await invalidMailboxesText.isVisible(), {
+        intervals: [500],
+        timeout: 90_000,
+      })
+      .toBeTruthy();
+
+    // Locate the report container
+    const reportContainer = newTab.locator(
+      "#VisibleReportContentReportViewerControl_ctl09",
+    );
+
+    // Wait for the report container
+    await expect(reportContainer).toBeVisible({ timeout: 20000 });
+
+    // Get all tables in the report
+    const allTables = await reportContainer.locator("table").all();
+
+    // Loop through all tables in the report container
+    let found = false;
+    for (const tbl of allTables) {
+      // Get all rows in the current table
+      const rows = await tbl.locator("tr").all();
+      for (const row of rows) {
+        // Get all cells in the current row
+        const cells = await row.locator("td").all();
+        // Check if the row has at least 4 cells and if the 2nd, 3rd, and 4th cells match the expected user details
+        if (
+          cells.length >= 4 &&
+          (await cells[1].innerText()).trim() === mailboxUserLastName &&
+          (await cells[2].innerText()).trim() === mailboxUserGivenName &&
+          (await cells[3].innerText()).trim() === mailboxUserEmail
+        ) {
+          found = true; // Mark as found if all details match
+          break;
+        }
+      }
+      if (found) break;
+    }
+    expect(found).toBe(shouldFindRecord);
   }
 }
