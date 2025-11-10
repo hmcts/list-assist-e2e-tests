@@ -8,6 +8,10 @@ test.use({
 });
 
 test.describe("Data Reporting @data-reporting", () => {
+  test.describe.configure({ mode: "serial" });
+  test.afterAll(() => {
+    process.env.SKIP_CREATE_CASE = "false";
+  });
   test("Invalid Mailbox report", async ({
     page,
     createUserPage,
