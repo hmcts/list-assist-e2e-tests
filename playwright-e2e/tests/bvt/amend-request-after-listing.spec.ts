@@ -9,7 +9,7 @@ import {
 } from "../../page-objects/pages/index.ts";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
 
-process.env.SKIP_CREATE_CASE = "true";
+// process.env.SKIP_CREATE_CASE = "true";
 
 test.describe("HMI Amend API tests after listing @amend-api-test-after-listing", () => {
   //using test.slow() because this test takes longer than 3 minutes to complete
