@@ -81,15 +81,6 @@ withNightlyPipeline(type, product, component, 600) {
 
   def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
-  def regressionBlockChanged = false
-if (env.CHANGE_ID) { // Only for PRs
-  def diff = sh(
-    script: "git diff origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} --unified=0 Jenkinsfile_CNP | grep -E '^@@.*\\+112,4'",
-    returnStatus: true
-  )
-  regressionBlockChanged = (diff == 0)
-}
-
   def browsers = ['chrome', 'firefox']
   def testConfigs = [
     [name: 'Add Participant Tests', grep: '@add-participant'],
@@ -130,6 +121,16 @@ if (env.CHANGE_ID) { // Only for PRs
         name: "${browser.capitalize()} - ${cfg.name}",
         command: "playwright test ${cfg.path} --project=${browser} --grep ${cfg.grep}"
       ]
+    }
+  }
+
+  stage('Detect Regression Block Change') {
+    if (env.CHANGE_ID) { // Only for PRs
+      def diff = sh(
+        script: "git diff origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} --unified=0 Jenkinsfile_CNP | grep -E '^@@.*\\+112,4'",
+        returnStatus: true
+      )
+      regressionBlockChanged = (diff == 0)
     }
   }
 
