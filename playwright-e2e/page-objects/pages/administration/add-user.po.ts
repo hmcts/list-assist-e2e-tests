@@ -41,6 +41,12 @@ export class CreateUserPage extends Base {
     { hasText: "Edit" },
   );
 
+  //edit user page
+  readonly editUserGivenNames = this.page.locator(
+    "#personalDetails_givenNames",
+  );
+  readonly editUserSurname = this.page.locator("#personalDetails_surname");
+
   constructor(page: Page) {
     super(page);
   }

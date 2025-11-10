@@ -36,13 +36,11 @@ test.describe("Data Reporting @data-reporting", () => {
     await createUserPage.editUserButton.first().click();
 
     //confirms correct user details are shown
-    await page
-      .locator("#personalDetails_givenNames")
-      .waitFor({ state: "visible" });
-    await expect(page.locator("#personalDetails_givenNames")).toHaveValue(
+    await createUserPage.editUserGivenNames.waitFor({ state: "visible" });
+    await expect(createUserPage.editUserGivenNames).toHaveValue(
       createUserPage.CONSTANTS.INVALID_MAILBOX_USER_GIVEN_NAME,
     );
-    await expect(page.locator("#personalDetails_surname")).toHaveValue(
+    await expect(createUserPage.editUserSurname).toHaveValue(
       createUserPage.CONSTANTS.INVALID_MAILBOX_USER_LAST_NAME,
     );
 
