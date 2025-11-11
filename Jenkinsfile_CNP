@@ -109,6 +109,7 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke']
   ]
 
+  // comments needed to run block stage('Detect Regression Block Change For PR')
   // REGRESSION_BLOCK_START
   def regressionBrowsers = ['chrome']
   def regressionConfigs = [
@@ -209,8 +210,8 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
     } else if (regressionBlockChanged) {
-      runBvtStages(bvtStages)
       runRegressionStages(regressionStages)
+      runBvtStages(bvtStages)
     } else {
       if (params.TEST_SUITE == 'bvt') {
         runBvtStages(bvtStages)
