@@ -9,12 +9,7 @@ import {
 } from "../../page-objects/pages/index.ts";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
 
-process.env.SKIP_CREATE_CASE = "true";
-
 test.describe("HMI Amend API tests after listing @amend-api-test-after-listing", () => {
-  test.afterAll(() => {
-    process.env.SKIP_CREATE_CASE = "false";
-  });
   //using test.slow() because this test takes longer than 3 minutes to complete
   test.slow();
   test("Amended participants and their hearing method should display as expected after listing", async ({
@@ -190,6 +185,4 @@ test.describe("HMI Amend API tests after listing @amend-api-test-after-listing",
       await expect(attendee3Text).not.toMatch(/: (In Person|Telephone|Video)/);
     */
   });
-
-  process.env.SKIP_CREATE_CASE = "false";
 });

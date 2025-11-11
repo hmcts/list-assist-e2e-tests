@@ -1,17 +1,12 @@
 import { test, expect } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
 
-process.env.SKIP_CREATE_CASE = "true";
-
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
 
 test.describe("Data Reporting @data-reporting", () => {
   test.describe.configure({ mode: "serial" });
-  test.afterAll(() => {
-    process.env.SKIP_CREATE_CASE = "false";
-  });
   test("Invalid Mailbox report", async ({
     page,
     createUserPage,
