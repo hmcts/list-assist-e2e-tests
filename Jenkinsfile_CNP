@@ -109,10 +109,13 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke']
   ]
 
+  // comments needed to run block stage('Detect Regression Block Change For PR')
+  // REGRESSION_BLOCK_START
   def regressionBrowsers = ['chrome']
   def regressionConfigs = [
-    [name: 'Data Reporting Test', grep: '@data-reporting', path: 'regression'],
+    [name: 'Data Reporting Test', grep: '@data-reporting', path: 'regression']
   ]
+  // REGRESSION_BLOCK_END
 
   def regressionStages = regressionBrowsers.collectMany { browser ->
     regressionConfigs.collect { cfg ->
@@ -161,6 +164,24 @@ withNightlyPipeline(type, product, component, 600) {
   }
 
   afterAlways('DependencyCheckNightly') {
+  def regressionBlockChanged = false
+
+  stage('Detect Regression Block Change For PR') {
+  if (env.CHANGE_ID) {
+    // Ensure all remote branches are available
+    sh 'git fetch origin +refs/heads/*:refs/remotes/origin/*'
+    // This command checks if there are any changes in the Jenkinsfile_CNP between the markers
+    // 'REGRESSION_BLOCK_START' and 'REGRESSION_BLOCK_END' in the current PR compared to the target branch.
+    // It extracts only the lines between those markers from the diff, and if any lines were added or removed
+    // (i.e., lines starting with '+' or '-'), it sets regressionBlockChanged to true.
+    def diffCmd = """
+      git diff origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} -- Jenkinsfile_CNP | \
+      awk '/REGRESSION_BLOCK_START/{flag=1;next}/REGRESSION_BLOCK_END/{flag=0}flag' | \
+      grep -qE '^[+-]'
+    """
+    regressionBlockChanged = (sh(script: diffCmd, returnStatus: true) == 0)
+  }
+}
     stage('Set up playwright') {
       try {
         yarnBuilder.yarn('setup')
@@ -187,6 +208,9 @@ withNightlyPipeline(type, product, component, 600) {
           ])
         }
       }
+    } else if (regressionBlockChanged) {
+      runRegressionStages(regressionStages)
+      runBvtStages(bvtStages)
     } else {
       if (params.TEST_SUITE == 'bvt') {
         runBvtStages(bvtStages)
