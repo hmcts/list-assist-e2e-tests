@@ -165,14 +165,18 @@ withNightlyPipeline(type, product, component, 600) {
     def regressionBlockChanged = false
 
   stage('Detect Regression Block Change For PR') {
-    if (env.CHANGE_ID) {
-      def diff = sh(
-        script: "git diff origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} --unified=0 Jenkinsfile_CNP | grep -E '^@@.*\\+112,4'",
-        returnStatus: true
-      )
-      regressionBlockChanged = (diff == 0)
-    }
+  if (env.CHANGE_ID) {
+    // Ensure all remote branches are available
+    sh 'git fetch origin +refs/heads/*:refs/remotes/origin/*'
+    // Check for any changes between the regression block markers in the Jenkinsfile
+    def diffCmd = """
+      git diff origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} -- Jenkinsfile_CNP | \
+      awk '/REGRESSION_BLOCK_START/{flag=1;next}/REGRESSION_BLOCK_END/{flag=0}flag' | \
+      grep -qE '^[+-]'
+    """
+    regressionBlockChanged = (sh(script: diffCmd, returnStatus: true) == 0)
   }
+}
     stage('Set up playwright') {
       try {
         yarnBuilder.yarn('setup')
