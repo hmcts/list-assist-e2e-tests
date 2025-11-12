@@ -6,8 +6,6 @@ test.use({
 });
 
 test.describe("Data Reporting @data-reporting", () => {
-  console.log("there is a change here");
-  console.log("there is another change here");
   test.describe.configure({ mode: "serial" });
   test("Invalid Mailbox report", async ({
     page,
