@@ -166,7 +166,7 @@ withNightlyPipeline(type, product, component, 600) {
   afterAlways('DependencyCheckNightly') {
   def regressionBlockChanged = false
 
-  sstage('Detect Regression Folder Change For PR') {
+  stage('Detect Regression Folder Change For PR') {
     if (env.CHANGE_ID) {
       // Ensure all remote branches are available
       sh 'git fetch origin +refs/heads/*:refs/remotes/origin/*'
