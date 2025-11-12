@@ -168,8 +168,12 @@ withNightlyPipeline(type, product, component, 600) {
 
   stage('Detect Regression Folder Change For PR') {
   if (env.CHANGE_ID) {
+    // Remove local refs and fetch everything fresh
+    sh 'git remote set-url origin $(git config --get remote.origin.url)'
+    sh 'git fetch --prune --unshallow || git fetch --all'
     sh 'git fetch origin +refs/heads/*:refs/remotes/origin/*'
     sh "git fetch origin ${env.CHANGE_BRANCH}:${env.CHANGE_BRANCH}"
+    sh "git fetch origin ${env.CHANGE_TARGET}:${env.CHANGE_TARGET}"
     sh "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH}"
     def diffCmd = """
       git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep -q '^regression/'
