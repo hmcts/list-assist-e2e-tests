@@ -167,17 +167,15 @@ withNightlyPipeline(type, product, component, 600) {
   def regressionBlockChanged = false
 
   stage('Detect Regression Folder Change For PR') {
-    if (env.CHANGE_ID) {
-      // Ensure all remote branches are available
-      sh 'git fetch origin +refs/heads/*:refs/remotes/origin/*'
-      // Show what files have changed for debugging
-      sh "git diff --name-only origin/${env.CHANGE_TARGET}...HEAD"
-      // Check if any files in the regression folder have changed in this PR
-      def diffCmd = """
-        git diff --name-only origin/${env.CHANGE_TARGET}...HEAD | grep -q '^regression/'
-      """
-      regressionBlockChanged = (sh(script: diffCmd, returnStatus: true) == 0)
-    }
+  if (env.CHANGE_ID) {
+    sh 'git fetch origin +refs/heads/*:refs/remotes/origin/*'
+    sh "git fetch origin ${env.CHANGE_BRANCH}:${env.CHANGE_BRANCH}"
+    sh "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH}"
+    def diffCmd = """
+      git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep -q '^regression/'
+    """
+    regressionBlockChanged = (sh(script: diffCmd, returnStatus: true) == 0)
+  }
 }
     stage('Set up playwright') {
       try {
