@@ -176,7 +176,7 @@ withNightlyPipeline(type, product, component, 600) {
     // Debug: print changed files
     sh "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH}"
     def diffCmd = """
-      git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep -q 'regression/'
+      git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep -q 'playwright-e2e/tests/regression/'
     """
     regressionBlockChanged = (sh(script: diffCmd, returnStatus: true) == 0)
   }
