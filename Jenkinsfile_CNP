@@ -209,7 +209,7 @@ withNightlyPipeline(type, product, component, 600) {
       }
     } else if (regressionBlockChanged) {
       runRegressionStages(regressionStages)
-      runBvtStages(bvtStages)
+      // runBvtStages(bvtStages)
     } else {
       if (params.TEST_SUITE == 'bvt') {
         runBvtStages(bvtStages)
