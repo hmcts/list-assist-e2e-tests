@@ -109,13 +109,10 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke']
   ]
 
-  // comments needed to run block stage('Detect Regression Block Change For PR')
-  // REGRESSION_BLOCK_START
   def regressionBrowsers = ['chrome']
   def regressionConfigs = [
     [name: 'Data Reporting Test', grep: '@data-reporting', path: 'regression']
   ]
-  // REGRESSION_BLOCK_END
 
   def regressionStages = regressionBrowsers.collectMany { browser ->
     regressionConfigs.collect { cfg ->
