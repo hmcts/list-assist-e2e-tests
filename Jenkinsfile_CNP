@@ -109,13 +109,10 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke']
   ]
 
-  // comments needed to run block stage('Detect Regression Block Change For PR')
-  // REGRESSION_BLOCK_START
   def regressionBrowsers = ['chrome']
   def regressionConfigs = [
     [name: 'Data Reporting Test', grep: '@data-reporting', path: 'regression']
   ]
-  // REGRESSION_BLOCK_END
 
   def regressionStages = regressionBrowsers.collectMany { browser ->
     regressionConfigs.collect { cfg ->
@@ -166,19 +163,20 @@ withNightlyPipeline(type, product, component, 600) {
   afterAlways('DependencyCheckNightly') {
   def regressionBlockChanged = false
 
-  stage('Detect Regression Block Change For PR') {
+  stage('Detect Regression Folder Change For PR') {
   if (env.CHANGE_ID) {
-    // Ensure all remote branches are available
+    // Ensure the git remote is set correctly (useful for Jenkins environments)
+    sh 'git remote set-url origin $(git config --get remote.origin.url)'
+    // Make sure we have a full git history 
+    sh 'git fetch --prune --unshallow || git fetch --all'
+    // Fetch all remote branches to ensure we can diff against them
     sh 'git fetch origin +refs/heads/*:refs/remotes/origin/*'
-    // This command checks if there are any changes in the Jenkinsfile_CNP between the markers
-    // 'REGRESSION_BLOCK_START' and 'REGRESSION_BLOCK_END' in the current PR compared to the target branch.
-    // It extracts only the lines between those markers from the diff, and if any lines were added or removed
-    // (i.e., lines starting with '+' or '-'), it sets regressionBlockChanged to true.
-    def diffCmd = """
-      git diff origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} -- Jenkinsfile_CNP | \
-      awk '/REGRESSION_BLOCK_START/{flag=1;next}/REGRESSION_BLOCK_END/{flag=0}flag' | \
-      grep -qE '^[+-]'
-    """
+    // Explicitly fetch the PR branch and the target branch for accurate comparison
+    sh "git fetch origin ${env.CHANGE_BRANCH}:${env.CHANGE_BRANCH}"
+    sh "git fetch origin ${env.CHANGE_TARGET}:${env.CHANGE_TARGET}"
+    // Check if any files under any 'regression/' folder have changed between the PR branch and the target branch
+    // If so, set regressionBlockChanged to true so the regression test pack will run
+    def diffCmd = """git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep -q 'regression/'"""
     regressionBlockChanged = (sh(script: diffCmd, returnStatus: true) == 0)
   }
 }
