@@ -48,6 +48,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     // Generate case details
     const HMCTS_CASE_NUMBER = "HMCTS_CN_" + crypto.randomUUID().toUpperCase();
     const CASE_NAME = "AUTO_" + crypto.randomUUID().toUpperCase();
+    const CASE_VS_REFERENCE =
+      "Acme Vs " + dataUtils.generateRandomAlphabetical(10).toUpperCase();
 
     await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
@@ -150,7 +152,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
 
     //misc
     payload["hearingRequest"]["_case"]["casePublishedName"] =
-      `Acme Vs ${dataUtils.generateRandomAlphabetical(10).toUpperCase()}`;
+      `${CASE_VS_REFERENCE}`;
 
     await HmiUtils.requestHearing(payload);
 
@@ -268,9 +270,18 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
 
     //check for report via CATH UI
     const reportName = `${cath.CONSTANTS.LIST_JURISDICTION_CIVIL_AND_FAMILY} ${cath.CONSTANTS.LIST_TYPE_DAILY_CAUSE_LIST} ${dataUtils.getFormattedDateInFormatDDMonthYYYY()} - English (Saesneg)`;
-    console.log(reportName);
 
-    await cath.goToCathUrlAndConfirmReportDisplayed(cathUrl, reportName);
+    await cath.goToCathUrlAndConfirmReportDisplayed(
+      cathUrl,
+      reportName,
+      "10am",
+      HMCTS_CASE_NUMBER,
+      CASE_VS_REFERENCE,
+      addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
+      `Trial (${addNewCasePage.CONSTANTS.SERVICE_DAMAGES})`,
+      "Telephone - Other, Video - CVP",
+      "1 hour",
+    );
   });
 
   test("Multi-day case listing and reporting", async ({
