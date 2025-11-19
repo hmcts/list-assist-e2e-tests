@@ -51,6 +51,14 @@ export class DataUtils {
     return date.toFormat("yyyy-MM-dd");
   }
 
+  //generate date in format dd Month yyyy with spaces
+  //01 January 2025
+  getFormattedDateInFormatDDMonthYYYY(): string {
+    // Use luxon to format as '19 November 2025'
+    const today = DateTime.now();
+    return today.toFormat("d LLLL yyyy");
+  }
+
   // Generate date in DD-MM-YYYY with hyphen separators
   generateDateInDdMmYyyyWithHypenSeparators(daysFromToday: number): string {
     const date = DateTime.now().plus({ days: daysFromToday });
