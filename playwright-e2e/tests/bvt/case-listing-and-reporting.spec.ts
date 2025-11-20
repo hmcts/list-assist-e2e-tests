@@ -281,6 +281,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       `Trial (${addNewCasePage.CONSTANTS.SERVICE_DAMAGES})`,
       "Telephone - Other, Video - CVP",
       "1 hour",
+      "",
+      "",
     );
   });
 
