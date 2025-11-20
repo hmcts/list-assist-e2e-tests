@@ -33,6 +33,8 @@ export class Cath extends Base {
     service: string,
     location: string,
     duration: string,
+    applicantPetitioner: string,
+    respondent: string,
   ) {
     //go to url
     await this.page.goto(cathUrl);
@@ -63,8 +65,8 @@ export class Cath extends Base {
       { header: "Hearing type", value: service },
       { header: "Location", value: location },
       { header: "Duration", value: duration },
-      { header: "Applicant/Petitioner", value: "" },
-      { header: "Respondent", value: "" },
+      { header: "Applicant/Petitioner", value: applicantPetitioner },
+      { header: "Respondent", value: respondent },
     ];
 
     const headerCells = table.locator("thead tr th");
