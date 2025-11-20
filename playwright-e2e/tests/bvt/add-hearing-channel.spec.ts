@@ -16,7 +16,7 @@ test.describe("Hearing channel test @hearing-channel", () => {
   test.beforeEach(
     async ({ page, hearingSchedulePage, sessionBookingPage, dataUtils }) => {
       await page.goto(config.urls.baseUrl);
-      //empties cart if there is anything present
+      //empties cart if there is anything present//
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
 
       //clears sessions at start of test class but then does not when sessions created as part of tests in the class
