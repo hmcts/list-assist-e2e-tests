@@ -63,6 +63,8 @@ export class Cath extends Base {
       { header: "Hearing type", value: service },
       { header: "Location", value: location },
       { header: "Duration", value: duration },
+      { header: "Applicant/Petitioner", value: "" },
+      { header: "Respondent", value: "" },
     ];
 
     const headerCells = table.locator("thead tr th");
