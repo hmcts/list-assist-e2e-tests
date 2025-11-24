@@ -1,6 +1,6 @@
 import { expect, test } from "../fixtures";
 import { config } from "../utils";
-
+// Assume that the user is already logged in
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
