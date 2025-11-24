@@ -11,7 +11,7 @@ import { config } from "../../utils";
 test.use({
   storageState: config.users.testUser.sessionFile,
 });
-
+// Assume that the user is already logged in in the session hearing-channel
 test.describe("Hearing channel test @hearing-channel", () => {
   test.beforeEach(
     async ({ page, hearingSchedulePage, sessionBookingPage, dataUtils }) => {
