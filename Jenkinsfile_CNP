@@ -24,6 +24,12 @@ properties([
       description: 'Select which test suite(s) to run',
       defaultValue: 'bvt'
     ),
+    choice(
+      name: 'ENVIRONMENT',
+      choices: ['TRG', 'SIT'],
+      description: 'Select which environment secrets to use',
+      defaultValue: 'TRG'
+    ),
   ])
 ])
 
@@ -43,7 +49,22 @@ static Map<String, Object> secret(String secretName, String envVariable) {
   ]
 }
 
-def secrets = [
+def trgSecrets = [
+  'snl-automation-bts-stg': [
+    secret('test-password', 'TEST_USERNAME'),
+    secret('test-username', 'TEST_PASSWORD'),
+    secret('base-url', 'BASE_URL'),
+    secret('hmi-client-id', 'HMI_CLIENT_ID'),
+    secret('hmi-client-secret', 'HMI_CLIENT_SECRET'),
+    secret('hmi-scope', 'HMI_SCOPE'),
+    secret('hmi-token-url', 'HMI_TOKEN_URL'),
+    secret('hmi-token-tenant', 'HMI_TOKEN_TENANT'),
+    secret('hmi-grant-type', 'HMI_GRANT_TYPE'),
+    secret('hmi-api-url', 'HMI_API_URL'),
+  ]
+]
+
+def sitSecrets = [
   'snl-automation-bts-stg': [
     secret('test-password', 'TEST_USERNAME'),
     secret('test-username', 'TEST_PASSWORD'),
@@ -73,7 +94,9 @@ def buildPlaywrightCommand(tags) {
 }
 
 withNightlyPipeline(type, product, component, 600) {
-  loadVaultSecrets(secrets)
+  // Select secrets based on ENVIRONMENT parameter
+  def selectedSecrets = params.ENVIRONMENT == 'SIT' ? sitSecrets : trgSecrets
+  loadVaultSecrets(selectedSecrets)
   env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
   env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
