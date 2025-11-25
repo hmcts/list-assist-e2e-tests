@@ -98,8 +98,8 @@ export class Cath extends Base {
   buildDailyCauseListArray(
     time: string,
     hmctsCaseNumber: string,
-    case_name: string,
-    case_type: string,
+    caseName: string,
+    caseType: string,
     service: string,
     location: string,
     duration: string,
@@ -109,8 +109,8 @@ export class Cath extends Base {
     return [
       { header: "Time", value: time },
       { header: "Case ref", value: hmctsCaseNumber },
-      { header: "Case name", value: case_name },
-      { header: "Case type", value: case_type },
+      { header: "Case name", value: caseName },
+      { header: "Case type", value: caseType },
       { header: "Hearing type", value: service },
       { header: "Location", value: location },
       { header: "Duration", value: duration },
@@ -122,8 +122,8 @@ export class Cath extends Base {
   buildCivilCauseListArray(
     time: string,
     hmctsCaseNumber: string,
-    case_name: string,
-    case_type: string,
+    caseName: string,
+    caseType: string,
     hearingType: string,
     location: string,
     duration: string,
@@ -131,8 +131,8 @@ export class Cath extends Base {
     return [
       { header: "Time", value: time },
       { header: "Case ref", value: hmctsCaseNumber },
-      { header: "Case name", value: case_name },
-      { header: "Case type", value: case_type },
+      { header: "Case name", value: caseName },
+      { header: "Case type", value: caseType },
       { header: "Hearing type", value: hearingType },
       { header: "Location", value: location },
       { header: "Duration", value: duration },
