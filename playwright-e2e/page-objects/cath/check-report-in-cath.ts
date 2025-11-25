@@ -24,6 +24,7 @@ export class Cath extends Base {
   }
 
   async goToCathUrlAndConfirmReportDisplayed(
+    reportType: string,
     cathUrl: string,
     reportName: string,
     time: string,
@@ -46,7 +47,7 @@ export class Cath extends Base {
     await expect(this.reportLink.filter({ hasText: reportName })).toBeVisible();
     await this.reportLink.filter({ hasText: reportName }).click();
 
-    //check that the court name is displayed on the report pagei
+    //check that the court name is displayed on the report page
     const courtHeader = this.page.locator("h1.govuk-heading-l.site-address", {
       hasText: "Newport (South Wales) County Court and Family Court",
     });
@@ -56,8 +57,44 @@ export class Cath extends Base {
       "div.govuk-accordion__section--expanded table.govuk-table",
     );
 
-    // Array of expected headers and corresponding first row values
-    const expected = [
+    let expected;
+    if (reportType === this.CONSTANTS.LIST_TYPE_DAILY_CAUSE_LIST) {
+      expected = this.buildDailyCauseListArray(
+        time,
+        hmctsCaseNumber,
+        case_name,
+        case_type,
+        service,
+        location,
+        duration,
+        applicantPetitioner,
+        respondent,
+      );
+    } else {
+      throw new Error(`Unsupported report type: ${reportType}`);
+    }
+
+    const headerCells = table.locator("thead tr th");
+    const firstRowCells = table.locator("tbody tr").first().locator("td");
+
+    for (let i = 0; i < expected.length; i++) {
+      await expect(headerCells.nth(i)).toHaveText(expected[i].header);
+      await expect(firstRowCells.nth(i)).toHaveText(expected[i].value);
+    }
+  }
+
+  buildDailyCauseListArray(
+    time: string,
+    hmctsCaseNumber: string,
+    case_name: string,
+    case_type: string,
+    service: string,
+    location: string,
+    duration: string,
+    applicantPetitioner: string,
+    respondent: string,
+  ) {
+    return [
       { header: "Time", value: time },
       { header: "Case ref", value: hmctsCaseNumber },
       { header: "Case name", value: case_name },
@@ -68,13 +105,5 @@ export class Cath extends Base {
       { header: "Applicant/Petitioner", value: applicantPetitioner },
       { header: "Respondent", value: respondent },
     ];
-
-    const headerCells = table.locator("thead tr th");
-    const firstRowCells = table.locator("tbody tr").first().locator("td");
-
-    for (let i = 0; i < expected.length; i++) {
-      await expect(headerCells.nth(i)).toHaveText(expected[i].header);
-      await expect(firstRowCells.nth(i)).toHaveText(expected[i].value);
-    }
   }
 }
