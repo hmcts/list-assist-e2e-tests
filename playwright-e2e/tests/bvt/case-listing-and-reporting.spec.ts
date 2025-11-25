@@ -33,7 +33,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     },
   );
 
-  test('List "Released" session and Generate report via P&I Dashboard. Generate Daily Type Cause List, NEWPORT_SOUTH_WALES_CC_FC(Saesneg) Report. Check CATH report details', async ({
+  test('List "Released" session and Generate report via P&I Dashboard. Generate Daily Type Cause List, NEWPORT_SOUTH_WALES_CC_FC(Saesneg) Report. Check CATH report details @cath', async ({
     addNewCasePage,
     editNewCasePage,
     sessionBookingPage,
@@ -272,6 +272,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     const reportName = `${cath.CONSTANTS.LIST_JURISDICTION_CIVIL_AND_FAMILY} ${cath.CONSTANTS.LIST_TYPE_DAILY_CAUSE_LIST} ${dataUtils.getFormattedDateInFormatDDMonthYYYY()} - English (Saesneg)`;
 
     await cath.goToCathUrlAndConfirmReportDisplayed(
+      cath.CONSTANTS.LIST_TYPE_DAILY_CAUSE_LIST,
       cathUrl,
       reportName,
       "10am",
