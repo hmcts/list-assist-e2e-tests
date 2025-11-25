@@ -279,6 +279,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       HMCTS_CASE_NUMBER,
       CASE_VS_REFERENCE,
       addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
+      "",
       `Trial (${addNewCasePage.CONSTANTS.SERVICE_DAMAGES})`,
       "Telephone - Other, Video - CVP",
       "1 hour",

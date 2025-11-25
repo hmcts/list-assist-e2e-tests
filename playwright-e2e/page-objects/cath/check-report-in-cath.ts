@@ -8,6 +8,7 @@ export class Cath extends Base {
     LOCATION_ID_NEWPORT_SOUTH_WALES_CC_FC: "2000",
     LIST_JURISDICTION_CIVIL_AND_FAMILY: "Civil and Family",
     LIST_TYPE_DAILY_CAUSE_LIST: "Daily Cause List",
+    LIST_TYPE_CIVIL_CAUSE_LIST: "Civil Cause List",
   };
 
   readonly summaryGovUkHeading = this.page.locator("h1.govuk-heading-l", {
@@ -31,6 +32,7 @@ export class Cath extends Base {
     hmctsCaseNumber: string,
     case_name: string,
     case_type: string,
+    hearingType: string,
     service: string,
     location: string,
     duration: string,
@@ -70,6 +72,16 @@ export class Cath extends Base {
         applicantPetitioner,
         respondent,
       );
+    } else if (reportType === this.CONSTANTS.LIST_TYPE_CIVIL_CAUSE_LIST) {
+      expected = this.buildCivilCauseListArray(
+        time,
+        hmctsCaseNumber,
+        case_name,
+        case_type,
+        hearingType,
+        location,
+        duration,
+      );
     } else {
       throw new Error(`Unsupported report type: ${reportType}`);
     }
@@ -104,6 +116,26 @@ export class Cath extends Base {
       { header: "Duration", value: duration },
       { header: "Applicant/Petitioner", value: applicantPetitioner },
       { header: "Respondent", value: respondent },
+    ];
+  }
+
+  buildCivilCauseListArray(
+    time: string,
+    hmctsCaseNumber: string,
+    case_name: string,
+    case_type: string,
+    hearingType: string,
+    location: string,
+    duration: string,
+  ) {
+    return [
+      { header: "Time", value: time },
+      { header: "Case ref", value: hmctsCaseNumber },
+      { header: "Case name", value: case_name },
+      { header: "Case type", value: case_type },
+      { header: "Hearing type", value: hearingType },
+      { header: "Location", value: location },
+      { header: "Duration", value: duration },
     ];
   }
 }
