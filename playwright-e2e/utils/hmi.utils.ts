@@ -1,6 +1,13 @@
 import { APIRequestContext, expect, request } from "@playwright/test";
 import { config } from "./config.utils.js";
 
+function getHmiApiUrl(): string {
+  const env = process.env.TEST_ENV;
+  if (env === "SIT") return config.hmi.sitApiUrl;
+  if (env === "TRG") return config.hmi.trgApiUrl;
+  throw new Error("TEST_ENV must be set to SIT or TRG");
+}
+
 export class HmiUtils {
   static async generateOAuthToken(): Promise<string> {
     const requestBody = {
@@ -24,7 +31,7 @@ export class HmiUtils {
 
   static async generateContext(): Promise<APIRequestContext> {
     const context = await request.newContext({
-      baseURL: config.hmi.apiUrl,
+      baseURL: getHmiApiUrl(),
       extraHTTPHeaders: {
         Authorization: await this.generateOAuthToken(),
         "Content-Type": "application/json",
