@@ -15,6 +15,8 @@ export interface UserCredentials {
 
 interface Urls {
   baseUrl: string;
+  sitBaseUrl: string;
+  trgBaseUrl: string;
 }
 
 interface Hmi {
@@ -24,7 +26,8 @@ interface Hmi {
   tokenUrl: string;
   tenant: string;
   grantType: string;
-  apiUrl: string;
+  sitApiUrl: string;
+  trgApiUrl: string;
 }
 
 interface Data {
@@ -54,7 +57,9 @@ export const config: Config = {
     },
   },
   urls: {
-    baseUrl: process.env.BASE_URL as string,
+    baseUrl: getBaseUrl(),
+    sitBaseUrl: getEnvVar("SIT_BASE_URL"),
+    trgBaseUrl: getEnvVar("TRG_BASE_URL"),
   },
   hmi: {
     clientId: getEnvVar("HMI_CLIENT_ID"),
@@ -66,7 +71,8 @@ export const config: Config = {
       "/oauth2/v2.0/token",
     tenant: getEnvVar("HMI_TOKEN_TENANT"),
     grantType: getEnvVar("HMI_GRANT_TYPE"),
-    apiUrl: getEnvVar("HMI_API_URL"),
+    sitApiUrl: getEnvVar("HMI_SIT_API_URL"),
+    trgApiUrl: getEnvVar("HMI_TRG_API_URL"),
   },
   data: {
     hearingRequest: readJsonFile(
@@ -83,6 +89,14 @@ export const config: Config = {
     ),
   },
 };
+
+// Helper to select baseUrl based on TEST_ENV
+function getBaseUrl(): string {
+  const env = process.env.TEST_ENV;
+  if (env === "SIT") return getEnvVar("SIT_BASE_URL");
+  if (env === "TRG") return getEnvVar("TRG_BASE_URL");
+  throw new Error("TEST_ENV must be set to SIT or TRG");
+}
 
 function getEnvVar(name: string): string {
   const value = process.env[name];
