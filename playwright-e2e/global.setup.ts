@@ -2,6 +2,7 @@ import { test as setup } from "./fixtures";
 import { isSessionValid } from "./utils";
 
 setup.describe("Global Setup", () => {
+  console.log("DEBUG: TEST_ENV:", process.env.TEST_ENV);
   setup("Setup test user", async ({ loginPage, page, config }) => {
     // Test user setup
     const user = config.users.testUser;
