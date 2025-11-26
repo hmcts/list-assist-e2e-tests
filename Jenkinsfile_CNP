@@ -51,8 +51,8 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 
 def trgSecrets = [
   'snl-automation-bts-stg': [
-    secret('test-password', 'TEST_USERNAME'),
-    secret('test-username', 'TEST_PASSWORD'),
+    secret('test-password', 'TEST_PASSWORD'),
+    secret('test-username', 'TEST_USERNAME'),
     secret('trg-base-url', 'TRG_BASE_URL'),
     secret('hmi-client-id', 'HMI_CLIENT_ID'),
     secret('hmi-client-secret', 'HMI_CLIENT_SECRET'),
@@ -66,8 +66,8 @@ def trgSecrets = [
 
 def sitSecrets = [
   'snl-automation-bts-stg': [
-    secret('test-password', 'TEST_USERNAME'),
-    secret('test-username', 'TEST_PASSWORD'),
+    secret('test-password', 'TEST_PASSWORD'),
+    secret('test-username', 'TEST_USERNAME'),
     secret('sit-base-url', 'SIT_BASE_URL'),
     secret('hmi-client-id', 'HMI_CLIENT_ID'),
     secret('hmi-client-secret', 'HMI_CLIENT_SECRET'),
@@ -214,6 +214,11 @@ withNightlyPipeline(type, product, component, 600) {
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       }
+    }
+
+    // Debugging environment variables
+    stage('Debug Env Vars') {
+      sh 'env | grep BASE_URL || true'
     }
 
     if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
