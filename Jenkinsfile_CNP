@@ -100,6 +100,7 @@ withNightlyPipeline(type, product, component, 600) {
   env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
   env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
+  env.TEST_ENV = params.ENVIRONMENT
   enableSlackNotifications(channel)
 
   def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
