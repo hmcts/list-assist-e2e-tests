@@ -153,7 +153,7 @@ withNightlyPipeline(type, product, component, 600) {
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = skipCreateCase
         }
-        yarnBuilder.yarn(command)
+        yarnBuilder.yarn("TEST_ENV=${params.ENVIRONMENT} ${command}")
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
