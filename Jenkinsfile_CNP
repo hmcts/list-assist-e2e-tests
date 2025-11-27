@@ -24,6 +24,12 @@ properties([
       description: 'Select which test suite(s) to run',
       defaultValue: 'bvt'
     ),
+    choice(
+      name: 'ENVIRONMENT',
+      choices: ['TRG', 'SIT'],
+      description: 'Which environment to run tests against',
+      defaultValue: 'TRG'
+    ),
   ])
 ])
 
@@ -45,16 +51,21 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 
 def secrets = [
   'snl-automation-bts-stg': [
+    // TRG secrets
     secret('test-password', 'TEST_USERNAME'),
     secret('test-username', 'TEST_PASSWORD'),
-    secret('base-url', 'BASE_URL'),
+    secret('trg-base-url', 'TRG_BASE_URL'),
     secret('hmi-client-id', 'HMI_CLIENT_ID'),
     secret('hmi-client-secret', 'HMI_CLIENT_SECRET'),
     secret('hmi-scope', 'HMI_SCOPE'),
     secret('hmi-token-url', 'HMI_TOKEN_URL'),
     secret('hmi-token-tenant', 'HMI_TOKEN_TENANT'),
     secret('hmi-grant-type', 'HMI_GRANT_TYPE'),
-    secret('hmi-api-url', 'HMI_API_URL'),
+    secret('hmi-trg-api-url', 'HMI_TRG_API_URL'),
+
+    // SIT secrets
+    secret('sit-base-url', 'SIT_BASE_URL'),
+    secret('hmi-sit-api-url', 'SIT_HMI_API_URL'),
   ]
 ]
 
@@ -187,6 +198,24 @@ withNightlyPipeline(type, product, component, 600) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       }
     }
+
+
+
+    // Before running tests, set environment variables based on ENVIRONMENT
+    if (params.ENVIRONMENT == 'SIT') {
+      env.TEST_USERNAME = env.EST_USERNAME
+      env.TEST_PASSWORD = env.TEST_PASSWORD
+      env.TRG_BASE_URL = env.SIT_BASE_URL
+      env.HMI_CLIENT_ID = env.HMI_CLIENT_ID
+      env.HMI_CLIENT_SECRET = env.HMI_CLIENT_SECRET
+      env.HMI_SCOPE = env.HMI_SCOPE
+      env.HMI_TOKEN_URL = env.HMI_TOKEN_URL
+      env.HMI_TOKEN_TENANT = env.HMI_TOKEN_TENANT
+      env.HMI_GRANT_TYPE = env.HMI_GRANT_TYPE
+      env.HMI_TRG_API_URL = env.HMI_SIT_API_URL
+    }
+
+    currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}<br>Suite: ${params.TEST_SUITE}"
 
     if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {

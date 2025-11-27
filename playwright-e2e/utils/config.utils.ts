@@ -42,6 +42,8 @@ export interface Config {
   data: Data;
 }
 
+const isSit = process.env.ENVIRONMENT === "SIT";
+
 export const config: Config = {
   users: {
     testUser: {
@@ -54,7 +56,7 @@ export const config: Config = {
     },
   },
   urls: {
-    baseUrl: process.env.BASE_URL as string,
+    baseUrl: isSit ? getEnvVar("SIT_BASE_URL") : getEnvVar("TRG_BASE_URL"),
   },
   hmi: {
     clientId: getEnvVar("HMI_CLIENT_ID"),
@@ -66,7 +68,7 @@ export const config: Config = {
       "/oauth2/v2.0/token",
     tenant: getEnvVar("HMI_TOKEN_TENANT"),
     grantType: getEnvVar("HMI_GRANT_TYPE"),
-    apiUrl: getEnvVar("HMI_API_URL"),
+    apiUrl: isSit ? getEnvVar("SIT_HMI_API_URL") : getEnvVar("HMI_TRG_API_URL"),
   },
   data: {
     hearingRequest: readJsonFile(
