@@ -12,7 +12,7 @@ import * as Console from "node:console";
 test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
   test.slow();
 
-  test.only("Should release a session and generate both external and internal hearing list reports", async ({
+  test("Should release a session and generate both external and internal hearing list reports", async ({
     page,
     sessionBookingPage,
     caseSearchPage,
@@ -168,7 +168,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       );
     });
 
-    await test.step.skip("Generate external hearing list report", async () => {
+    await test.step("Generate external hearing list report", async () => {
       await viewReportsPage.reportRequestPageActions(
         todayDate,
           partyName,
@@ -179,7 +179,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       );
     });
 
-    await test.step.skip("Generate internal hearing list report (damages)", async () => {
+    await test.step("Generate internal hearing list report (damages)", async () => {
       await viewReportsPage.reportRequestPageActions(
         todayDate,
         partyName,
