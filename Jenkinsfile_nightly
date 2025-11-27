@@ -202,4 +202,12 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
   }
+
+  // Add this at the very end, after all stages have run
+  def durationMillis = currentBuild.duration ?: (System.currentTimeMillis() - currentBuild.startTimeInMillis)
+  def durationSeconds = (durationMillis / 1000).intValue()
+  def durationMinutes = (durationSeconds / 60).intValue()
+  def durationString = "${durationMinutes}m ${durationSeconds % 60}s"
+
+  currentBuild.description = "Duration: ${durationString}"
 }
