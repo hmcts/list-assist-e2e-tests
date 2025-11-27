@@ -38,9 +38,8 @@ export class ViewReportsPage extends Base {
   readonly dateToCalenderSelect = this.page.getByRole("button", {
     name: "Date To:",
   });
-  readonly localityDropDown = this.page.getByRole("textbox", {
-    name: "Locality:",
-  });
+  readonly localityDropDown = this.page.locator("#ReportViewerControl_ctl04_ctl07_ctl01");
+
   readonly localityChevronButton = this.page.locator(
     "#ReportViewerControl_ctl04_ctl07_ctl01",
   );
@@ -101,13 +100,22 @@ export class ViewReportsPage extends Base {
 
   async reportRequestPageActions(
     todayDate: string,
+    partyName: string,
     locality: string,
     location: string,
     jurisdiction: string,
     reportDate: string,
     service?: string,
+    isWelsh: boolean = false,
+
   ) {
-    if (service) {
+
+    if (isWelsh) {
+      this.reportSubMenu = this.page.getByRole("link", {
+        name: "External Hearing List Welsh v2.0 (SRSS)",
+      });
+    }
+    else if (service) {
       this.reportSubMenu = this.page.getByRole("link", {
         name: "Opens Internal Hearing List",
       });
@@ -308,11 +316,36 @@ export class ViewReportsPage extends Base {
       )
       .toBeTruthy();
 
-    await expect(reportsRequestPage.reportBody).toContainText(locality);
-    await expect(reportsRequestPage.reportBody).toContainText(
-      "DAILY CAUSE LIST",
-    );
+    // Common assertions for all the 3 reports
+    await expect(reportsRequestPage.reportBody).toContainText('Pontypridd Courtroom 01');
+    await expect(reportsRequestPage.reportBody).toContainText(partyName, { ignoreCase: true });
+    await expect(reportsRequestPage.reportBody).toContainText('Before: Matthew Dunn (P)');
+    await expect(reportsRequestPage.reportBody).toContainText('Pontypridd County Court and Family Court');
     await expect(reportsRequestPage.reportBody).toContainText(reportDate);
+
+
+    // Welsh report assertions
+    if (isWelsh) {
+
+      await expect(reportsRequestPage.reportBody).toContainText('Dros y FfÇïn - Arall/Telephone - Other');
+      await expect(reportsRequestPage.reportBody).toContainText('RHESTR ACHOS DYDDIOL, DAILY CAUSE LIST');
+      await expect(reportsRequestPage.reportBody).toContainText('Cais, Application');
+      await expect(reportsRequestPage.reportBody).toContainText('Adeilad y Llys, Courthouse Street, Pontypridd, CF37 1JR, The Courthouse, Courthouse Street, Pontypridd, CF37 1JR');
+      await expect(reportsRequestPage.reportBody).toContainText('Ystafell Llys 01 Pontypridd, Pontypridd Courtroom 01');
+      await expect(reportsRequestPage.reportBody).toContainText('1 awr, hour');
+      await expect(reportsRequestPage.reportBody).toContainText(reportDate);
+
+    }
+
+    // English report assertions
+    else {
+
+      await expect(reportsRequestPage.reportBody).toContainText('Telephone - Other');
+      await expect(reportsRequestPage.reportBody).toContainText('DAILY CAUSE LIST');
+
+      //TODO: uncomment this assertions when the bug is fixed.
+      //await expect(reportsRequestPage.reportBody).toContainText('The Courthouse, Courthouse Street, Pontypridd, CF37 1JR');
+    }
   }
 
   //looks for invalid mailbox checkbox and sets/unsets it based on boolean value passed
