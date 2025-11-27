@@ -65,7 +65,7 @@ def secrets = [
 
     // SIT secrets
     secret('sit-base-url', 'SIT_BASE_URL'),
-    secret('sit-hmi-api-url', 'SIT_HMI_API_URL'),
+    secret('hmi-sit-api-url', 'SIT_HMI_API_URL'),
   ]
 ]
 
