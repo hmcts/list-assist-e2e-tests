@@ -47,45 +47,27 @@ const isSit = process.env.ENVIRONMENT === "SIT";
 export const config: Config = {
   users: {
     testUser: {
-      username: isSit
-        ? getEnvVar("SIT_TEST_USERNAME")
-        : getEnvVar("TEST_USERNAME"),
-      password: isSit
-        ? getEnvVar("SIT_TEST_PASSWORD")
-        : getEnvVar("TEST_PASSWORD"),
+      username: getEnvVar("TEST_USERNAME"),
+      password: getEnvVar("TEST_PASSWORD"),
       sessionFile:
         path.join(fileURLToPath(import.meta.url), "../../.sessions/") +
-        `${isSit ? getEnvVar("SIT_TEST_USERNAME") : getEnvVar("TEST_USERNAME")}.json`,
+        `${getEnvVar("TEST_USERNAME")}.json`,
       cookieName: "MAX-ACTIVE",
     },
   },
   urls: {
-    baseUrl: isSit
-      ? (process.env.SIT_BASE_URL as string)
-      : (process.env.TRG_BASE_URL as string),
+    baseUrl: isSit ? getEnvVar("SIT_BASE_URL") : getEnvVar("TRG_BASE_URL"),
   },
   hmi: {
-    clientId: isSit
-      ? getEnvVar("SIT_HMI_CLIENT_ID")
-      : getEnvVar("HMI_CLIENT_ID"),
-    clientSecret: isSit
-      ? getEnvVar("SIT_HMI_CLIENT_SECRET")
-      : getEnvVar("HMI_CLIENT_SECRET"),
-    scope:
-      (isSit ? getEnvVar("SIT_HMI_SCOPE") : getEnvVar("HMI_SCOPE")) +
-      "/.default",
+    clientId: getEnvVar("HMI_CLIENT_ID"),
+    clientSecret: getEnvVar("HMI_CLIENT_SECRET"),
+    scope: getEnvVar("HMI_SCOPE") + "/.default",
     tokenUrl:
-      (isSit ? getEnvVar("SIT_HMI_TOKEN_URL") : getEnvVar("HMI_TOKEN_URL")) +
-      (isSit
-        ? getEnvVar("SIT_HMI_TOKEN_TENANT")
-        : getEnvVar("HMI_TOKEN_TENANT")) +
+      getEnvVar("HMI_TOKEN_URL") +
+      getEnvVar("HMI_TOKEN_TENANT") +
       "/oauth2/v2.0/token",
-    tenant: isSit
-      ? getEnvVar("SIT_HMI_TOKEN_TENANT")
-      : getEnvVar("HMI_TOKEN_TENANT"),
-    grantType: isSit
-      ? getEnvVar("SIT_HMI_GRANT_TYPE")
-      : getEnvVar("HMI_GRANT_TYPE"),
+    tenant: getEnvVar("HMI_TOKEN_TENANT"),
+    grantType: getEnvVar("HMI_GRANT_TYPE"),
     apiUrl: isSit ? getEnvVar("SIT_HMI_API_URL") : getEnvVar("HMI_TRG_API_URL"),
   },
   data: {
