@@ -199,7 +199,10 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
-    currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}"
+    currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}, suite: ${params.TEST_SUITE}"
+    def buildUser = env.BUILD_USER ?: 'Automated trigger'
+    currentBuild.description = "triggered by: ${buildUser}"
+
 
     // Before running tests, set environment variables based on ENVIRONMENT
     if (params.ENVIRONMENT == 'SIT') {
