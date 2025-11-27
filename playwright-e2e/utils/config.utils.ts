@@ -54,7 +54,7 @@ export const config: Config = {
     },
   },
   urls: {
-    baseUrl: process.env.BASE_URL as string,
+    baseUrl: process.env.TRG_BASE_URL as string,
   },
   hmi: {
     clientId: getEnvVar("HMI_CLIENT_ID"),
@@ -66,7 +66,7 @@ export const config: Config = {
       "/oauth2/v2.0/token",
     tenant: getEnvVar("HMI_TOKEN_TENANT"),
     grantType: getEnvVar("HMI_GRANT_TYPE"),
-    apiUrl: getEnvVar("HMI_API_URL"),
+    apiUrl: getEnvVar("HMI_TRG_API_URL"),
   },
   data: {
     hearingRequest: readJsonFile(
