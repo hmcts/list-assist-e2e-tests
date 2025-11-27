@@ -199,6 +199,8 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
+    currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}"
+
     // Before running tests, set environment variables based on ENVIRONMENT
     if (params.ENVIRONMENT == 'SIT') {
       env.TEST_USERNAME = env.EST_USERNAME
@@ -211,10 +213,6 @@ withNightlyPipeline(type, product, component, 600) {
       env.HMI_TOKEN_TENANT = env.HMI_TOKEN_TENANT
       env.HMI_GRANT_TYPE = env.HMI_GRANT_TYPE
       env.HMI_TRG_API_URL = env.HMI_SIT_API_URL
-    }
-
-    stage('Show Selected Environment') {
-      echo "Running tests in environment: ${params.ENVIRONMENT}"
     }
 
     if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
