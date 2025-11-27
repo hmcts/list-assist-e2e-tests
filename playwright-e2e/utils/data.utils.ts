@@ -74,6 +74,12 @@ export class DataUtils {
     return today.toFormat("cccc, d LLLL yyyy");
   }
 
+  getFormattedWelshDateForReportAssertion(): string {
+    // Use luxon to format as 'Tuesday, 29 July 2025'
+    const today = DateTime.now().setLocale("cy");
+    return today.toFormat("cccc, d LLLL yyyy");
+  }
+
   getCurrentDateTimeUTC(): string {
     // Use luxon to get UTC ISO string without milliseconds
     return DateTime.utc().toISO({ suppressMilliseconds: true });

@@ -11,6 +11,7 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
     CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT:
       "Pontypridd County Court and",
+    JUDICIAL_OFFICE_HOLDER_NAME: "Banning, Duncan (Banning)",
     CASE_LISTING_LOCALITY_CAERNARFON_JC: "Caernarfon Justice Centre",
     CASE_LISTING_LOCALITY_ABERYSTWYTH_JC: "Aberystwyth Justice Centre",
     CASE_LISTING_LOCATION_LOCATION_CAERNARFON_CHMBRS_5:
@@ -35,11 +36,14 @@ export class SessionBookingPage extends Base {
 
     CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON: "Generic Decision 3",
   };
-
   readonly container = this.page.locator("#pageContent");
   readonly heading = this.page.getByText("Session Booking", { exact: true });
   readonly listingDuration = this.page.locator("#defListingDuration");
   readonly durationDropdownButton = this.page.locator("#defListingDuration");
+  readonly sessionJohDropdown = this.page.locator('button[data-id="membersList"]');
+  readonly sessionJoh = this.page.getByRole('option', { name: 'Dunn, Matthew (Matthew Dunn)' })
+      .nth(1);
+
   readonly sessionStatusDropdown = this.page.getByLabel(
     "Session Status: This field is",
   );
@@ -154,10 +158,12 @@ export class SessionBookingPage extends Base {
     await this.sessionHearingChannel.click();
     await this.sessionHearingChannelTel.click();
     await this.sessionHearingChannelVid.click();
+    await this.sessionJohDropdown.click();
+    await this.sessionJoh.click();
 
     let validationPopup;
     try {
-      const pagePromise = this.page.waitForEvent("popup", { timeout: 2000 });
+      const pagePromise = this.page.waitForEvent("popup", { timeout: 4000 });
       await this.page.getByRole("button", { name: "Save" }).click();
       validationPopup = await pagePromise;
       await validationPopup.waitForLoadState("domcontentloaded");
