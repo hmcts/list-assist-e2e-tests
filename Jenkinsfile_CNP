@@ -199,9 +199,6 @@ withNightlyPipeline(type, product, component, 600) {
       }
     }
 
-    currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}, suite: ${params.TEST_SUITE}"
-    def buildUser = env.BUILD_USER ?: 'Automated trigger'
-    currentBuild.description = "triggered by: ${buildUser}"
 
 
     // Before running tests, set environment variables based on ENVIRONMENT
@@ -217,6 +214,9 @@ withNightlyPipeline(type, product, component, 600) {
       env.HMI_GRANT_TYPE = env.HMI_GRANT_TYPE
       env.HMI_TRG_API_URL = env.HMI_SIT_API_URL
     }
+
+    def buildUser = env.BUILD_USER ?: 'unknown'
+currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}, suite: ${params.TEST_SUITE}, triggered by: ${buildUser}"
 
     if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
