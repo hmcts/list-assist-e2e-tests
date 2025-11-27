@@ -215,8 +215,7 @@ withNightlyPipeline(type, product, component, 600) {
       env.HMI_TRG_API_URL = env.HMI_SIT_API_URL
     }
 
-    def buildUser = env.BUILD_USER ?: 'Automated trigger'
-currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}, Suite: ${params.TEST_SUITE}, Triggered by: ${buildUser}"
+    currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}, Suite: ${params.TEST_SUITE}"
 
     if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
