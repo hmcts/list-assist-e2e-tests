@@ -179,7 +179,7 @@ withNightlyPipeline(type, product, component, 600) {
   def bvtSpecFilesChanged = []
   def regressionSpecFilesChanged = []
 
-  stage('Prepare PR Test Run') {
+  stage('Prepare Test Run') {
     if (isPrBuild) {
       // Detect Regression & BVT Folder Change
       sh 'git remote set-url origin $(git config --get remote.origin.url)'
