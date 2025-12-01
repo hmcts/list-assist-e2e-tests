@@ -235,16 +235,17 @@ withNightlyPipeline(type, product, component, 600) {
       def regressionSpecFilesChanged = []
 
       // Find changed spec.ts files in bvt and regression folders
-      def diffBvtSpecCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep '^bvt/.*\\.spec\\.ts$' || true"
+      // Correct way: build the command as a Groovy string
+      def diffBvtSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep '^bvt/.*\\.spec\\.ts\$' || true"
       def bvtSpecDiffOutput = sh(script: diffBvtSpecCmd, returnStdout: true).trim()
       if (bvtSpecDiffOutput) {
-        bvtSpecFilesChanged = bvtSpecDiffOutput.split('\\n')
+        bvtSpecFilesChanged = bvtSpecDiffOutput.split('\n')
       }
 
-      def diffRegressionSpecCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep '^regression/.*\\.spec\\.ts$' || true"
+      def diffRegressionSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep '^regression/.*\\.spec\\.ts\$' || true"
       def regressionSpecDiffOutput = sh(script: diffRegressionSpecCmd, returnStdout: true).trim()
       if (regressionSpecDiffOutput) {
-        regressionSpecFilesChanged = regressionSpecDiffOutput.split('\\n')
+        regressionSpecFilesChanged = regressionSpecDiffOutput.split('\n')
       }
 
       // Always run all @pr-build tagged tests
