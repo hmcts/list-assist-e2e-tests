@@ -33,7 +33,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     },
   );
 
-  test('List "Released" session and Generate report via P&I Dashboard. Generate Daily Type Cause List, NEWPORT_SOUTH_WALES_CC_FC(Saesneg) Report. Check CATH report details @cath', async ({
+  test('List "Released" session and Generate report via P&I Dashboard. Generate Daily Type Cause List, NEWPORT_SOUTH_WALES_CC_FC(Saesneg) Report. Check CATH report details @pr-build', async ({
     addNewCasePage,
     editNewCasePage,
     sessionBookingPage,
