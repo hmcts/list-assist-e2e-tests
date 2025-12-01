@@ -175,43 +175,58 @@ withNightlyPipeline(type, product, component, 600) {
   def regressionBlockChanged = false
   def bvtFilesChanged = []
   def isPrBuild = env.CHANGE_ID ? true : false
+  def prBuildTaggedFiles = []
+  def bvtSpecFilesChanged = []
+  def regressionSpecFilesChanged = []
 
-  stage('Detect Regression & BVT Folder Change For PR') {
+  stage('Prepare PR Test Run') {
     if (isPrBuild) {
-      // Ensure the git remote is set correctly (useful for Jenkins environments)
+      // Detect Regression & BVT Folder Change
       sh 'git remote set-url origin $(git config --get remote.origin.url)'
-      // Make sure we have a full git history 
       sh 'git fetch --prune --unshallow || git fetch --all'
-      // Fetch all remote branches to ensure we can diff against them
       sh 'git fetch origin +refs/heads/*:refs/remotes/origin/*'
-      // Explicitly fetch the PR branch and the target branch for accurate comparison
       sh "git fetch origin '${env.CHANGE_BRANCH}':'${env.CHANGE_BRANCH}'"
       sh "git fetch origin '${env.CHANGE_TARGET}':'${env.CHANGE_TARGET}'"
 
-      // --- PR & BVT logic ---
-      // Detect regression changes
       def diffRegressionCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep -q 'regression/'"
       regressionBlockChanged = (sh(script: diffRegressionCmd, returnStatus: true) == 0)
 
-      // Detect bvt folder changes and collect changed files
       def diffBvtCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep '^bvt/' || true"
       def bvtDiffOutput = sh(script: diffBvtCmd, returnStdout: true).trim()
       if (bvtDiffOutput) {
         bvtFilesChanged = bvtDiffOutput.split('\\n')
       }
-      // --- end PR & BVT logic ---
-    }
-  }
 
-  stage('Set up playwright') {
+      // Find changed spec.ts files in bvt and regression folders
+      def diffBvtSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep '^bvt/.*\\.spec\\.ts\$' || true"
+      def bvtSpecDiffOutput = sh(script: diffBvtSpecCmd, returnStdout: true).trim()
+      if (bvtSpecDiffOutput) {
+        bvtSpecFilesChanged = bvtSpecDiffOutput.split('\n')
+      }
+
+      def diffRegressionSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep '^regression/.*\\.spec\\.ts\$' || true"
+      def regressionSpecDiffOutput = sh(script: diffRegressionSpecCmd, returnStdout: true).trim()
+      if (regressionSpecDiffOutput) {
+        regressionSpecFilesChanged = regressionSpecDiffOutput.split('\n')
+      }
+
+      // Find @pr-build tagged files
+      def prBuildFilesOutput = sh(
+        script: "grep -rl '@pr-build' bvt/ regression/ || true",
+        returnStdout: true
+      ).trim()
+      if (prBuildFilesOutput) {
+        prBuildTaggedFiles = prBuildFilesOutput.split('\n')
+      }
+    }
+
+    // Set up playwright
     try {
       yarnBuilder.yarn('setup')
     } catch (Error) {
       unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
     }
   }
-
-
 
     // Before running tests, set environment variables based on ENVIRONMENT
     if (params.ENVIRONMENT == 'SIT') {
@@ -231,34 +246,6 @@ withNightlyPipeline(type, product, component, 600) {
 
     // --- PR & BVT/Regression logic ---
     if (isPrBuild) {
-      def bvtSpecFilesChanged = []
-      def regressionSpecFilesChanged = []
-
-      // Find changed spec.ts files in bvt and regression folders
-      def diffBvtSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep '^bvt/.*\\.spec\\.ts\$' || true"
-      def bvtSpecDiffOutput = sh(script: diffBvtSpecCmd, returnStdout: true).trim()
-      if (bvtSpecDiffOutput) {
-        bvtSpecFilesChanged = bvtSpecDiffOutput.split('\n')
-      }
-
-      def diffRegressionSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep '^regression/.*\\.spec\\.ts\$' || true"
-      def regressionSpecDiffOutput = sh(script: diffRegressionSpecCmd, returnStdout: true).trim()
-      if (regressionSpecDiffOutput) {
-        regressionSpecFilesChanged = regressionSpecDiffOutput.split('\n')
-      }
-
-      // Find @pr-build tagged files
-      def prBuildTaggedFiles = []
-      stage('Find @pr-build Tagged Files') {
-        def prBuildFilesOutput = sh(
-          script: "grep -rl '@pr-build' bvt/ regression/ || true",
-          returnStdout: true
-        ).trim()
-        if (prBuildFilesOutput) {
-          prBuildTaggedFiles = prBuildFilesOutput.split('\n')
-        }
-      }
-
       // Always run all @pr-build tagged tests
       stage("PR: @pr-build Tagged Tests") {
         try {
