@@ -235,7 +235,6 @@ withNightlyPipeline(type, product, component, 600) {
       def regressionSpecFilesChanged = []
 
       // Find changed spec.ts files in bvt and regression folders
-      // Correct way: build the command as a Groovy string
       def diffBvtSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep '^bvt/.*\\.spec\\.ts\$' || true"
       def bvtSpecDiffOutput = sh(script: diffBvtSpecCmd, returnStdout: true).trim()
       if (bvtSpecDiffOutput) {
@@ -246,6 +245,18 @@ withNightlyPipeline(type, product, component, 600) {
       def regressionSpecDiffOutput = sh(script: diffRegressionSpecCmd, returnStdout: true).trim()
       if (regressionSpecDiffOutput) {
         regressionSpecFilesChanged = regressionSpecDiffOutput.split('\n')
+      }
+
+      // Find @pr-build tagged files
+      def prBuildTaggedFiles = []
+      stage('Find @pr-build Tagged Files') {
+        def prBuildFilesOutput = sh(
+          script: "grep -rl '@pr-build' bvt/ regression/ || true",
+          returnStdout: true
+        ).trim()
+        if (prBuildFilesOutput) {
+          prBuildTaggedFiles = prBuildFilesOutput.split('\n')
+        }
       }
 
       // Always run all @pr-build tagged tests
@@ -304,6 +315,53 @@ withNightlyPipeline(type, product, component, 600) {
               reportDir: "playwright-report",
               reportFiles: 'index.html',
               reportName: "PR: Regression Changed File - ${file}"
+            ])
+          }
+        }
+      }
+
+      // After you have bvtSpecFilesChanged and regressionSpecFilesChanged:
+      def allChangedFiles = (bvtSpecFilesChanged + regressionSpecFilesChanged).unique()
+      def prBuildChangedFiles = allChangedFiles.intersect(prBuildTaggedFiles)
+      def onlyChangedFiles = allChangedFiles - prBuildChangedFiles
+
+      // Run @pr-build tagged changed files only once, with --grep @pr-build
+      prBuildChangedFiles.each { file ->
+        stage("PR: @pr-build Changed File - ${file}") {
+          try {
+            currentBuild.displayName = "PR: @pr-build Changed File - ${file}"
+            yarnBuilder.yarn("playwright test ${file} --grep @pr-build --project=${params.browser}")
+          } catch (Error) {
+            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          } finally {
+            publishHTML([
+              allowMissing: true,
+              alwaysLinkToLastBuild: true,
+              keepAll: true,
+              reportDir: "playwright-report",
+              reportFiles: 'index.html',
+              reportName: "PR: @pr-build Changed File - ${file}"
+            ])
+          }
+        }
+      }
+
+      // Run other changed files normally
+      onlyChangedFiles.each { file ->
+        stage("PR: Changed File - ${file}") {
+          try {
+            currentBuild.displayName = "PR: Changed File - ${file}"
+            yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+          } catch (Error) {
+            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          } finally {
+            publishHTML([
+              allowMissing: true,
+              alwaysLinkToLastBuild: true,
+              keepAll: true,
+              reportDir: "playwright-report",
+              reportFiles: 'index.html',
+              reportName: "PR: Changed File - ${file}"
             ])
           }
         }
