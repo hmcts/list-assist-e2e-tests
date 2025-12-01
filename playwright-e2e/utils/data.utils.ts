@@ -55,7 +55,8 @@ export class DataUtils {
   //01 January 2025
   getFormattedDateInFormatDDMonthYYYY(): string {
     const today = DateTime.now();
-    return today.toFormat("d LLLL yyyy");
+    // Use 'dd' for zero-padded day
+    return today.toFormat("dd LLLL yyyy");
   }
 
   // Generate date in DD-MM-YYYY with hyphen separators
