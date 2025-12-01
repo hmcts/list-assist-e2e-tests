@@ -229,35 +229,49 @@ withNightlyPipeline(type, product, component, 600) {
 
     currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}<br>Suite: ${params.TEST_SUITE}"
 
-    // --- PR & BVT logic ---
+    // --- PR & BVT/Regression logic ---
     if (isPrBuild) {
-      if (bvtFilesChanged && bvtFilesChanged.size() > 0) {
-        // Run only changed bvt files with @pr-build tag
-        bvtFilesChanged.each { file ->
-          stage("PR: BVT Changed File - ${file}") {
-            try {
-              currentBuild.displayName = "PR: BVT Changed File - ${file}"
-              yarnBuilder.yarn("playwright test ${file} --grep @pr-build --project=${params.browser}")
-            } catch (Error) {
-              unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-            } finally {
-              publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: "playwright-report",
-                reportFiles: 'index.html',
-                reportName: "PR: BVT Changed File - ${file}"
-              ])
-            }
-          }
+      def bvtSpecFilesChanged = []
+      def regressionSpecFilesChanged = []
+
+      // Find changed spec.ts files in bvt and regression folders
+      def diffBvtSpecCmd = """git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep '^bvt/.*\\.spec\\.ts$' || true"""
+      def bvtSpecDiffOutput = sh(script: diffBvtSpecCmd, returnStdout: true).trim()
+      if (bvtSpecDiffOutput) {
+        bvtSpecFilesChanged = bvtSpecDiffOutput.split("\\n")
+      }
+
+      def diffRegressionSpecCmd = """git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep '^regression/.*\\.spec\\.ts$' || true"""
+      def regressionSpecDiffOutput = sh(script: diffRegressionSpecCmd, returnStdout: true).trim()
+      if (regressionSpecDiffOutput) {
+        regressionSpecFilesChanged = regressionSpecDiffOutput.split("\\n")
+      }
+
+      // Always run all @pr-build tagged tests
+      stage("PR: @pr-build Tagged Tests") {
+        try {
+          currentBuild.displayName = "PR: @pr-build Tagged Tests"
+          yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: "PR: @pr-build Tagged Tests"
+          ])
         }
-      } else {
-        // Default: run all @pr-build tagged tests for PRs
-        stage("PR: @pr-build Tagged Tests") {
+      }
+
+      // Run changed bvt spec.ts files
+      bvtSpecFilesChanged.each { file ->
+        stage("PR: BVT Changed File - ${file}") {
           try {
-            currentBuild.displayName = "PR: @pr-build Tagged Tests"
-            yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
+            currentBuild.displayName = "PR: BVT Changed File - ${file}"
+            yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
           } finally {
@@ -267,7 +281,28 @@ withNightlyPipeline(type, product, component, 600) {
               keepAll: true,
               reportDir: "playwright-report",
               reportFiles: 'index.html',
-              reportName: "PR: @pr-build Tagged Tests"
+              reportName: "PR: BVT Changed File - ${file}"
+            ])
+          }
+        }
+      }
+
+      // Run changed regression spec.ts files
+      regressionSpecFilesChanged.each { file ->
+        stage("PR: Regression Changed File - ${file}") {
+          try {
+            currentBuild.displayName = "PR: Regression Changed File - ${file}"
+            yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+          } catch (Error) {
+            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          } finally {
+            publishHTML([
+              allowMissing: true,
+              alwaysLinkToLastBuild: true,
+              keepAll: true,
+              reportDir: "playwright-report",
+              reportFiles: 'index.html',
+              reportName: "PR: Regression Changed File - ${file}"
             ])
           }
         }
