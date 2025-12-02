@@ -198,7 +198,7 @@ withNightlyPipeline(type, product, component, 600) {
       }
 
       // Find changed spec.ts files in bvt and regression folders
-      def diffBvtSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep '^bvt/.*\\.spec\\.ts\$' || true"
+      def diffBvtSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep 'bvt/.*\\.spec\\.ts\$' || true"
       def bvtSpecDiffOutput = sh(script: diffBvtSpecCmd, returnStdout: true).trim()
       if (bvtSpecDiffOutput) {
         bvtSpecFilesChanged = bvtSpecDiffOutput.split('\n')
@@ -207,7 +207,7 @@ withNightlyPipeline(type, product, component, 600) {
         echo "No changed bvt spec files detected."
       }
 
-      def diffRegressionSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep '^regression/.*\\.spec\\.ts\$' || true"
+      def diffRegressionSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep 'regression/.*\\.spec\\.ts\$' || true"
       def regressionSpecDiffOutput = sh(script: diffRegressionSpecCmd, returnStdout: true).trim()
       if (regressionSpecDiffOutput) {
         regressionSpecFilesChanged = regressionSpecDiffOutput.split('\n')
