@@ -319,31 +319,9 @@ withNightlyPipeline(type, product, component, 600) {
 
       // After you have bvtSpecFilesChanged and regressionSpecFilesChanged:
       def allChangedFiles = (bvtSpecFilesChanged + regressionSpecFilesChanged).unique()
-      def prBuildChangedFiles = allChangedFiles.intersect(prBuildTaggedFiles)
-      def onlyChangedFiles = allChangedFiles - prBuildChangedFiles
+      def onlyChangedFiles = allChangedFiles - prBuildTaggedFiles
 
-      // Run @pr-build tagged changed files only once, with --grep @pr-build
-      prBuildChangedFiles.each { file ->
-        stage("PR: @pr-build Changed File - ${file}") {
-          try {
-            currentBuild.displayName = "PR: @pr-build Changed File - ${file}"
-            yarnBuilder.yarn("playwright test ${file} --grep @pr-build --project=${params.browser}")
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: "PR: @pr-build Changed File - ${file}"
-            ])
-          }
-        }
-      }
-
-      // Run other changed files normally
+      // Run other changed files normally (excluding @pr-build tagged files)
       onlyChangedFiles.each { file ->
         stage("PR: Changed File - ${file}") {
           try {
