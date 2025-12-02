@@ -12,7 +12,7 @@ import * as Console from "node:console";
 test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
   test.slow();
 
-  test("Should release a session and generate both external and internal hearing list reports", async ({
+  test.only("Should release a session and generate both external and internal hearing list reports", async ({
     page,
     sessionBookingPage,
     caseSearchPage,
@@ -23,7 +23,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     dataUtils,
     loginPage,
     addNewCasePage,
-    editNewCasePage, listingRequirementsPage,newParticipantsPage
+    editNewCasePage, listingRequirementsPage
 
   }) => {
     const caseNumber = process.env.HMCTS_CASE_NUMBER;
@@ -169,7 +169,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     });
 
     await test.step("Generate external hearing list report", async () => {
-      await viewReportsPage.reportRequestPageActions(
+      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
         todayDate,
           partyName,
           CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
@@ -177,10 +177,24 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
         viewReportsPage.CONSTANTS.JURISDICTION_CIVIL,
         formattedReportDate,
       );
+
+      const expected = reportsRequestPage.buildEnglishDailyCauseListArray(
+          "10:00 AM",
+          "1 hour",
+          `${caseNumber} ${caseName}`,
+          "Application",
+          "Telephone - Other",
+          partyName
+      );
+
+      //await viewReportsPage.assertSSRSReportTable(expected);
+      await reportsRequestPage.assertDailyCauseListsByText(expected);
+
+
     });
 
     await test.step("Generate internal hearing list report (damages)", async () => {
-      await viewReportsPage.reportRequestPageActions(
+      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
         todayDate,
         partyName,
         CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
@@ -189,10 +203,23 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
         formattedReportDate,
         viewReportsPage.CONSTANTS.SERVICE_DAMAGES,
       );
+
+      const expected = reportsRequestPage.buildEnglishDailyCauseListArray(
+          "10:00 AM",
+          "1 hour",
+          `${caseNumber} ${caseName}`,
+          "Application",
+          "Telephone - Other",
+          partyName
+      );
+
+      //await viewReportsPage.assertSSRSReportTable(expected);
+      await reportsRequestPage.assertDailyCauseListsByText(expected);
+
     });
     await test.step("Generate external hearing list Welsh report", async () => {
 
-      await viewReportsPage.reportRequestPageActions(
+      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
           todayDate,
           partyName,
           CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
@@ -202,6 +229,18 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
           undefined,
           true
       );
+
+      const expected = reportsRequestPage.buildWelshDailyCauseListArray(
+          "10:00 AM",
+          "1 awr, hour",
+          `${caseNumber} ${caseName}`,
+          "Cais, Application",
+          "Dros y Ffôn - Arall/Telephone - Other",
+          partyName
+      );
+
+      await reportsRequestPage.assertDailyCauseListsByText(expected);
+
     });
   });
 
