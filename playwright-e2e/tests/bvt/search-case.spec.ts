@@ -34,6 +34,8 @@ test.describe("Case creation @add-new-case", () => {
     await addNewCasePage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
 
+    console.log("test log");
+
     //checks case details against known values
     await caseDetailsPage.checkInputtedCaseValues(
       editNewCasePage,
