@@ -202,12 +202,18 @@ withNightlyPipeline(type, product, component, 600) {
       def bvtSpecDiffOutput = sh(script: diffBvtSpecCmd, returnStdout: true).trim()
       if (bvtSpecDiffOutput) {
         bvtSpecFilesChanged = bvtSpecDiffOutput.split('\n')
+        echo "Detected changed bvt spec files: ${bvtSpecFilesChanged}"
+      } else {
+        echo "No changed bvt spec files detected."
       }
 
       def diffRegressionSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep '^regression/.*\\.spec\\.ts\$' || true"
       def regressionSpecDiffOutput = sh(script: diffRegressionSpecCmd, returnStdout: true).trim()
       if (regressionSpecDiffOutput) {
         regressionSpecFilesChanged = regressionSpecDiffOutput.split('\n')
+        echo "Detected changed regression spec files: ${regressionSpecFilesChanged}"
+      } else {
+        echo "No changed regression spec files detected."
       }
 
       // Find @pr-build tagged files
