@@ -14,7 +14,6 @@ test.describe("Data Reporting @data-reporting", () => {
     viewReportsPage,
   }) => {
     // Navigate to User Management Page
-    console.log("test log");
     await page.goto(config.urls.baseUrl);
     await homePage.sidebarComponent.openUserManagementPage();
 
