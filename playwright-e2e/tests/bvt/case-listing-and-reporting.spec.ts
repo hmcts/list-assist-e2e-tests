@@ -33,7 +33,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     },
   );
 
-  test('List "Released" session and Generate report via P&I Dashboard. Run and confirm scheduled job is completed @pr-test', async ({
+  test('List "Released" session and Generate report via P&I Dashboard. Generate Daily Type Cause List, NEWPORT_SOUTH_WALES_CC_FC(Saesneg) Report. Check CATH report details @pr-build', async ({
     addNewCasePage,
     editNewCasePage,
     sessionBookingPage,
@@ -43,10 +43,13 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     homePage,
     automaticBookingDashboardPage,
     dataUtils,
+    cath,
   }) => {
     // Generate case details
     const HMCTS_CASE_NUMBER = "HMCTS_CN_" + crypto.randomUUID().toUpperCase();
     const CASE_NAME = "AUTO_" + crypto.randomUUID().toUpperCase();
+    const CASE_VS_REFERENCE =
+      "Acme Vs " + dataUtils.generateRandomAlphabetical(10).toUpperCase();
 
     await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
@@ -149,7 +152,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
 
     //misc
     payload["hearingRequest"]["_case"]["casePublishedName"] =
-      `Acme Vs ${dataUtils.generateRandomAlphabetical(10).toUpperCase()}`;
+      `${CASE_VS_REFERENCE}`;
 
     await HmiUtils.requestHearing(payload);
 
@@ -258,6 +261,30 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
         .AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+    );
+
+    const cathUrl = await cath.cathUrlConstruction(
+      cath.CONSTANTS.CATH_TEST_URL,
+      cath.CONSTANTS.LOCATION_ID_NEWPORT_SOUTH_WALES_CC_FC,
+    );
+
+    //check for report via CATH UI
+    const reportName = `${cath.CONSTANTS.LIST_JURISDICTION_CIVIL_AND_FAMILY} ${cath.CONSTANTS.LIST_TYPE_DAILY_CAUSE_LIST} ${dataUtils.getFormattedDateInFormatDDMonthYYYY()} - English (Saesneg)`;
+
+    await cath.goToCathUrlAndConfirmReportDisplayed(
+      cath.CONSTANTS.LIST_TYPE_DAILY_CAUSE_LIST,
+      cathUrl,
+      reportName,
+      "10am",
+      HMCTS_CASE_NUMBER,
+      CASE_VS_REFERENCE,
+      addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
+      "",
+      `Trial (${addNewCasePage.CONSTANTS.SERVICE_DAMAGES})`,
+      "Telephone - Other, Video - CVP",
+      "1 hour",
+      "",
+      "",
     );
   });
 
