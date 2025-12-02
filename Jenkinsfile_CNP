@@ -188,7 +188,7 @@ withNightlyPipeline(type, product, component, 600) {
       sh "git fetch origin '${env.CHANGE_BRANCH}':'${env.CHANGE_BRANCH}'"
       sh "git fetch origin '${env.CHANGE_TARGET}':'${env.CHANGE_TARGET}'"
 
-      def diffRegressionCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep -q 'regression/'"
+      def diffRegressionCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep -q 'regression/'";
       regressionBlockChanged = (sh(script: diffRegressionCmd, returnStatus: true) == 0)
 
       def diffBvtCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep '^bvt/' || true"
@@ -224,6 +224,10 @@ withNightlyPipeline(type, product, component, 600) {
       if (prBuildFilesOutput) {
         prBuildTaggedFiles = prBuildFilesOutput.split('\n')
       }
+
+      // Remove pr-build tagged files from changed files lists
+      bvtSpecFilesChanged = bvtSpecFilesChanged.findAll { !prBuildTaggedFiles.contains(it) }
+      regressionSpecFilesChanged = regressionSpecFilesChanged.findAll { !prBuildTaggedFiles.contains(it) }
     }
 
     // Set up playwright
