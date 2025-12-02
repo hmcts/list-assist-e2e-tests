@@ -7,12 +7,11 @@ import {
   HomePage,
 } from "../../page-objects/pages/index.ts";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
-import * as Console from "node:console";
 
 test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
   test.slow();
 
-  test.only("Should release a session and generate both external and internal hearing list reports", async ({
+  test("Should release a session and generate both external and internal hearing list reports", async ({
     page,
     sessionBookingPage,
     caseSearchPage,
@@ -32,12 +31,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     const lastName = dataUtils.generateRandomAlphabetical(8);
     const partyName = `${givenName} ${lastName}`;
 
-    Console.log(givenName);
-    Console.log(lastName);
 
-
-
-    Console.log(partyName);
 
 
     if (!caseNumber || !caseName) {
