@@ -173,33 +173,70 @@ withNightlyPipeline(type, product, component, 600) {
 
   afterAlways('DependencyCheckNightly') {
   def regressionBlockChanged = false
+  def bvtFilesChanged = []
+  def isPrBuild = env.CHANGE_ID ? true : false
+  def prBuildTaggedFiles = []
+  def bvtSpecFilesChanged = []
+  def regressionSpecFilesChanged = []
 
-  stage('Detect Regression Folder Change For PR') {
-  if (env.CHANGE_ID) {
-    // Ensure the git remote is set correctly (useful for Jenkins environments)
-    sh 'git remote set-url origin $(git config --get remote.origin.url)'
-    // Make sure we have a full git history 
-    sh 'git fetch --prune --unshallow || git fetch --all'
-    // Fetch all remote branches to ensure we can diff against them
-    sh 'git fetch origin +refs/heads/*:refs/remotes/origin/*'
-    // Explicitly fetch the PR branch and the target branch for accurate comparison
-    sh "git fetch origin ${env.CHANGE_BRANCH}:${env.CHANGE_BRANCH}"
-    sh "git fetch origin ${env.CHANGE_TARGET}:${env.CHANGE_TARGET}"
-    // Check if any files under any 'regression/' folder have changed between the PR branch and the target branch
-    // If so, set regressionBlockChanged to true so the regression test pack will run
-    def diffCmd = """git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep -q 'regression/'"""
-    regressionBlockChanged = (sh(script: diffCmd, returnStatus: true) == 0)
-  }
-}
-    stage('Set up playwright') {
-      try {
-        yarnBuilder.yarn('setup')
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+  stage('Prepare Test Run') {
+    if (isPrBuild) {
+      // Detect Regression & BVT Folder Change
+      sh 'git remote set-url origin $(git config --get remote.origin.url)'
+      sh 'git fetch --prune --unshallow || git fetch --all'
+      sh 'git fetch origin +refs/heads/*:refs/remotes/origin/*'
+      sh "git fetch origin '${env.CHANGE_BRANCH}':'${env.CHANGE_BRANCH}'"
+      sh "git fetch origin '${env.CHANGE_TARGET}':'${env.CHANGE_TARGET}'"
+
+      def diffRegressionCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep -q 'regression/'";
+      regressionBlockChanged = (sh(script: diffRegressionCmd, returnStatus: true) == 0)
+
+      def diffBvtCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep '^bvt/' || true"
+      def bvtDiffOutput = sh(script: diffBvtCmd, returnStdout: true).trim()
+      if (bvtDiffOutput) {
+        bvtFilesChanged = bvtDiffOutput.split('\\n')
       }
+
+      // Find changed spec.ts files in bvt and regression folders
+      def diffBvtSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep 'bvt/.*\\.spec\\.ts\$' || true"
+      def bvtSpecDiffOutput = sh(script: diffBvtSpecCmd, returnStdout: true).trim()
+      if (bvtSpecDiffOutput) {
+        bvtSpecFilesChanged = bvtSpecDiffOutput.split('\n')
+        echo "Detected changed bvt spec files: ${bvtSpecFilesChanged}"
+      } else {
+        echo "No changed bvt spec files detected."
+      }
+
+      def diffRegressionSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep 'regression/.*\\.spec\\.ts\$' || true"
+      def regressionSpecDiffOutput = sh(script: diffRegressionSpecCmd, returnStdout: true).trim()
+      if (regressionSpecDiffOutput) {
+        regressionSpecFilesChanged = regressionSpecDiffOutput.split('\n')
+        echo "Detected changed regression spec files: ${regressionSpecFilesChanged}"
+      } else {
+        echo "No changed regression spec files detected."
+      }
+
+      // Find @pr-build tagged files
+      def prBuildFilesOutput = sh(
+        script: "grep -rl '@pr-build' bvt/ regression/ || true",
+        returnStdout: true
+      ).trim()
+      if (prBuildFilesOutput) {
+        prBuildTaggedFiles = prBuildFilesOutput.split('\n')
+      }
+
+      // Remove pr-build tagged files from changed files lists
+      bvtSpecFilesChanged = bvtSpecFilesChanged.findAll { !prBuildTaggedFiles.contains(it) }
+      regressionSpecFilesChanged = regressionSpecFilesChanged.findAll { !prBuildTaggedFiles.contains(it) }
     }
 
-
+    // Set up playwright
+    try {
+      yarnBuilder.yarn('setup')
+    } catch (Error) {
+      unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+    }
+  }
 
     // Before running tests, set environment variables based on ENVIRONMENT
     if (params.ENVIRONMENT == 'SIT') {
@@ -217,7 +254,94 @@ withNightlyPipeline(type, product, component, 600) {
 
     currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}<br>Suite: ${params.TEST_SUITE}"
 
-    if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
+    // --- PR & BVT/Regression logic ---
+    if (isPrBuild) {
+      // Always run all @pr-build tagged tests
+      stage("PR: @pr-build Tagged Tests") {
+        try {
+          currentBuild.displayName = "PR: @pr-build Tagged Tests"
+          yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: "PR: @pr-build Tagged Tests"
+          ])
+        }
+      }
+
+      // Run changed bvt spec.ts files
+      bvtSpecFilesChanged.each { file ->
+        stage("PR: BVT Changed File - ${file}") {
+          try {
+            currentBuild.displayName = "PR: BVT Changed File - ${file}"
+            yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+          } catch (Error) {
+            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          } finally {
+            publishHTML([
+              allowMissing: true,
+              alwaysLinkToLastBuild: true,
+              keepAll: true,
+              reportDir: "playwright-report",
+              reportFiles: 'index.html',
+              reportName: "PR: BVT Changed File - ${file}"
+            ])
+          }
+        }
+      }
+
+      // Run changed regression spec.ts files
+      regressionSpecFilesChanged.each { file ->
+        stage("PR: Regression Changed File - ${file}") {
+          try {
+            currentBuild.displayName = "PR: Regression Changed File - ${file}"
+            yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+          } catch (Error) {
+            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          } finally {
+            publishHTML([
+              allowMissing: true,
+              alwaysLinkToLastBuild: true,
+              keepAll: true,
+              reportDir: "playwright-report",
+              reportFiles: 'index.html',
+              reportName: "PR: Regression Changed File - ${file}"
+            ])
+          }
+        }
+      }
+
+      // After you have bvtSpecFilesChanged and regressionSpecFilesChanged:
+      def allChangedFiles = (bvtSpecFilesChanged + regressionSpecFilesChanged).unique()
+      def onlyChangedFiles = allChangedFiles - prBuildTaggedFiles
+
+      // Run other changed files normally (excluding @pr-build tagged files)
+      onlyChangedFiles.each { file ->
+        stage("PR: Changed File - ${file}") {
+          try {
+            currentBuild.displayName = "PR: Changed File - ${file}"
+            yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+          } catch (Error) {
+            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          } finally {
+            publishHTML([
+              allowMissing: true,
+              alwaysLinkToLastBuild: true,
+              keepAll: true,
+              reportDir: "playwright-report",
+              reportFiles: 'index.html',
+              reportName: "PR: Changed File - ${file}"
+            ])
+          }
+        }
+      }
+    } else if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
           currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
