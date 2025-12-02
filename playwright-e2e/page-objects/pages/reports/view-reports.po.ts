@@ -108,7 +108,7 @@ export class ViewReportsPage extends Base {
     service?: string,
     isWelsh: boolean = false,
 
-  ) {
+  ): Promise<ViewReportsPage> {
 
     if (isWelsh) {
       this.reportSubMenu = this.page.getByRole("link", {
@@ -316,9 +316,7 @@ export class ViewReportsPage extends Base {
       )
       .toBeTruthy();
 
-    // Common assertions for all the 3 reports
-    await expect(reportsRequestPage.reportBody).toContainText('Pontypridd Courtroom 01');
-    await expect(reportsRequestPage.reportBody).toContainText(partyName, { ignoreCase: true });
+    // Common headings assertions for all the 3 reports
     await expect(reportsRequestPage.reportBody).toContainText('Before: Matthew Dunn (P)');
     await expect(reportsRequestPage.reportBody).toContainText('Pontypridd County Court and Family Court');
     await expect(reportsRequestPage.reportBody).toContainText(reportDate);
@@ -327,12 +325,9 @@ export class ViewReportsPage extends Base {
     // Welsh report assertions
     if (isWelsh) {
 
-      await expect(reportsRequestPage.reportBody).toContainText('Dros y FfÇïn - Arall/Telephone - Other');
       await expect(reportsRequestPage.reportBody).toContainText('RHESTR ACHOS DYDDIOL, DAILY CAUSE LIST');
-      await expect(reportsRequestPage.reportBody).toContainText('Cais, Application');
       await expect(reportsRequestPage.reportBody).toContainText('Adeilad y Llys, Courthouse Street, Pontypridd, CF37 1JR, The Courthouse, Courthouse Street, Pontypridd, CF37 1JR');
       await expect(reportsRequestPage.reportBody).toContainText('Ystafell Llys 01 Pontypridd, Pontypridd Courtroom 01');
-      await expect(reportsRequestPage.reportBody).toContainText('1 awr, hour');
       await expect(reportsRequestPage.reportBody).toContainText(reportDate);
 
     }
@@ -340,12 +335,71 @@ export class ViewReportsPage extends Base {
     // English report assertions
     else {
 
-      await expect(reportsRequestPage.reportBody).toContainText('Telephone - Other');
       await expect(reportsRequestPage.reportBody).toContainText('DAILY CAUSE LIST');
+      await expect(reportsRequestPage.reportBody).toContainText('The Courthouse, Courthouse Street, Pontypridd');
+      await expect(reportsRequestPage.reportBody).toContainText('Pontypridd Courtroom 01');
 
-      //TODO: uncomment this assertions when the bug is fixed.
+
+      //TODO: uncomment this assertions when the bug(postcode missing in internal hearing list) is fixed.
       //await expect(reportsRequestPage.reportBody).toContainText('The Courthouse, Courthouse Street, Pontypridd, CF37 1JR');
     }
+    return reportsRequestPage;
+
+  }
+
+  async assertDailyCauseListsByText(
+      expectedArray: { header: string; value: string }[],
+  ) {
+    for (const { header, value } of expectedArray) {
+      // Check the header text appears somewhere in the report body
+      await expect(
+          this.reportBody,
+          `Expected header "${header}" to appear in report body`,
+      ).toContainText(header, { ignoreCase: true });
+
+      // Check the value text appears somewhere in the report body
+      await expect(
+          this.reportBody,
+          `Expected value "${value}" for header "${header}" to appear in report body`,
+      ).toContainText(value, { ignoreCase: true });
+    }
+  }
+
+
+  buildEnglishDailyCauseListArray(
+  startTime: string,
+  duration: string,
+  caseDetail: string,
+  hearingType: string,
+  hearingChannel: string,
+  partyName: string,
+) {
+  return [
+    { header: "Start Time", value: startTime },
+    { header: "Duration", value: duration },
+    { header: "Case Details", value: caseDetail },
+    { header: "Hearing Type", value: hearingType },
+    { header: "Hearing Channel", value: hearingChannel },
+    { header: "Party Name", value: partyName },
+  ];
+}
+
+  buildWelshDailyCauseListArray(
+      startTime: string,
+      duration: string,
+      caseDetail: string,
+      hearingType: string,
+      hearingChannel: string,
+      partyName: string,
+  ) {
+    return [
+      { header: "Amser Cychwyn, Start Time", value: startTime },
+      { header: "Hyd, Duration", value: duration },
+      { header: "Manylion yr Achos, Case Detail", value: caseDetail },
+      { header: "Math o Wrandawiad, Hearing Type", value: hearingType },
+      { header: "Sianel Clyw, Hearing Channel", value: hearingChannel },
+      { header: "Enw’r Blaid, Party Name", value: partyName },
+    ];
   }
 
   //looks for invalid mailbox checkbox and sets/unsets it based on boolean value passed
