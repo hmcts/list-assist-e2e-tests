@@ -159,7 +159,6 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     await test.step("Generate external hearing list report", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
         todayDate,
-        partyName,
         CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
         CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
         viewReportsPage.CONSTANTS.JURISDICTION_CIVIL,
