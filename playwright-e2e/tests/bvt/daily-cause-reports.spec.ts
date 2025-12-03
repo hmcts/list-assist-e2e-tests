@@ -54,8 +54,8 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     } = sessionBookingPage.CONSTANTS;
 
     const todayDate = dataUtils.generateDateInYyyyMmDdNoSeparators(0);
-    const formattedReportDate = dataUtils.getFormattedDateForReportAssertion();
-    const welshDate = dataUtils.getFormattedWelshDateForReportAssertion();
+    const formattedReportDate = dataUtils.getFormattedDateForReportAssertionUsingDateStringWithDayName();
+    const welshDate = dataUtils.getFormattedWelshDateForReportAssertionUsingWelshDateStringWithDayName();
     const combinedDate = `${welshDate}, ${formattedReportDate}`;
 
     await test.step("Login and prepare test case", async () => {
@@ -190,12 +190,12 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     await test.step("Generate internal hearing list report (damages)", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
         todayDate,
-        partyName,
         CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
         CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
         viewReportsPage.CONSTANTS.JURISDICTION_CIVIL,
         formattedReportDate,
         viewReportsPage.CONSTANTS.SERVICE_DAMAGES,
+
       );
 
       const expected = reportsRequestPage.buildEnglishDailyCauseListArray(
@@ -215,7 +215,6 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
 
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
           todayDate,
-          partyName,
           CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
           CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
           viewReportsPage.CONSTANTS.JURISDICTION_CIVIL,
@@ -229,7 +228,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
           "1 awr, hour",
           `${caseNumber} ${caseName}`,
           "Cais, Application",
-          "Dros y Ffôn - Arall/Telephone - Other",
+          "Dros y FfÇïn - Arall/Telephone - Other",
           partyName
       );
 

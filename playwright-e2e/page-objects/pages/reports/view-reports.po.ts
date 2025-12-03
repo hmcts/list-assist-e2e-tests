@@ -9,13 +9,29 @@ export class ViewReportsPage extends Base {
     CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS:
       "Wales Civil, Family and Tribunals",
     CASE_LISTING_LOCATION_LEICESTER_CC_7: "Leicester County Courtroom 07",
-    CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
     CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT:
       "Pontypridd County Court and",
     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
       "Newport (South Wales) Chambers 01",
     JURISDICTION_CIVIL: "Civil",
     SERVICE_DAMAGES: "Damages",
+
+
+    SESSION_JOH: "Before: Matthew Dunn (P)",
+    LOCALITY_PONTYPRIDD_COUNTY_COURT_AND_FAMILY_COURT:"Pontypridd County Court and Family Court",
+    CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
+    LIST_TYPE_DAILY_CAUSE_LIST: "DAILY CAUSE LIST",
+    CASE_LISTING_ADDRESS_PONTYPRIDD: "The Courthouse, Courthouse Street, Pontypridd",
+
+    REPORT_HEADING_WELSH_DAILY_CAUSE_LIST: "RHESTR ACHOS DYDDIOL, DAILY CAUSE LIST",
+    CASE_LISTING_ADDRESS_PONTYPRIDD_BILINGUAL:
+        "Adeilad y Llys, Courthouse Street, Pontypridd, CF37 1JR, The Courthouse, Courthouse Street, Pontypridd, CF37 1JR",
+    CASE_LISTING_LOCATION_PONTYPRIDD_WELSH:
+        "Ystafell Llys 01 Pontypridd, Pontypridd Courtroom 01",
+
+    REPORT_SUBMENU_WELSH_EXTERNAL_HEARING_LIST: "External Hearing List Welsh v2.0 (SRSS)",
+    REPORT_SUBMENU_INTERNAL_HEARING_LIST: "Opens Internal Hearing List",
+    REPORT_SUBMENU_EXTERNAL_HEARING_LIST: "External Hearing List v2.0 (SSRS)",
   };
 
   //reports menu
@@ -100,7 +116,6 @@ export class ViewReportsPage extends Base {
 
   async reportRequestPageActions(
     todayDate: string,
-    partyName: string,
     locality: string,
     location: string,
     jurisdiction: string,
@@ -112,16 +127,16 @@ export class ViewReportsPage extends Base {
 
     if (isWelsh) {
       this.reportSubMenu = this.page.getByRole("link", {
-        name: "External Hearing List Welsh v2.0 (SRSS)",
+        name: this.CONSTANTS.REPORT_SUBMENU_WELSH_EXTERNAL_HEARING_LIST,
       });
     }
     else if (service) {
       this.reportSubMenu = this.page.getByRole("link", {
-        name: "Opens Internal Hearing List",
+        name: this.CONSTANTS.REPORT_SUBMENU_INTERNAL_HEARING_LIST,
       });
     } else {
       this.reportSubMenu = this.page.getByRole("link", {
-        name: "External Hearing List v2.0 (SSRS)",
+        name: this.CONSTANTS.REPORT_SUBMENU_EXTERNAL_HEARING_LIST
       });
     }
 
@@ -317,17 +332,17 @@ export class ViewReportsPage extends Base {
       .toBeTruthy();
 
     // Common headings assertions for all the 3 reports
-    await expect(reportsRequestPage.reportBody).toContainText('Before: Matthew Dunn (P)');
-    await expect(reportsRequestPage.reportBody).toContainText('Pontypridd County Court and Family Court');
+    await expect(reportsRequestPage.reportBody).toContainText(reportsRequestPage.CONSTANTS.SESSION_JOH);
+    await expect(reportsRequestPage.reportBody).toContainText(reportsRequestPage.CONSTANTS.LOCALITY_PONTYPRIDD_COUNTY_COURT_AND_FAMILY_COURT);
     await expect(reportsRequestPage.reportBody).toContainText(reportDate);
 
 
     // Welsh report assertions
     if (isWelsh) {
 
-      await expect(reportsRequestPage.reportBody).toContainText('RHESTR ACHOS DYDDIOL, DAILY CAUSE LIST');
-      await expect(reportsRequestPage.reportBody).toContainText('Adeilad y Llys, Courthouse Street, Pontypridd, CF37 1JR, The Courthouse, Courthouse Street, Pontypridd, CF37 1JR');
-      await expect(reportsRequestPage.reportBody).toContainText('Ystafell Llys 01 Pontypridd, Pontypridd Courtroom 01');
+      await expect(reportsRequestPage.reportBody).toContainText(reportsRequestPage.CONSTANTS.REPORT_HEADING_WELSH_DAILY_CAUSE_LIST);
+      await expect(reportsRequestPage.reportBody).toContainText(reportsRequestPage.CONSTANTS.CASE_LISTING_ADDRESS_PONTYPRIDD_BILINGUAL);
+      await expect(reportsRequestPage.reportBody).toContainText(reportsRequestPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_WELSH);
       await expect(reportsRequestPage.reportBody).toContainText(reportDate);
 
     }
@@ -335,9 +350,9 @@ export class ViewReportsPage extends Base {
     // English report assertions
     else {
 
-      await expect(reportsRequestPage.reportBody).toContainText('DAILY CAUSE LIST');
-      await expect(reportsRequestPage.reportBody).toContainText('The Courthouse, Courthouse Street, Pontypridd');
-      await expect(reportsRequestPage.reportBody).toContainText('Pontypridd Courtroom 01');
+      await expect(reportsRequestPage.reportBody).toContainText(reportsRequestPage.CONSTANTS.LIST_TYPE_DAILY_CAUSE_LIST);
+      await expect(reportsRequestPage.reportBody).toContainText(reportsRequestPage.CONSTANTS.CASE_LISTING_ADDRESS_PONTYPRIDD);
+      await expect(reportsRequestPage.reportBody).toContainText(reportsRequestPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1);
 
 
       //TODO: uncomment this assertions when the bug(postcode missing in internal hearing list) is fixed.
