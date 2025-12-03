@@ -40,9 +40,12 @@ export class SessionBookingPage extends Base {
   readonly heading = this.page.getByText("Session Booking", { exact: true });
   readonly listingDuration = this.page.locator("#defListingDuration");
   readonly durationDropdownButton = this.page.locator("#defListingDuration");
-  readonly sessionJohDropdown = this.page.locator('button[data-id="membersList"]');
-  readonly sessionJoh = this.page.getByRole('option', { name: 'Dunn, Matthew (Matthew Dunn)' })
-      .nth(1);
+  readonly sessionJohDropdown = this.page.locator(
+    'button[data-id="membersList"]',
+  );
+  readonly sessionJoh = this.page
+    .getByRole("option", { name: "Dunn, Matthew (Matthew Dunn)" })
+    .nth(1);
 
   readonly sessionStatusDropdown = this.page.getByLabel(
     "Session Status: This field is",
