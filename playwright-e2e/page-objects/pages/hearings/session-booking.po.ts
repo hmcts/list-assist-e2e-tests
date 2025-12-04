@@ -11,7 +11,6 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
     CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT:
       "Pontypridd County Court and",
-    JUDICIAL_OFFICE_HOLDER_NAME: "Banning, Duncan (Banning)",
     CASE_LISTING_LOCALITY_CAERNARFON_JC: "Caernarfon Justice Centre",
     CASE_LISTING_LOCALITY_ABERYSTWYTH_JC: "Aberystwyth Justice Centre",
     CASE_LISTING_LOCATION_LOCATION_CAERNARFON_CHMBRS_5:
@@ -20,6 +19,7 @@ export class SessionBookingPage extends Base {
       "Newport (South Wales) County Court and Family Court",
     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
       "Newport (South Wales) Chambers 01",
+
     CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1: "Aberystwyth Courtroom 01",
     CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
     CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: "4",
@@ -27,6 +27,11 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_COLUMN_ONE: "columnOne",
     CASE_LISTING_HEARING_TYPE_APPLICATION: "Application",
     CASE_LISTING_CANCEL_REASON_AMEND: "Amend",
+
+    AUTO_JUDICIAL_OFFICE_HOLDER_01: "Benson, David (Mr David Benson)",
+    AUTO_JUDICIAL_OFFICE_HOLDER_02: "Dunn, Matthew (Matthew Dunn)",
+    AUTO_JUDICIAL_OFFICE_HOLDER_03: "Laverne, Sally (District Judge Laverne)",
+
 
     //session details
     SESSION_DETAILS_CANCELLATION_CODE_CANCEL: "CNCL",
@@ -43,9 +48,6 @@ export class SessionBookingPage extends Base {
   readonly sessionJohDropdown = this.page.locator(
     'button[data-id="membersList"]',
   );
-  readonly sessionJoh = this.page
-    .getByRole("option", { name: "Dunn, Matthew (Matthew Dunn)" })
-    .nth(1);
 
   readonly sessionStatusDropdown = this.page.getByLabel(
     "Session Status: This field is",
@@ -152,7 +154,8 @@ export class SessionBookingPage extends Base {
     if (!iconClass?.includes("down")) await roomsButton.click();
   }
 
-  async bookSession(duration: string, sessionStatus: string) {
+  async bookSession(duration: string, sessionStatus: string, johName: string) {
+
     await this.waitForLoad();
     await expect(this.heading).toBeVisible();
     await this.durationDropdownButton.click();
@@ -161,8 +164,11 @@ export class SessionBookingPage extends Base {
     await this.sessionHearingChannel.click();
     await this.sessionHearingChannelTel.click();
     await this.sessionHearingChannelVid.click();
+
+    //JOH selection
     await this.sessionJohDropdown.click();
-    await this.sessionJoh.click();
+    const johOption = this.page.getByRole("option", { name: johName }).nth(1);
+    await johOption.click();
 
     let validationPopup;
     try {

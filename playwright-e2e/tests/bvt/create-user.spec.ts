@@ -1,6 +1,5 @@
 import { expect, test } from "../../fixtures";
 import { config } from "../../utils";
-import * as Console from "node:console";
 
 test.describe("Add user @add-user", () => {
   test("Add new user as Listing Officer", async ({
@@ -10,7 +9,6 @@ test.describe("Add user @add-user", () => {
     loginPage,
     createUserPage,
   }) => {
-    Console.log( "Test");
 
     await page.goto(config.urls.baseUrl);
     await loginPage.login(config.users.testUser, true);

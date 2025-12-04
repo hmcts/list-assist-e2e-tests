@@ -48,6 +48,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       CASE_LISTING_CANCEL_REASON_AMEND,
       SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
       CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+        AUTO_JUDICIAL_OFFICE_HOLDER_02,
     } = sessionBookingPage.CONSTANTS;
 
     const todayDate = dataUtils.generateDateInYyyyMmDdNoSeparators(0);
@@ -152,6 +153,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
           hearingType: CASE_LISTING_HEARING_TYPE_APPLICATION,
           cancelReason: CASE_LISTING_CANCEL_REASON_AMEND,
           sessionStatus: CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+          sessionJoh: AUTO_JUDICIAL_OFFICE_HOLDER_02,
         },
       );
     });
@@ -241,6 +243,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       hearingType: string;
       cancelReason: string;
       sessionStatus: string;
+      sessionJoh: string,
     },
   ) {
     const {
@@ -276,6 +279,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     await sessionBookingPage.bookSession(
       roomData.sessionDuration,
       roomData.sessionStatus,
+        roomData.sessionJoh,
     );
 
     await expect(
