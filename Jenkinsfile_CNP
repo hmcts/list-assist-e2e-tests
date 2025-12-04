@@ -317,30 +317,6 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
 
-      // After you have bvtSpecFilesChanged and regressionSpecFilesChanged:
-      def allChangedFiles = (bvtSpecFilesChanged + regressionSpecFilesChanged).unique()
-      def onlyChangedFiles = allChangedFiles - prBuildTaggedFiles
-
-      // Run other changed files normally (excluding @pr-build tagged files)
-      onlyChangedFiles.each { file ->
-        stage("PR: Changed File - ${file}") {
-          try {
-            currentBuild.displayName = "PR: Changed File - ${file}"
-            yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: "PR: Changed File - ${file}"
-            ])
-          }
-        }
-      }
     } else if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
