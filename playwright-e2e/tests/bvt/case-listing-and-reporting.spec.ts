@@ -212,7 +212,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
 
     //assert that the report preview is generated and contains expected elements
     await automaticBookingDashboardPage.assertPreviewReport(
-      dataUtils.getFormattedDateForReportAssertion(),
+      dataUtils.getFormattedDateForReportAssertionUsingDateStringWithDayName(),
       automaticBookingDashboardPage.CONSTANTS.CIVIL_AND_FAMILY_DAILY_CAUSE_LIST,
       automaticBookingDashboardPage.CONSTANTS
         .AUTO_CREATION_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
@@ -518,6 +518,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     await sessionBookingPage.bookSession(
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+        sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
     );
 
     //confirm listing

@@ -76,9 +76,15 @@ export class DataUtils {
     return DateTime.now().toFormat("LLLL");
   }
 
-  getFormattedDateForReportAssertion(): string {
+  getFormattedDateForReportAssertionUsingDateStringWithDayName(): string {
     // Use luxon to format as 'Tuesday, 29 July 2025'
     const today = DateTime.now();
+    return today.toFormat("cccc, d LLLL yyyy");
+  }
+
+  getFormattedWelshDateForReportAssertionUsingWelshDateStringWithDayName(): string {
+    // Use luxon to format as 'Dydd Mawrth, 29 Rhagfyr 2025'
+    const today = DateTime.now().setLocale("cy");
     return today.toFormat("cccc, d LLLL yyyy");
   }
 

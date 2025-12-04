@@ -23,9 +23,13 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     loginPage,
     addNewCasePage,
     editNewCasePage,
+    listingRequirementsPage,
   }) => {
     const caseNumber = process.env.HMCTS_CASE_NUMBER;
     const caseName = process.env.CASE_NAME;
+    const givenName = dataUtils.generateRandomAlphabetical(7);
+    const lastName = dataUtils.generateRandomAlphabetical(8);
+    const partyName = `${givenName} ${lastName}`;
 
     if (!caseNumber || !caseName) {
       throw new Error(
@@ -44,10 +48,15 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       CASE_LISTING_CANCEL_REASON_AMEND,
       SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
       CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+        AUTO_JUDICIAL_OFFICE_HOLDER_02,
     } = sessionBookingPage.CONSTANTS;
 
     const todayDate = dataUtils.generateDateInYyyyMmDdNoSeparators(0);
-    const formattedReportDate = dataUtils.getFormattedDateForReportAssertion();
+    const formattedReportDate =
+      dataUtils.getFormattedDateForReportAssertionUsingDateStringWithDayName();
+    const welshDate =
+      dataUtils.getFormattedWelshDateForReportAssertionUsingWelshDateStringWithDayName();
+    const combinedDate = `${welshDate}, ${formattedReportDate}`;
 
     await test.step("Login and prepare test case", async () => {
       await page.goto(config.urls.baseUrl);
@@ -56,6 +65,60 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       await addNewCasePage.sidebarComponent.openSearchCasePage();
       await caseSearchPage.searchCase(caseNumber);
       await expect(editNewCasePage.caseNameField).toHaveText(caseName);
+    });
+
+    await test.step("add case participants and their hearing channel via case details page", async () => {
+      await editNewCasePage.createNewParticipant(
+        editNewCasePage.CONSTANTS.PARTICIPANT_CLASS_PERSON,
+        editNewCasePage.CONSTANTS.PARTICIPANT_TYPE_INDIVIDUAL,
+        givenName,
+        lastName,
+        editNewCasePage.CONSTANTS.PARTICIPANT_GENDER_MALE,
+        dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(
+          dataUtils.getRandomNumberBetween1And50(),
+        ),
+        editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
+        editNewCasePage.CONSTANTS.PARTICIPANT_ROLE_APPLICANT,
+      );
+
+      await editNewCasePage.checkCaseParticipantTable(
+        editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INDIVIDUAL,
+        `${lastName}, ${givenName}`,
+        editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
+      );
+    });
+
+    await test.step("add listing hearing channel via listing requirements page", async () => {
+      //LISTING REQUIREMENTS
+      await editNewCasePage.sidebarComponent.openListingRequirementsPage();
+      //checks header
+      await expect
+        .poll(
+          async () => {
+            return await caseDetailsPage.listingRequirementsHeader.isVisible();
+          },
+          {
+            intervals: [2_000],
+            timeout: 20_000,
+          },
+        )
+        .toBeTruthy();
+      await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
+
+      //select hearing type
+      await caseDetailsPage.hearingTypeSelect.selectOption(
+        addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+      );
+
+      //select hearing channel
+      await listingRequirementsPage.parentHearingChannel.click();
+      await listingRequirementsPage.setHearingChannel(
+        listingRequirementsPage.CONSTANTS.PARENT_HEARING_CHANNEL_IN_PERSON,
+      );
+      await listingRequirementsPage.setHearingChannel(
+        listingRequirementsPage.CONSTANTS.PARENT_HEARING_CHANNEL_TELEPHONE,
+      );
+      await caseDetailsPage.saveButton.click();
     });
 
     await test.step("Clear existing schedule and create new released session", async () => {
@@ -90,22 +153,35 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
           hearingType: CASE_LISTING_HEARING_TYPE_APPLICATION,
           cancelReason: CASE_LISTING_CANCEL_REASON_AMEND,
           sessionStatus: CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+          sessionJoh: AUTO_JUDICIAL_OFFICE_HOLDER_02,
         },
       );
     });
 
     await test.step("Generate external hearing list report", async () => {
-      await viewReportsPage.reportRequestPageActions(
+      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
         todayDate,
         CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
         CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
         viewReportsPage.CONSTANTS.JURISDICTION_CIVIL,
         formattedReportDate,
       );
+
+      const expected = reportsRequestPage.buildEnglishDailyCauseListArray(
+        "10:00 AM",
+        "1 hour",
+        `${caseNumber} ${caseName}`,
+        "Application",
+        "Telephone - Other",
+        partyName,
+      );
+
+      //await viewReportsPage.assertSSRSReportTable(expected);
+      await reportsRequestPage.assertDailyCauseListsByText(expected);
     });
 
     await test.step("Generate internal hearing list report (damages)", async () => {
-      await viewReportsPage.reportRequestPageActions(
+      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
         todayDate,
         CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
         CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
@@ -113,6 +189,40 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
         formattedReportDate,
         viewReportsPage.CONSTANTS.SERVICE_DAMAGES,
       );
+
+      const expected = reportsRequestPage.buildEnglishDailyCauseListArray(
+        "10:00 AM",
+        "1 hour",
+        `${caseNumber} ${caseName}`,
+        "Application",
+        "Telephone - Other",
+        partyName,
+      );
+
+      //await viewReportsPage.assertSSRSReportTable(expected);
+      await reportsRequestPage.assertDailyCauseListsByText(expected);
+    });
+    await test.step("Generate external hearing list Welsh report", async () => {
+      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
+        todayDate,
+        CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        viewReportsPage.CONSTANTS.JURISDICTION_CIVIL,
+        combinedDate,
+        undefined,
+        true,
+      );
+
+      const expected = reportsRequestPage.buildWelshDailyCauseListArray(
+        "10:00 AM",
+        "1 awr, hour",
+        `${caseNumber} ${caseName}`,
+        "Cais, Application",
+        "Dros y FfÇïn - Arall/Telephone - Other",
+        partyName,
+      );
+
+      await reportsRequestPage.assertDailyCauseListsByText(expected);
     });
   });
 
@@ -133,6 +243,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       hearingType: string;
       cancelReason: string;
       sessionStatus: string;
+      sessionJoh: string,
     },
   ) {
     const {
@@ -168,6 +279,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     await sessionBookingPage.bookSession(
       roomData.sessionDuration,
       roomData.sessionStatus,
+        roomData.sessionJoh,
     );
 
     await expect(
