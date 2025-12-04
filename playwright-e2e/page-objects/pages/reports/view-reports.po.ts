@@ -9,13 +9,32 @@ export class ViewReportsPage extends Base {
     CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS:
       "Wales Civil, Family and Tribunals",
     CASE_LISTING_LOCATION_LEICESTER_CC_7: "Leicester County Courtroom 07",
-    CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
     CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT:
       "Pontypridd County Court and",
     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
       "Newport (South Wales) Chambers 01",
     JURISDICTION_CIVIL: "Civil",
     SERVICE_DAMAGES: "Damages",
+
+    SESSION_JOH: "Before: Matthew Dunn (P)",
+    LOCALITY_PONTYPRIDD_COUNTY_COURT_AND_FAMILY_COURT:
+      "Pontypridd County Court and Family Court",
+    CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
+    LIST_TYPE_DAILY_CAUSE_LIST: "DAILY CAUSE LIST",
+    CASE_LISTING_ADDRESS_PONTYPRIDD:
+      "The Courthouse, Courthouse Street, Pontypridd",
+
+    REPORT_HEADING_WELSH_DAILY_CAUSE_LIST:
+      "RHESTR ACHOS DYDDIOL, DAILY CAUSE LIST",
+    CASE_LISTING_ADDRESS_PONTYPRIDD_BILINGUAL:
+      "Adeilad y Llys, Courthouse Street, Pontypridd, CF37 1JR, The Courthouse, Courthouse Street, Pontypridd, CF37 1JR",
+    CASE_LISTING_LOCATION_PONTYPRIDD_WELSH:
+      "Ystafell Llys 01 Pontypridd, Pontypridd Courtroom 01",
+
+    REPORT_SUBMENU_WELSH_EXTERNAL_HEARING_LIST:
+      "External Hearing List Welsh v2.0 (SRSS)",
+    REPORT_SUBMENU_INTERNAL_HEARING_LIST: "Opens Internal Hearing List",
+    REPORT_SUBMENU_EXTERNAL_HEARING_LIST: "External Hearing List v2.0 (SSRS)",
   };
 
   //reports menu
@@ -38,9 +57,10 @@ export class ViewReportsPage extends Base {
   readonly dateToCalenderSelect = this.page.getByRole("button", {
     name: "Date To:",
   });
-  readonly localityDropDown = this.page.getByRole("textbox", {
-    name: "Locality:",
-  });
+  readonly localityDropDown = this.page.locator(
+    "#ReportViewerControl_ctl04_ctl07_ctl01",
+  );
+
   readonly localityChevronButton = this.page.locator(
     "#ReportViewerControl_ctl04_ctl07_ctl01",
   );
@@ -106,14 +126,19 @@ export class ViewReportsPage extends Base {
     jurisdiction: string,
     reportDate: string,
     service?: string,
-  ) {
-    if (service) {
+    isWelsh: boolean = false,
+  ): Promise<ViewReportsPage> {
+    if (isWelsh) {
       this.reportSubMenu = this.page.getByRole("link", {
-        name: "Opens Internal Hearing List",
+        name: this.CONSTANTS.REPORT_SUBMENU_WELSH_EXTERNAL_HEARING_LIST,
+      });
+    } else if (service) {
+      this.reportSubMenu = this.page.getByRole("link", {
+        name: this.CONSTANTS.REPORT_SUBMENU_INTERNAL_HEARING_LIST,
       });
     } else {
       this.reportSubMenu = this.page.getByRole("link", {
-        name: "External Hearing List v2.0 (SSRS)",
+        name: this.CONSTANTS.REPORT_SUBMENU_EXTERNAL_HEARING_LIST,
       });
     }
 
@@ -308,11 +333,100 @@ export class ViewReportsPage extends Base {
       )
       .toBeTruthy();
 
-    await expect(reportsRequestPage.reportBody).toContainText(locality);
+    // Common headings assertions for all the 3 reports
     await expect(reportsRequestPage.reportBody).toContainText(
-      "DAILY CAUSE LIST",
+      reportsRequestPage.CONSTANTS.SESSION_JOH,
+    );
+    await expect(reportsRequestPage.reportBody).toContainText(
+      reportsRequestPage.CONSTANTS
+        .LOCALITY_PONTYPRIDD_COUNTY_COURT_AND_FAMILY_COURT,
     );
     await expect(reportsRequestPage.reportBody).toContainText(reportDate);
+
+    // Welsh report assertions
+    if (isWelsh) {
+      await expect(reportsRequestPage.reportBody).toContainText(
+        reportsRequestPage.CONSTANTS.REPORT_HEADING_WELSH_DAILY_CAUSE_LIST,
+      );
+      await expect(reportsRequestPage.reportBody).toContainText(
+        reportsRequestPage.CONSTANTS.CASE_LISTING_ADDRESS_PONTYPRIDD_BILINGUAL,
+      );
+      await expect(reportsRequestPage.reportBody).toContainText(
+        reportsRequestPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_WELSH,
+      );
+      await expect(reportsRequestPage.reportBody).toContainText(reportDate);
+    }
+
+    // English report assertions
+    else {
+      await expect(reportsRequestPage.reportBody).toContainText(
+        reportsRequestPage.CONSTANTS.LIST_TYPE_DAILY_CAUSE_LIST,
+      );
+      await expect(reportsRequestPage.reportBody).toContainText(
+        reportsRequestPage.CONSTANTS.CASE_LISTING_ADDRESS_PONTYPRIDD,
+      );
+      await expect(reportsRequestPage.reportBody).toContainText(
+        reportsRequestPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+      );
+
+      //TODO: uncomment this assertions when the bug(postcode missing in internal hearing list) is fixed.
+      //await expect(reportsRequestPage.reportBody).toContainText('The Courthouse, Courthouse Street, Pontypridd, CF37 1JR');
+    }
+    return reportsRequestPage;
+  }
+
+  async assertDailyCauseListsByText(
+    expectedArray: { header: string; value: string }[],
+  ) {
+    for (const { header, value } of expectedArray) {
+      // Check the header text appears somewhere in the report body
+      await expect(
+        this.reportBody,
+        `Expected header "${header}" to appear in report body`,
+      ).toContainText(header, { ignoreCase: true });
+
+      // Check the value text appears somewhere in the report body
+      await expect(
+        this.reportBody,
+        `Expected value "${value}" for header "${header}" to appear in report body`,
+      ).toContainText(value, { ignoreCase: true });
+    }
+  }
+
+  buildEnglishDailyCauseListArray(
+    startTime: string,
+    duration: string,
+    caseDetail: string,
+    hearingType: string,
+    hearingChannel: string,
+    partyName: string,
+  ) {
+    return [
+      { header: "Start Time", value: startTime },
+      { header: "Duration", value: duration },
+      { header: "Case Details", value: caseDetail },
+      { header: "Hearing Type", value: hearingType },
+      { header: "Hearing Channel", value: hearingChannel },
+      { header: "Party Name", value: partyName },
+    ];
+  }
+
+  buildWelshDailyCauseListArray(
+    startTime: string,
+    duration: string,
+    caseDetail: string,
+    hearingType: string,
+    hearingChannel: string,
+    partyName: string,
+  ) {
+    return [
+      { header: "Amser Cychwyn, Start Time", value: startTime },
+      { header: "Hyd, Duration", value: duration },
+      { header: "Manylion yr Achos, Case Detail", value: caseDetail },
+      { header: "Math o Wrandawiad, Hearing Type", value: hearingType },
+      { header: "Sianel Clyw, Hearing Channel", value: hearingChannel },
+      { header: "Enw’r Blaid, Party Name", value: partyName },
+    ];
   }
 
   //looks for invalid mailbox checkbox and sets/unsets it based on boolean value passed

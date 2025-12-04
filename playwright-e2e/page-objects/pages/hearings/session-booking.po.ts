@@ -19,6 +19,7 @@ export class SessionBookingPage extends Base {
       "Newport (South Wales) County Court and Family Court",
     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
       "Newport (South Wales) Chambers 01",
+
     CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1: "Aberystwyth Courtroom 01",
     CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
     CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: "4",
@@ -26,6 +27,11 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_COLUMN_ONE: "columnOne",
     CASE_LISTING_HEARING_TYPE_APPLICATION: "Application",
     CASE_LISTING_CANCEL_REASON_AMEND: "Amend",
+
+    AUTO_JUDICIAL_OFFICE_HOLDER_01: "Benson, David (Mr David Benson)",
+    AUTO_JUDICIAL_OFFICE_HOLDER_02: "Dunn, Matthew (Matthew Dunn)",
+    AUTO_JUDICIAL_OFFICE_HOLDER_03: "Laverne, Sally (District Judge Laverne)",
+
 
     //session details
     SESSION_DETAILS_CANCELLATION_CODE_CANCEL: "CNCL",
@@ -35,11 +41,14 @@ export class SessionBookingPage extends Base {
 
     CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON: "Generic Decision 3",
   };
-
   readonly container = this.page.locator("#pageContent");
   readonly heading = this.page.getByText("Session Booking", { exact: true });
   readonly listingDuration = this.page.locator("#defListingDuration");
   readonly durationDropdownButton = this.page.locator("#defListingDuration");
+  readonly sessionJohDropdown = this.page.locator(
+    'button[data-id="membersList"]',
+  );
+
   readonly sessionStatusDropdown = this.page.getByLabel(
     "Session Status: This field is",
   );
@@ -145,7 +154,8 @@ export class SessionBookingPage extends Base {
     if (!iconClass?.includes("down")) await roomsButton.click();
   }
 
-  async bookSession(duration: string, sessionStatus: string) {
+  async bookSession(duration: string, sessionStatus: string, johName: string) {
+
     await this.waitForLoad();
     await expect(this.heading).toBeVisible();
     await this.durationDropdownButton.click();
@@ -155,9 +165,14 @@ export class SessionBookingPage extends Base {
     await this.sessionHearingChannelTel.click();
     await this.sessionHearingChannelVid.click();
 
+    //JOH selection
+    await this.sessionJohDropdown.click();
+    const johOption = this.page.getByRole("option", { name: johName }).nth(1);
+    await johOption.click();
+
     let validationPopup;
     try {
-      const pagePromise = this.page.waitForEvent("popup", { timeout: 2000 });
+      const pagePromise = this.page.waitForEvent("popup", { timeout: 4000 });
       await this.page.getByRole("button", { name: "Save" }).click();
       validationPopup = await pagePromise;
       await validationPopup.waitForLoadState("domcontentloaded");
