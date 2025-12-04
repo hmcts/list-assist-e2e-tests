@@ -113,6 +113,7 @@ test.describe("HMI Amend API tests after listing @amend-api-test-after-listing",
       await sessionBookingPage.bookSession(
         sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
         sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+          sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_01,
       );
     }
 
