@@ -256,31 +256,12 @@ withNightlyPipeline(type, product, component, 600) {
 
     // --- PR & BVT/Regression logic ---
     if (isPrBuild) {
-      // Always run all @pr-build tagged tests
-      stage("PR: @pr-build Tagged Tests") {
-        try {
-          currentBuild.displayName = "PR: @pr-build Tagged Tests"
-          yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
-        } catch (Error) {
-          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-        } finally {
-          publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: "playwright-report",
-            reportFiles: 'index.html',
-            reportName: "PR: @pr-build Tagged Tests"
-          ])
-        }
-      }
-
-      // Run changed bvt spec.ts files
-      bvtSpecFilesChanged.each { file ->
-        stage("PR: BVT Changed File - ${file}") {
+      // If TAGS_TO_RUN is specified, run only those tags and skip normal PR logic
+      if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
+        stage("PR: ${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
           try {
-            currentBuild.displayName = "PR: BVT Changed File - ${file}"
-            yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+            currentBuild.displayName = "PR: ${params.TAGS_TO_RUN} E2E Tests"
+            yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
           } finally {
@@ -290,18 +271,16 @@ withNightlyPipeline(type, product, component, 600) {
               keepAll: true,
               reportDir: "playwright-report",
               reportFiles: 'index.html',
-              reportName: "PR: BVT Changed File - ${file}"
+              reportName: "PR: ${params.TAGS_TO_RUN} E2E Tests ${params.browser}"
             ])
           }
         }
-      }
-
-      // Run changed regression spec.ts files
-      regressionSpecFilesChanged.each { file ->
-        stage("PR: Regression Changed File - ${file}") {
+      } else {
+        // Always run all @pr-build tagged tests
+        stage("PR: @pr-build Tagged Tests") {
           try {
-            currentBuild.displayName = "PR: Regression Changed File - ${file}"
-            yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+            currentBuild.displayName = "PR: @pr-build Tagged Tests"
+            yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
           } finally {
@@ -311,12 +290,53 @@ withNightlyPipeline(type, product, component, 600) {
               keepAll: true,
               reportDir: "playwright-report",
               reportFiles: 'index.html',
-              reportName: "PR: Regression Changed File - ${file}"
+              reportName: "PR: @pr-build Tagged Tests"
             ])
           }
         }
-      }
 
+        // Run changed bvt spec.ts files
+        bvtSpecFilesChanged.each { file ->
+          stage("PR: BVT Changed File - ${file}") {
+            try {
+              currentBuild.displayName = "PR: BVT Changed File - ${file}"
+              yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+            } catch (Error) {
+              unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+            } finally {
+              publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: "playwright-report",
+                reportFiles: 'index.html',
+                reportName: "PR: BVT Changed File - ${file}"
+              ])
+            }
+          }
+        }
+
+        // Run changed regression spec.ts files
+        regressionSpecFilesChanged.each { file ->
+          stage("PR: Regression Changed File - ${file}") {
+            try {
+              currentBuild.displayName = "PR: Regression Changed File - ${file}"
+              yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+            } catch (Error) {
+              unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+            } finally {
+              publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: "playwright-report",
+                reportFiles: 'index.html',
+                reportName: "PR: Regression Changed File - ${file}"
+              ])
+            }
+          }
+        }
+      }
     } else if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {

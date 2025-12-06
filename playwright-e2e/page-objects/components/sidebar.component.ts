@@ -32,8 +32,8 @@ export class SidebarComponent {
   });
   readonly caseHeader = this.page.locator("#CMSHomeHeading");
 
-  readonly eventCodeSortButton = this.page.getByRole("gridcell", {
-    name: "Event Code: activate to sort",
+  readonly eventCodeSortButton = this.page.getByRole("columnheader", {
+    name: "Event Code",
   });
   readonly caseComment = this.page.getByRole("gridcell", {
     name: "test comment",
