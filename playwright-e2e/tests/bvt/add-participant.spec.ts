@@ -1,6 +1,5 @@
 import { expect, test } from "../../fixtures";
 import { config } from "../../utils";
-import { DataUtils } from "../../utils/data.utils";
 
 test.use({
   storageState: config.users.testUser.sessionFile,
