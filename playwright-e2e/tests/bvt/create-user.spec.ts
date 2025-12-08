@@ -9,7 +9,6 @@ test.describe("Add user @add-user", () => {
     loginPage,
     createUserPage,
   }) => {
-
     await page.goto(config.urls.baseUrl);
     await loginPage.login(config.users.testUser, true);
 
