@@ -105,13 +105,14 @@ test.describe("Add participant @add-participant", () => {
 
   test("Case history should display correct event codes @codes", async ({
     homePage,
+    dataUtils,
   }) => {
     await homePage.sidebarComponent.caseFileNotesPage();
     await homePage.sidebarComponent.currentCaseEventType.selectOption({
       label: "File Note",
     });
 
-    const comment = DataUtils.prototype.generateRandomAlphabetical(20);
+    const comment = dataUtils.generateRandomAlphabetical(20);
     await homePage.sidebarComponent.addCaseFileNotes(comment);
     await homePage.sidebarComponent.fileNoteSaveButton.click();
 
