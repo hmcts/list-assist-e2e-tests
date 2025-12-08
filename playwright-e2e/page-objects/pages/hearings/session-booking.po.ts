@@ -32,7 +32,6 @@ export class SessionBookingPage extends Base {
     AUTO_JUDICIAL_OFFICE_HOLDER_02: "Dunn, Matthew (Matthew Dunn)",
     AUTO_JUDICIAL_OFFICE_HOLDER_03: "Laverne, Sally (District Judge Laverne)",
 
-
     //session details
     SESSION_DETAILS_CANCELLATION_CODE_CANCEL: "CNCL",
     //session hearing channels
@@ -155,7 +154,6 @@ export class SessionBookingPage extends Base {
   }
 
   async bookSession(duration: string, sessionStatus: string, johName: string) {
-
     await this.waitForLoad();
     await expect(this.heading).toBeVisible();
     await this.durationDropdownButton.click();
