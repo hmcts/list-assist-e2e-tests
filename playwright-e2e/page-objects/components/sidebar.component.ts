@@ -35,10 +35,9 @@ export class SidebarComponent {
   readonly eventCodeSortButton = this.page.getByRole("columnheader", {
     name: "Event Code",
   });
-  readonly caseComment = this.page.getByRole("gridcell", {
-    name: "test comment",
-    exact: true,
-  });
+  getCaseCommentCell(comment: string) {
+    return this.page.locator("td.cell-pre-text > p", { hasText: comment });
+  }
   readonly caseHistoryRows = this.page.locator("tbody > tr");
   readonly caseHistoryCol = this.caseHistoryRows.locator("td:nth-child(2)");
   readonly nonEmptyCol = this.caseHistoryCol.filter({ hasText: /\S/ });
@@ -386,7 +385,7 @@ export class SidebarComponent {
     await this.currentCaseFileNote.click();
   }
 
-  async addCaseFileNotes() {
+  async addCaseFileNotes(comment: string) {
     await expect
       .poll(
         async () => {
@@ -398,6 +397,6 @@ export class SidebarComponent {
         },
       )
       .toBeTruthy();
-    await this.page.locator(".note-editable").fill("test comment");
+    await this.page.locator(".note-editable").fill(comment);
   }
 }
