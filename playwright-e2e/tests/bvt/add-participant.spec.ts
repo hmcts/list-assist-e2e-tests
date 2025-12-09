@@ -115,15 +115,22 @@ test.describe("Add participant @add-participant", () => {
     await homePage.sidebarComponent.addCaseFileNotes(comment);
     await homePage.sidebarComponent.fileNoteSaveButton.click();
 
-    // await homePage.sidebarComponent.eventCodeSortButton.click();
-    //verify case comment in case history
-    await homePage.sidebarComponent.caseHistorySearchBox.fill(comment);
-    const commentCell = homePage.sidebarComponent.getCaseCommentCell(comment);
-    await expect(commentCell).toBeVisible();
-    await expect(homePage.sidebarComponent.nonEmptyCol).toHaveText([
+    //search and verify File Note in case history
+    await homePage.sidebarComponent.searchCaseNotesAndAssertVisible(
+      comment,
+      comment,
+    );
+
+    //search and verify Allocate event code
+    await homePage.sidebarComponent.searchCaseNotesAndAssertVisible(
       "Allocate",
-      "File Note",
+      "Initial Allocation",
+    );
+
+    //search and verify Registration event code
+    await homePage.sidebarComponent.searchCaseNotesAndAssertVisible(
       "Registration",
-    ]);
+      "Initiating Document",
+    );
   });
 });
