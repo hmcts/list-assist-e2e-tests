@@ -102,19 +102,23 @@ test.describe("Add participant @add-participant", () => {
     await homePage.waitForHomePageLoad();
   });
 
-  test("Case history should display correct event codes", async ({
+  test("Case history should display correct event codes @codes", async ({
     homePage,
+    dataUtils,
   }) => {
     await homePage.sidebarComponent.caseFileNotesPage();
     await homePage.sidebarComponent.currentCaseEventType.selectOption({
       label: "File Note",
     });
 
-    await homePage.sidebarComponent.addCaseFileNotes();
+    const comment = dataUtils.generateRandomAlphabetical(20);
+    await homePage.sidebarComponent.addCaseFileNotes(comment);
     await homePage.sidebarComponent.fileNoteSaveButton.click();
 
     await homePage.sidebarComponent.eventCodeSortButton.click();
-    await homePage.sidebarComponent.caseComment.click();
+    //verify case comment in case history
+    const commentCell = homePage.sidebarComponent.getCaseCommentCell(comment);
+    await expect(commentCell).toBeVisible();
     await expect(homePage.sidebarComponent.nonEmptyCol).toHaveText([
       "Allocate",
       "File Note",
