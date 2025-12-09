@@ -42,8 +42,12 @@ export class SidebarComponent {
   readonly commentsHeaderAsc = this.page.locator(
     "th.cell-pre-text.sorting_asc",
   );
-  getCaseCommentCell(comment: string) {
-    return this.page.locator("td.cell-pre-text > p", { hasText: comment });
+  getCaseHistoryRow(comment: string) {
+    return this.page.locator(`tr:has(td.cell-pre-text:has-text("${comment}"))`);
+  }
+
+  allocationRow(type: string) {
+    return this.page.locator(`tr:has(td:text("${type}"))`);
   }
 
   readonly caseHistoryRows = this.page.locator("tbody > tr");
@@ -406,5 +410,11 @@ export class SidebarComponent {
       )
       .toBeTruthy();
     await this.page.locator(".note-editable").fill(comment);
+  }
+
+  async searchCaseNotesAndAssertVisible(searchText: string, rowText: string) {
+    await this.caseHistorySearchBox.fill(searchText);
+    await expect(this.allocationRow(rowText)).toBeVisible();
+    await this.caseHistorySearchBox.fill("");
   }
 }
