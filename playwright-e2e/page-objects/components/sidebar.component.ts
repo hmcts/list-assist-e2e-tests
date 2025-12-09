@@ -35,6 +35,10 @@ export class SidebarComponent {
   readonly eventCodeSortButton = this.page.getByRole("columnheader", {
     name: "Event Code",
   });
+  readonly commentsHeaderAsc = this.page.locator(
+    "th.cell-pre-text.sorting_asc",
+    { hasText: "Comments" },
+  );
   getCaseCommentCell(comment: string) {
     return this.page.locator("td.cell-pre-text > p", { hasText: comment });
   }
