@@ -32,6 +32,10 @@ export class SidebarComponent {
   });
   readonly caseHeader = this.page.locator("#CMSHomeHeading");
 
+  readonly caseHistorySearchBox = this.page.locator(
+    'input[type="search"].form-control.form-control-sm',
+  );
+
   readonly eventCodeSortButton = this.page.getByRole("columnheader", {
     name: "Event Code",
   });
@@ -41,6 +45,7 @@ export class SidebarComponent {
   getCaseCommentCell(comment: string) {
     return this.page.locator("td.cell-pre-text > p", { hasText: comment });
   }
+
   readonly caseHistoryRows = this.page.locator("tbody > tr");
   readonly caseHistoryCol = this.caseHistoryRows.locator("td:nth-child(2)");
   readonly nonEmptyCol = this.caseHistoryCol.filter({ hasText: /\S/ });

@@ -117,7 +117,7 @@ test.describe("Add participant @add-participant", () => {
 
     // await homePage.sidebarComponent.eventCodeSortButton.click();
     //verify case comment in case history
-    await homePage.sidebarComponent.commentsHeaderAsc.click();
+    await homePage.sidebarComponent.caseHistorySearchBox.fill(comment);
     const commentCell = homePage.sidebarComponent.getCaseCommentCell(comment);
     await expect(commentCell).toBeVisible();
     await expect(homePage.sidebarComponent.nonEmptyCol).toHaveText([
