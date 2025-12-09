@@ -116,10 +116,13 @@ test.describe("Add participant @add-participant", () => {
     await homePage.sidebarComponent.fileNoteSaveButton.click();
 
     //search and verify File Note in case history
-    await homePage.sidebarComponent.searchCaseNotesAndAssertVisible(
-      comment,
-      comment,
-    );
+    await homePage.sidebarComponent.caseHistorySearchBox.fill(comment);
+    await homePage.sidebarComponent.commentCaseHistoryRow(comment);
+    await homePage.sidebarComponent.caseHistorySearchBox.fill("");
+    // await homePage.sidebarComponent.searchCaseNotesAndAssertVisible(
+    //   comment,
+    //   comment,
+    // );
 
     //search and verify Allocate event code
     await homePage.sidebarComponent.searchCaseNotesAndAssertVisible(

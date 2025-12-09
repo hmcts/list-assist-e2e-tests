@@ -42,7 +42,7 @@ export class SidebarComponent {
   readonly commentsHeaderAsc = this.page.locator(
     "th.cell-pre-text.sorting_asc",
   );
-  getCaseHistoryRow(comment: string) {
+  commentCaseHistoryRow(comment: string) {
     return this.page.locator(`tr:has(td.cell-pre-text:has-text("${comment}"))`);
   }
 
