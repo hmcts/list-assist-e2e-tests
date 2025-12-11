@@ -68,8 +68,4 @@ test.describe("HMI Amend API tests before listing @amend-api-test", () => {
     await listingRequirementsPage.assertHearingMethodValueAt(1, "VID");
     await listingRequirementsPage.assertHearingMethodValueAt(2, "");
   });
-
-  test.afterAll(async () => {
-    process.env.SKIP_CREATE_CASE = "true";
-  });
 });
