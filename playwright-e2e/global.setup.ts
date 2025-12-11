@@ -22,7 +22,6 @@ setup.describe("Global Setup", () => {
       hearingSchedulePage,
     }) => {
       setup.skip(process.env.SKIP_CREATE_CASE == "true");
-
       await page.goto(config.urls.baseUrl);
       await loginPage.login(config.users.testUser);
 
