@@ -17,6 +17,8 @@ test.describe("HMI Amend API tests before listing @amend-api-test", () => {
     // We are expecting the env var SKIP_CREATE_CASE to be true so that case creation is skipped.
     // If this is not the case, the test will run redundant steps unnecessarily.
 
+    console.log("line 1");
+
     const CASE_ID =
       "CASE_ID" + dataUtils.generateRandomAlphabetical(10).toUpperCase();
     const CASE_NAME =
