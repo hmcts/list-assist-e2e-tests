@@ -1,5 +1,4 @@
 import { expect, test } from "../../fixtures";
-import { CaseHistoryPage } from "../../page-objects/pages/cases/case-history.po";
 import { config } from "../../utils";
 
 test.use({
