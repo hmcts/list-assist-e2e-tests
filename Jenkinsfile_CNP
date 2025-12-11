@@ -103,9 +103,9 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
 
     // Only run Amend Api Tests before listing in Chrome
-    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skip: 'true', browsers: ['chrome']],
+    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: 'true', browsers: ['chrome']],
     // Only run Amend Api test after listing in Chrome
-    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skip: 'true', browsers: ['chrome']]
+    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: 'true', browsers: ['chrome']]
   ]
 
   def bvtStages = browsers.collectMany { browser ->
@@ -113,7 +113,7 @@ withNightlyPipeline(type, product, component, 600) {
       [
         name: "${browser.capitalize()} - ${cfg.name}",
         command: "playwright test --project=${browser} --grep ${cfg.grep}",
-        skip: cfg.skip
+        skipCreateCase: cfg.skipCreateCase
       ]
     }
   } + [
@@ -161,11 +161,7 @@ withNightlyPipeline(type, product, component, 600) {
 
   def runBvtStages = { stages ->
     stages.each { s ->
-      if (s.skip != 'true') {
-        runPlaywrightStage(s.name, s.command, s.name, s.skip ?: null)
-      } else {
-        echo "Skipping stage: ${s.name} because skip is set to true"
-      }
+      runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null)
     }
   }
 
