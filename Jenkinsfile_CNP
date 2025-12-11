@@ -235,12 +235,23 @@ withNightlyPipeline(type, product, component, 600) {
     }
 
     // Set up playwright
-    try {
-      yarnBuilder.yarn('setup')
-    } catch (Error) {
-      unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+    def skipGlobalSetup = false
+    if (params.TAGS_TO_RUN) {
+      def tags = params.TAGS_TO_RUN.split(',').collect { it.trim() }
+      if (tags.every { it == '@amend-api-test' || it == '@amend-api-test-after-listing' }) {
+        skipGlobalSetup = true
+      }
     }
-  }
+
+    if (!skipGlobalSetup) {
+      try {
+        yarnBuilder.yarn('setup')
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      }
+    } else {
+      echo "Skipping global setup for amend-api test tags"
+    }
 
     // Before running tests, set environment variables based on ENVIRONMENT
     if (params.ENVIRONMENT == 'SIT') {
