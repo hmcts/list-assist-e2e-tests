@@ -102,7 +102,7 @@ test.describe("Add participant @add-participant", () => {
     await homePage.waitForHomePageLoad();
   });
 
-  test("Case history should display correct event codes @codes", async ({
+  test("Case history should display correct event codes", async ({
     homePage,
     dataUtils,
     caseHistoryPage,
