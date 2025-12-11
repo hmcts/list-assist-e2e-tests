@@ -161,13 +161,21 @@ withNightlyPipeline(type, product, component, 600) {
 
   def runBvtStages = { stages ->
     stages.each { s ->
-      runPlaywrightStage(s.name, s.command, s.name, s.skip ?: null)
+      if (s.skip != 'true') {
+        runPlaywrightStage(s.name, s.command, s.name, s.skip ?: null)
+      } else {
+        echo "Skipping stage: ${s.name} because skip is set to true"
+      }
     }
   }
 
   def runRegressionStages = { stages ->
     stages.each { s ->
-      runPlaywrightStage(s.name, s.command, s.name)
+      if (s.skip != 'true') {
+        runPlaywrightStage(s.name, s.command, s.name)
+      } else {
+        echo "Skipping stage: ${s.name} because skip is set to true"
+      }
     }
   }
 
@@ -276,22 +284,27 @@ withNightlyPipeline(type, product, component, 600) {
           }
         }
       } else {
-        // Always run all @pr-build tagged tests
-        stage("PR: @pr-build Tagged Tests") {
-          try {
-            currentBuild.displayName = "PR: @pr-build Tagged Tests"
-            yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: "PR: @pr-build Tagged Tests"
-            ])
+        // Check if @pr-build should be skipped
+        def prBuildConfig = testConfigs.find { it.grep == '@pr-build' }
+        if (prBuildConfig && prBuildConfig.skip == 'true') {
+          echo "Skipping stage: PR: @pr-build Tagged Tests because skip is set to true"
+        } else {
+          stage("PR: @pr-build Tagged Tests") {
+            try {
+              currentBuild.displayName = "PR: @pr-build Tagged Tests"
+              yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
+            } catch (Error) {
+              unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+            } finally {
+              publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: "playwright-report",
+                reportFiles: 'index.html',
+                reportName: "PR: @pr-build Tagged Tests"
+              ])
+            }
           }
         }
 
