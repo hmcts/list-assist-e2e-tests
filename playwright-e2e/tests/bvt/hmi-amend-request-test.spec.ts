@@ -2,8 +2,6 @@ import { test } from "../../fixtures.js";
 import { HmiUtils } from "../../utils/hmi.utils.js";
 import { expect } from "@playwright/test";
 
-process.env.SKIP_CREATE_CASE = "true";
-
 test.describe("HMI Amend API tests before listing @amend-api-test", () => {
   test("Amended participants and their hearing method should display as expected before listing", async ({
     editNewCasePage,
