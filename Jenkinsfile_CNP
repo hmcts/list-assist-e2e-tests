@@ -276,6 +276,7 @@ withNightlyPipeline(type, product, component, 600) {
         stage("PR: @pr-build Tagged Tests") {
           try {
             currentBuild.displayName = "PR: @pr-build Tagged Tests"
+            env.SKIP_CREATE_CASE = "false"
             yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
@@ -288,6 +289,7 @@ withNightlyPipeline(type, product, component, 600) {
               reportFiles: 'index.html',
               reportName: "PR: @pr-build Tagged Tests"
             ])
+            env.SKIP_CREATE_CASE = null
           }
         }
 
@@ -296,6 +298,7 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: BVT Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: BVT Changed File - ${file}"
+              env.SKIP_CREATE_CASE = "false"
               yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
@@ -308,6 +311,7 @@ withNightlyPipeline(type, product, component, 600) {
                 reportFiles: 'index.html',
                 reportName: "PR: BVT Changed File - ${file}"
               ])
+              env.SKIP_CREATE_CASE = null
             }
           }
         }
@@ -317,6 +321,7 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: Regression Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: Regression Changed File - ${file}"
+              env.SKIP_CREATE_CASE = "false"
               yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
@@ -329,6 +334,7 @@ withNightlyPipeline(type, product, component, 600) {
                 reportFiles: 'index.html',
                 reportName: "PR: Regression Changed File - ${file}"
               ])
+              env.SKIP_CREATE_CASE = null
             }
           }
         }
