@@ -102,9 +102,10 @@ test.describe("Add participant @add-participant", () => {
     await homePage.waitForHomePageLoad();
   });
 
-  test("Case history should display correct event codes @codes", async ({
+  test("Case history should display correct event codes", async ({
     homePage,
     dataUtils,
+    caseHistoryPage,
   }) => {
     await homePage.sidebarComponent.caseFileNotesPage();
     await homePage.sidebarComponent.currentCaseEventType.selectOption({
@@ -115,14 +116,28 @@ test.describe("Add participant @add-participant", () => {
     await homePage.sidebarComponent.addCaseFileNotes(comment);
     await homePage.sidebarComponent.fileNoteSaveButton.click();
 
-    await homePage.sidebarComponent.eventCodeSortButton.click();
-    //verify case comment in case history
-    const commentCell = homePage.sidebarComponent.getCaseCommentCell(comment);
-    await expect(commentCell).toBeVisible();
-    await expect(homePage.sidebarComponent.nonEmptyCol).toHaveText([
-      "Allocate",
-      "File Note",
-      "Registration",
-    ]);
+    //search and verify File Note in case history
+    await caseHistoryPage.searchCaseNotesAndAssertVisible(
+      comment,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_CODE_FILE_NOTE,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_FILE_NOTE,
+      comment,
+    );
+
+    //search and verify Allocate event code
+    await caseHistoryPage.searchCaseNotesAndAssertVisible(
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_CODE_ALLOCATE,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_CODE_ALLOCATE,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_INITIAL_ALLOCATION,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_COMMENT_TO_AUTOMATION_TEST,
+    );
+
+    //search and verify Registration event code
+    await caseHistoryPage.searchCaseNotesAndAssertVisible(
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_CODE_REGISTRATION,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_CODE_REGISTRATION,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_REGISTRATION,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_COMMENT_INITIATING_DOCUMENT,
+    );
   });
 });
