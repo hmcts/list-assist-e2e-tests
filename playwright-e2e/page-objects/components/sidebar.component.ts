@@ -32,24 +32,6 @@ export class SidebarComponent {
   });
   readonly caseHeader = this.page.locator("#CMSHomeHeading");
 
-  readonly caseHistorySearchBox = this.page.locator(
-    'input[type="search"].form-control.form-control-sm',
-  );
-
-  readonly eventCodeSortButton = this.page.getByRole("columnheader", {
-    name: "Event Code",
-  });
-  readonly commentsHeaderAsc = this.page.locator(
-    "th.cell-pre-text.sorting_asc",
-  );
-  commentCaseHistoryRow(comment: string) {
-    return this.page.locator(`tr:has(td.cell-pre-text:has-text("${comment}"))`);
-  }
-
-  allocationRow(type: string) {
-    return this.page.locator(`tr:has(td:text("${type}"))`);
-  }
-
   readonly caseHistoryRows = this.page.locator("tbody > tr");
   readonly caseHistoryCol = this.caseHistoryRows.locator("td:nth-child(2)");
   readonly nonEmptyCol = this.caseHistoryCol.filter({ hasText: /\S/ });
@@ -410,11 +392,5 @@ export class SidebarComponent {
       )
       .toBeTruthy();
     await this.page.locator(".note-editable").fill(comment);
-  }
-
-  async searchCaseNotesAndAssertVisible(searchText: string, rowText: string) {
-    await this.caseHistorySearchBox.fill(searchText);
-    await expect(this.allocationRow(rowText)).toBeVisible();
-    await this.caseHistorySearchBox.fill("");
   }
 }
