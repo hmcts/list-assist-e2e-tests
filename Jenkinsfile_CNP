@@ -80,7 +80,6 @@ def buildPlaywrightCommand(tags) {
     }
   }
   return command
-}
 
 withNightlyPipeline(type, product, component, 600) {
   loadVaultSecrets(secrets)
