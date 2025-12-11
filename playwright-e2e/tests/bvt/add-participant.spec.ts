@@ -1,4 +1,5 @@
 import { expect, test } from "../../fixtures";
+import { CaseHistoryPage } from "../../page-objects/pages/cases/case-history.po";
 import { config } from "../../utils";
 
 test.use({
@@ -105,6 +106,7 @@ test.describe("Add participant @add-participant", () => {
   test("Case history should display correct event codes @codes", async ({
     homePage,
     dataUtils,
+    caseHistoryPage,
   }) => {
     await homePage.sidebarComponent.caseFileNotesPage();
     await homePage.sidebarComponent.currentCaseEventType.selectOption({
@@ -116,24 +118,27 @@ test.describe("Add participant @add-participant", () => {
     await homePage.sidebarComponent.fileNoteSaveButton.click();
 
     //search and verify File Note in case history
-    await homePage.sidebarComponent.caseHistorySearchBox.fill(comment);
-    await homePage.sidebarComponent.commentCaseHistoryRow(comment);
-    await homePage.sidebarComponent.caseHistorySearchBox.fill("");
-    // await homePage.sidebarComponent.searchCaseNotesAndAssertVisible(
-    //   comment,
-    //   comment,
-    // );
+    await caseHistoryPage.searchCaseNotesAndAssertVisible(
+      comment,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_CODE_FILE_NOTE,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_FILE_NOTE,
+      comment,
+    );
 
     //search and verify Allocate event code
-    await homePage.sidebarComponent.searchCaseNotesAndAssertVisible(
-      "Allocate",
-      "Initial Allocation",
+    await caseHistoryPage.searchCaseNotesAndAssertVisible(
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_CODE_ALLOCATE,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_CODE_ALLOCATE,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_INITIAL_ALLOCATION,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_COMMENT_TO_AUTOMATION_TEST,
     );
 
     //search and verify Registration event code
-    await homePage.sidebarComponent.searchCaseNotesAndAssertVisible(
-      "Registration",
-      "Initiating Document",
+    await caseHistoryPage.searchCaseNotesAndAssertVisible(
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_CODE_REGISTRATION,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_CODE_REGISTRATION,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_REGISTRATION,
+      caseHistoryPage.CONSTANTS.CASE_HISTORY_COMMENT_INITIATING_DOCUMENT,
     );
   });
 });
