@@ -134,12 +134,10 @@ withNightlyPipeline(type, product, component, 600) {
     }
   }
 
-  def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
+  def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = "false" ->
     stage(stageName) {
       try {
-        if (skipCreateCase != null) {
-          env.SKIP_CREATE_CASE = skipCreateCase
-        }
+        env.SKIP_CREATE_CASE = skipCreateCase
         yarnBuilder.yarn(command)
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
@@ -152,22 +150,20 @@ withNightlyPipeline(type, product, component, 600) {
           reportFiles: 'index.html',
           reportName: reportName
         ])
-        if (skipCreateCase != null) {
-          env.SKIP_CREATE_CASE = null
-        }
+        env.SKIP_CREATE_CASE = null
       }
     }
   }
 
   def runBvtStages = { stages ->
     stages.each { s ->
-      runPlaywrightStage(s.name, s.command, s.name, s.skip ?: null)
+      runPlaywrightStage(s.name, s.command, s.name, s.skip ?: "false")
     }
   }
 
   def runRegressionStages = { stages ->
     stages.each { s ->
-      runPlaywrightStage(s.name, s.command, s.name)
+      runPlaywrightStage(s.name, s.command, s.name, "false")
     }
   }
 
