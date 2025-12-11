@@ -47,7 +47,6 @@ static Map<String, Object> secret(String secretName, String envVariable) {
     name: secretName,
     envVariable: envVariable
   ]
-}
 
 def secrets = [
   'snl-automation-bts-stg': [
