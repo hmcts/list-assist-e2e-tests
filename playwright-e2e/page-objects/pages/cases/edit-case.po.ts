@@ -29,7 +29,10 @@ export class EditNewCasePage extends Base {
   readonly owningHearingField = this.page.locator(
     "#matter-detail-homeLocationId",
   );
-
+  // Edit case pencil icon
+  readonly editCasePencilIcon = this.page.locator("#editMatter");
+   readonly caseNameSuppressionField = this.page.locator(
+      "#CaseNameSuppression");
   // Add new participant
   readonly caseParticipantsHeader = this.page.getByRole("heading", {
     name: "Case Participants",
@@ -48,6 +51,9 @@ export class EditNewCasePage extends Base {
   readonly relatedCasesTable = this.page.locator(
     'table[aria-label="Related Cases "]',
   );
+
+  // Edit case save button
+  readonly editCaseSaveButton = this.page.locator("#saveButton");
 
   constructor(page: Page) {
     super(page);
@@ -72,6 +78,9 @@ export class EditNewCasePage extends Base {
     dateOfBirth: string,
     interpreter: string,
     role: string,
+    selectRoleIfExists?: true,
+    alternativePartyName?: string,
+
   ) {
     const waitForCreateNewPartyPopup = this.page.waitForEvent("popup");
     await this.addNewParticipantButton.click();
@@ -173,6 +182,13 @@ export class EditNewCasePage extends Base {
     await expect(createNewParticipant.getByText("New Party")).toBeVisible();
     await expect(createNewParticipant.getByLabel("Role")).toBeVisible();
     await createNewParticipant.getByLabel("Role").selectOption(role);
+
+    if (selectRoleIfExists) {
+      await createNewParticipant.locator("#mpSupressFlag1").click();
+    }
+    else if( alternativePartyName && selectRoleIfExists){
+      await createNewParticipant.locator("#mpSuppressAltNameId").fill(alternativePartyName);
+    }
     await createNewParticipant
       .getByRole("button", { name: "Save", exact: true })
       .click();
@@ -208,10 +224,18 @@ export class EditNewCasePage extends Base {
       this.page.getByRole("cell", { name: caseInterpreter }).first(),
     ).toBeVisible();
     await expect(
-      this.page.getByRole("button", { name: "View/Edit" }),
+      this.page.getByRole("button", { name: "View/Edit" }).first(),
     ).toBeVisible();
     await expect(
-      this.page.getByRole("button", { name: "Remove" }),
+      this.page.getByRole("button", { name: "Remove" }).first(),
     ).toBeVisible();
   }
+
+  async setCaseNameSuppression(caseNameSuppression)
+  {
+    await this.editCasePencilIcon.click();
+    await this.caseNameSuppressionField.fill(caseNameSuppression);
+    await this.editCaseSaveButton.click();
+  }
+
 }
