@@ -69,6 +69,8 @@ export class AddNewCasePage extends Base {
     exact: true,
   });
 
+  readonly caseCommentsInput = this.page.locator("textarea#mtrComment");
+
   constructor(page: Page) {
     super(page);
   }
@@ -124,6 +126,7 @@ export class AddNewCasePage extends Base {
     region: string,
     cluster: string,
     owninghearing: string,
+    caseComment: string,
   ) {
     await this.selectJurisdiction(jurisdiction);
     await this.selectService(service);
@@ -133,12 +136,14 @@ export class AddNewCasePage extends Base {
     await this.selectOwningHearing(owninghearing);
     await this.hmctsCaseNumberInput.fill(hmctsCaseNumber);
     await this.enterNameInput.fill(caseName);
+    await this.caseCommentsInput.fill(caseComment);
   }
 
   async addNewCaseWithMandatoryData(
     caseData: CaseData,
     hmctsCaseNumber: string,
     caseName: string,
+    caseComment: string,
   ) {
     // Assert that the header contains the text 'New Case'
     await expect(this.newCaseHeader).toHaveText("New Case");
@@ -154,6 +159,7 @@ export class AddNewCasePage extends Base {
       caseData.region,
       caseData.cluster,
       caseData.hearingCentre,
+      caseComment,
     );
     // Click save button
     await this.saveButton.click();

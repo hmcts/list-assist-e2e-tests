@@ -36,6 +36,7 @@ setup.describe("Global Setup", () => {
       process.env.HMCTS_CASE_NUMBER =
         "HMCTS_CN_" + crypto.randomUUID().toUpperCase();
       process.env.CASE_NAME = "AUTO_" + crypto.randomUUID().toUpperCase();
+      const caseComment = `Case Comment ${process.env.HMCTS_CASE_NUMBER}`;
 
       const caseData = {
         hmctsCaseNumberHeaderValue:
@@ -56,6 +57,7 @@ setup.describe("Global Setup", () => {
         caseData,
         process.env.HMCTS_CASE_NUMBER,
         process.env.CASE_NAME,
+        caseComment,
       );
     },
   );
