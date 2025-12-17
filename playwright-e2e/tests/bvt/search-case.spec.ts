@@ -94,6 +94,7 @@ test.describe("Case creation @add-new-case", () => {
       dataUtils.generateRandomAlphabetical(10).toUpperCase();
     const RELATED_CASE_NAME =
       "RELATED_AUTO_" + dataUtils.generateRandomAlphabetical(10).toUpperCase();
+    const caseComment = `Case Comment ${RELATED_HMCTS_CASE_NUMBER}`;
 
     const caseData = {
       hmctsCaseNumberHeaderValue:
@@ -114,6 +115,7 @@ test.describe("Case creation @add-new-case", () => {
       caseData,
       RELATED_HMCTS_CASE_NUMBER,
       RELATED_CASE_NAME,
+      caseComment,
     );
     await addNewCasePage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
