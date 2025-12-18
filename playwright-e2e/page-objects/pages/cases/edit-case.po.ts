@@ -31,8 +31,7 @@ export class EditNewCasePage extends Base {
   );
   // Edit case pencil icon
   readonly editCasePencilIcon = this.page.locator("#editMatter");
-   readonly caseNameSuppressionField = this.page.locator(
-      "#CaseNameSuppression");
+  readonly caseNameSuppressionField = this.page.locator("#CaseNameSuppression");
   // Add new participant
   readonly caseParticipantsHeader = this.page.getByRole("heading", {
     name: "Case Participants",
@@ -80,7 +79,6 @@ export class EditNewCasePage extends Base {
     role: string,
     selectRoleIfExists?: true,
     alternativePartyName?: string,
-
   ) {
     const waitForCreateNewPartyPopup = this.page.waitForEvent("popup");
     await this.addNewParticipantButton.click();
@@ -185,9 +183,10 @@ export class EditNewCasePage extends Base {
 
     if (selectRoleIfExists) {
       await createNewParticipant.locator("#mpSupressFlag1").click();
-    }
-    else if( alternativePartyName && selectRoleIfExists){
-      await createNewParticipant.locator("#mpSuppressAltNameId").fill(alternativePartyName);
+    } else if (alternativePartyName && selectRoleIfExists) {
+      await createNewParticipant
+        .locator("#mpSuppressAltNameId")
+        .fill(alternativePartyName);
     }
     await createNewParticipant
       .getByRole("button", { name: "Save", exact: true })
@@ -231,11 +230,9 @@ export class EditNewCasePage extends Base {
     ).toBeVisible();
   }
 
-  async setCaseNameSuppression(caseNameSuppression)
-  {
+  async setCaseNameSuppression(caseNameSuppression) {
     await this.editCasePencilIcon.click();
     await this.caseNameSuppressionField.fill(caseNameSuppression);
     await this.editCaseSaveButton.click();
   }
-
 }
