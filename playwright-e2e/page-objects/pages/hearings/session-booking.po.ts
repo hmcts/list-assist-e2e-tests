@@ -142,6 +142,23 @@ export class SessionBookingPage extends Base {
     { hasText: this.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7 },
   );
 
+  readonly jurisdictionDropdown = this.page.locator("select#jsCode");
+  readonly sessionTypeDropdown = this.page.locator("select#sessionType");
+
+  readonly internalCommentsTextBox = this.page.locator(
+    "#venueBooking\\.venueBookingDesc",
+  );
+  readonly externalCommentsTextBox = this.page.locator(
+    "#venueBooking\\.externalComments",
+  );
+
+  readonly hearingSessionLocationComment = this.page.locator(
+    "textarea#listing\\.locationComment",
+  );
+  readonly hearingSessionInternalCaseComment = this.page.locator(
+    'textarea[name="listing.comments"]',
+  );
+
   constructor(page: Page) {
     super(page);
   }
@@ -153,7 +170,13 @@ export class SessionBookingPage extends Base {
     if (!iconClass?.includes("down")) await roomsButton.click();
   }
 
-  async bookSession(duration: string, sessionStatus: string, johName: string) {
+  async bookSession(
+    duration: string,
+    sessionStatus: string,
+    internalComments: string,
+    externalComments: string,
+    johName: string,
+  ) {
     await this.waitForLoad();
     await expect(this.heading).toBeVisible();
     await this.durationDropdownButton.click();
@@ -162,6 +185,16 @@ export class SessionBookingPage extends Base {
     await this.sessionHearingChannel.click();
     await this.sessionHearingChannelTel.click();
     await this.sessionHearingChannelVid.click();
+    await this.jurisdictionDropdown.click();
+    await this.jurisdictionDropdown.selectOption({ value: "AB" });
+    await this.sessionTypeDropdown.click();
+    await this.sessionTypeDropdown.selectOption({ value: "ADHOC" });
+
+    //add internal comments
+    await this.internalCommentsTextBox.fill(internalComments);
+
+    //add external comments
+    await this.externalCommentsTextBox.fill(externalComments);
 
     //JOH selection
     await this.sessionJohDropdown.click();
@@ -242,42 +275,37 @@ export class SessionBookingPage extends Base {
 
     // Wait for the iframe to be visible
     await expect
-      .poll(
-        async () => {
-          return await listingIframe.first().isVisible();
-        },
-        {
-          intervals: [1_000],
-          timeout: 20_000,
-        },
-      )
+      .poll(async () => await listingIframe.first().isVisible(), {
+        intervals: [1_000],
+        timeout: 20_000,
+      })
       .toBeTruthy();
 
-    const contentFrame = listingIframe.contentFrame();
-    if (!contentFrame) {
-      throw new Error("Failed to locate content frame inside the iframe.");
-    }
+    const contentFrame = await listingIframe.contentFrame();
+    await contentFrame
+      .locator("textarea#listing\\.locationComment")
+      .fill("Automation - Location Comment");
+    await contentFrame
+      .locator('textarea[name="listing.comments"]')
+      .fill("Automation - Internal Case Comment");
 
-    await expect(
-      listingIframe.contentFrame().getByLabel("Hearing Type"),
-    ).toBeVisible();
-    const hearingTypeBtn = listingIframe
-      .contentFrame()
-      .getByRole("button", { name: "Please Choose..." });
+    await expect(contentFrame.getByLabel("Hearing Type")).toBeVisible();
+    const hearingTypeBtn = contentFrame.getByRole("button", {
+      name: "Please Choose...",
+    });
 
     if (await hearingTypeBtn.isVisible()) {
       await hearingTypeBtn.click();
-      await listingIframe
-        .contentFrame()
+      await contentFrame
         .getByRole("list")
         .getByRole("option", { name: "Allocation Hearing", exact: true })
         .click();
     }
 
-    await listingIframe
-      .contentFrame()
+    await contentFrame
       .getByRole("button", { name: "Save", exact: true })
       .click();
+    await this.page.waitForTimeout(10_000);
   }
 
   async updateAdvancedFilterConfig(
