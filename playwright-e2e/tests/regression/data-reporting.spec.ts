@@ -1,5 +1,9 @@
 import { test, expect } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
+import {
+  clearDownSchedule,
+  runAutomationBookingQueueJob,
+} from "../../utils/reporting.utils.js";
 
 test.describe("Data Reporting And Export @data-reporting", () => {
   test.describe.configure({ mode: "serial" });
@@ -7,21 +11,21 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     async ({
       page,
       loginPage,
-      addNewCasePage,
-      caseSearchPage,
-      editNewCasePage,
-      hearingSchedulePage,
+      // addNewCasePage,
+      // caseSearchPage,
+      // editNewCasePage,
+      // hearingSchedulePage,
     }) => {
       await page.goto(config.urls.baseUrl);
       await loginPage.login(config.users.testUser);
-      //empties cart if there is anything present
-      await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-      //search for the case
-      await addNewCasePage.sidebarComponent.openSearchCasePage();
-      await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
-      await expect(editNewCasePage.caseNameField).toHaveText(
-        process.env.CASE_NAME as string,
-      );
+      // //empties cart if there is anything present
+      // await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+      // //search for the case
+      // await addNewCasePage.sidebarComponent.openSearchCasePage();
+      // await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
+      // await expect(editNewCasePage.caseNameField).toHaveText(
+      //   process.env.CASE_NAME as string,
+      // );
     },
   );
   test("Invalid Mailbox report", async ({
@@ -86,9 +90,23 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     automaticBookingDashboardPage,
     dataUtils,
     hearingSchedulePage,
+    editNewCasePage,
+    viewReportsPage,
   }) => {
-    await addNewCasePage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
+    // Test data
+    const roomData = {
+      roomName:
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
+      column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
+      caseNumber: process.env.HMCTS_CASE_NUMBER as string,
+      // sessionDuration:
+      //   sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      // hearingType:
+      //   sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
+      // cancelReason:
+      //   sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
+    };
 
     await clearDownSchedule(
       sessionBookingPage,
@@ -104,41 +122,88 @@ test.describe("Data Reporting And Export @data-reporting", () => {
       dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
     );
 
-    //run scheduled jobs so there are no queued reports
-    //open scheduled jobs page
-    await automaticBookingDashboardPage.sidebarComponent.openScheduledJobsPage();
-    //run the job
-    await automaticBookingDashboardPage.clickRunForAutomaticBookingQueueJob(
-      automaticBookingDashboardPage.CONSTANTS
-        .SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB,
+    await runAutomationBookingQueueJob(automaticBookingDashboardPage);
+
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
+    await expect(editNewCasePage.caseNameField).toHaveText(
+      process.env.CASE_NAME as string,
     );
-    //check the header is present after page has refreshed
-    await automaticBookingDashboardPage.sidebarComponent.scheduledJobsHeader.isVisible();
+    await caseSearchPage.addToCartButton.click();
+    await expect(caseSearchPage.sidebarComponent.cartButton).toBeEnabled();
+
+    //go to hearing schedule page
+    await expect(hearingSchedulePage.sidebarComponent.sidebar).toBeVisible();
+    await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+
+    //schedule hearing
+    await hearingSchedulePage.waitForLoad();
+
+    await hearingSchedulePage.scheduleHearingWithBasket(
+      roomData.roomName,
+      roomData.column,
+      roomData.caseNumber,
+    );
+
+    //session booking page
+    await sessionBookingPage.bookSession(
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+      `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
+      `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
+      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
+    );
+
+    await expect(hearingSchedulePage.header).toBeVisible();
+
+    const report = await viewReportsPage.generateDataExportReport(
+      dataUtils.generateDateInYyyyMmDdNoSeparators(0),
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
+    );
+
+    const expected = [
+      { column: "JOH", value: "DJ Sally Laverne" },
+      {
+        column: "Court",
+        value: "Newport (South Wales) County Court and Family Court",
+      },
+      { column: "Room", value: "Newport (South Wales) Chambers 01" },
+      {
+        column: "Date",
+        value: dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(0),
+      },
+      { column: "Start", value: "10:00" },
+      { column: "End", value: "11:00" },
+      {
+        column: "Subject",
+        value: `${process.env.HMCTS_CASE_NUMBER as string} - ${process.env.CASE_NAME as string} - Allocation Hearing`,
+      },
+      { column: "Description", value: process.env.HMCTS_CASE_NUMBER as string },
+      { column: "Location Comments", value: "Automation - Location Comment" },
+      { column: "Case ID", value: process.env.HMCTS_CASE_NUMBER as string },
+      { column: "Hearing ID", value: process.env.CASE_NAME as string },
+      { column: "Hearing Type", value: "Allocation Hearing" },
+      {
+        column: "Case Comments",
+        value: `Case Comment ${process.env.HMCTS_CASE_NUMBER as string}`,
+      },
+      {
+        column: "Listing Comments",
+        value: "Automation - Internal Case Comment",
+      },
+      { column: "Session Type", value: "Adhoc (as directed)" },
+      { column: "Jurisdiction", value: "Family" },
+      { column: "Case Service", value: "Damages" },
+      { column: "Case Type", value: "Small Claims" },
+    ];
+
+    expect(report.length).toBe(expected.length);
+    for (let i = 0; i < expected.length; i++) {
+      expect(report[i].column).toBe(expected[i].column);
+      expect(report[i].value).toContain(expected[i].value);
+    }
   });
 });
-
-async function clearDownSchedule(
-  sessionBookingPage,
-  hearingSchedulePage,
-  caseListingRegion,
-  caseListingCluster,
-  caseListingLocality,
-  caseListingLocation,
-  sessionDetailsCanxCode,
-  date,
-) {
-  await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
-
-  await sessionBookingPage.updateAdvancedFilterConfig(
-    caseListingRegion,
-    caseListingCluster,
-    caseListingLocality,
-    caseListingLocation,
-  );
-
-  await hearingSchedulePage.clearDownSchedule(
-    sessionDetailsCanxCode,
-    caseListingLocation,
-    date,
-  );
-}

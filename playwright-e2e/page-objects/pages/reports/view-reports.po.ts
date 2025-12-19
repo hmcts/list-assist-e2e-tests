@@ -19,6 +19,8 @@ export class ViewReportsPage extends Base {
     SESSION_JOH: "Before: Matthew Dunn (P)",
     LOCALITY_PONTYPRIDD_COUNTY_COURT_AND_FAMILY_COURT:
       "Pontypridd County Court and Family Court",
+    LOCALITY_CARDIFF_CIVIL_AND_FAMILY_JUSTICE_CENTRE:
+      "Cardiff Civil and Family Justice Centre",
     CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
     LIST_TYPE_DAILY_CAUSE_LIST: "DAILY CAUSE LIST",
     CASE_LISTING_ADDRESS_PONTYPRIDD:
@@ -114,6 +116,8 @@ export class ViewReportsPage extends Base {
   readonly invalidMailboxCheckbox = this.page.getByRole("checkbox", {
     name: "Invalid Mailbox Invalid",
   });
+
+  //data export report
 
   constructor(page: Page) {
     super(page);
@@ -561,5 +565,192 @@ export class ViewReportsPage extends Base {
       if (found) break;
     }
     expect(found).toBe(shouldFindRecord);
+  }
+
+  async generateDataExportReport(
+    date: string,
+    locality: string,
+    location: string,
+  ) {
+    await expect(this.reportsMenu).toBeVisible();
+    await this.reportsMenu.click();
+    await expect(this.sidebarComponent.dataExportsSubMenu).toBeVisible();
+    const [popup] = await Promise.all([
+      this.page.waitForEvent("popup"),
+      this.sidebarComponent.dataExportsSubMenu.click(),
+    ]);
+
+    const reportsRequestPage = new ViewReportsPage(popup);
+    await expect(reportsRequestPage.viewReportButton).toBeVisible();
+
+    //input to and from dates
+    await reportsRequestPage.dateFromCalenderSelect.click();
+    await reportsRequestPage.page
+      .locator('iframe[name="ReportViewerControl_ctl04_ctl03_ctl02"]')
+      .contentFrame()
+      .locator(`td.ms-picker-today:has(a[id="${date}"])`)
+      .click();
+
+    await reportsRequestPage.dateToCalenderSelect.click();
+    await reportsRequestPage.page
+      .locator('iframe[name="ReportViewerControl_ctl04_ctl05_ctl02"]')
+      .contentFrame()
+      .locator(`td.ms-picker-today:has(a[id="${date}"])`)
+      .click();
+
+    //locality drop down select
+    const localityDropDownSelect = reportsRequestPage.page.getByRole(
+      "checkbox",
+      { name: locality },
+    );
+
+    await reportsRequestPage.localityDropDown.click();
+    await expect
+      .poll(
+        async () => {
+          await reportsRequestPage.localityDropDown.click();
+          return await localityDropDownSelect.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 30_000,
+        },
+      )
+      .toBeTruthy();
+
+    await localityDropDownSelect.check();
+    await reportsRequestPage.localityChevronButton.click();
+
+    //location drop down select
+    const locationDropDownSelect = reportsRequestPage.page.getByRole(
+      "checkbox",
+      { name: location },
+    );
+    await reportsRequestPage.locationChevronButton.isEnabled();
+    await expect
+      .poll(
+        async () => {
+          await reportsRequestPage.locationChevronButton.click();
+          return await locationDropDownSelect.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 30_000,
+        },
+      )
+      .toBeTruthy();
+
+    await locationDropDownSelect.check();
+    await reportsRequestPage.locationChevronButton.click();
+
+    //judicial officer holder drop down select
+    await expect
+      .poll(
+        async () => {
+          await reportsRequestPage.judicialOfficerHolderChevronButton.isVisible();
+          await reportsRequestPage.judicialOfficerHolderChevronButton.click();
+          return await reportsRequestPage.judicialOfficerHolderDropDownSelectAll
+            .isVisible;
+        },
+        {
+          intervals: [2_000],
+          timeout: 30_000,
+        },
+      )
+      .toBeTruthy();
+
+    await reportsRequestPage.judicialOfficerHolderDropDownSelectAll.click();
+
+    await reportsRequestPage.viewReportButton.click();
+
+    await expect
+      .poll(
+        async () =>
+          await reportsRequestPage.page
+            .locator("#VisibleReportContentReportViewerControl_ctl09")
+            .innerText(),
+        {
+          timeout: 150_000,
+          intervals: [10_000],
+        },
+      )
+      .toContain("Data Export Report");
+
+    // Wait for the report to be visible
+    const reportContainer = reportsRequestPage.page.locator(
+      "#VisibleReportContentReportViewerControl_ctl09",
+    );
+    await expect(reportContainer).toBeVisible({ timeout: 20000 });
+
+    // Get all tables in the report
+    const allTables = await reportContainer.locator("table").all();
+
+    const expectedHeadings = [
+      "JOH",
+      "Court",
+      "Room",
+      "Date",
+      "Start",
+      "End",
+      "Subject",
+      "Description",
+      "Location Comments",
+      "Case ID",
+      "Hearing ID",
+      "Hearing Type",
+      "Case Comments",
+      "Listing Comments",
+      "Session Type",
+      "Jurisdiction",
+      "Case Service",
+      "Case Type",
+    ];
+
+    // Initialize an empty array to hold the extracted report data
+    let extracted: { column: string; value: string }[] = [];
+
+    // Loop through all tables found in the report container
+    for (const tbl of allTables) {
+      // Get all rows in the current table
+      const rows = await tbl.locator("tr").all();
+      // Skip tables that don't have at least 3 rows (header, headings, values)
+      if (rows.length < 3) continue;
+
+      // Extract the header cells from the second row (these should be the column headings)
+      const headerCells = await rows[1].locator("td").all();
+      const headers: string[] = [];
+      for (const cell of headerCells) {
+        // Add each header cell's text to the headers array
+        headers.push((await cell.innerText()).trim());
+      }
+
+      // Check if the extracted headers match the expected headings for the Data Export Report
+      if (headers.join(",") === expectedHeadings.join(",")) {
+        // Extract the value cells from the third row (these should be the data values)
+        const valueCells = await rows[2].locator("td").all();
+        const values: string[] = [];
+        for (const cell of valueCells) {
+          // Add each value cell's text to the values array
+          values.push((await cell.innerText()).trim());
+        }
+
+        // Map the headers and values into an array of objects with { column, value }
+        extracted = headers.map((column, i) => ({
+          column,
+          value: values[i],
+        }));
+
+        // Stop searching after finding the correct table
+        break;
+      }
+    }
+
+    if (extracted.length === 0) {
+      throw new Error(
+        "Could not find the Data Export Report table with expected headings.",
+      );
+    }
+
+    return extracted;
   }
 }

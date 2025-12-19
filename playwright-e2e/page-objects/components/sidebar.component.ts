@@ -96,6 +96,15 @@ export class SidebarComponent {
     ".cart-counter .cart-counter-label",
   );
 
+  //reports menu
+  readonly reportsMenu = this.page.getByRole("link", {
+    name: "Reports",
+    exact: true,
+  });
+  readonly dataExportsSubMenu = this.page.getByRole("link", {
+    name: "Opens Data Export (SSRS) in a",
+  });
+
   readonly cacheRefreshBtn = this.page.locator("#refreshCacheButton");
 
   readonly cacheRefreshMessage = this.page.locator(
@@ -392,5 +401,22 @@ export class SidebarComponent {
       )
       .toBeTruthy();
     await this.page.locator(".note-editable").fill(comment);
+  }
+
+  async openReportGenerationMenu(dataExportsSubMenu: Locator) {
+    await expect
+      .poll(
+        async () => {
+          await this.reportsMenu.click();
+          return await dataExportsSubMenu.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 10_000,
+        },
+      )
+      .toBeTruthy();
+
+    await dataExportsSubMenu.click();
   }
 }
