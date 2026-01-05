@@ -196,9 +196,18 @@ export class SessionBookingPage extends Base {
     //add external comments
     await this.externalCommentsTextBox.fill(externalComments);
 
-    //JOH selection
-    await this.sessionJohDropdown.click();
-    const johOption = this.page.getByRole("option", { name: johName }).nth(1);
+    // JOH selection
+    // Open the dropdown only if not already expanded
+    if (
+      !(await this.page
+        .getByRole("option", { name: johName })
+        .first()
+        .isVisible())
+    ) {
+      await this.sessionJohDropdown.click();
+    }
+    // Select the first visible matching option
+    const johOption = this.page.getByRole("option", { name: johName }).first();
     await johOption.click();
 
     let validationPopup;
