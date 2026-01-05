@@ -83,7 +83,7 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     );
   });
 
-  test("Data Export report", async ({
+  test("Data Export report @export", async ({
     addNewCasePage,
     caseSearchPage,
     sessionBookingPage,
