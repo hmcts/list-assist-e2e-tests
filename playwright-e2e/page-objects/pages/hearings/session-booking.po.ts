@@ -196,19 +196,19 @@ export class SessionBookingPage extends Base {
     //add external comments
     await this.externalCommentsTextBox.fill(externalComments);
 
-    // JOH selection
-    // Open the dropdown only if not already expanded
-    if (
-      !(await this.page
-        .getByRole("option", { name: johName })
-        .first()
-        .isVisible())
-    ) {
-      await this.sessionJohDropdown.click();
-    }
-    // Select the first visible matching option
-    const johOption = this.page.getByRole("option", { name: johName }).first();
-    await johOption.click();
+    //JOH selection
+    await this.sessionJohDropdown.click();
+    // Wait for the correct dropdown list to be fully loaded and visible
+    const johDropdownContainer = this.sessionJohDropdown
+      .locator("..")
+      .locator("..");
+    const johDropdownList = johDropdownContainer.locator(
+      "ul.dropdown-menu.inner.show",
+    );
+    await expect(johDropdownList).toBeVisible();
+    await johDropdownList
+      .locator('li a[role="option"] span.text', { hasText: johName })
+      .click();
 
     let validationPopup;
     try {
