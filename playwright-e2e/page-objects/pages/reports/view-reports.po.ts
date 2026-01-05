@@ -37,6 +37,16 @@ export class ViewReportsPage extends Base {
       "External Hearing List Welsh v2.0 (SRSS)",
     REPORT_SUBMENU_INTERNAL_HEARING_LIST: "Opens Internal Hearing List",
     REPORT_SUBMENU_EXTERNAL_HEARING_LIST: "External Hearing List v2.0 (SSRS)",
+
+    //data export report
+    DATA_EXPORT_REPORT_JOH_SALLY_LAVERNE: "DJ Sally Laverne",
+    DATA_EXPORT_REPORT_COURT_NEWPORT_CCFC:
+      "Newport (South Wales) County Court and Family Court",
+    DATA_EXPORT_REPORT_ROOM_NEWPORT_CHAMBERS_01:
+      "Newport (South Wales) Chambers 01",
+    DATA_EXPORT_REPORT_SESSION_TYPE_ADHOC_AS_DIRECTED: "Adhoc (as directed)",
+    DATA_EXPORT_REPORT_JURISDICTION_FAMILY: "Family",
+    DATA_EXPORT_REPORT_CASE_TYPE_SMALL_CLAIMS: "Small Claims",
   };
 
   //reports menu
