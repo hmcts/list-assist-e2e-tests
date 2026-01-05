@@ -83,7 +83,7 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     );
   });
 
-  test("Data Export Report @export", async ({
+  test("Data Export report", async ({
     addNewCasePage,
     caseSearchPage,
     sessionBookingPage,
@@ -100,12 +100,6 @@ test.describe("Data Reporting And Export @data-reporting", () => {
           .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       caseNumber: process.env.HMCTS_CASE_NUMBER as string,
-      // sessionDuration:
-      //   sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-      // hearingType:
-      //   sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-      // cancelReason:
-      //   sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
     await clearDownSchedule(
@@ -165,12 +159,19 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     );
 
     const expected = [
-      { column: "JOH", value: "DJ Sally Laverne" },
+      {
+        column: "JOH",
+        value: viewReportsPage.CONSTANTS.DATA_EXPORT_REPORT_JOH_SALLY_LAVERNE,
+      },
       {
         column: "Court",
-        value: "Newport (South Wales) County Court and Family Court",
+        value: viewReportsPage.CONSTANTS.DATA_EXPORT_REPORT_COURT_NEWPORT_CCFC,
       },
-      { column: "Room", value: "Newport (South Wales) Chambers 01" },
+      {
+        column: "Room",
+        value:
+          viewReportsPage.CONSTANTS.DATA_EXPORT_REPORT_ROOM_NEWPORT_CHAMBERS_01,
+      },
       {
         column: "Date",
         value: dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(0),
@@ -194,10 +195,25 @@ test.describe("Data Reporting And Export @data-reporting", () => {
         column: "Listing Comments",
         value: "Automation - Internal Case Comment",
       },
-      { column: "Session Type", value: "Adhoc (as directed)" },
-      { column: "Jurisdiction", value: "Family" },
-      { column: "Case Service", value: "Damages" },
-      { column: "Case Type", value: "Small Claims" },
+      {
+        column: "Session Type",
+        value:
+          viewReportsPage.CONSTANTS
+            .DATA_EXPORT_REPORT_SESSION_TYPE_ADHOC_AS_DIRECTED,
+      },
+      {
+        column: "Jurisdiction",
+        value: viewReportsPage.CONSTANTS.DATA_EXPORT_REPORT_JURISDICTION_FAMILY,
+      },
+      {
+        column: "Case Service",
+        value: viewReportsPage.CONSTANTS.SERVICE_DAMAGES,
+      },
+      {
+        column: "Case Type",
+        value:
+          viewReportsPage.CONSTANTS.DATA_EXPORT_REPORT_CASE_TYPE_SMALL_CLAIMS,
+      },
     ];
 
     expect(report.length).toBe(expected.length);
