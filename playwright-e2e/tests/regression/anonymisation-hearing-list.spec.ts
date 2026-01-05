@@ -446,9 +446,11 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     );
 
     await sessionBookingPage.bookSession(
-      roomData.sessionDuration,
-      roomData.sessionStatus,
-      roomData.sessionJoh,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+      `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
+      `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
+      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
     );
 
     await expect(
@@ -501,6 +503,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
       caseData,
       caseNumber,
       caseName,
+      "automation comment",
     );
 
     // Return values so each test has its own case
