@@ -8,6 +8,17 @@ import {
   HomePage,
 } from "../../page-objects/pages/index.ts";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
+import { clearDownSchedule } from "../../utils/reporting.utils.ts";
+
+test.afterEach(
+  async ({ hearingSchedulePage, sessionBookingPage, dataUtils }) => {
+    await clearDownMidlandsLeicesterSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
+  },
+);
 
 //to skip case creation when running test in isolation, uncomment this line
 // process.env.SKIP_CREATE_CASE = 'true';
@@ -49,10 +60,10 @@ test.describe("HMI Amend API tests after listing @amend-api-test-after-listing",
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
 
     //clears sessions
-    await hearingSchedulePage.clearDownSchedule(
-      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
-      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+    await clearDownMidlandsLeicesterSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
     );
 
     const roomData = {
@@ -118,7 +129,7 @@ test.describe("HMI Amend API tests after listing @amend-api-test-after-listing",
         sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
         `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
         `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
-        sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_01,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_JOH_AUTOMATION_TEST,
       );
     }
 
@@ -192,3 +203,21 @@ test.describe("HMI Amend API tests after listing @amend-api-test-after-listing",
     */
   });
 });
+
+async function clearDownMidlandsLeicesterSchedule(
+  sessionBookingPage,
+  hearingSchedulePage,
+  dataUtils,
+) {
+  await clearDownSchedule(
+    sessionBookingPage,
+    hearingSchedulePage,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_MIDLANDS,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_CLUSTER_MIDLANDS_LEICESTERSHIRE_RUTLAND_LINCOLNSHIRE_NORTH,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_LEICESTER_CC,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
+    sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+    dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+  );
+}

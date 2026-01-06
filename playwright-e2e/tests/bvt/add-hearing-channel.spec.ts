@@ -5,6 +5,7 @@ import {
   CaseDetailsPage,
   HearingSchedulePage,
 } from "../../page-objects/pages";
+import { clearDownSchedule } from "../../utils/reporting.utils.js";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po";
 import { config } from "../../utils";
 
@@ -20,10 +21,20 @@ test.describe("Hearing channel test @hearing-channel", () => {
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
 
       //clears sessions at start of test class but then does not when sessions created as part of tests in the class
-      await hearingSchedulePage.clearDownSchedule(
-        sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
-        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+      await clearDownMidlandsLeicesterSchedule(
+        sessionBookingPage,
+        hearingSchedulePage,
+        dataUtils,
+      );
+    },
+  );
+
+  test.afterEach(
+    async ({ hearingSchedulePage, sessionBookingPage, dataUtils }) => {
+      await clearDownMidlandsLeicesterSchedule(
+        sessionBookingPage,
+        hearingSchedulePage,
+        dataUtils,
       );
     },
   );
@@ -144,7 +155,7 @@ async function createHearingSession(
     sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
     `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
     `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
-    sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_01,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_JOH_AUTOMATION_TEST,
   );
 
   await hearingSchedulePage.waitForLoad();
@@ -165,4 +176,22 @@ async function createHearingSession(
     expect(interpreterIcons).toBe(0);
     expect(allIcons).toBe(1);
   }
+}
+
+async function clearDownMidlandsLeicesterSchedule(
+  sessionBookingPage,
+  hearingSchedulePage,
+  dataUtils,
+) {
+  await clearDownSchedule(
+    sessionBookingPage,
+    hearingSchedulePage,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_MIDLANDS,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_CLUSTER_MIDLANDS_LEICESTERSHIRE_RUTLAND_LINCOLNSHIRE_NORTH,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_LEICESTER_CC,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
+    sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+    dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+  );
 }

@@ -40,6 +40,7 @@ export class ViewReportsPage extends Base {
 
     //data export report
     DATA_EXPORT_REPORT_JOH_SALLY_LAVERNE: "DJ Sally Laverne",
+    DATA_EXPORT_REPORT_JOH_AUTOMATION_TEST: "JOH AutomationTest",
     DATA_EXPORT_REPORT_COURT_NEWPORT_CCFC:
       "Newport (South Wales) County Court and Family Court",
     DATA_EXPORT_REPORT_ROOM_NEWPORT_CHAMBERS_01:
