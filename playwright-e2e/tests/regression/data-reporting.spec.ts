@@ -11,23 +11,30 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     async ({
       page,
       loginPage,
-      // addNewCasePage,
-      // caseSearchPage,
-      // editNewCasePage,
-      // hearingSchedulePage,
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
     }) => {
       await page.goto(config.urls.baseUrl);
       await loginPage.login(config.users.testUser);
-      // //empties cart if there is anything present
-      // await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-      // //search for the case
-      // await addNewCasePage.sidebarComponent.openSearchCasePage();
-      // await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
-      // await expect(editNewCasePage.caseNameField).toHaveText(
-      //   process.env.CASE_NAME as string,
-      // );
+      await clearDownWalesSchedule(
+        sessionBookingPage,
+        hearingSchedulePage,
+        dataUtils,
+      );
     },
   );
+
+  test.afterEach(
+    async ({ sessionBookingPage, hearingSchedulePage, dataUtils }) => {
+      await clearDownWalesSchedule(
+        sessionBookingPage,
+        hearingSchedulePage,
+        dataUtils,
+      );
+    },
+  );
+
   test("Invalid Mailbox report", async ({
     createUserPage,
     homePage,
@@ -102,20 +109,6 @@ test.describe("Data Reporting And Export @data-reporting", () => {
       caseNumber: process.env.HMCTS_CASE_NUMBER as string,
     };
 
-    await clearDownSchedule(
-      sessionBookingPage,
-      hearingSchedulePage,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-      sessionBookingPage.CONSTANTS
-        .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-      sessionBookingPage.CONSTANTS
-        .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
-      sessionBookingPage.CONSTANTS
-        .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
-      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-    );
-
     await runAutomationBookingQueueJob(automaticBookingDashboardPage);
 
     await addNewCasePage.sidebarComponent.openSearchCasePage();
@@ -145,7 +138,7 @@ test.describe("Data Reporting And Export @data-reporting", () => {
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
       `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
       `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
-      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_JOH_AUTOMATION_TEST,
     );
 
     await expect(hearingSchedulePage.header).toBeVisible();
@@ -161,7 +154,7 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     const expected = [
       {
         column: "JOH",
-        value: viewReportsPage.CONSTANTS.DATA_EXPORT_REPORT_JOH_SALLY_LAVERNE,
+        value: viewReportsPage.CONSTANTS.DATA_EXPORT_REPORT_JOH_AUTOMATION_TEST,
       },
       {
         column: "Court",
@@ -223,3 +216,23 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     }
   });
 });
+
+async function clearDownWalesSchedule(
+  sessionBookingPage,
+  hearingSchedulePage,
+  dataUtils,
+) {
+  await clearDownSchedule(
+    sessionBookingPage,
+    hearingSchedulePage,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
+    sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+    dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+  );
+}

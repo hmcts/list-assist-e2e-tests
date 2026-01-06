@@ -5,12 +5,16 @@ export class SessionBookingPage extends Base {
   readonly CONSTANTS = {
     //case listing
     CASE_LISTING_REGION_WALES: "Wales",
+    CASE_LISTING_REGION_MIDLANDS: "Midlands",
     CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS:
       "Wales Civil, Family and Tribunals",
+    CASE_LISTING_CLUSTER_MIDLANDS_LEICESTERSHIRE_RUTLAND_LINCOLNSHIRE_NORTH:
+      "Leicestershire, Rutland, Lincolnshire and North",
     CASE_LISTING_LOCATION_LEICESTER_CC_7: "Leicester County Courtroom 07",
     CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
     CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT:
       "Pontypridd County Court and",
+    CASE_LISTING_LOCALITY_LEICESTER_CC: "Leicester Combined Court",
     CASE_LISTING_LOCALITY_CAERNARFON_JC: "Caernarfon Justice Centre",
     CASE_LISTING_LOCALITY_ABERYSTWYTH_JC: "Aberystwyth Justice Centre",
     CASE_LISTING_LOCATION_LOCATION_CAERNARFON_CHMBRS_5:
@@ -37,6 +41,9 @@ export class SessionBookingPage extends Base {
     //session hearing channels
     SESSION_HEARING_CHANNEL_IN_PERSON: "In Person (child)",
     SESSION_HEARING_CHANNEL_TELEPHONE: "Telephone - Other",
+
+    CASE_LISTING_JOH_AUTOMATION_TEST:
+      "AutomationTest, JOH (Automation Test JOH)",
 
     CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON: "Generic Decision 3",
   };
@@ -197,18 +204,18 @@ export class SessionBookingPage extends Base {
     await this.externalCommentsTextBox.fill(externalComments);
 
     //JOH selection
+    // Click the dropdown button to open the list
     await this.sessionJohDropdown.click();
-    // Wait for the correct dropdown list to be fully loaded and visible
-    const johDropdownContainer = this.sessionJohDropdown
-      .locator("..")
-      .locator("..");
-    const johDropdownList = johDropdownContainer.locator(
-      "ul.dropdown-menu.inner.show",
+
+    // Wait for the dropdown menu to be visible
+    const dropdownMenu = this.page.locator(
+      "div.dropdown-menu.show ul.dropdown-menu.inner.show",
     );
-    await expect(johDropdownList).toBeVisible();
-    await johDropdownList
-      .locator('li a[role="option"] span.text', { hasText: johName })
-      .click();
+    await expect(dropdownMenu).toBeVisible();
+
+    // Click the desired option by visible text
+    const johOption = dropdownMenu.getByText(johName, { exact: true });
+    await johOption.click();
 
     let validationPopup;
     try {
