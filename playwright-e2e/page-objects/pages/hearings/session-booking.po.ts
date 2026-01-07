@@ -184,8 +184,8 @@ export class SessionBookingPage extends Base {
     sessionStatus: string,
     internalComments: string,
     externalComments: string,
-    johName: string,
-    jurisdictionCode?: string, // <-- add this optional param
+    johName?: string,
+    jurisdictionCode?: string,
   ) {
     await this.waitForLoad();
     await expect(this.heading).toBeVisible();
@@ -209,19 +209,22 @@ export class SessionBookingPage extends Base {
     //add external comments
     await this.externalCommentsTextBox.fill(externalComments);
 
-    //JOH selection
-    // Click the dropdown button to open the list
-    await this.sessionJohDropdown.click();
+    //conditional
+    if (johName) {
+      //JOH selection
+      // Click the dropdown button to open the list
+      await this.sessionJohDropdown.click();
 
-    // Wait for the dropdown menu to be visible
-    const dropdownMenu = this.page.locator(
-      "div.dropdown-menu.show ul.dropdown-menu.inner.show",
-    );
-    await expect(dropdownMenu).toBeVisible();
+      // Wait for the dropdown menu to be visible
+      const dropdownMenu = this.page.locator(
+        "div.dropdown-menu.show ul.dropdown-menu.inner.show",
+      );
+      await expect(dropdownMenu).toBeVisible();
 
-    // Click the desired option by visible text
-    const johOption = dropdownMenu.getByText(johName, { exact: true });
-    await johOption.click();
+      // Click the desired option by visible text
+      const johOption = dropdownMenu.getByText(johName, { exact: true });
+      await johOption.click();
+    }
 
     let validationPopup;
     try {

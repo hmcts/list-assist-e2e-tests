@@ -263,7 +263,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       hearingType: string;
       cancelReason: string;
       sessionStatus: string;
-      sessionJoh: string;
+      sessionJoh?: string;
     },
   ) {
     const {
