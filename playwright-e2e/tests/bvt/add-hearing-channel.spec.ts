@@ -155,7 +155,6 @@ async function createHearingSession(
     sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
     `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
     `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
-    sessionBookingPage.CONSTANTS.CASE_LISTING_JOH_AUTOMATION_TEST,
   );
 
   await hearingSchedulePage.waitForLoad();
