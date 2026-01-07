@@ -64,6 +64,12 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     const CASE_VS_REFERENCE =
       "Acme Vs " + dataUtils.generateRandomAlphabetical(10).toUpperCase();
 
+    await clearDownWalesSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
+
     await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
     await sessionBookingPage.updateAdvancedFilterConfig(
@@ -74,12 +80,6 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
         .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
       sessionBookingPage.CONSTANTS
         .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
-    );
-
-    await clearDownWalesSchedule(
-      sessionBookingPage,
-      hearingSchedulePage,
-      dataUtils,
     );
 
     //run scheduled jobs so there are no queued reports
