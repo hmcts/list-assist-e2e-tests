@@ -139,6 +139,7 @@ test.describe("Data Reporting And Export @data-reporting", () => {
       `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
       `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
       sessionBookingPage.CONSTANTS.CASE_LISTING_JOH_AUTOMATION_TEST,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_FAMILY_CODE_AB,
     );
 
     await expect(hearingSchedulePage.header).toBeVisible();

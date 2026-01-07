@@ -24,6 +24,8 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
       "Newport (South Wales) Chambers 01",
 
+    CASE_LISTING_JURISDICTION_FAMILY_CODE_AB: "AB",
+
     CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1: "Aberystwyth Courtroom 01",
     CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
     CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: "4",
@@ -183,6 +185,7 @@ export class SessionBookingPage extends Base {
     internalComments: string,
     externalComments: string,
     johName: string,
+    jurisdictionCode?: string, // <-- add this optional param
   ) {
     await this.waitForLoad();
     await expect(this.heading).toBeVisible();
@@ -192,8 +195,11 @@ export class SessionBookingPage extends Base {
     await this.sessionHearingChannel.click();
     await this.sessionHearingChannelTel.click();
     await this.sessionHearingChannelVid.click();
-    await this.jurisdictionDropdown.click();
-    await this.jurisdictionDropdown.selectOption({ value: "AB" });
+    //conditional
+    if (jurisdictionCode) {
+      await this.jurisdictionDropdown.click();
+      await this.jurisdictionDropdown.selectOption({ value: jurisdictionCode });
+    }
     await this.sessionTypeDropdown.click();
     await this.sessionTypeDropdown.selectOption({ value: "ADHOC" });
 
