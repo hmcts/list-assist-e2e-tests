@@ -490,6 +490,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       sessionDuration: string;
       hearingType: string;
       cancelReason: string;
+      johName?: string; // <-- add this optional property
     },
     sessionBookingPage: SessionBookingPage,
   ) {
@@ -532,7 +533,6 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
       `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
       `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
-      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
     );
 
     //confirm listing
