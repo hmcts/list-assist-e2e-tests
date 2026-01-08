@@ -296,11 +296,13 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     );
 
     await sessionBookingPage.bookSession(
-      roomData.sessionDuration,
-      roomData.sessionStatus,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+      roomData.sessionJoh,
+      "AB",
+      undefined,
       `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
       `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
-      roomData.sessionJoh,
     );
 
     await expect(
