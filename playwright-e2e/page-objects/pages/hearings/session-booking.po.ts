@@ -37,15 +37,14 @@ export class SessionBookingPage extends Base {
     AUTO_JUDICIAL_OFFICE_HOLDER_01: "Benson, David (Mr David Benson)",
     AUTO_JUDICIAL_OFFICE_HOLDER_02: "Dunn, Matthew (Matthew Dunn)",
     AUTO_JUDICIAL_OFFICE_HOLDER_03: "Laverne, Sally (District Judge Laverne)",
+    AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH:
+      "AutomationTest, JOH (Automation Test JOH)",
 
     //session details
     SESSION_DETAILS_CANCELLATION_CODE_CANCEL: "CNCL",
     //session hearing channels
     SESSION_HEARING_CHANNEL_IN_PERSON: "In Person (child)",
     SESSION_HEARING_CHANNEL_TELEPHONE: "Telephone - Other",
-
-    CASE_LISTING_JOH_AUTOMATION_TEST:
-      "AutomationTest, JOH (Automation Test JOH)",
 
     CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON: "Generic Decision 3",
   };
