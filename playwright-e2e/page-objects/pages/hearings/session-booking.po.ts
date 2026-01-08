@@ -182,11 +182,11 @@ export class SessionBookingPage extends Base {
   async bookSession(
     duration: string,
     sessionStatus: string,
-    internalComments: string,
-    externalComments: string,
     johName?: string,
     jurisdictionCode?: string,
     sessionType?: string,
+    internalComments?: string,
+    externalComments?: string,
   ) {
     await this.waitForLoad();
     await expect(this.heading).toBeVisible();
@@ -208,10 +208,14 @@ export class SessionBookingPage extends Base {
     }
 
     //add internal comments
-    await this.internalCommentsTextBox.fill(internalComments);
+    if (internalComments) {
+      await this.internalCommentsTextBox.fill(internalComments);
+    }
 
     //add external comments
-    await this.externalCommentsTextBox.fill(externalComments);
+    if (externalComments) {
+      await this.externalCommentsTextBox.fill(externalComments);
+    }
 
     //conditional
     if (johName) {
