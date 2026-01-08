@@ -64,12 +64,6 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     const CASE_VS_REFERENCE =
       "Acme Vs " + dataUtils.generateRandomAlphabetical(10).toUpperCase();
 
-    await clearDownWalesSchedule(
-      sessionBookingPage,
-      hearingSchedulePage,
-      dataUtils,
-    );
-
     await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
     await sessionBookingPage.updateAdvancedFilterConfig(
@@ -532,7 +526,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     await sessionBookingPage.bookSession(
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_JOH_AUTOMATION_TEST,
       undefined,
       undefined,
       `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
