@@ -505,7 +505,6 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
       caseData,
       caseNumber,
       caseName,
-      "automation comment",
     );
 
     // Return values so each test has its own case
