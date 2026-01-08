@@ -153,11 +153,11 @@ async function createHearingSession(
   await sessionBookingPage.bookSession(
     sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
     sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-    undefined, // instead of ""
-    "AB",
-    undefined, // instead of ""
-    `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
-    `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
+    sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_01,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
   );
 
   await hearingSchedulePage.waitForLoad();
