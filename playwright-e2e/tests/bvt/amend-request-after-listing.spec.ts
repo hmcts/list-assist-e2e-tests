@@ -59,13 +59,6 @@ test.describe("HMI Amend API tests after listing @amend-api-test-after-listing",
 
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
 
-    //clears sessions
-    await clearDownMidlandsLeicesterSchedule(
-      sessionBookingPage,
-      hearingSchedulePage,
-      dataUtils,
-    );
-
     const roomData = {
       roomName:
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,

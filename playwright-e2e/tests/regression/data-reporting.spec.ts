@@ -140,6 +140,7 @@ test.describe("Data Reporting And Export @data-reporting", () => {
       `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
       sessionBookingPage.CONSTANTS.CASE_LISTING_JOH_AUTOMATION_TEST,
       sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_FAMILY_CODE_AB,
+      "ADHOC",
     );
 
     await expect(hearingSchedulePage.header).toBeVisible();
