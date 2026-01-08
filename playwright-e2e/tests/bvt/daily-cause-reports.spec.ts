@@ -9,6 +9,18 @@ import {
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
 import { clearDownSchedule } from "../../utils/reporting.utils.ts";
 
+test.beforeEach(
+  async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
+    await page.goto(config.urls.baseUrl);
+
+    await clearDownPontypriddSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
+  },
+);
+
 test.afterEach(
   async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
     await page.goto(config.urls.baseUrl);
@@ -74,12 +86,6 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       await page.goto(config.urls.baseUrl);
       await loginPage.login(config.users.testUser);
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-
-      await clearDownPontypriddSchedule(
-        sessionBookingPage,
-        hearingSchedulePage,
-        dataUtils,
-      );
 
       await addNewCasePage.sidebarComponent.openSearchCasePage();
       await caseSearchPage.searchCase(caseNumber);
@@ -148,12 +154,6 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
         CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
         CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
         CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-      );
-
-      await clearDownPontypriddSchedule(
-        sessionBookingPage,
-        hearingSchedulePage,
-        dataUtils,
       );
 
       await createHearingSession(
