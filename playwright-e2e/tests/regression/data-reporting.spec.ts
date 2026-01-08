@@ -136,11 +136,11 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     await sessionBookingPage.bookSession(
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_JOH_AUTOMATION_TEST,
+      "AB",
+      "ADHOC",
       `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
       `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_JOH_AUTOMATION_TEST,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_FAMILY_CODE_AB,
-      "ADHOC",
     );
 
     await expect(hearingSchedulePage.header).toBeVisible();
