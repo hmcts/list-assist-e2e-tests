@@ -136,7 +136,7 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     await sessionBookingPage.bookSession(
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_JOH_AUTOMATION_TEST,
+      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
       "AB",
       "ADHOC",
       `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
