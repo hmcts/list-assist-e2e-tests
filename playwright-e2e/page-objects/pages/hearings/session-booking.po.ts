@@ -186,6 +186,7 @@ export class SessionBookingPage extends Base {
     externalComments: string,
     johName?: string,
     jurisdictionCode?: string,
+    sessionType?: string,
   ) {
     await this.waitForLoad();
     await expect(this.heading).toBeVisible();
@@ -200,8 +201,11 @@ export class SessionBookingPage extends Base {
       await this.jurisdictionDropdown.click();
       await this.jurisdictionDropdown.selectOption({ value: jurisdictionCode });
     }
-    await this.sessionTypeDropdown.click();
-    await this.sessionTypeDropdown.selectOption({ value: "ADHOC" });
+
+    if (sessionType) {
+      await this.sessionTypeDropdown.click();
+      await this.sessionTypeDropdown.selectOption({ value: sessionType });
+    }
 
     //add internal comments
     await this.internalCommentsTextBox.fill(internalComments);
