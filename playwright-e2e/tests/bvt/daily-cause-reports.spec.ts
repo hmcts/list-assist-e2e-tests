@@ -52,7 +52,6 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     homePage,
     viewReportsPage,
     dataUtils,
-    loginPage,
     addNewCasePage,
     editNewCasePage,
     listingRequirementsPage,
