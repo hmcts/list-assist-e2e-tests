@@ -90,8 +90,6 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     const combinedDate = `${welshDate}, ${formattedReportDate}`;
 
     await test.step("Login and prepare test case", async () => {
-      await page.goto(config.urls.baseUrl);
-      await loginPage.login(config.users.testUser);
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
 
       await addNewCasePage.sidebarComponent.openSearchCasePage();
