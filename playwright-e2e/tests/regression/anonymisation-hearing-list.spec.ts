@@ -491,12 +491,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     addNewCasePage: AddNewCasePage;
     hearingSchedulePage: HearingSchedulePage;
   }): Promise<{ caseNumber: string; caseName: string }> {
-    const { page, loginPage, homePage, addNewCasePage, hearingSchedulePage } =
-      pages;
-
-    // Login
-    await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser);
+    const { homePage, addNewCasePage, hearingSchedulePage } = pages;
 
     // Empty cart if there is anything present
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
