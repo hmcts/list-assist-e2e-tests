@@ -153,8 +153,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
             sessionBookingPage.CONSTANTS
               .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
           sessionJoh:
-            sessionBookingPage.CONSTANTS
-              .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
+            sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
         },
       );
     });
@@ -338,8 +337,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
             sessionBookingPage.CONSTANTS
               .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
           sessionJoh:
-            sessionBookingPage.CONSTANTS
-              .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
+            sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
         },
       );
     });
@@ -472,7 +470,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     await sessionBookingPage.bookSession(
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
+      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
       undefined,
       undefined,
       undefined,
