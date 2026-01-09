@@ -56,6 +56,7 @@ setup.describe("Global Setup", () => {
         caseData,
         process.env.HMCTS_CASE_NUMBER,
         process.env.CASE_NAME,
+        `Case Comment ${process.env.HMCTS_CASE_NUMBER}`,
       );
     },
   );
