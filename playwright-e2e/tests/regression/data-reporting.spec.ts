@@ -36,10 +36,13 @@ test.describe("Data Reporting And Export @data-reporting", () => {
   );
 
   test("Invalid Mailbox report", async ({
+    page,
     createUserPage,
     homePage,
     viewReportsPage,
   }) => {
+    await page.goto(config.urls.baseUrl);
+
     // Navigate to User Management Page
     await homePage.sidebarComponent.openUserManagementPage();
 
@@ -91,6 +94,7 @@ test.describe("Data Reporting And Export @data-reporting", () => {
   });
 
   test("Data Export report @export", async ({
+    page,
     addNewCasePage,
     caseSearchPage,
     sessionBookingPage,
@@ -108,6 +112,8 @@ test.describe("Data Reporting And Export @data-reporting", () => {
       column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       caseNumber: process.env.HMCTS_CASE_NUMBER as string,
     };
+
+    await page.goto(config.urls.baseUrl);
 
     await runAutomationBookingQueueJob(automaticBookingDashboardPage);
 
