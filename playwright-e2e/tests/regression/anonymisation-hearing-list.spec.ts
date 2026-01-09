@@ -153,7 +153,8 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
             sessionBookingPage.CONSTANTS
               .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
           sessionJoh:
-            sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_02,
+            sessionBookingPage.CONSTANTS
+              .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
         },
       );
     });
@@ -337,7 +338,8 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
             sessionBookingPage.CONSTANTS
               .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
           sessionJoh:
-            sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_02,
+            sessionBookingPage.CONSTANTS
+              .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
         },
       );
     });
@@ -470,7 +472,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     await sessionBookingPage.bookSession(
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
+      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
       undefined,
       undefined,
       undefined,
@@ -522,6 +524,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
       caseData,
       caseNumber,
       caseName,
+      "Case comment for testing",
     );
 
     // Return values so each test has its own case
