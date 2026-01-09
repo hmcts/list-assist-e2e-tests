@@ -41,7 +41,7 @@ export class ViewReportsPage extends Base {
     //data export report
     DATA_EXPORT_REPORT_JOH_SALLY_LAVERNE: "DJ Sally Laverne",
     DATA_EXPORT_DISTRICT_JUDGE_LAVERNE: "District Judge Laverne (P)",
-    DATA_EXPORT_REPORT_JOH_AUTOMATION_TEST: "JOH AutomationTest",
+    DATA_EXPORT_REPORT_JOH_AUTOMATION_TEST: "Automation Test JOH",
     DATA_EXPORT_REPORT_COURT_NEWPORT_CCFC:
       "Newport (South Wales) County Court and Family Court",
     DATA_EXPORT_REPORT_ROOM_NEWPORT_CHAMBERS_01:
@@ -351,7 +351,7 @@ export class ViewReportsPage extends Base {
 
     // Common headings assertions for all the 3 reports
     await expect(reportsRequestPage.reportBody).toContainText(
-      reportsRequestPage.CONSTANTS.DATA_EXPORT_DISTRICT_JUDGE_LAVERNE,
+      reportsRequestPage.CONSTANTS.DATA_EXPORT_REPORT_JOH_AUTOMATION_TEST,
     );
     await expect(reportsRequestPage.reportBody).toContainText(
       reportsRequestPage.CONSTANTS
