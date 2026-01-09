@@ -62,6 +62,7 @@ export class AddNewCasePage extends Base {
   readonly owningHearingSelector = this.page
     .getByLabel("Matter Detail - Owning Hearing Location_listbox")
     .getByText("Select One");
+  readonly commentInput = this.page.locator("#mtrComment");
   readonly hmctsCaseNumberInput = this.page.locator("#mtrNumberAdded");
   readonly enterNameInput = this.page.locator("#mtrAltTitleTxt");
   readonly saveButton = this.page.getByRole("button", {
@@ -134,7 +135,7 @@ export class AddNewCasePage extends Base {
     await this.selectOwningHearing(owningHearing);
     await this.hmctsCaseNumberInput.fill(hmctsCaseNumber);
     await this.enterNameInput.fill(caseName);
-    await this.page.locator("#mtrCaseCommentsTxt").fill(caseComment);
+    await this.commentInput.fill(caseComment);
   }
 
   async addNewCaseWithMandatoryData(
