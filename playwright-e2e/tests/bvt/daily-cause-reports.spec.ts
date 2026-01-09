@@ -9,17 +9,24 @@ import {
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
 import { clearDownSchedule } from "../../utils/reporting.utils.ts";
 
-// test.beforeEach(
-//   async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
-//     await page.goto(config.urls.baseUrl);
+test.beforeEach(
+  async ({
+    page,
+    sessionBookingPage,
+    hearingSchedulePage,
+    dataUtils,
+    loginPage,
+  }) => {
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser);
 
-//     await clearDownPontypriddSchedule(
-//       sessionBookingPage,
-//       hearingSchedulePage,
-//       dataUtils,
-//     );
-//   },
-// );
+    await clearDownPontypriddSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
+  },
+);
 
 test.afterEach(
   async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
