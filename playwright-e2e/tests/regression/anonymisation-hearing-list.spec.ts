@@ -13,8 +13,15 @@ import { AddNewCasePage } from "../../page-objects/pages/cases/add-new-case.po.t
 import { clearDownSchedule } from "../../utils/reporting.utils.ts";
 
 test.beforeEach(
-  async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
+  async ({
+    page,
+    sessionBookingPage,
+    hearingSchedulePage,
+    dataUtils,
+    loginPage,
+  }) => {
     await page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser);
 
     await clearDownPontypriddSchedule(
       sessionBookingPage,
@@ -56,6 +63,8 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     const givenName = dataUtils.generateRandomAlphabetical(7);
     const lastName = dataUtils.generateRandomAlphabetical(8);
     const partyName = `${givenName} ${lastName}`;
+
+    await page.goto(config.urls.baseUrl);
 
     // case name suppression value
     const caseNameSuppression = dataUtils.generateRandomAlphabetical(10);
