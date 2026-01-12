@@ -93,7 +93,7 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     );
   });
 
-  test("Data Export report @export", async ({
+  test.only("Data Export report @export", async ({
     page,
     addNewCasePage,
     caseSearchPage,
@@ -125,6 +125,14 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     await caseSearchPage.addToCartButton.click();
     await expect(caseSearchPage.sidebarComponent.cartButton).toBeEnabled();
 
+    //add comment to case
+    await caseSearchPage.sidebarComponent.openCaseDetailsEditPage();
+    await editNewCasePage.editCasePencilIcon.click();
+    await addNewCasePage.commentInput.fill(
+      `Case Comment ${process.env.HMCTS_CASE_NUMBER}`,
+    );
+    await addNewCasePage.saveButton.click();
+
     //go to hearing schedule page
     await expect(hearingSchedulePage.sidebarComponent.sidebar).toBeVisible();
     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
@@ -147,6 +155,8 @@ test.describe("Data Reporting And Export @data-reporting", () => {
       "ADHOC",
       `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
       `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
+      `Automation location comments ${process.env.HMCTS_CASE_NUMBER}`,
+      `Automation listing comments ${process.env.HMCTS_CASE_NUMBER}`,
     );
 
     await expect(hearingSchedulePage.header).toBeVisible();
@@ -184,7 +194,10 @@ test.describe("Data Reporting And Export @data-reporting", () => {
         value: `${process.env.HMCTS_CASE_NUMBER as string} - ${process.env.CASE_NAME as string} - Allocation Hearing`,
       },
       { column: "Description", value: process.env.HMCTS_CASE_NUMBER as string },
-      { column: "Location Comments", value: "Automation - Location Comment" },
+      {
+        column: "Location Comments",
+        value: `Automation location comments ${process.env.HMCTS_CASE_NUMBER}`,
+      },
       { column: "Case ID", value: process.env.HMCTS_CASE_NUMBER as string },
       { column: "Hearing ID", value: process.env.CASE_NAME as string },
       { column: "Hearing Type", value: "Allocation Hearing" },
@@ -194,7 +207,7 @@ test.describe("Data Reporting And Export @data-reporting", () => {
       },
       {
         column: "Listing Comments",
-        value: "Automation - Internal Case Comment",
+        value: `Automation listing comments ${process.env.HMCTS_CASE_NUMBER}`,
       },
       {
         column: "Session Type",
