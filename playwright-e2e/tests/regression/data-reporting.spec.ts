@@ -93,7 +93,7 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     );
   });
 
-  test.only("Data Export report @export", async ({
+  test("Data Export report @export", async ({
     page,
     addNewCasePage,
     caseSearchPage,
