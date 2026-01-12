@@ -114,7 +114,6 @@ test.describe("Case creation @add-new-case", () => {
       caseData,
       RELATED_HMCTS_CASE_NUMBER,
       RELATED_CASE_NAME,
-      "Case Comment " + RELATED_HMCTS_CASE_NUMBER,
     );
     await addNewCasePage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
