@@ -21,7 +21,6 @@ export class CaseDetailsPage extends Base {
     "#matter-detail-summaryField-4",
   );
 
-  readonly caseCommentTextBox = this.page.locator("#mtrComment");
   readonly closeCaseButton = this.page.getByRole("link", {
     name: "Close Case from top navigation",
   });
