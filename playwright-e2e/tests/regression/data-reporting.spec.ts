@@ -162,7 +162,7 @@ test.describe("Data Reporting And Export @data-reporting", () => {
     const expected = [
       {
         column: "JOH",
-        value: viewReportsPage.CONSTANTS.DATA_EXPORT_REPORT_JOH_AUTOMATION_TEST,
+        value: "JOH AutomationTest",
       },
       {
         column: "Court",
