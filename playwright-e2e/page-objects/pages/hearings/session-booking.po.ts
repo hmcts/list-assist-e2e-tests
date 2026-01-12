@@ -186,6 +186,8 @@ export class SessionBookingPage extends Base {
     sessionType?: string,
     internalComments?: string,
     externalComments?: string,
+    locationComment?: string,
+    listingComment?: string,
   ) {
     await this.waitForLoad();
     await expect(this.heading).toBeVisible();
@@ -248,9 +250,9 @@ export class SessionBookingPage extends Base {
       await validationPopup
         .getByRole("button", { name: "SAVE & CONTINUE LISTING" })
         .click();
-      await this.checkingListingIframe();
+      await this.checkingListingIframe(locationComment, listingComment);
     } catch {
-      await this.checkingListingIframe();
+      await this.checkingListingIframe(locationComment, listingComment);
     }
   }
 
@@ -300,7 +302,10 @@ export class SessionBookingPage extends Base {
       .toBeTruthy();
   }
 
-  async checkingListingIframe() {
+  async checkingListingIframe(
+    locationComment?: string,
+    listingComment?: string,
+  ) {
     const listingIframe = this.page.locator(
       '#container iframe[name="addAssociation"]',
     );
@@ -314,12 +319,18 @@ export class SessionBookingPage extends Base {
       .toBeTruthy();
 
     const contentFrame = await listingIframe.contentFrame();
-    await contentFrame
-      .locator("textarea#listing\\.locationComment")
-      .fill("Automation - Location Comment");
-    await contentFrame
-      .locator('textarea[name="listing.comments"]')
-      .fill("Automation - Internal Case Comment");
+
+    if (locationComment) {
+      await contentFrame
+        .locator("textarea#listing\\.locationComment")
+        .fill(locationComment);
+    }
+
+    if (listingComment) {
+      await contentFrame
+        .locator('textarea[name="listing.comments"]')
+        .fill(listingComment);
+    }
 
     await expect(contentFrame.getByLabel("Hearing Type")).toBeVisible();
     const hearingTypeBtn = contentFrame.getByRole("button", {
