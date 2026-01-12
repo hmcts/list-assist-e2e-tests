@@ -175,7 +175,8 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
             sessionBookingPage.CONSTANTS
               .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
           sessionJoh:
-            sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
+            sessionBookingPage.CONSTANTS
+              .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
         },
       );
     });
@@ -304,7 +305,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     await sessionBookingPage.bookSession(
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
+      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
       undefined,
       undefined,
       `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
