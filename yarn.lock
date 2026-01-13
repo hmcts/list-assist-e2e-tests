@@ -5,7 +5,7 @@ __metadata:
   version: 8
   cacheKey: 10
 
-"@axe-core/playwright@npm:^4.10.0":
+"@axe-core/playwright@npm:^4.11.0":
   version: 4.11.0
   resolution: "@axe-core/playwright@npm:4.11.0"
   dependencies:
@@ -3672,7 +3672,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "tcoe-playwright-example@workspace:."
   dependencies:
-    "@axe-core/playwright": "npm:^4.10.0"
+    "@axe-core/playwright": "npm:^4.11.0"
     "@eslint/js": "npm:^9.11.1"
     "@hmcts/playwright-common": "npm:1.0.39"
     "@playwright/test": "npm:^1.52.0"
