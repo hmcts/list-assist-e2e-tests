@@ -44,7 +44,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     // Create new Civil Damages Small Claims case
     const { caseNumber, caseName } =
       await test.step("login and Create Civil Damages Small Claims case for case-name suppression", async () =>
-        await createCivilDamagesSmallClaimsCase({
+        await createNewCase({
           page,
           loginPage,
           homePage,
@@ -94,54 +94,25 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
       await editNewCasePage.setCaseNameSuppression(caseNameSuppression);
     });
 
-    await test.step("Clear existing schedule and create new released session", async () => {
-      await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
-      await sessionBookingPage.updateAdvancedFilterConfig(
-        sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-        sessionBookingPage.CONSTANTS
-          .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-        sessionBookingPage.CONSTANTS
-          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-      );
+      await test.step("Clear existing schedule and create new released session", async () => {
 
-      await hearingSchedulePage.clearDownSchedule(
-        sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-      );
+          const listingDate =
+              dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0);
+          await clearScheduleAndCreateReleasedSession(
+              {
+                  homePage,
+                  caseSearchPage,
+                  caseDetailsPage,
+                  hearingSchedulePage,
+                  sessionBookingPage,
+              },
+              caseNumber,
+              listingDate,
+          );
+      });
 
-      await createHearingSession(
-        {
-          homePage,
-          caseSearchPage,
-          caseDetailsPage,
-          hearingSchedulePage,
-          sessionBookingPage,
-        },
-        {
-          roomName:
-            sessionBookingPage.CONSTANTS
-              .CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-          caseNumber,
-          sessionDuration:
-            sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-          hearingType:
-            sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-          cancelReason:
-            sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
-          sessionStatus:
-            sessionBookingPage.CONSTANTS
-              .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-          sessionJoh:
-            sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_02,
-        },
-      );
-    });
-
-    await test.step("Verify External report shows suppressed case name and real party name", async () => {
+      await test.step("Verify External report shows suppressed case name and real party name", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
         todayDate,
         sessionBookingPage.CONSTANTS
@@ -243,7 +214,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     // Create new Civil Damages Small Claims case
     const { caseNumber, caseName } =
       await test.step("login and Create Civil Damages Small Claims case for party suppression", async () =>
-        await createCivilDamagesSmallClaimsCase({
+        await createNewCase({
           page,
           loginPage,
           homePage,
@@ -291,54 +262,25 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
       );
     });
 
-    await test.step("Clear existing schedule and create new released session", async () => {
-      await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
-      await sessionBookingPage.updateAdvancedFilterConfig(
-        sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-        sessionBookingPage.CONSTANTS
-          .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-        sessionBookingPage.CONSTANTS
-          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-      );
+      await test.step("Clear existing schedule and create new released session", async () => {
 
-      await hearingSchedulePage.clearDownSchedule(
-        sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-      );
+          const listingDate =
+              dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0);
+          await clearScheduleAndCreateReleasedSession(
+              {
+                  homePage,
+                  caseSearchPage,
+                  caseDetailsPage,
+                  hearingSchedulePage,
+                  sessionBookingPage,
+              },
+              caseNumber,
+              listingDate,
+          );
+      });
 
-      await createHearingSession(
-        {
-          homePage,
-          caseSearchPage,
-          caseDetailsPage,
-          hearingSchedulePage,
-          sessionBookingPage,
-        },
-        {
-          roomName:
-            sessionBookingPage.CONSTANTS
-              .CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-          caseNumber,
-          sessionDuration:
-            sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-          hearingType:
-            sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-          cancelReason:
-            sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
-          sessionStatus:
-            sessionBookingPage.CONSTANTS
-              .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-          sessionJoh:
-            sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_02,
-        },
-      );
-    });
-
-    await test.step("Verify External report shows real case name and suppressed party name", async () => {
+      await test.step("Verify External report shows real case name and suppressed party name", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
         todayDate,
         sessionBookingPage.CONSTANTS
@@ -444,7 +386,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     // Create new Family case
     const { caseNumber, caseName } =
         await test.step("login and Create Family Case (Private Law) with parties, default suppression", async () =>
-            await createCivilDamagesSmallClaimsCase({
+            await createNewCase({
                   page,
                   loginPage,
                   homePage,
@@ -492,52 +434,23 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
       });
 
 
-    await test.step("Clear existing schedule and create new released session", async () => {
-      await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
-      await sessionBookingPage.updateAdvancedFilterConfig(
-          sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-          sessionBookingPage.CONSTANTS
-              .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-          sessionBookingPage.CONSTANTS
-              .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-          sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-      );
+      await test.step("Clear existing schedule and create new released session", async () => {
 
-      await hearingSchedulePage.clearDownSchedule(
-          sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-          sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-      );
-
-      await createHearingSession(
-          {
-            homePage,
-            caseSearchPage,
-            caseDetailsPage,
-            hearingSchedulePage,
-            sessionBookingPage,
-          },
-          {
-            roomName:
-            sessionBookingPage.CONSTANTS
-                .CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-            column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-            caseNumber,
-            sessionDuration:
-            sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-            hearingType:
-            sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-            cancelReason:
-            sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
-            sessionStatus:
-            sessionBookingPage.CONSTANTS
-                .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-            sessionJoh:
-            sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_02,
-          },
-      );
-    });
+          const listingDate =
+              dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0);
+          await clearScheduleAndCreateReleasedSession(
+              {
+                  homePage,
+                  caseSearchPage,
+                  caseDetailsPage,
+                  hearingSchedulePage,
+                  sessionBookingPage,
+              },
+              caseNumber,
+              listingDate,
+          );
+      });
 
     await test.step("Verify External report shows default suppressed case name suppressed party name", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
@@ -647,7 +560,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
         // Create new Family case
         const { caseNumber, caseName } =
             await test.step("login and Create Family Case (Private Law) with parties", async () =>
-                await createCivilDamagesSmallClaimsCase({
+                await createNewCase({
                         page,
                         loginPage,
                         homePage,
@@ -697,25 +610,12 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
             await editNewCasePage.setCaseNameSuppression(caseNameSuppression);
         });
 
+
         await test.step("Clear existing schedule and create new released session", async () => {
-            await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
-            await sessionBookingPage.updateAdvancedFilterConfig(
-                sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-                sessionBookingPage.CONSTANTS
-                    .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-                sessionBookingPage.CONSTANTS
-                    .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-                sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-            );
-
-            await hearingSchedulePage.clearDownSchedule(
-                sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-                sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-                dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-            );
-
-            await createHearingSession(
+            const listingDate =
+                dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0);
+            await clearScheduleAndCreateReleasedSession(
                 {
                     homePage,
                     caseSearchPage,
@@ -723,24 +623,8 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
                     hearingSchedulePage,
                     sessionBookingPage,
                 },
-                {
-                    roomName:
-                    sessionBookingPage.CONSTANTS
-                        .CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-                    column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-                    caseNumber,
-                    sessionDuration:
-                    sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-                    hearingType:
-                    sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-                    cancelReason:
-                    sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
-                    sessionStatus:
-                    sessionBookingPage.CONSTANTS
-                        .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-                    sessionJoh:
-                    sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_02,
-                },
+                caseNumber,
+                listingDate,
             );
         });
 
@@ -851,7 +735,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
         // Create new Family case
         const { caseNumber, caseName } =
             await test.step("login and Create Family Case (Private Law) with parties, default suppression", async () =>
-                await createCivilDamagesSmallClaimsCase({
+                await createNewCase({
                         page,
                         loginPage,
                         homePage,
@@ -897,55 +781,24 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
             );
         });
 
-
         await test.step("Clear existing schedule and create new released session", async () => {
-            await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
-            await sessionBookingPage.updateAdvancedFilterConfig(
-                sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-                sessionBookingPage.CONSTANTS
-                    .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-                sessionBookingPage.CONSTANTS
-                    .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-                sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-            );
+          const listingDate =
+              dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0);
+          await clearScheduleAndCreateReleasedSession(
+              {
+                  homePage,
+                  caseSearchPage,
+                  caseDetailsPage,
+                  hearingSchedulePage,
+                  sessionBookingPage,
+              },
+              caseNumber,
+              listingDate,
+          );
+      });
 
-            await hearingSchedulePage.clearDownSchedule(
-                sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-                sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-                dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-            );
-
-            await createHearingSession(
-                {
-                    homePage,
-                    caseSearchPage,
-                    caseDetailsPage,
-                    hearingSchedulePage,
-                    sessionBookingPage,
-                },
-                {
-                    roomName:
-                    sessionBookingPage.CONSTANTS
-                        .CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-                    column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-                    caseNumber,
-                    sessionDuration:
-                    sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-                    hearingType:
-                    sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-                    cancelReason:
-                    sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
-                    sessionStatus:
-                    sessionBookingPage.CONSTANTS
-                        .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-                    sessionJoh:
-                    sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_02,
-                },
-            );
-        });
-
-        await test.step("Verify External report shows default suppressed case name & default Alternative/Suppression value for party name", async () => {
+    await test.step("Verify External report shows default suppressed case name & default Alternative/Suppression value for party name", async () => {
             const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
                 todayDate,
                 sessionBookingPage.CONSTANTS
@@ -1052,7 +905,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
         // Create new Family case
         const { caseNumber, caseName } =
             await test.step("login and Create Family (Financial Dispute) with parties & no suppression", async () =>
-                await createCivilDamagesSmallClaimsCase({
+                await createNewCase({
                         page,
                         loginPage,
                         homePage,
@@ -1097,26 +950,12 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
                 editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
             );
         });
-        
+
         await test.step("Clear existing schedule and create new released session", async () => {
-            await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
-            await sessionBookingPage.updateAdvancedFilterConfig(
-                sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-                sessionBookingPage.CONSTANTS
-                    .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-                sessionBookingPage.CONSTANTS
-                    .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-                sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-            );
-
-            await hearingSchedulePage.clearDownSchedule(
-                sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-                sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-                dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-            );
-
-            await createHearingSession(
+            const listingDate =
+                dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0);
+            await clearScheduleAndCreateReleasedSession(
                 {
                     homePage,
                     caseSearchPage,
@@ -1124,26 +963,11 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
                     hearingSchedulePage,
                     sessionBookingPage,
                 },
-                {
-                    roomName:
-                    sessionBookingPage.CONSTANTS
-                        .CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-                    column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
-                    caseNumber,
-                    sessionDuration:
-                    sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-                    hearingType:
-                    sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
-                    cancelReason:
-                    sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
-                    sessionStatus:
-                    sessionBookingPage.CONSTANTS
-                        .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-                    sessionJoh:
-                    sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_02,
-                },
+                caseNumber,
+                listingDate,
             );
         });
+        
 
         await test.step("Verify External report shows Case Name followed by case number and actual part names", async () => {
             const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
@@ -1223,7 +1047,53 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     });
 
   // Reusable helpers
-  async function createHearingSession(
+
+
+    async function clearScheduleAndCreateReleasedSession(
+        pages: {
+            homePage: HomePage;
+            caseSearchPage: CaseSearchPage;
+            caseDetailsPage: CaseDetailsPage;
+            hearingSchedulePage: HearingSchedulePage;
+            sessionBookingPage: SessionBookingPage;
+        },
+        caseNumber: string,
+        listingDate: string,
+    ) {
+        const sessionConstants = pages.sessionBookingPage.CONSTANTS;
+
+        await pages.sessionBookingPage.sidebarComponent.openHearingSchedulePage();
+
+        await pages.sessionBookingPage.updateAdvancedFilterConfig(
+            sessionConstants.CASE_LISTING_REGION_WALES,
+            sessionConstants.CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+            sessionConstants.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+            sessionConstants.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        );
+
+        await pages.hearingSchedulePage.clearDownSchedule(
+            sessionConstants.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+            sessionConstants.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+            listingDate,
+        );
+
+        await createHearingSession(
+            pages,
+            {
+                roomName: sessionConstants.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+                column: sessionConstants.CASE_LISTING_COLUMN_ONE,
+                caseNumber,
+                sessionDuration: sessionConstants.CASE_LISTING_SESSION_DURATION_1_00,
+                hearingType: sessionConstants.CASE_LISTING_HEARING_TYPE_APPLICATION,
+                cancelReason: sessionConstants.CASE_LISTING_CANCEL_REASON_AMEND,
+                sessionStatus: sessionConstants.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+                sessionJoh: sessionConstants.AUTO_JUDICIAL_OFFICE_HOLDER_02,
+            },
+        );
+    }
+
+
+    async function createHearingSession(
     pages: {
       homePage: HomePage;
       caseSearchPage: CaseSearchPage;
@@ -1285,7 +1155,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
   // reusable case creation function
 
-  async function createCivilDamagesSmallClaimsCase(
+  async function createNewCase(
       pages: {
     page: Page;
     loginPage: LoginPage;
