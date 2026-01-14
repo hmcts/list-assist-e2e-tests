@@ -10,6 +10,26 @@ import {
 } from "../../page-objects/pages/index.ts";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
 import { AddNewCasePage } from "../../page-objects/pages/cases/add-new-case.po.ts";
+import { clearDownSchedule } from "../../utils/reporting.utils.ts";
+
+test.beforeEach(
+  async ({
+    page,
+    sessionBookingPage,
+    hearingSchedulePage,
+    dataUtils,
+    loginPage,
+  }) => {
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser);
+
+    await clearDownPontypriddSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
+  },
+);
 
 test.describe("Hearing List anonymisation @anonymisation @regression", () => {
   test.slow();
@@ -95,12 +115,6 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
       );
 
-      await hearingSchedulePage.clearDownSchedule(
-        sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-      );
-
       await createHearingSession(
         {
           homePage,
@@ -125,7 +139,8 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
             sessionBookingPage.CONSTANTS
               .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
           sessionJoh:
-            sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_02,
+            sessionBookingPage.CONSTANTS
+              .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
         },
       );
     });
@@ -285,12 +300,6 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
       );
 
-      await hearingSchedulePage.clearDownSchedule(
-        sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-      );
-
       await createHearingSession(
         {
           homePage,
@@ -315,7 +324,8 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
             sessionBookingPage.CONSTANTS
               .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
           sessionJoh:
-            sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_02,
+            sessionBookingPage.CONSTANTS
+              .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
         },
       );
     });
@@ -446,9 +456,13 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     );
 
     await sessionBookingPage.bookSession(
-      roomData.sessionDuration,
-      roomData.sessionStatus,
-      roomData.sessionJoh,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
     );
 
     await expect(
@@ -465,12 +479,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     addNewCasePage: AddNewCasePage;
     hearingSchedulePage: HearingSchedulePage;
   }): Promise<{ caseNumber: string; caseName: string }> {
-    const { page, loginPage, homePage, addNewCasePage, hearingSchedulePage } =
-      pages;
-
-    // Login
-    await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser);
+    const { homePage, addNewCasePage, hearingSchedulePage } = pages;
 
     // Empty cart if there is anything present
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
@@ -507,3 +516,21 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     return { caseNumber, caseName };
   }
 });
+
+async function clearDownPontypriddSchedule(
+  sessionBookingPage,
+  hearingSchedulePage,
+  dataUtils,
+) {
+  await clearDownSchedule(
+    sessionBookingPage,
+    hearingSchedulePage,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+    sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+    dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+  );
+}

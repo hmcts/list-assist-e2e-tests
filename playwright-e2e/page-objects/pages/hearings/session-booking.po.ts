@@ -5,12 +5,16 @@ export class SessionBookingPage extends Base {
   readonly CONSTANTS = {
     //case listing
     CASE_LISTING_REGION_WALES: "Wales",
+    CASE_LISTING_REGION_MIDLANDS: "Midlands",
     CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS:
       "Wales Civil, Family and Tribunals",
+    CASE_LISTING_CLUSTER_MIDLANDS_LEICESTERSHIRE_RUTLAND_LINCOLNSHIRE_NORTH:
+      "Leicestershire, Rutland, Lincolnshire and North",
     CASE_LISTING_LOCATION_LEICESTER_CC_7: "Leicester County Courtroom 07",
     CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
     CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT:
       "Pontypridd County Court and",
+    CASE_LISTING_LOCALITY_LEICESTER_CC: "Leicester Combined Court",
     CASE_LISTING_LOCALITY_CAERNARFON_JC: "Caernarfon Justice Centre",
     CASE_LISTING_LOCALITY_ABERYSTWYTH_JC: "Aberystwyth Justice Centre",
     CASE_LISTING_LOCATION_LOCATION_CAERNARFON_CHMBRS_5:
@@ -19,6 +23,8 @@ export class SessionBookingPage extends Base {
       "Newport (South Wales) County Court and Family Court",
     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
       "Newport (South Wales) Chambers 01",
+
+    CASE_LISTING_JURISDICTION_FAMILY_CODE_AB: "AB",
 
     CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1: "Aberystwyth Courtroom 01",
     CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
@@ -31,6 +37,8 @@ export class SessionBookingPage extends Base {
     AUTO_JUDICIAL_OFFICE_HOLDER_01: "Benson, David (Mr David Benson)",
     AUTO_JUDICIAL_OFFICE_HOLDER_02: "Dunn, Matthew (Matthew Dunn)",
     AUTO_JUDICIAL_OFFICE_HOLDER_03: "Laverne, Sally (District Judge Laverne)",
+    AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH:
+      "AutomationTest, JOH (Automation Test JOH)",
 
     //session details
     SESSION_DETAILS_CANCELLATION_CODE_CANCEL: "CNCL",
@@ -142,6 +150,23 @@ export class SessionBookingPage extends Base {
     { hasText: this.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7 },
   );
 
+  readonly jurisdictionDropdown = this.page.locator("select#jsCode");
+  readonly sessionTypeDropdown = this.page.locator("select#sessionType");
+
+  readonly internalCommentsTextBox = this.page.locator(
+    "#venueBooking\\.venueBookingDesc",
+  );
+  readonly externalCommentsTextBox = this.page.locator(
+    "#venueBooking\\.externalComments",
+  );
+
+  readonly hearingSessionLocationComment = this.page.locator(
+    "textarea#listing\\.locationComment",
+  );
+  readonly hearingSessionInternalCaseComment = this.page.locator(
+    'textarea[name="listing.comments"]',
+  );
+
   constructor(page: Page) {
     super(page);
   }
@@ -153,7 +178,17 @@ export class SessionBookingPage extends Base {
     if (!iconClass?.includes("down")) await roomsButton.click();
   }
 
-  async bookSession(duration: string, sessionStatus: string, johName: string) {
+  async bookSession(
+    duration: string,
+    sessionStatus: string,
+    johName?: string,
+    jurisdictionCode?: string,
+    sessionType?: string,
+    internalComments?: string,
+    externalComments?: string,
+    locationComment?: string,
+    listingComment?: string,
+  ) {
     await this.waitForLoad();
     await expect(this.heading).toBeVisible();
     await this.durationDropdownButton.click();
@@ -162,11 +197,43 @@ export class SessionBookingPage extends Base {
     await this.sessionHearingChannel.click();
     await this.sessionHearingChannelTel.click();
     await this.sessionHearingChannelVid.click();
+    //conditional
+    if (jurisdictionCode) {
+      await this.jurisdictionDropdown.click();
+      await this.jurisdictionDropdown.selectOption({ value: jurisdictionCode });
+    }
 
-    //JOH selection
-    await this.sessionJohDropdown.click();
-    const johOption = this.page.getByRole("option", { name: johName }).nth(1);
-    await johOption.click();
+    if (sessionType) {
+      await this.sessionTypeDropdown.click();
+      await this.sessionTypeDropdown.selectOption({ value: sessionType });
+    }
+
+    //add internal comments
+    if (internalComments) {
+      await this.internalCommentsTextBox.fill(internalComments);
+    }
+
+    //add external comments
+    if (externalComments) {
+      await this.externalCommentsTextBox.fill(externalComments);
+    }
+
+    //conditional
+    if (johName) {
+      //JOH selection
+      // Click the dropdown button to open the list
+      await this.sessionJohDropdown.click();
+
+      // Wait for the dropdown menu to be visible
+      const dropdownMenu = this.page.locator(
+        "div.dropdown-menu.show ul.dropdown-menu.inner.show",
+      );
+      await expect(dropdownMenu).toBeVisible();
+
+      // Click the desired option by visible text
+      const johOption = dropdownMenu.getByText(johName, { exact: true });
+      await johOption.click();
+    }
 
     let validationPopup;
     try {
@@ -183,9 +250,9 @@ export class SessionBookingPage extends Base {
       await validationPopup
         .getByRole("button", { name: "SAVE & CONTINUE LISTING" })
         .click();
-      await this.checkingListingIframe();
+      await this.checkingListingIframe(locationComment, listingComment);
     } catch {
-      await this.checkingListingIframe();
+      await this.checkingListingIframe(locationComment, listingComment);
     }
   }
 
@@ -235,49 +302,53 @@ export class SessionBookingPage extends Base {
       .toBeTruthy();
   }
 
-  async checkingListingIframe() {
+  async checkingListingIframe(
+    locationComment?: string,
+    listingComment?: string,
+  ) {
     const listingIframe = this.page.locator(
       '#container iframe[name="addAssociation"]',
     );
 
     // Wait for the iframe to be visible
     await expect
-      .poll(
-        async () => {
-          return await listingIframe.first().isVisible();
-        },
-        {
-          intervals: [1_000],
-          timeout: 20_000,
-        },
-      )
+      .poll(async () => await listingIframe.first().isVisible(), {
+        intervals: [1_000],
+        timeout: 20_000,
+      })
       .toBeTruthy();
 
-    const contentFrame = listingIframe.contentFrame();
-    if (!contentFrame) {
-      throw new Error("Failed to locate content frame inside the iframe.");
+    const contentFrame = await listingIframe.contentFrame();
+
+    if (locationComment) {
+      await contentFrame
+        .locator("textarea#listing\\.locationComment")
+        .fill(locationComment);
     }
 
-    await expect(
-      listingIframe.contentFrame().getByLabel("Hearing Type"),
-    ).toBeVisible();
-    const hearingTypeBtn = listingIframe
-      .contentFrame()
-      .getByRole("button", { name: "Please Choose..." });
+    if (listingComment) {
+      await contentFrame
+        .locator('textarea[name="listing.comments"]')
+        .fill(listingComment);
+    }
+
+    await expect(contentFrame.getByLabel("Hearing Type")).toBeVisible();
+    const hearingTypeBtn = contentFrame.getByRole("button", {
+      name: "Please Choose...",
+    });
 
     if (await hearingTypeBtn.isVisible()) {
       await hearingTypeBtn.click();
-      await listingIframe
-        .contentFrame()
+      await contentFrame
         .getByRole("list")
         .getByRole("option", { name: "Allocation Hearing", exact: true })
         .click();
     }
 
-    await listingIframe
-      .contentFrame()
+    await contentFrame
       .getByRole("button", { name: "Save", exact: true })
       .click();
+    await this.page.waitForTimeout(10_000);
   }
 
   async updateAdvancedFilterConfig(

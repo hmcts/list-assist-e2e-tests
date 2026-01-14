@@ -62,6 +62,7 @@ export class AddNewCasePage extends Base {
   readonly owningHearingSelector = this.page
     .getByLabel("Matter Detail - Owning Hearing Location_listbox")
     .getByText("Select One");
+  readonly commentInput = this.page.locator("#mtrComment");
   readonly hmctsCaseNumberInput = this.page.locator("#mtrNumberAdded");
   readonly enterNameInput = this.page.locator("#mtrAltTitleTxt");
   readonly saveButton = this.page.getByRole("button", {
@@ -123,14 +124,14 @@ export class AddNewCasePage extends Base {
     caseType: string,
     region: string,
     cluster: string,
-    owninghearing: string,
+    owningHearing: string,
   ) {
     await this.selectJurisdiction(jurisdiction);
     await this.selectService(service);
     await this.selectCaseType(caseType);
     await this.selectRegion(region);
     await this.selectCluster(cluster);
-    await this.selectOwningHearing(owninghearing);
+    await this.selectOwningHearing(owningHearing);
     await this.hmctsCaseNumberInput.fill(hmctsCaseNumber);
     await this.enterNameInput.fill(caseName);
   }
