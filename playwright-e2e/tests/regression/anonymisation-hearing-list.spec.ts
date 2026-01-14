@@ -499,21 +499,3 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     return { caseNumber, caseName };
   }
 });
-
-async function clearDownPontypriddSchedule(
-  sessionBookingPage,
-  hearingSchedulePage,
-  dataUtils,
-) {
-  await clearDownSchedule(
-    sessionBookingPage,
-    hearingSchedulePage,
-    sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-    sessionBookingPage.CONSTANTS
-      .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-    sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-    dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-  );
-}
