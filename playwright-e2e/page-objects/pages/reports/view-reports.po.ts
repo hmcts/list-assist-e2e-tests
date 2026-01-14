@@ -584,7 +584,6 @@ export class ViewReportsPage extends Base {
     locality: string,
     location: string,
   ) {
-    await expect(this.reportsMenu).toBeVisible();
     await this.reportsMenu.click();
     await expect(this.sidebarComponent.dataExportsSubMenu).toBeVisible();
     const [popup] = await Promise.all([
