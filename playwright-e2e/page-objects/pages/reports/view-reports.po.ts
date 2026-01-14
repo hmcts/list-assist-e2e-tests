@@ -350,9 +350,6 @@ export class ViewReportsPage extends Base {
       .toBeTruthy();
 
     // Common headings assertions for all the 3 reports
-    // await expect(reportsRequestPage.reportBody).toContainText(
-    //   reportsRequestPage.CONSTANTS.DATA_EXPORT_REPORT_JOH_AUTOMATION_TEST,
-    // );
     await expect(reportsRequestPage.reportBody).toContainText(
       reportsRequestPage.CONSTANTS
         .LOCALITY_PONTYPRIDD_COUNTY_COURT_AND_FAMILY_COURT,

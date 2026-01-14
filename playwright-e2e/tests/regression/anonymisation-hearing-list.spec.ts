@@ -10,6 +10,26 @@ import {
 } from "../../page-objects/pages/index.ts";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
 import { AddNewCasePage } from "../../page-objects/pages/cases/add-new-case.po.ts";
+import { clearDownSchedule } from "../../utils/reporting.utils.ts";
+
+test.beforeEach(
+  async ({
+    page,
+    sessionBookingPage,
+    hearingSchedulePage,
+    dataUtils,
+    loginPage,
+  }) => {
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser);
+
+    await clearDownPontypriddSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
+  },
+);
 
 test.describe("Hearing List anonymisation @anonymisation @regression", () => {
   test.slow();
@@ -31,9 +51,6 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     const givenName = dataUtils.generateRandomAlphabetical(7);
     const lastName = dataUtils.generateRandomAlphabetical(8);
     const partyName = `${givenName} ${lastName}`;
-
-    await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser);
 
     // case name suppression value
     const caseNameSuppression = dataUtils.generateRandomAlphabetical(10);
@@ -231,9 +248,6 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     const welshDate =
       dataUtils.getFormattedWelshDateForReportAssertionUsingWelshDateStringWithDayName();
     const combinedDate = `${welshDate}, ${formattedReportDate}`;
-
-    await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser);
 
     // Create new Civil Damages Small Claims case
     const { caseNumber, caseName } =
@@ -502,3 +516,21 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     return { caseNumber, caseName };
   }
 });
+
+async function clearDownPontypriddSchedule(
+  sessionBookingPage,
+  hearingSchedulePage,
+  dataUtils,
+) {
+  await clearDownSchedule(
+    sessionBookingPage,
+    hearingSchedulePage,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+    sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+    dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+  );
+}
