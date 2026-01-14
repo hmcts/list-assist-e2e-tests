@@ -8,6 +8,7 @@ import {
 } from "../../page-objects/pages/index.js";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.js";
 import { config } from "../../utils/index.js";
+import { clearDownSchedule } from "../../utils/reporting.utils.js";
 
 test.describe("Case listing and reporting @case-listing-and-reporting", () => {
   test.describe.configure({ mode: "serial" });
@@ -29,6 +30,18 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
       await expect(editNewCasePage.caseNameField).toHaveText(
         process.env.CASE_NAME as string,
+      );
+    },
+  );
+
+  test.afterEach(
+    async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
+      await page.goto(config.urls.baseUrl);
+
+      await clearDownWalesSchedule(
+        sessionBookingPage,
+        hearingSchedulePage,
+        dataUtils,
       );
     },
   );
@@ -61,13 +74,6 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
         .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
       sessionBookingPage.CONSTANTS
         .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
-    );
-
-    await hearingSchedulePage.clearDownSchedule(
-      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-      sessionBookingPage.CONSTANTS
-        .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
-      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
     );
 
     //run scheduled jobs so there are no queued reports
@@ -478,6 +484,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       sessionDuration: string;
       hearingType: string;
       cancelReason: string;
+      johName?: string;
+      jurisdiction?: string;
     },
     sessionBookingPage: SessionBookingPage,
   ) {
@@ -518,7 +526,11 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     await sessionBookingPage.bookSession(
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_03,
+      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
+      undefined,
+      undefined,
+      `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
+      `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
     );
 
     //confirm listing
@@ -533,3 +545,23 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     }
   }
 });
+
+async function clearDownWalesSchedule(
+  sessionBookingPage,
+  hearingSchedulePage,
+  dataUtils,
+) {
+  await clearDownSchedule(
+    sessionBookingPage,
+    hearingSchedulePage,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
+    sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+    dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+  );
+}

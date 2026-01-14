@@ -184,6 +184,7 @@ export class HearingSchedulePage extends Base {
   ): Promise<void> {
     const table: TableRow[] = await this.mapTable();
     const row = table.filter((row) => row.roomName === roomName)[0];
+    await expect(row[column].locator(`${this.scheduleSelector}`)).toBeVisible();
     await row[column].locator(`${this.scheduleSelector}`).click();
     await expect(this.schedulePopup.basketItem).toBeVisible();
     await this.schedulePopup.basketItem.filter({ hasText: caseName }).click();
