@@ -22,6 +22,7 @@ export class AddNewCasePage extends Base {
     SERVICE_DAMAGES: "Damages",
     SERVICE_PRIVATE_LAW: "Private Law",
     SERVICE_DAMAGES_REFERENCE: "AAA7",
+    SERVICE_FINANCIAL_DISPUTE: "Financial Dispute",
     DECREE_ABSOLUTE_CASE_TYPE: "Decree Absolute",
     DECREE_ABSOLUTE_CASE_TYPE_REFERENCE: "ABA5-PRL",
     CASE_TYPE_SMALL_CLAIMS: "Small Claims",
