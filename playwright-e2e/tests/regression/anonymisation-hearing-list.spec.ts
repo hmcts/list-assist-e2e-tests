@@ -33,6 +33,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     const partyName = `${givenName} ${lastName}`;
 
     await page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser);
 
     // case name suppression value
     const caseNameSuppression = dataUtils.generateRandomAlphabetical(10);
@@ -230,6 +231,9 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     const welshDate =
       dataUtils.getFormattedWelshDateForReportAssertionUsingWelshDateStringWithDayName();
     const combinedDate = `${welshDate}, ${formattedReportDate}`;
+
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser);
 
     // Create new Civil Damages Small Claims case
     const { caseNumber, caseName } =
