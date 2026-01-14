@@ -12,37 +12,6 @@ import { SessionBookingPage } from "../../page-objects/pages/hearings/session-bo
 import { AddNewCasePage } from "../../page-objects/pages/cases/add-new-case.po.ts";
 import { clearDownSchedule } from "../../utils/reporting.utils.ts";
 
-test.beforeEach(
-  async ({
-    page,
-    sessionBookingPage,
-    hearingSchedulePage,
-    dataUtils,
-    loginPage,
-  }) => {
-    await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser);
-
-    await clearDownPontypriddSchedule(
-      sessionBookingPage,
-      hearingSchedulePage,
-      dataUtils,
-    );
-  },
-);
-
-test.afterEach(
-  async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
-    await page.goto(config.urls.baseUrl);
-
-    await clearDownPontypriddSchedule(
-      sessionBookingPage,
-      hearingSchedulePage,
-      dataUtils,
-    );
-  },
-);
-
 test.describe("Hearing List anonymisation @anonymisation @regression", () => {
   test.slow();
   test.describe.configure({ mode: "serial" });
@@ -472,7 +441,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     await sessionBookingPage.bookSession(
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
+      undefined,
       undefined,
       undefined,
       undefined,
