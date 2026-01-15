@@ -4,7 +4,7 @@ import { Base } from "../../base";
 interface CaseData {
   jurisdiction: string;
   service: string;
-  caseType: string;
+  caseType?: string;
   region: string;
   cluster: string;
   hearingCentre: string;
@@ -20,7 +20,9 @@ export class AddNewCasePage extends Base {
     JURISDICTION_CIVIL_REFERENCE: "AA",
     SERVICE_DIVORCE: "Divorce",
     SERVICE_DAMAGES: "Damages",
+    SERVICE_PRIVATE_LAW: "Private Law",
     SERVICE_DAMAGES_REFERENCE: "AAA7",
+    SERVICE_FINANCIAL_DISPUTE: "Financial Dispute",
     DECREE_ABSOLUTE_CASE_TYPE: "Decree Absolute",
     DECREE_ABSOLUTE_CASE_TYPE_REFERENCE: "ABA5-PRL",
     CASE_TYPE_SMALL_CLAIMS: "Small Claims",
@@ -62,8 +64,8 @@ export class AddNewCasePage extends Base {
   readonly owningHearingSelector = this.page
     .getByLabel("Matter Detail - Owning Hearing Location_listbox")
     .getByText("Select One");
-  readonly commentInput = this.page.locator("#mtrComment");
   readonly hmctsCaseNumberInput = this.page.locator("#mtrNumberAdded");
+  readonly commentInput = this.page.locator("#mtrComment");
   readonly enterNameInput = this.page.locator("#mtrAltTitleTxt");
   readonly saveButton = this.page.getByRole("button", {
     name: "Save Case",
@@ -121,17 +123,19 @@ export class AddNewCasePage extends Base {
     caseName: string,
     jurisdiction: string,
     service: string,
-    caseType: string,
+    caseType: string | undefined,
     region: string,
     cluster: string,
-    owningHearing: string,
+    owninghearing: string,
   ) {
     await this.selectJurisdiction(jurisdiction);
     await this.selectService(service);
-    await this.selectCaseType(caseType);
+    if (caseType) {
+      await this.selectCaseType(caseType);
+    }
     await this.selectRegion(region);
     await this.selectCluster(cluster);
-    await this.selectOwningHearing(owningHearing);
+    await this.selectOwningHearing(owninghearing);
     await this.hmctsCaseNumberInput.fill(hmctsCaseNumber);
     await this.enterNameInput.fill(caseName);
   }
