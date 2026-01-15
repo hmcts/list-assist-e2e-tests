@@ -42,25 +42,47 @@ export class AddNewCasePage extends Base {
   //new case page
   readonly newCaseHeader = this.page.locator("h1.header-title.my-2");
   readonly jurisdictionSelector = this.page
-    .getByLabel("Matter Detail - Jurisdiction_listbox")
+    .getByLabel("Jurisdiction")
     .getByText("Select One");
-  readonly serviceSelector = this.page
-    .getByLabel("Matter Detail - Service_listbox")
-    .getByText("Select One");
+
+
+  readonly serviceCombo = this.page
+      .locator("#matter-detail-matterDetailsCard")
+      .getByRole("combobox", { name: "Service list" });
+
+  readonly serviceListbox = this.page
+      .locator("#matter-detail-matterDetailsCard #mtrCategoryId_listbox");
+
   readonly caseTypeSelector = this.page
-    .getByLabel("Matter Detail - Case Type_listbox")
-    .locator("div")
-    .filter({ hasText: "Select One" });
-  readonly regionSelector = this.page
-    .getByRole("combobox", { name: "Matter Detail - Region_listbox" })
+      .locator("#matter-detail-matterDetailsCard")
+      .getByRole("combobox", { name: "Case Type list" });
+
+  readonly caseTypeListbox = this.page
+      .locator("#matter-detail-matterDetailsCard #mtrMatterCdId_listbox");
+
+
+
+   readonly regionSelector = this.page
+    .getByRole("combobox", { name: "Region" })
     .locator("div")
     .first();
-  readonly clusterSelect = this.page
-    .getByRole("combobox", { name: "Matter Detail - Cluster_listbox" })
-    .locator("div")
-    .first();
+
+
+  // readonly clusterSelect = this.page
+  //   .getByRole("combobox", { name: "Cluster" })
+  //   .locator("div")
+  //   .first();
+  //
+
+  readonly card = this.page.locator("#matter-detail-matterDetailsCard");
+
+  readonly clusterSelect = this.card.getByRole("combobox", { name: "Cluster list" });
+  readonly clusterListbox = this.card.locator("#registry_listbox");
+
+
+
   readonly owningHearingSelector = this.page
-    .getByLabel("Matter Detail - Owning Hearing Location_listbox")
+    .getByLabel("Owning Hearing Location")
     .getByText("Select One");
   readonly commentInput = this.page.locator("#mtrComment");
   readonly hmctsCaseNumberInput = this.page.locator("#mtrNumberAdded");
@@ -84,17 +106,15 @@ export class AddNewCasePage extends Base {
   }
 
   async selectService(service: string) {
-    await this.serviceSelector.click();
-    await this.page
-      .getByRole("option", { name: service, exact: true })
-      .locator("span")
-      .first()
-      .click();
+    await this.serviceCombo.click();
+    await this.serviceListbox.getByRole("option", { name: service, exact: true }).click();
   }
 
   async selectCaseType(caseType: string) {
     await this.caseTypeSelector.click();
-    await this.page.getByText(caseType).click();
+    await this.caseTypeListbox
+        .getByRole("option", { name: caseType, exact: true })
+        .click();
   }
 
   async selectRegion(region: string) {
@@ -105,11 +125,41 @@ export class AddNewCasePage extends Base {
       .first()
       .click();
   }
+  // async selectCluster(cluster: string) {
+  //   await this.clusterSelect.click();
+  //
+  //   const option = this.clusterListbox.getByRole("option", { name: cluster, exact: true });
+  //   await expect(option).toBeVisible({ timeout: 10_000 });
+  //   await option.click();
+  //
+  //   // optional: confirm it actually selected
+  //   await expect(this.clusterSelect).toContainText(cluster);
+  // }
+
+  //
+
 
   async selectCluster(cluster: string) {
-    await this.clusterSelect.click();
-    await this.page.getByText(cluster).click();
+
+    console.log ("Selecting cluster: " + cluster);
+    // const card = this.page.locator("#matter-detail-matterDetailsCard");
+    // const combo = card.getByRole("combobox", { name: "Cluster list" });
+    // const listbox = card.locator("#registry_listbox");
+    //
+    // await combo.click();
+    //
+    // const option = listbox.locator("span.multiselect__option", { hasText: cluster }).first();
+    // await option.hover();                 // make it the active highlighted option
+    // await this.page.keyboard.press("Enter"); // commit selection
+    //
+    // await expect(combo).toContainText(cluster, { timeout: 10_000 });
   }
+
+
+  // async selectCluster(cluster: string) {
+  //   await this.clusterSelect.click();
+  //   await this.page.getByText(cluster).click();
+  // }
 
   async selectOwningHearing(owningHearing: string) {
     await this.owningHearingSelector.click();
