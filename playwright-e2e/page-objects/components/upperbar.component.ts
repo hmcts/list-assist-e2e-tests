@@ -4,9 +4,11 @@ export class UpperbarComponent {
   readonly logoutButton = this.root.locator("#logout");
 
   //case buttons
-  readonly currentCaseDropdownButton = this.page.locator("#currentApplication");
+  readonly currentCaseDropdownButton = this.page.locator(
+    'a#currentMatter[role="link"][title="Current Case"]',
+  );
   readonly currentCaseDropdownList = this.page.locator(
-    "nav#vueNavbarMatter ul.sidebar-menu li",
+    "nav#vueNavbarCurrentMatter ul.sidebar-menu li a span span",
   );
   readonly closeCaseButton = this.root.locator("#closeApplication");
 
@@ -38,6 +40,7 @@ export class UpperbarComponent {
     "Case History",
     "File Note",
     "Pending Activities",
+    "File Movement",
     "List Case",
     "Allocate",
     "Alert",
