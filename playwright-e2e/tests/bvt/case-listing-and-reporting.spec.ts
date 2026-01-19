@@ -497,9 +497,12 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     ).toBeVisible();
     await homePage.upperbarComponent.currentCaseDropdownButton.click();
 
-    await expect(
-      homePage.upperbarComponent.currentCaseDropdownList,
-    ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
+    const items =
+      await homePage.upperbarComponent.currentCaseDropdownList.allTextContents();
+    const trimmedItems = items.map((text) => text.trim());
+    expect(trimmedItems).toEqual(
+      homePage.upperbarComponent.currentCaseDropDownItems,
+    );
 
     //add case to cart
     await caseSearchPage.sidebarComponent.openSearchCasePage();
