@@ -67,20 +67,18 @@ export class CreateUserPage extends Base {
   }
 
   async selectCluster(clusterName: string) {
-
-    const clusterSelect = this.page.locator(
-        '.form-group.single-select',
-        { hasText: 'Primary Clusters' },
-    );
+    const clusterSelect = this.page.locator(".form-group.single-select", {
+      hasText: "Primary Clusters",
+    });
 
     const combo = clusterSelect.locator('[role="combobox"]');
     await combo.click();
 
     await this.page
-        .locator('#userDetailsPrimaryRegistry_listbox')
-        .locator('span.multiselect__option', { hasText: clusterName })
-        .first()
-        .click();
+      .locator("#userDetailsPrimaryRegistry_listbox")
+      .locator("span.multiselect__option", { hasText: clusterName })
+      .first()
+      .click();
 
     await expect(combo).toContainText(clusterName);
   }

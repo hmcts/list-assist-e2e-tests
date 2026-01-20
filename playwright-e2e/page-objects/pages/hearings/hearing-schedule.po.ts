@@ -75,9 +75,9 @@ export class HearingSchedulePage extends Base {
   readonly goToSessionDetailsButton = this.page.getByRole("button", {
     name: "Go to Session Details screen",
   });
-  readonly deleteSessionButton = this.page.getByRole("button", {
-    name: "Delete",
-  });
+  readonly deleteSessionButton = this.page.locator(
+    'input[type="button"]#dvb[name="Delete"][value="Delete"]',
+  );
   readonly deleteSessionInSessionDetailsButton = this.page
     .locator("#handleListingImgId")
     .nth(1);

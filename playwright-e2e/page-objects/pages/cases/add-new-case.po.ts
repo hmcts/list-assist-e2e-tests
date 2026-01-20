@@ -45,32 +45,32 @@ export class AddNewCasePage extends Base {
     .getByText("Select One");
 
   readonly serviceCombo = this.page
-      .locator("#matter-detail-matterDetailsCard")
-      .getByRole("combobox", { name: "Service list" });
+    .locator("#matter-detail-matterDetailsCard")
+    .getByRole("combobox", { name: "Service list" });
 
-  readonly serviceListbox = this.page
-      .locator("#matter-detail-matterDetailsCard #mtrCategoryId_listbox");
+  readonly serviceListbox = this.page.locator(
+    "#matter-detail-matterDetailsCard #mtrCategoryId_listbox",
+  );
 
   readonly caseTypeSelector = this.page
-      .locator("#matter-detail-matterDetailsCard")
-      .getByRole("combobox", { name: "Case Type list" });
+    .locator("#matter-detail-matterDetailsCard")
+    .getByRole("combobox", { name: "Case Type list" });
 
-  readonly caseTypeListbox = this.page
-      .locator("#matter-detail-matterDetailsCard #mtrMatterCdId_listbox");
+  readonly caseTypeListbox = this.page.locator(
+    "#matter-detail-matterDetailsCard #mtrMatterCdId_listbox",
+  );
 
   readonly regionSelector = this.page
     .getByRole("combobox", { name: "Region" })
     .locator("div")
     .first();
 
-
-  readonly clusterSelect = this.page
-    .getByRole("combobox", { name: "Cluster" })
-    .locator("div")
-    .first();
-
-
   readonly card = this.page.locator("#matter-detail-matterDetailsCard");
+
+  readonly clusterSelect = this.card.getByRole("combobox", {
+    name: "Cluster list",
+  });
+  readonly clusterListbox = this.card.locator("#registry_listbox");
 
   readonly owningHearingSelector = this.page
     .getByLabel("Owning Hearing Location")
@@ -98,14 +98,16 @@ export class AddNewCasePage extends Base {
 
   async selectService(service: string) {
     await this.serviceCombo.click();
-    await this.serviceListbox.getByRole("option", { name: service, exact: true }).click();
+    await this.serviceListbox
+      .getByRole("option", { name: service, exact: true })
+      .click();
   }
 
   async selectCaseType(caseType: string) {
     await this.caseTypeSelector.click();
     await this.caseTypeListbox
-        .getByRole("option", { name: caseType, exact: true })
-        .click();
+      .getByRole("option", { name: caseType, exact: true })
+      .click();
   }
 
   async selectRegion(region: string) {
@@ -117,15 +119,9 @@ export class AddNewCasePage extends Base {
       .click();
   }
 
-// keeping this method for future use if needed. in 4.67 the autopopulated cluster require a double select to set the value
-
   async selectCluster(cluster: string) {
-    await this.clusterSelect.click();
-    await this.page.getByText(cluster).click();
-    await this.clusterSelect.click();
-    await this.page.getByText(cluster).click();
+    console.log("Selecting cluster: " + cluster);
   }
-
 
   async selectOwningHearing(owningHearing: string) {
     await this.owningHearingSelector.click();
