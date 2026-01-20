@@ -6,7 +6,6 @@ interface CaseData {
   service: string;
   caseType: string;
   region: string;
-  cluster: string;
   hearingCentre: string;
 }
 
@@ -125,18 +124,6 @@ export class AddNewCasePage extends Base {
       .first()
       .click();
   }
-  // async selectCluster(cluster: string) {
-  //   await this.clusterSelect.click();
-  //
-  //   const option = this.clusterListbox.getByRole("option", { name: cluster, exact: true });
-  //   await expect(option).toBeVisible({ timeout: 10_000 });
-  //   await option.click();
-  //
-  //   // optional: confirm it actually selected
-  //   await expect(this.clusterSelect).toContainText(cluster);
-  // }
-
-  //
 
   async selectCluster(cluster: string) {
     console.log("Selecting cluster: " + cluster);
@@ -170,14 +157,12 @@ export class AddNewCasePage extends Base {
     service: string,
     caseType: string,
     region: string,
-    cluster: string,
     owningHearing: string,
   ) {
     await this.selectJurisdiction(jurisdiction);
     await this.selectService(service);
     await this.selectCaseType(caseType);
     await this.selectRegion(region);
-    await this.selectCluster(cluster);
     await this.selectOwningHearing(owningHearing);
     await this.hmctsCaseNumberInput.fill(hmctsCaseNumber);
     await this.enterNameInput.fill(caseName);
@@ -200,7 +185,6 @@ export class AddNewCasePage extends Base {
       caseData.service,
       caseData.caseType,
       caseData.region,
-      caseData.cluster,
       caseData.hearingCentre,
     );
     // Click save button

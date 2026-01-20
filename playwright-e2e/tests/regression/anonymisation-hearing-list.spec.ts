@@ -499,7 +499,6 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
       service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
       caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
       region: addNewCasePage.CONSTANTS.REGION_WALES,
-      cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
       hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
       hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
       currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
