@@ -10,7 +10,7 @@ test.describe("Case creation @add-new-case", () => {
     await page.goto(config.urls.baseUrl);
   });
 
-//Skipping this test due to a bug in the 4.67 release where the Owning Hearing Location is missing on the case details screen.
+  //Skipping this test due to a bug in the 4.67 release where the Owning Hearing Location is missing on the case details screen.
   test.skip("Search for case and confirm case details are correct @smoke", async ({
     addNewCasePage,
     editNewCasePage,

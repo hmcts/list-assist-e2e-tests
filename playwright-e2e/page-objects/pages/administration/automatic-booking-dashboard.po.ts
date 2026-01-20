@@ -110,7 +110,7 @@ export class AutomaticBookingDashboardPage extends Base {
 
   //list name
   readonly listNameDropDown = this.page.locator(
-    'div.multiselect[aria-owns="publishExternalLists_Creation_List_listbox"]',
+    'div.multiselect-wrapper[aria-owns="publishExternalLists_Creation_List_listbox"]',
   );
 
   //version type
