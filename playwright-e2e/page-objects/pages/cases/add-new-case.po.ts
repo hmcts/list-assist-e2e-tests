@@ -6,7 +6,6 @@ interface CaseData {
   service: string;
   caseType: string;
   region: string;
-  cluster: string;
   hearingCentre: string;
 }
 
@@ -45,7 +44,6 @@ export class AddNewCasePage extends Base {
     .getByLabel("Jurisdiction")
     .getByText("Select One");
 
-
   readonly serviceCombo = this.page
       .locator("#matter-detail-matterDetailsCard")
       .getByRole("combobox", { name: "Service list" });
@@ -60,26 +58,19 @@ export class AddNewCasePage extends Base {
   readonly caseTypeListbox = this.page
       .locator("#matter-detail-matterDetailsCard #mtrMatterCdId_listbox");
 
-
-
-   readonly regionSelector = this.page
+  readonly regionSelector = this.page
     .getByRole("combobox", { name: "Region" })
     .locator("div")
     .first();
 
 
-  // readonly clusterSelect = this.page
-  //   .getByRole("combobox", { name: "Cluster" })
-  //   .locator("div")
-  //   .first();
-  //
+  readonly clusterSelect = this.page
+    .getByRole("combobox", { name: "Cluster" })
+    .locator("div")
+    .first();
+
 
   readonly card = this.page.locator("#matter-detail-matterDetailsCard");
-
-  readonly clusterSelect = this.card.getByRole("combobox", { name: "Cluster list" });
-  readonly clusterListbox = this.card.locator("#registry_listbox");
-
-
 
   readonly owningHearingSelector = this.page
     .getByLabel("Owning Hearing Location")
@@ -125,41 +116,16 @@ export class AddNewCasePage extends Base {
       .first()
       .click();
   }
-  // async selectCluster(cluster: string) {
-  //   await this.clusterSelect.click();
-  //
-  //   const option = this.clusterListbox.getByRole("option", { name: cluster, exact: true });
-  //   await expect(option).toBeVisible({ timeout: 10_000 });
-  //   await option.click();
-  //
-  //   // optional: confirm it actually selected
-  //   await expect(this.clusterSelect).toContainText(cluster);
-  // }
 
-  //
-
+// keeping this method for future use if needed. in 4.67 the autopopulated cluster require a double select to set the value
 
   async selectCluster(cluster: string) {
-
-    console.log ("Selecting cluster: " + cluster);
-    // const card = this.page.locator("#matter-detail-matterDetailsCard");
-    // const combo = card.getByRole("combobox", { name: "Cluster list" });
-    // const listbox = card.locator("#registry_listbox");
-    //
-    // await combo.click();
-    //
-    // const option = listbox.locator("span.multiselect__option", { hasText: cluster }).first();
-    // await option.hover();                 // make it the active highlighted option
-    // await this.page.keyboard.press("Enter"); // commit selection
-    //
-    // await expect(combo).toContainText(cluster, { timeout: 10_000 });
+    await this.clusterSelect.click();
+    await this.page.getByText(cluster).click();
+    await this.clusterSelect.click();
+    await this.page.getByText(cluster).click();
   }
 
-
-  // async selectCluster(cluster: string) {
-  //   await this.clusterSelect.click();
-  //   await this.page.getByText(cluster).click();
-  // }
 
   async selectOwningHearing(owningHearing: string) {
     await this.owningHearingSelector.click();
@@ -173,14 +139,12 @@ export class AddNewCasePage extends Base {
     service: string,
     caseType: string,
     region: string,
-    cluster: string,
     owningHearing: string,
   ) {
     await this.selectJurisdiction(jurisdiction);
     await this.selectService(service);
     await this.selectCaseType(caseType);
     await this.selectRegion(region);
-    await this.selectCluster(cluster);
     await this.selectOwningHearing(owningHearing);
     await this.hmctsCaseNumberInput.fill(hmctsCaseNumber);
     await this.enterNameInput.fill(caseName);
@@ -203,7 +167,6 @@ export class AddNewCasePage extends Base {
       caseData.service,
       caseData.caseType,
       caseData.region,
-      caseData.cluster,
       caseData.hearingCentre,
     );
     // Click save button
