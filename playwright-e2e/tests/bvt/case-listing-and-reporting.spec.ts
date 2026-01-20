@@ -20,6 +20,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       caseSearchPage,
       editNewCasePage,
       hearingSchedulePage,
+      sessionBookingPage,
+      dataUtils,
     }) => {
       await page.goto(config.urls.baseUrl);
       await loginPage.login(config.users.testUser);
@@ -30,6 +32,12 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
       await expect(editNewCasePage.caseNameField).toHaveText(
         process.env.CASE_NAME as string,
+      );
+
+      await clearDownWalesSchedule(
+        sessionBookingPage,
+        hearingSchedulePage,
+        dataUtils,
       );
     },
   );
