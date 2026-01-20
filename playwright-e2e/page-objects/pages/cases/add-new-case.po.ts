@@ -65,12 +65,6 @@ export class AddNewCasePage extends Base {
     .locator("div")
     .first();
 
-  // readonly clusterSelect = this.page
-  //   .getByRole("combobox", { name: "Cluster" })
-  //   .locator("div")
-  //   .first();
-  //
-
   readonly card = this.page.locator("#matter-detail-matterDetailsCard");
 
   readonly clusterSelect = this.card.getByRole("combobox", {
@@ -127,23 +121,7 @@ export class AddNewCasePage extends Base {
 
   async selectCluster(cluster: string) {
     console.log("Selecting cluster: " + cluster);
-    // const card = this.page.locator("#matter-detail-matterDetailsCard");
-    // const combo = card.getByRole("combobox", { name: "Cluster list" });
-    // const listbox = card.locator("#registry_listbox");
-    //
-    // await combo.click();
-    //
-    // const option = listbox.locator("span.multiselect__option", { hasText: cluster }).first();
-    // await option.hover();                 // make it the active highlighted option
-    // await this.page.keyboard.press("Enter"); // commit selection
-    //
-    // await expect(combo).toContainText(cluster, { timeout: 10_000 });
   }
-
-  // async selectCluster(cluster: string) {
-  //   await this.clusterSelect.click();
-  //   await this.page.getByText(cluster).click();
-  // }
 
   async selectOwningHearing(owningHearing: string) {
     await this.owningHearingSelector.click();
