@@ -119,8 +119,12 @@ export class AddNewCasePage extends Base {
       .click();
   }
 
+  // keeping this method for future use if needed. in 4.67 the autopopulated cluster require a double select to set the value
   async selectCluster(cluster: string) {
-    console.log("Selecting cluster: " + cluster);
+    await this.clusterSelect.click();
+    await this.page.getByText(cluster).click();
+    await this.clusterSelect.click();
+    await this.page.getByText(cluster).click();
   }
 
   async selectOwningHearing(owningHearing: string) {

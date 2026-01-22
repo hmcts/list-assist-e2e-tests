@@ -16,7 +16,7 @@ export class UpperbarComponent {
   readonly currentParticipantDropdownButton =
     this.page.locator("#currentEntity");
   readonly currentParticipantDropdownList = this.page.locator(
-    "nav#vueNavbarEntity ul.sidebar-menu li",
+    "nav#vueNavbarCurrentEntity ul.sidebar-menu li",
   );
   readonly closeParticipantButton = this.root.locator("#closeEntity");
 
