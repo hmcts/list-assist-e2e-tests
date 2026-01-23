@@ -170,11 +170,17 @@ export class AutomaticBookingDashboardPage extends Base {
     "#publishExternalLists_PreviousRun_Refresh",
   );
   readonly publishExternalListClearFilterButton = this.page
-    .getByRole("group", { name: "Localities filter list with" })
-    .getByLabel("Clear all selected options");
+    .getByRole("group", { name: "Jurisdictions filter list" })
+    .getByRole("button", { name: "Clear all selected options" });
+
+  readonly viewPublishedExternalListsClearFilterButton = this.page.getByRole(
+    "button",
+    { name: "Clear all selected options" },
+  );
+
   readonly publishExternalListLocalityFilter = this.page
     .getByRole("group", { name: "Localities filter list with 0" })
-    .getByLabel("Open listbox");
+    .getByRole("button", { name: "Open listbox" });
 
   readonly retryStatusInRow = this.page
     .locator(
@@ -392,8 +398,10 @@ export class AutomaticBookingDashboardPage extends Base {
     dateTo: string,
   ) {
     //filters table
+    await this.publishExternalListClearFilterButton.isVisible();
     await this.publishExternalListClearFilterButton.click();
 
+    await this.publishExternalListLocalityFilter.isVisible();
     await this.publishExternalListLocalityFilter.click();
     await this.page
       .getByRole("option", { name: locality })
