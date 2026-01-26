@@ -104,7 +104,12 @@ test.describe("Add participant @add-participant", () => {
     homePage,
     dataUtils,
     caseHistoryPage,
+    addNewCasePage,
+    caseSearchPage,
   }) => {
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
+
     await homePage.sidebarComponent.caseFileNotesPage();
     await homePage.sidebarComponent.currentCaseEventType.selectOption({
       label: "File Note",
