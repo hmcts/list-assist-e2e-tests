@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 import { Base } from "../../base";
 
 export class CreateUserPage extends Base {
@@ -67,18 +67,23 @@ export class CreateUserPage extends Base {
   }
 
   async selectCluster(clusterName: string) {
-    const primaryClusterDropdownToggle = this.page
-      .locator('.multiselect[aria-owns="userDetailsPrimaryRegistry_listbox"]')
-      .locator(".multiselect__select");
-    await primaryClusterDropdownToggle.click();
-    const primaryClusterListbox = this.page.locator(
-      "#userDetailsPrimaryRegistry_listbox",
-    );
-    const targetOption = primaryClusterListbox.locator(
-      `.multiselect__option:has-text("${clusterName}")`,
-    );
-    await targetOption.click();
+    const clusterSelect = this.page.locator(".form-group.single-select", {
+      hasText: "Primary Clusters",
+    });
+
+    const combo = clusterSelect.locator('[role="combobox"]');
+    await combo.click();
+
+    await this.page
+      .locator("#userDetailsPrimaryRegistry_listbox")
+      .locator("span.multiselect__option", { hasText: clusterName })
+      .first()
+      .click();
+
+    await expect(combo).toContainText(clusterName);
   }
+
+  //#userDetailsPrimaryRegistry_listbox
 
   async selectSecurityGroup(securityGroupName: string) {
     const securityGroupToggle = this.page

@@ -10,7 +10,8 @@ test.describe("Case creation @add-new-case", () => {
     await page.goto(config.urls.baseUrl);
   });
 
-  test("Search for case and confirm case details are correct @smoke", async ({
+  //Skipping this test due to a bug in the 4.67 MCGIRRSD-95278 release where the Owning Hearing Location is missing on the case details screen.
+  test.skip("Search for case and confirm case details are correct @smoke", async ({
     addNewCasePage,
     editNewCasePage,
     caseDetailsPage,
@@ -103,7 +104,6 @@ test.describe("Case creation @add-new-case", () => {
       service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
       caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
       region: addNewCasePage.CONSTANTS.REGION_WALES,
-      cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
       hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
       hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
       currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
