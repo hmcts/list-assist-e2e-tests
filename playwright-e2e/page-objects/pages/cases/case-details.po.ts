@@ -20,6 +20,7 @@ export class CaseDetailsPage extends Base {
   readonly currentCaseCurrentStatusField = this.page.locator(
     "#matter-detail-summaryField-4",
   );
+
   readonly closeCaseButton = this.page.getByRole("link", {
     name: "Close Case from top navigation",
   });
