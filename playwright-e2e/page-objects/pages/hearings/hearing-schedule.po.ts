@@ -75,9 +75,9 @@ export class HearingSchedulePage extends Base {
   readonly goToSessionDetailsButton = this.page.getByRole("button", {
     name: "Go to Session Details screen",
   });
-  readonly deleteSessionButton = this.page.getByRole("button", {
-    name: "Delete",
-  });
+  readonly deleteSessionButton = this.page.locator(
+    'input[type="button"]#dvb[name="Delete"][value="Delete"]',
+  );
   readonly deleteSessionInSessionDetailsButton = this.page
     .locator("#handleListingImgId")
     .nth(1);
@@ -184,6 +184,7 @@ export class HearingSchedulePage extends Base {
   ): Promise<void> {
     const table: TableRow[] = await this.mapTable();
     const row = table.filter((row) => row.roomName === roomName)[0];
+    await expect(row[column].locator(`${this.scheduleSelector}`)).toBeVisible();
     await row[column].locator(`${this.scheduleSelector}`).click();
     await expect(this.schedulePopup.basketItem).toBeVisible();
     await this.schedulePopup.basketItem.filter({ hasText: caseName }).click();

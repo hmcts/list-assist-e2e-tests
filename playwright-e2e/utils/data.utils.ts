@@ -65,6 +65,11 @@ export class DataUtils {
     return date.toFormat("dd-MM-yyyy");
   }
 
+  // Generate month and year, separated by hyphen. e.g. -01-2026
+  generateMonthAndYearWithHyphenSeparators(): string {
+    return DateTime.now().toFormat("'-'MM-yyyy");
+  }
+
   // Gets the number day number in the month, padded with a zero if less than 10.
   // e.g. -1 previous day, 0 today, 1 tomorrow
   getDayAsDd(offset: number = 0): string {

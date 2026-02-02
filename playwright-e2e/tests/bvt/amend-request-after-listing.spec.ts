@@ -8,6 +8,43 @@ import {
   HomePage,
 } from "../../page-objects/pages/index.ts";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
+import { clearDownSchedule } from "../../utils/reporting.utils.ts";
+
+test.beforeEach(
+  async ({
+    hearingSchedulePage,
+    sessionBookingPage,
+    dataUtils,
+    page,
+    loginPage,
+    config,
+  }) => {
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser);
+    await clearDownMidlandsLeicesterSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
+  },
+);
+
+test.afterEach(
+  async ({
+    page,
+    config,
+    hearingSchedulePage,
+    sessionBookingPage,
+    dataUtils,
+  }) => {
+    await page.goto(config.urls.baseUrl);
+    await clearDownMidlandsLeicesterSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
+  },
+);
 
 //to skip case creation when running test in isolation, uncomment this line
 // process.env.SKIP_CREATE_CASE = 'true';
@@ -17,8 +54,6 @@ test.describe("HMI Amend API tests after listing @amend-api-test-after-listing",
   test.slow();
   test("Amended participants and their hearing method should display as expected after listing", async ({
     editNewCasePage,
-    loginPage,
-    page,
     config,
     caseSearchPage,
     dataUtils,
@@ -43,17 +78,7 @@ test.describe("HMI Amend API tests after listing @amend-api-test-after-listing",
     await HmiUtils.requestHearing(payload);
     console.log("\ncase id = " + CASE_ID);
 
-    await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser, true);
-
     await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-
-    //clears sessions
-    await hearingSchedulePage.clearDownSchedule(
-      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
-      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-    );
 
     const roomData = {
       roomName:
@@ -116,7 +141,11 @@ test.describe("HMI Amend API tests after listing @amend-api-test-after-listing",
       await sessionBookingPage.bookSession(
         sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
         sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-        sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_01,
+        sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
       );
     }
 
@@ -190,3 +219,21 @@ test.describe("HMI Amend API tests after listing @amend-api-test-after-listing",
     */
   });
 });
+
+async function clearDownMidlandsLeicesterSchedule(
+  sessionBookingPage,
+  hearingSchedulePage,
+  dataUtils,
+) {
+  await clearDownSchedule(
+    sessionBookingPage,
+    hearingSchedulePage,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_MIDLANDS,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_CLUSTER_MIDLANDS_LEICESTERSHIRE_RUTLAND_LINCOLNSHIRE_NORTH,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_LEICESTER_CC,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
+    sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+    dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+  );
+}

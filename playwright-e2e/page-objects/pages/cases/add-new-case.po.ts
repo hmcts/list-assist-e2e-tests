@@ -6,7 +6,6 @@ interface CaseData {
   service: string;
   caseType?: string;
   region: string;
-  cluster: string;
   hearingCentre: string;
 }
 
@@ -44,26 +43,41 @@ export class AddNewCasePage extends Base {
   //new case page
   readonly newCaseHeader = this.page.locator("h1.header-title.my-2");
   readonly jurisdictionSelector = this.page
-    .getByLabel("Matter Detail - Jurisdiction_listbox")
+    .getByLabel("Jurisdiction")
     .getByText("Select One");
-  readonly serviceSelector = this.page
-    .getByLabel("Matter Detail - Service_listbox")
-    .getByText("Select One");
+
+  readonly serviceCombo = this.page
+    .locator("#matter-detail-matterDetailsCard")
+    .getByRole("combobox", { name: "Service list" });
+
+  readonly serviceListbox = this.page.locator(
+    "#matter-detail-matterDetailsCard #mtrCategoryId_listbox",
+  );
+
   readonly caseTypeSelector = this.page
-    .getByLabel("Matter Detail - Case Type_listbox")
-    .locator("div")
-    .filter({ hasText: "Select One" });
+    .locator("#matter-detail-matterDetailsCard")
+    .getByRole("combobox", { name: "Case Type list" });
+
+  readonly caseTypeListbox = this.page.locator(
+    "#matter-detail-matterDetailsCard #mtrMatterCdId_listbox",
+  );
+
   readonly regionSelector = this.page
-    .getByRole("combobox", { name: "Matter Detail - Region_listbox" })
+    .getByRole("combobox", { name: "Region" })
     .locator("div")
     .first();
-  readonly clusterSelect = this.page
-    .getByRole("combobox", { name: "Matter Detail - Cluster_listbox" })
-    .locator("div")
-    .first();
+
+  readonly card = this.page.locator("#matter-detail-matterDetailsCard");
+
+  readonly clusterSelect = this.card.getByRole("combobox", {
+    name: "Cluster list",
+  });
+  readonly clusterListbox = this.card.locator("#registry_listbox");
+
   readonly owningHearingSelector = this.page
-    .getByLabel("Matter Detail - Owning Hearing Location_listbox")
+    .getByLabel("Owning Hearing Location")
     .getByText("Select One");
+  readonly commentInput = this.page.locator("#mtrComment");
   readonly hmctsCaseNumberInput = this.page.locator("#mtrNumberAdded");
   readonly enterNameInput = this.page.locator("#mtrAltTitleTxt");
   readonly saveButton = this.page.getByRole("button", {
@@ -85,17 +99,17 @@ export class AddNewCasePage extends Base {
   }
 
   async selectService(service: string) {
-    await this.serviceSelector.click();
-    await this.page
+    await this.serviceCombo.click();
+    await this.serviceListbox
       .getByRole("option", { name: service, exact: true })
-      .locator("span")
-      .first()
       .click();
   }
 
   async selectCaseType(caseType: string) {
     await this.caseTypeSelector.click();
-    await this.page.getByText(caseType).click();
+    await this.caseTypeListbox
+      .getByRole("option", { name: caseType, exact: true })
+      .click();
   }
 
   async selectRegion(region: string) {
@@ -107,7 +121,10 @@ export class AddNewCasePage extends Base {
       .click();
   }
 
+  // keeping this method for future use if needed. in 4.67 the autopopulated cluster require a double select to set the value
   async selectCluster(cluster: string) {
+    await this.clusterSelect.click();
+    await this.page.getByText(cluster).click();
     await this.clusterSelect.click();
     await this.page.getByText(cluster).click();
   }
@@ -124,8 +141,7 @@ export class AddNewCasePage extends Base {
     service: string,
     caseType: string | undefined,
     region: string,
-    cluster: string,
-    owninghearing: string,
+    owningHearing: string,
   ) {
     await this.selectJurisdiction(jurisdiction);
     await this.selectService(service);
@@ -133,8 +149,7 @@ export class AddNewCasePage extends Base {
       await this.selectCaseType(caseType);
     }
     await this.selectRegion(region);
-    await this.selectCluster(cluster);
-    await this.selectOwningHearing(owninghearing);
+    await this.selectOwningHearing(owningHearing);
     await this.hmctsCaseNumberInput.fill(hmctsCaseNumber);
     await this.enterNameInput.fill(caseName);
   }
@@ -156,7 +171,6 @@ export class AddNewCasePage extends Base {
       caseData.service,
       caseData.caseType,
       caseData.region,
-      caseData.cluster,
       caseData.hearingCentre,
     );
     // Click save button

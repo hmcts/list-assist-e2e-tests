@@ -7,6 +7,38 @@ import {
   HomePage,
 } from "../../page-objects/pages/index.ts";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
+import { clearDownSchedule } from "../../utils/reporting.utils.ts";
+
+test.beforeEach(
+  async ({
+    page,
+    sessionBookingPage,
+    hearingSchedulePage,
+    dataUtils,
+    loginPage,
+  }) => {
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser);
+
+    await clearDownPontypriddSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
+  },
+);
+
+test.afterEach(
+  async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
+    await page.goto(config.urls.baseUrl);
+
+    await clearDownPontypriddSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
+  },
+);
 
 test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
   test.slow();
@@ -20,7 +52,6 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     homePage,
     viewReportsPage,
     dataUtils,
-    loginPage,
     addNewCasePage,
     editNewCasePage,
     listingRequirementsPage,
@@ -37,20 +68,6 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       );
     }
 
-    const {
-      CASE_LISTING_REGION_WALES,
-      CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-      CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-      CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-      CASE_LISTING_COLUMN_ONE,
-      CASE_LISTING_SESSION_DURATION_1_00,
-      CASE_LISTING_HEARING_TYPE_APPLICATION,
-      CASE_LISTING_CANCEL_REASON_AMEND,
-      SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-      CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-      AUTO_JUDICIAL_OFFICE_HOLDER_02,
-    } = sessionBookingPage.CONSTANTS;
-
     const todayDate = dataUtils.generateDateInYyyyMmDdNoSeparators(0);
     const formattedReportDate =
       dataUtils.getFormattedDateForReportAssertionUsingDateStringWithDayName();
@@ -60,8 +77,9 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
 
     await test.step("Login and prepare test case", async () => {
       await page.goto(config.urls.baseUrl);
-      await loginPage.login(config.users.testUser);
+
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+
       await addNewCasePage.sidebarComponent.openSearchCasePage();
       await caseSearchPage.searchCase(caseNumber);
       await expect(editNewCasePage.caseNameField).toHaveText(caseName);
@@ -125,16 +143,12 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
       await sessionBookingPage.updateAdvancedFilterConfig(
-        CASE_LISTING_REGION_WALES,
-        CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-        CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-        CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-      );
-
-      await hearingSchedulePage.clearDownSchedule(
-        SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-        CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+        sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
       );
 
       await createHearingSession(
@@ -146,14 +160,23 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
           sessionBookingPage,
         },
         {
-          roomName: CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          column: CASE_LISTING_COLUMN_ONE,
+          roomName:
+            sessionBookingPage.CONSTANTS
+              .CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+          column: sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
           caseNumber,
-          sessionDuration: CASE_LISTING_SESSION_DURATION_1_00,
-          hearingType: CASE_LISTING_HEARING_TYPE_APPLICATION,
-          cancelReason: CASE_LISTING_CANCEL_REASON_AMEND,
-          sessionStatus: CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-          sessionJoh: AUTO_JUDICIAL_OFFICE_HOLDER_02,
+          sessionDuration:
+            sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+          hearingType:
+            sessionBookingPage.CONSTANTS.CASE_LISTING_HEARING_TYPE_APPLICATION,
+          cancelReason:
+            sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
+          sessionStatus:
+            sessionBookingPage.CONSTANTS
+              .CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+          sessionJoh:
+            sessionBookingPage.CONSTANTS
+              .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
         },
       );
     });
@@ -161,8 +184,9 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     await test.step("Generate external hearing list report", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
         todayDate,
-        CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-        CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
         viewReportsPage.CONSTANTS.JURISDICTION_CIVIL,
         formattedReportDate,
       );
@@ -183,8 +207,9 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     await test.step("Generate internal hearing list report (damages)", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
         todayDate,
-        CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-        CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
         viewReportsPage.CONSTANTS.JURISDICTION_CIVIL,
         formattedReportDate,
         viewReportsPage.CONSTANTS.SERVICE_DAMAGES,
@@ -205,8 +230,9 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     await test.step("Generate external hearing list Welsh report", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
         todayDate,
-        CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-        CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
         viewReportsPage.CONSTANTS.JURISDICTION_CIVIL,
         combinedDate,
         undefined,
@@ -243,7 +269,7 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       hearingType: string;
       cancelReason: string;
       sessionStatus: string;
-      sessionJoh: string;
+      sessionJoh?: string;
     },
   ) {
     const {
@@ -277,9 +303,13 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     );
 
     await sessionBookingPage.bookSession(
-      roomData.sessionDuration,
-      roomData.sessionStatus,
-      roomData.sessionJoh,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
+      undefined,
+      undefined,
+      `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
+      `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
     );
 
     await expect(
@@ -287,3 +317,21 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
     ).toBeVisible();
   }
 });
+
+async function clearDownPontypriddSchedule(
+  sessionBookingPage,
+  hearingSchedulePage,
+  dataUtils,
+) {
+  await clearDownSchedule(
+    sessionBookingPage,
+    hearingSchedulePage,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+    sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+    dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+  );
+}

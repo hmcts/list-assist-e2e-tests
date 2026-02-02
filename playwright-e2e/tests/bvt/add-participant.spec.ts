@@ -48,11 +48,13 @@ test.describe("Add participant @add-participant", () => {
       editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
     );
 
-    //use close participant button
+    // in new release 4.67 the close participant button only appears when clicking on a participant to view/edit their details
+    //use Close Case button
+
     await expect(
-      editNewCasePage.upperbarComponent.closeParticipantButton,
+      editNewCasePage.upperbarComponent.closeCaseButton,
     ).toBeVisible();
-    await editNewCasePage.upperbarComponent.closeParticipantButton.click();
+    await editNewCasePage.upperbarComponent.closeCaseButton.click();
 
     //wait for homepage to load
     await homePage.waitForHomePageLoad();
@@ -67,10 +69,6 @@ test.describe("Add participant @add-participant", () => {
     const lastName = dataUtils.generateRandomAlphabetical(8);
 
     await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
-
-    await expect(
-      homePage.upperbarComponent.closeParticipantButton,
-    ).toBeVisible();
 
     // Add new participant
     await homePage.sidebarComponent.openAddNewParticipantPage();
@@ -106,7 +104,12 @@ test.describe("Add participant @add-participant", () => {
     homePage,
     dataUtils,
     caseHistoryPage,
+    addNewCasePage,
+    caseSearchPage,
   }) => {
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
+
     await homePage.sidebarComponent.caseFileNotesPage();
     await homePage.sidebarComponent.currentCaseEventType.selectOption({
       label: "File Note",
