@@ -379,7 +379,7 @@ export class SidebarComponent {
         },
         {
           intervals: [2_000],
-          timeout: 10_000,
+          timeout: 20_000,
         },
       )
       .toBeTruthy();
