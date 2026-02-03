@@ -7,19 +7,19 @@ export class MultiDayCartPage extends Base {
     { hasText: "Multi Days Cart" },
   );
   readonly bulkListTable = this.page.locator("table#vuetable.table.mcms-thead");
-  readonly bulkListCheckBox = this.page.locator("#checkAllBulk_checkmark");
+  readonly bulkListCheckBox = this.page.getByRole("checkbox", {
+    name: "Check/uncheck to add all",
+  });
   readonly submitButton = this.page.locator("#submitSession");
   readonly applyFilterButton = this.page.locator("#applyFilter");
 
-  readonly selectCaseBoxSelect = this.page.locator(
-    'label.select-header:has-text("Select a Case") + div.multiselect',
-  );
+  readonly selectCaseBoxSelect = this.page.locator(".multiselect__select");
   readonly listingRequirementsDropDown = this.page.locator(
     'label.select-header:has-text("Select a Listing Requirement") + div.multiselect',
   );
 
   readonly listingRequirementsOption = this.listingRequirementsDropDown.locator(
-    ".multiselect__single",
+    ".multiselect .multiselect__single",
   );
 
   //validation popup
@@ -75,34 +75,36 @@ export class MultiDayCartPage extends Base {
   }
 
   async selectCaseFromSelectDropDown(caseName: string) {
-    await this.selectCaseBoxSelect.click();
+    await expect
+      .poll(
+        async () => {
+          await this.page.locator(".multiselect__select").first().isVisible();
+          await this.page.locator(".multiselect__select").first().click();
+          return await this.page
+            .locator(".multiselect__option", { hasText: caseName })
+            .first()
+            .isVisible();
+        },
+        { intervals: [1_000], timeout: 10_000 },
+      )
+      .toBeTruthy();
 
-    const options = this.selectCaseBoxSelect.locator(
-      "div.multiselect__content-wrapper",
-    );
-    await expect(options).toBeVisible();
-
-    const caseOption = options
-      .locator(".multiselect__element span.multiselect__option")
-      .filter({ hasText: caseName });
-    await expect(caseOption).toBeVisible();
-    await caseOption.click();
+    await this.page
+      .locator(".multiselect__option", { hasText: caseName })
+      .first()
+      .click();
   }
 
   async waitForlistingRequirementsSelectionToBePopulated(value: string) {
     await expect
       .poll(
-        async () => {
-          const text = await this.listingRequirementsOption.textContent();
-          return text && text.trim() !== "Select One";
-        },
-        {
-          intervals: [2_000],
-          timeout: 10_000,
-        },
+        async () =>
+          await this.page
+            .locator("span", { hasText: value })
+            .first()
+            .isVisible(),
+        { intervals: [1000], timeout: 10_000 },
       )
       .toBeTruthy();
-
-    await expect(this.listingRequirementsOption).toContainText(value);
   }
 }

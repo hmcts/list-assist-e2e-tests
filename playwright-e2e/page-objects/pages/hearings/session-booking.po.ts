@@ -134,6 +134,9 @@ export class SessionBookingPage extends Base {
   readonly locationDropDown = this.page
     .getByLabel("Location filter list with 0")
     .getByText("Location");
+  readonly locationFilterToggleButton = this.page
+    .getByRole("group", { name: /Location filter list/i })
+    .locator('span[role="button"][title="Toggle"].multiselect__custom-select');
   readonly applyButton = this.page
     .getByRole("dialog", { name: "Advanced Filter" })
     .getByLabel("Apply filter criteria");
@@ -389,6 +392,9 @@ export class SessionBookingPage extends Base {
       .locator("span")
       .nth(2)
       .click();
+
+    // Use the class property here
+    await this.locationFilterToggleButton.click();
 
     //apply filter
     await this.applyButton.click();
