@@ -43,16 +43,19 @@ export class CaseHistoryPage extends Base {
   ) {
     await this.caseHistorySearchBox.fill(searchText);
 
+    await expect
+      .poll(async () => await this.allocationRow(eventCode).isVisible(), {
+        intervals: [500],
+        timeout: 10_000,
+      })
+      .toBeTruthy();
+    await expect(this.allocationRow(event)).toBeVisible();
     if (
       searchText !== this.CONSTANTS.CASE_HISTORY_EVENT_CODE_ALLOCATE &&
       searchText !== this.CONSTANTS.CASE_HISTORY_EVENT_CODE_REGISTRATION
     ) {
-      await expect(this.allocationRow(eventCode)).toBeVisible();
-      await expect(this.allocationRow(event)).toBeVisible();
       await expect(this.commentCaseHistoryRow(comments)).toBeVisible();
     } else {
-      await expect(this.allocationRow(eventCode)).toBeVisible();
-      await expect(this.allocationRow(event)).toBeVisible();
       await expect(this.allocationRow(comments)).toBeVisible();
     }
 
