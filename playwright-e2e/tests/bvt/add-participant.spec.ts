@@ -102,7 +102,7 @@ test.describe("Add participant @add-participant", () => {
     await homePage.waitForHomePageLoad();
   });
 
-  test("Case history should display correct event codes", async ({
+  test("Case history should display correct event codes @event-codes", async ({
     homePage,
     dataUtils,
     caseHistoryPage,
@@ -123,6 +123,8 @@ test.describe("Add participant @add-participant", () => {
       caseHistoryPage.CONSTANTS.CASE_HISTORY_EVENT_FILE_NOTE,
       comment,
     );
+
+    console.log("Verified File Note in Case History");
 
     //search and verify Allocate event code
     await caseHistoryPage.searchCaseNotesAndAssertVisible(
