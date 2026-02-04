@@ -880,7 +880,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
   //Family Case (Financial Dispute) with parties & no suppression
 
-  test("Family Case (Financial Dispute) with parties & no suppression", async ({
+  test.only("Family Case (Financial Dispute) with parties & no suppression", async ({
                                                                                  page,
                                                                                  sessionBookingPage,
                                                                                  caseSearchPage,
@@ -1048,101 +1048,66 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
 
     // Reusable helpers
-  async function createReleasedSessionForCase(
-      pages: {
-        homePage: HomePage;
-        caseSearchPage: CaseSearchPage;
-        caseDetailsPage: CaseDetailsPage;
-        hearingSchedulePage: HearingSchedulePage;
-        sessionBookingPage: SessionBookingPage;
-      },
-      caseNumber: string,
-  ) {
-    const sessionConstants = pages.sessionBookingPage.CONSTANTS;
 
-    await createHearingSession(
-        pages,
-        {
-          roomName: sessionConstants.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          column: sessionConstants.CASE_LISTING_COLUMN_ONE,
-          caseNumber,
-          sessionDuration: sessionConstants.CASE_LISTING_SESSION_DURATION_1_00,
-          hearingType: sessionConstants.CASE_LISTING_HEARING_TYPE_APPLICATION,
-          cancelReason: sessionConstants.CASE_LISTING_CANCEL_REASON_AMEND,
-          sessionStatus: sessionConstants.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-          sessionJoh: sessionConstants.AUTO_JUDICIAL_OFFICE_HOLDER_02,
+    async function createReleasedSessionForCase(
+        pages: {
+            homePage: HomePage;
+            caseSearchPage: CaseSearchPage;
+            caseDetailsPage: CaseDetailsPage;
+            hearingSchedulePage: HearingSchedulePage;
+            sessionBookingPage: SessionBookingPage;
         },
-    );
-  }
+        caseNumber: string,
+    ) {
 
+        const {
+            homePage,
+            caseSearchPage,
+            caseDetailsPage,
+            hearingSchedulePage,
+            sessionBookingPage,
+        } = pages;
 
-  async function createHearingSession(
-    pages: {
-      homePage: HomePage;
-      caseSearchPage: CaseSearchPage;
-      caseDetailsPage: CaseDetailsPage;
-      hearingSchedulePage: HearingSchedulePage;
-      sessionBookingPage: SessionBookingPage;
-    },
-    roomData: {
-      roomName: string;
-      column: string;
-      caseNumber: string;
-      sessionDuration: string;
-      hearingType: string;
-      cancelReason: string;
-      sessionStatus: string;
-      sessionJoh: string;
-    },
-  ) {
-    const {
-      homePage,
-      caseSearchPage,
-      caseDetailsPage,
-      hearingSchedulePage,
-      sessionBookingPage,
-    } = pages;
+        const C = sessionBookingPage.CONSTANTS;
 
-    await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
-    await homePage.upperbarComponent.currentCaseDropdownButton.click();
+        await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
+        await homePage.upperbarComponent.currentCaseDropdownButton.click();
 
-    await expect(
-      homePage.upperbarComponent.currentCaseDropdownList,
-    ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
+        await expect(homePage.upperbarComponent.currentCaseDropdownList).toContainText(
+            homePage.upperbarComponent.currentCaseDropDownItems,
+        );
 
-    await caseSearchPage.sidebarComponent.openSearchCasePage();
-    await caseSearchPage.searchCase(roomData.caseNumber);
-    await expect(caseDetailsPage.addToCartButton).toBeVisible();
-    await caseDetailsPage.addToCartButton.click();
-    await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
+        await caseSearchPage.sidebarComponent.openSearchCasePage();
+        await caseSearchPage.searchCase(caseNumber);
 
-    await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-    await hearingSchedulePage.waitForLoad();
+        await expect(caseDetailsPage.addToCartButton).toBeVisible();
+        await caseDetailsPage.addToCartButton.click();
 
-    await hearingSchedulePage.scheduleHearingWithBasket(
-      roomData.roomName,
-      roomData.column,
-      roomData.caseNumber,
-    );
+        await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
 
-    await sessionBookingPage.bookSession(
-      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-    );
+        await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+        await hearingSchedulePage.waitForLoad();
 
-    await expect(
-      hearingSchedulePage.confirmListingReleasedStatus,
-    ).toBeVisible();
-  }
+        await hearingSchedulePage.scheduleHearingWithBasket(
+            C.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+            C.CASE_LISTING_COLUMN_ONE,
+            caseNumber,
+        );
 
-  // reusable case creation function
+        await sessionBookingPage.bookSession(
+            C.CASE_LISTING_SESSION_DURATION_1_00,
+            C.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+            C.AUTO_JUDICIAL_OFFICE_HOLDER_02,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+        );
 
-  async function createNewCase(
+        await expect(hearingSchedulePage.confirmListingReleasedStatus).toBeVisible();
+    }
+
+    async function createNewCase(
       pages: {
         page: Page;
     loginPage: LoginPage;
