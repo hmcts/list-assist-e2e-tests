@@ -483,9 +483,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
       await reportsRequestPage.assertDailyCauseListsByText(expected);
     });
 
-   // Bug:  Expected value "HMCTS_CN_8D9254FC-FB89-468B-9038-FFA9F5449B70 Cyfraith Teulu Breifat, Re A Minor" but got "HMCTS_CN_8D9254FC-FB89-468B-9038-FFA9F5449B70  Par: Plentyn, Re A Minor"
-
-      await test.step.skip("verify external hearing list Welsh report shows default suppressed case name suppressed party name", async () => {      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
+    await test.step("verify external hearing list Welsh report shows default suppressed case name suppressed party name", async () => {      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
           todayDate,
           sessionBookingPage.CONSTANTS
               .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
@@ -499,7 +497,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
       const expected = [
         {
           header: "Manylion yr Achos, Case Detail",
-          value: `${caseNumber} Cyfraith Teulu Breifat, ${caseNameSuppression}`,
+          value: `${caseNumber} Par: Plentyn, ${caseNameSuppression}`,
         },
         {
           header: "Enw’r Blaid, Party Name",
