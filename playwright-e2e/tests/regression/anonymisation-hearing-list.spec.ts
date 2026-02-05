@@ -1,6 +1,8 @@
 import { expect, test } from "../../fixtures.ts";
 import { config } from "../../utils/index.ts";
 import { Page } from "@playwright/test";
+import { EditNewCasePage } from "../../page-objects/pages/cases/edit-case.po";
+import { DataUtils } from "../../utils/data.utils.ts";
 import {
   CaseDetailsPage,
   CaseSearchPage,
@@ -64,24 +66,28 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     // Create new Civil Damages Small Claims case
     const { caseNumber, caseName } =
       await test.step("login and Create Civil Damages Small Claims case for case-name suppression", async () =>
-          await createNewCase({
-                page,
-          loginPage,
-          homePage,
-          addNewCasePage,
-          hearingSchedulePage,
-            },
-            {
-              jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL,
-              service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
-              caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
-              region: addNewCasePage.CONSTANTS.REGION_WALES,
-              cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-              hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-              hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-              currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-
-            }));
+        await createNewCase(
+          {
+            page,
+            loginPage,
+            homePage,
+            addNewCasePage,
+            hearingSchedulePage,
+          },
+          {
+            jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL,
+            service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
+            caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
+            region: addNewCasePage.CONSTANTS.REGION_WALES,
+            cluster:
+              addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+            hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+            hearingTypeRef:
+              addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+            currentStatus:
+              addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
+          },
+        ));
 
     await test.step("Open newly created case", async () => {
       await addNewCasePage.sidebarComponent.openSearchCasePage();
@@ -90,23 +96,11 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     });
 
     await test.step("add case participants", async () => {
-      await editNewCasePage.createNewParticipant(
-        editNewCasePage.CONSTANTS.PARTICIPANT_CLASS_PERSON,
-        editNewCasePage.CONSTANTS.PARTICIPANT_TYPE_INDIVIDUAL,
+      await addIndividualParticipantAndAssert(
+        editNewCasePage,
+        dataUtils,
         givenName,
         lastName,
-        editNewCasePage.CONSTANTS.PARTICIPANT_GENDER_MALE,
-        dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(
-          dataUtils.getRandomNumberBetween1And50(),
-        ),
-        editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
-        editNewCasePage.CONSTANTS.PARTICIPANT_ROLE_APPLICANT,
-      );
-
-      await editNewCasePage.checkCaseParticipantTable(
-        editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INDIVIDUAL,
-        `${lastName}, ${givenName}`,
-        editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
       );
     });
 
@@ -115,18 +109,16 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     });
 
     await test.step("Clear existing schedule and create new released session", async () => {
-
       await createReleasedSessionForCase(
-          {
-            homePage,
-            caseSearchPage,
-            caseDetailsPage,
-            hearingSchedulePage,
-            sessionBookingPage,
-          },
-          caseNumber,
+        {
+          homePage,
+          caseSearchPage,
+          caseDetailsPage,
+          hearingSchedulePage,
+          sessionBookingPage,
+        },
+        caseNumber,
       );
-
     });
 
     await test.step("Verify External report shows suppressed case name and real party name", async () => {
@@ -231,24 +223,27 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     // Create new Civil Damages Small Claims case
     const { caseNumber, caseName } =
       await test.step("login and Create Civil Damages Small Claims case for party suppression", async () =>
-        await createNewCase({
-          page,
-          loginPage,
-          homePage,
-          addNewCasePage,
-          hearingSchedulePage,
-            },
-            {
-
-              jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL,
-              service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
-              caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
-              region: addNewCasePage.CONSTANTS.REGION_WALES,
-              cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-              hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-              hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-              currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-            }
+        await createNewCase(
+          {
+            page,
+            loginPage,
+            homePage,
+            addNewCasePage,
+            hearingSchedulePage,
+          },
+          {
+            jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL,
+            service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
+            caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
+            region: addNewCasePage.CONSTANTS.REGION_WALES,
+            cluster:
+              addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+            hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+            hearingTypeRef:
+              addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+            currentStatus:
+              addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
+          },
         ));
 
     await test.step("Open newly created case", async () => {
@@ -257,38 +252,26 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
       await expect(editNewCasePage.caseNameField).toHaveText(caseName);
     });
 
-    await test.step("add case participants with default Allternative/Suppression value", async () => {
-      await editNewCasePage.createNewParticipant(
-        editNewCasePage.CONSTANTS.PARTICIPANT_CLASS_PERSON,
-        editNewCasePage.CONSTANTS.PARTICIPANT_TYPE_INDIVIDUAL,
+    await test.step("add case participants", async () => {
+      await addIndividualParticipantAndAssert(
+        editNewCasePage,
+        dataUtils,
         givenName,
         lastName,
-        editNewCasePage.CONSTANTS.PARTICIPANT_GENDER_MALE,
-        dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(
-          dataUtils.getRandomNumberBetween1And50(),
-        ),
-        editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
-        editNewCasePage.CONSTANTS.PARTICIPANT_ROLE_APPLICANT,
         true,
-      );
-
-      await editNewCasePage.checkCaseParticipantTable(
-        editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INDIVIDUAL,
-        `${lastName}, ${givenName}`,
-        editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
       );
     });
 
     await test.step("Clear existing schedule and create new released session", async () => {
       await createReleasedSessionForCase(
-          {
-            homePage,
-            caseSearchPage,
-            caseDetailsPage,
-            hearingSchedulePage,
-            sessionBookingPage,
-          },
-          caseNumber,
+        {
+          homePage,
+          caseSearchPage,
+          caseDetailsPage,
+          hearingSchedulePage,
+          sessionBookingPage,
+        },
+        caseNumber,
       );
     });
 
@@ -372,51 +355,54 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
   //Family Cases --- -- case type suppression (default)
 
   test("Family Case (Private Law) with parties; case type suppression (default)", async ({
-                                                                                           page,
-                                                                                           sessionBookingPage,
-                                                                                           caseSearchPage,
-                                                                                           caseDetailsPage,
-                                                                                           hearingSchedulePage,
-                                                                                           homePage,
-                                                                                           viewReportsPage,
-                                                                                           dataUtils,
-                                                                                           loginPage,
-                                                                                           addNewCasePage,
-                                                                                           editNewCasePage,
-                                                                                         }) => {
+    page,
+    sessionBookingPage,
+    caseSearchPage,
+    caseDetailsPage,
+    hearingSchedulePage,
+    homePage,
+    viewReportsPage,
+    dataUtils,
+    loginPage,
+    addNewCasePage,
+    editNewCasePage,
+  }) => {
     const givenName = dataUtils.generateRandomAlphabetical(7);
     const lastName = dataUtils.generateRandomAlphabetical(8);
     const caseNameSuppression = "Re A Minor";
     const partyName = `${givenName} ${lastName}`;
     const todayDate = dataUtils.generateDateInYyyyMmDdNoSeparators(0);
     const formattedReportDate =
-        dataUtils.getFormattedDateForReportAssertionUsingDateStringWithDayName();
+      dataUtils.getFormattedDateForReportAssertionUsingDateStringWithDayName();
     const welshDate =
-        dataUtils.getFormattedWelshDateForReportAssertionUsingWelshDateStringWithDayName();
+      dataUtils.getFormattedWelshDateForReportAssertionUsingWelshDateStringWithDayName();
     const combinedDate = `${welshDate}, ${formattedReportDate}`;
 
     // Create new Family case
     const { caseNumber, caseName } =
-        await test.step("login and Create Family Case (Private Law) with parties, default suppression", async () =>
-            await createNewCase({
-                  page,
-                  loginPage,
-                  homePage,
-                  addNewCasePage,
-                  hearingSchedulePage,
-                },
-                {
+      await test.step("login and Create Family Case (Private Law) with parties, default suppression", async () =>
+        await createNewCase(
+          {
+            page,
+            loginPage,
+            homePage,
+            addNewCasePage,
+            hearingSchedulePage,
+          },
+          {
+            jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
+            service: addNewCasePage.CONSTANTS.SERVICE_PRIVATE_LAW,
 
-                  jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
-                  service: addNewCasePage.CONSTANTS.SERVICE_PRIVATE_LAW,
-
-                  region: addNewCasePage.CONSTANTS.REGION_WALES,
-                  cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-                  hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-                  hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-                  currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-                }
-            ));
+            region: addNewCasePage.CONSTANTS.REGION_WALES,
+            cluster:
+              addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+            hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+            hearingTypeRef:
+              addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+            currentStatus:
+              addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
+          },
+        ));
 
     await test.step("Open newly created case", async () => {
       await addNewCasePage.sidebarComponent.openSearchCasePage();
@@ -425,48 +411,35 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     });
 
     await test.step("add case participants", async () => {
-      await editNewCasePage.createNewParticipant(
-          editNewCasePage.CONSTANTS.PARTICIPANT_CLASS_PERSON,
-          editNewCasePage.CONSTANTS.PARTICIPANT_TYPE_INDIVIDUAL,
-          givenName,
-          lastName,
-          editNewCasePage.CONSTANTS.PARTICIPANT_GENDER_MALE,
-          dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(
-              dataUtils.getRandomNumberBetween1And50(),
-          ),
-          editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
-          editNewCasePage.CONSTANTS.PARTICIPANT_ROLE_APPLICANT,
-      );
-
-      await editNewCasePage.checkCaseParticipantTable(
-          editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INDIVIDUAL,
-          `${lastName}, ${givenName}`,
-          editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
+      await addIndividualParticipantAndAssert(
+        editNewCasePage,
+        dataUtils,
+        givenName,
+        lastName,
       );
     });
-
 
     await test.step("Clear existing schedule and create new released session", async () => {
-
       await createReleasedSessionForCase(
-          {
-            homePage,
-            caseSearchPage,
-            caseDetailsPage,
-            hearingSchedulePage,
-            sessionBookingPage,
-          },
-          caseNumber,
+        {
+          homePage,
+          caseSearchPage,
+          caseDetailsPage,
+          hearingSchedulePage,
+          sessionBookingPage,
+        },
+        caseNumber,
       );
     });
 
-    await test.step("Verify External report shows default suppressed case name suppressed party name", async () => {      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
-          todayDate,
-          sessionBookingPage.CONSTANTS
-              .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-          sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-          formattedReportDate,
+    await test.step("Verify External report shows default suppressed case name suppressed party name", async () => {
+      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
+        todayDate,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
+        formattedReportDate,
       );
 
       const expected = [
@@ -483,15 +456,16 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
       await reportsRequestPage.assertDailyCauseListsByText(expected);
     });
 
-    await test.step("verify external hearing list Welsh report shows default suppressed case name suppressed party name", async () => {      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
-          todayDate,
-          sessionBookingPage.CONSTANTS
-              .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-          sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-          combinedDate,
-          undefined,
-          true,
+    await test.step("verify external hearing list Welsh report shows default suppressed case name suppressed party name", async () => {
+      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
+        todayDate,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
+        combinedDate,
+        undefined,
+        true,
       );
 
       const expected = [
@@ -508,14 +482,15 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
       await reportsRequestPage.assertDailyCauseListsByText(expected);
     });
 
-    await test.step("verify internal hearing list report no suppression should apply on Case Name and Part name", async () => {      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
-          todayDate,
-          sessionBookingPage.CONSTANTS
-              .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-          sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-          formattedReportDate,
-          addNewCasePage.CONSTANTS.SERVICE_PRIVATE_LAW,
+    await test.step("verify internal hearing list report no suppression should apply on Case Name and Part name", async () => {
+      const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
+        todayDate,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
+        formattedReportDate,
+        addNewCasePage.CONSTANTS.SERVICE_PRIVATE_LAW,
       );
 
       const expected = [
@@ -531,24 +506,23 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
       await reportsRequestPage.assertDailyCauseListsByText(expected);
     });
-
   });
 
   // Family case --- case name suppression
 
   test("Family Case (Private Law) with parties; with Case Name Suppression added", async ({
-                                                                                            page,
-                                                                                            sessionBookingPage,
-                                                                                            caseSearchPage,
-                                                                                            caseDetailsPage,
-                                                                                            hearingSchedulePage,
-                                                                                            homePage,
-                                                                                            viewReportsPage,
-                                                                                            dataUtils,
-                                                                                            loginPage,
-                                                                                            addNewCasePage,
-                                                                                            editNewCasePage,
-                                                                                          }) => {
+    page,
+    sessionBookingPage,
+    caseSearchPage,
+    caseDetailsPage,
+    hearingSchedulePage,
+    homePage,
+    viewReportsPage,
+    dataUtils,
+    loginPage,
+    addNewCasePage,
+    editNewCasePage,
+  }) => {
     // case name suppression value
     const caseNameSuppression = dataUtils.generateRandomAlphabetical(10);
     // party details
@@ -557,56 +531,48 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     const partyName = `${givenName} ${lastName}`;
     const todayDate = dataUtils.generateDateInYyyyMmDdNoSeparators(0);
     const formattedReportDate =
-        dataUtils.getFormattedDateForReportAssertionUsingDateStringWithDayName();
+      dataUtils.getFormattedDateForReportAssertionUsingDateStringWithDayName();
     const welshDate =
-        dataUtils.getFormattedWelshDateForReportAssertionUsingWelshDateStringWithDayName();
+      dataUtils.getFormattedWelshDateForReportAssertionUsingWelshDateStringWithDayName();
     const combinedDate = `${welshDate}, ${formattedReportDate}`;
 
     // Create new Family case
     const { caseNumber, caseName } =
-        await test.step("login and Create Family Case (Private Law) with parties", async () =>
-            await createNewCase({
-                  page,
-                  loginPage,
-                  homePage,
-                  addNewCasePage,
-                  hearingSchedulePage,
-                },
-                {
-
-                  jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
-                  service: addNewCasePage.CONSTANTS.SERVICE_PRIVATE_LAW,
-                  region: addNewCasePage.CONSTANTS.REGION_WALES,
-                  cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-                  hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-                  hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-                  currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-                }
-            ));
+      await test.step("login and Create Family Case (Private Law) with parties", async () =>
+        await createNewCase(
+          {
+            page,
+            loginPage,
+            homePage,
+            addNewCasePage,
+            hearingSchedulePage,
+          },
+          {
+            jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
+            service: addNewCasePage.CONSTANTS.SERVICE_PRIVATE_LAW,
+            region: addNewCasePage.CONSTANTS.REGION_WALES,
+            cluster:
+              addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+            hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+            hearingTypeRef:
+              addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+            currentStatus:
+              addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
+          },
+        ));
 
     await test.step("Open newly created case", async () => {
       await addNewCasePage.sidebarComponent.openSearchCasePage();
       await caseSearchPage.searchCase(caseNumber);
       await expect(editNewCasePage.caseNameField).toHaveText(caseName);
     });
-    await test.step("add case participants", async () => {
-      await editNewCasePage.createNewParticipant(
-          editNewCasePage.CONSTANTS.PARTICIPANT_CLASS_PERSON,
-          editNewCasePage.CONSTANTS.PARTICIPANT_TYPE_INDIVIDUAL,
-          givenName,
-          lastName,
-          editNewCasePage.CONSTANTS.PARTICIPANT_GENDER_MALE,
-          dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(
-              dataUtils.getRandomNumberBetween1And50(),
-          ),
-          editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
-          editNewCasePage.CONSTANTS.PARTICIPANT_ROLE_APPLICANT,
-      );
 
-      await editNewCasePage.checkCaseParticipantTable(
-          editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INDIVIDUAL,
-          `${lastName}, ${givenName}`,
-          editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
+    await test.step("add case participants", async () => {
+      await addIndividualParticipantAndAssert(
+        editNewCasePage,
+        dataUtils,
+        givenName,
+        lastName,
       );
     });
 
@@ -615,28 +581,26 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     });
 
     await test.step("Clear existing schedule and create new released session", async () => {
-
       await createReleasedSessionForCase(
-          {
-            homePage,
-            caseSearchPage,
-            caseDetailsPage,
-            hearingSchedulePage,
-            sessionBookingPage,
-          },
-          caseNumber,
-
+        {
+          homePage,
+          caseSearchPage,
+          caseDetailsPage,
+          hearingSchedulePage,
+          sessionBookingPage,
+        },
+        caseNumber,
       );
     });
 
     await test.step("Verify External report shows manually entered suppressed case name & party name replaced Parties Suppressed", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
-          todayDate,
-          sessionBookingPage.CONSTANTS
-              .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-          sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-          formattedReportDate,
+        todayDate,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
+        formattedReportDate,
       );
 
       const expected = [
@@ -655,14 +619,14 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
     await test.step("verify external hearing list Welsh report shows manually entered suppressed case name and part name replaced with Parties Suppressed", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
-          todayDate,
-          sessionBookingPage.CONSTANTS
-              .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-          sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-          combinedDate,
-          undefined,
-          true,
+        todayDate,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
+        combinedDate,
+        undefined,
+        true,
       );
 
       const expected = [
@@ -681,13 +645,13 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
     await test.step("verify internal hearing list report, no suppression should apply on case Name and parties name", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
-          todayDate,
-          sessionBookingPage.CONSTANTS
-              .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-          sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-          formattedReportDate,
-          addNewCasePage.CONSTANTS.SERVICE_PRIVATE_LAW,
+        todayDate,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
+        formattedReportDate,
+        addNewCasePage.CONSTANTS.SERVICE_PRIVATE_LAW,
       );
 
       const expected = [
@@ -703,11 +667,11 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
       await reportsRequestPage.assertDailyCauseListsByText(expected);
     });
-
   });
 
-//Family case --- "Alternative/Suppression" with parties & "Alternative/Suppression" applied
+  //Family case --- "Alternative/Suppression" with parties & "Alternative/Suppression" applied
   //TODO: Bug: Uncomment the following test once the bug under MCGIRRSD-78068 is fixed.
+  // leaving adding participants (without refactoring) step in this test for now, need to remove when the bug is fixed
   /*
   test("Family Case (Private Law) with parties & Alternative/Suppression applied to individual parties.", async ({
                                                                                              page,
@@ -760,7 +724,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
           await expect(editNewCasePage.caseNameField).toHaveText(caseName);
       });
 
-      await test.step("add case participants with default Allternative/Suppression value", async () => {
+      await test.step.skip("add case participants with default Allternative/Suppression value", async () => {
           await editNewCasePage.createNewParticipant(
               editNewCasePage.CONSTANTS.PARTICIPANT_CLASS_PERSON,
               editNewCasePage.CONSTANTS.PARTICIPANT_TYPE_INDIVIDUAL,
@@ -781,6 +745,15 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
               editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
           );
       });
+      await test.step("add case participants", async () => {
+      await addIndividualParticipantAndAssert(
+          editNewCasePage,
+          dataUtils,
+          givenName,
+          lastName,
+          true
+      );
+    });
 
 
       await test.step("Clear existing schedule and create new released session", async () => {
@@ -880,51 +853,53 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
   //Family Case (Financial Dispute) with parties & no suppression
 
-  test.only("Family Case (Financial Dispute) with parties & no suppression", async ({
-                                                                                 page,
-                                                                                 sessionBookingPage,
-                                                                                 caseSearchPage,
-                                                                                 caseDetailsPage,
-                                                                                 hearingSchedulePage,
-                                                                                 homePage,
-                                                                                 viewReportsPage,
-                                                                                 dataUtils,
-                                                                                 loginPage,
-                                                                                 addNewCasePage,
-                                                                                 editNewCasePage,
-                                                                               }) => {
-
+  test("Family Case (Financial Dispute) with parties & no suppression", async ({
+    page,
+    sessionBookingPage,
+    caseSearchPage,
+    caseDetailsPage,
+    hearingSchedulePage,
+    homePage,
+    viewReportsPage,
+    dataUtils,
+    loginPage,
+    addNewCasePage,
+    editNewCasePage,
+  }) => {
     const givenName = dataUtils.generateRandomAlphabetical(7);
     const lastName = dataUtils.generateRandomAlphabetical(8);
     const partyName = `${givenName} ${lastName}`;
     const todayDate = dataUtils.generateDateInYyyyMmDdNoSeparators(0);
     const formattedReportDate =
-        dataUtils.getFormattedDateForReportAssertionUsingDateStringWithDayName();
+      dataUtils.getFormattedDateForReportAssertionUsingDateStringWithDayName();
     const welshDate =
-        dataUtils.getFormattedWelshDateForReportAssertionUsingWelshDateStringWithDayName();
+      dataUtils.getFormattedWelshDateForReportAssertionUsingWelshDateStringWithDayName();
     const combinedDate = `${welshDate}, ${formattedReportDate}`;
 
     // Create new Family case
     const { caseNumber, caseName } =
-        await test.step("login and Create Family (Financial Dispute) with parties & no suppression", async () =>
-            await createNewCase({
-                  page,
-                  loginPage,
-                  homePage,
-                  addNewCasePage,
-                  hearingSchedulePage,
-                },
-                {
-
-                  jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
-                  service: addNewCasePage.CONSTANTS.SERVICE_FINANCIAL_DISPUTE,
-                  region: addNewCasePage.CONSTANTS.REGION_WALES,
-                  cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-                  hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-                  hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-                  currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-                }
-            ));
+      await test.step("login and Create Family (Financial Dispute) with parties & no suppression", async () =>
+        await createNewCase(
+          {
+            page,
+            loginPage,
+            homePage,
+            addNewCasePage,
+            hearingSchedulePage,
+          },
+          {
+            jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_FAMILY,
+            service: addNewCasePage.CONSTANTS.SERVICE_FINANCIAL_DISPUTE,
+            region: addNewCasePage.CONSTANTS.REGION_WALES,
+            cluster:
+              addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+            hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+            hearingTypeRef:
+              addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
+            currentStatus:
+              addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
+          },
+        ));
 
     await test.step("Open newly created case", async () => {
       await addNewCasePage.sidebarComponent.openSearchCasePage();
@@ -933,49 +908,35 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     });
 
     await test.step("add case participants", async () => {
-      await editNewCasePage.createNewParticipant(
-          editNewCasePage.CONSTANTS.PARTICIPANT_CLASS_PERSON,
-          editNewCasePage.CONSTANTS.PARTICIPANT_TYPE_INDIVIDUAL,
-          givenName,
-          lastName,
-          editNewCasePage.CONSTANTS.PARTICIPANT_GENDER_MALE,
-          dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(
-              dataUtils.getRandomNumberBetween1And50(),
-          ),
-          editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
-          editNewCasePage.CONSTANTS.PARTICIPANT_ROLE_APPLICANT,
-      );
-
-      await editNewCasePage.checkCaseParticipantTable(
-          editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INDIVIDUAL,
-          `${lastName}, ${givenName}`,
-          editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
+      await addIndividualParticipantAndAssert(
+        editNewCasePage,
+        dataUtils,
+        givenName,
+        lastName,
       );
     });
 
     await test.step("Clear existing schedule and create new released session", async () => {
-
       await createReleasedSessionForCase(
-          {
-            homePage,
-            caseSearchPage,
-            caseDetailsPage,
-            hearingSchedulePage,
-            sessionBookingPage,
-          },
-          caseNumber,
-
+        {
+          homePage,
+          caseSearchPage,
+          caseDetailsPage,
+          hearingSchedulePage,
+          sessionBookingPage,
+        },
+        caseNumber,
       );
     });
 
     await test.step("Verify External report shows Case Name followed by case number and actual part names", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
-          todayDate,
-          sessionBookingPage.CONSTANTS
-              .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-          sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-          formattedReportDate,
+        todayDate,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
+        formattedReportDate,
       );
 
       const expected = [
@@ -994,14 +955,14 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
     await test.step("verify external hearing list Welsh report shows Case Name followed by case number and actual party names", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
-          todayDate,
-          sessionBookingPage.CONSTANTS
-              .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-          sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-          combinedDate,
-          undefined,
-          true,
+        todayDate,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
+        combinedDate,
+        undefined,
+        true,
       );
 
       const expected = [
@@ -1020,13 +981,13 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
     await test.step("verify internal hearing list report, no suppression should apply on case Name and parties name", async () => {
       const reportsRequestPage = await viewReportsPage.reportRequestPageActions(
-          todayDate,
-          sessionBookingPage.CONSTANTS
-              .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
-          sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-          viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
-          formattedReportDate,
-          addNewCasePage.CONSTANTS.SERVICE_FINANCIAL_DISPUTE,
+        todayDate,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+        viewReportsPage.CONSTANTS.JURISDICTION_FAMILY,
+        formattedReportDate,
+        addNewCasePage.CONSTANTS.SERVICE_FINANCIAL_DISPUTE,
       );
 
       const expected = [
@@ -1042,89 +1003,116 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
       await reportsRequestPage.assertDailyCauseListsByText(expected);
     });
-
   });
 
+  // Reusable helpers
 
+  async function createReleasedSessionForCase(
+    pages: {
+      homePage: HomePage;
+      caseSearchPage: CaseSearchPage;
+      caseDetailsPage: CaseDetailsPage;
+      hearingSchedulePage: HearingSchedulePage;
+      sessionBookingPage: SessionBookingPage;
+    },
+    caseNumber: string,
+  ) {
+    const {
+      homePage,
+      caseSearchPage,
+      caseDetailsPage,
+      hearingSchedulePage,
+      sessionBookingPage,
+    } = pages;
 
-    // Reusable helpers
+    const sessionBookingConstants = sessionBookingPage.CONSTANTS;
 
-    async function createReleasedSessionForCase(
-        pages: {
-            homePage: HomePage;
-            caseSearchPage: CaseSearchPage;
-            caseDetailsPage: CaseDetailsPage;
-            hearingSchedulePage: HearingSchedulePage;
-            sessionBookingPage: SessionBookingPage;
-        },
-        caseNumber: string,
-    ) {
+    await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
+    await homePage.upperbarComponent.currentCaseDropdownButton.click();
 
-        const {
-            homePage,
-            caseSearchPage,
-            caseDetailsPage,
-            hearingSchedulePage,
-            sessionBookingPage,
-        } = pages;
+    await expect(
+      homePage.upperbarComponent.currentCaseDropdownList,
+    ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
 
-        const C = sessionBookingPage.CONSTANTS;
+    await caseSearchPage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.searchCase(caseNumber);
 
-        await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
-        await homePage.upperbarComponent.currentCaseDropdownButton.click();
+    await expect(caseDetailsPage.addToCartButton).toBeVisible();
+    await caseDetailsPage.addToCartButton.click();
 
-        await expect(homePage.upperbarComponent.currentCaseDropdownList).toContainText(
-            homePage.upperbarComponent.currentCaseDropDownItems,
-        );
+    await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
 
-        await caseSearchPage.sidebarComponent.openSearchCasePage();
-        await caseSearchPage.searchCase(caseNumber);
+    await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+    await hearingSchedulePage.waitForLoad();
 
-        await expect(caseDetailsPage.addToCartButton).toBeVisible();
-        await caseDetailsPage.addToCartButton.click();
+    await hearingSchedulePage.scheduleHearingWithBasket(
+      sessionBookingConstants.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
+      sessionBookingConstants.CASE_LISTING_COLUMN_ONE,
+      caseNumber,
+    );
 
-        await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
+    await sessionBookingPage.bookSession(
+      sessionBookingConstants.CASE_LISTING_SESSION_DURATION_1_00,
+      sessionBookingConstants.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+      sessionBookingConstants.AUTO_JUDICIAL_OFFICE_HOLDER_02,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    );
 
-        await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-        await hearingSchedulePage.waitForLoad();
+    await expect(
+      hearingSchedulePage.confirmListingReleasedStatus,
+    ).toBeVisible();
+  }
 
-        await hearingSchedulePage.scheduleHearingWithBasket(
-            C.CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1,
-            C.CASE_LISTING_COLUMN_ONE,
-            caseNumber,
-        );
+  async function addIndividualParticipantAndAssert(
+    editNewCasePage: EditNewCasePage,
+    dataUtils: DataUtils,
+    givenName: string,
+    lastName: string,
+    applyDefaultSuppression = false,
+  ) {
+    await editNewCasePage.createNewParticipant(
+      editNewCasePage.CONSTANTS.PARTICIPANT_CLASS_PERSON,
+      editNewCasePage.CONSTANTS.PARTICIPANT_TYPE_INDIVIDUAL,
+      givenName,
+      lastName,
+      editNewCasePage.CONSTANTS.PARTICIPANT_GENDER_MALE,
+      dataUtils.generateDobInDdMmYyyyForwardSlashSeparators(
+        dataUtils.getRandomNumberBetween1And50(),
+      ),
+      editNewCasePage.CONSTANTS.PARTICIPANT_INTERPRETER_WELSH,
+      editNewCasePage.CONSTANTS.PARTICIPANT_ROLE_APPLICANT,
+      applyDefaultSuppression,
+    );
 
-        await sessionBookingPage.bookSession(
-            C.CASE_LISTING_SESSION_DURATION_1_00,
-            C.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
-            C.AUTO_JUDICIAL_OFFICE_HOLDER_02,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-        );
+    await editNewCasePage.checkCaseParticipantTable(
+      editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INDIVIDUAL,
+      `${lastName}, ${givenName}`,
+      editNewCasePage.CONSTANTS.CASE_PARTICIPANT_TABLE_INTERPRETER,
+    );
+  }
 
-        await expect(hearingSchedulePage.confirmListingReleasedStatus).toBeVisible();
-    }
-
-    async function createNewCase(
-      pages: {
-        page: Page;
-    loginPage: LoginPage;
-    homePage: HomePage;
-    addNewCasePage: AddNewCasePage;
-    hearingSchedulePage: HearingSchedulePage;
-      },
-      caseConfig: {
-        jurisdiction: string;
-        service: string;
-        caseType?: string; // made optional for family cases
-        region: string;
-        cluster: string;
-        hearingCentre: string;
-        hearingTypeRef: string;
-        currentStatus: string;
-      }): Promise<{ caseNumber: string; caseName: string }> {
+  async function createNewCase(
+    pages: {
+      page: Page;
+      loginPage: LoginPage;
+      homePage: HomePage;
+      addNewCasePage: AddNewCasePage;
+      hearingSchedulePage: HearingSchedulePage;
+    },
+    caseConfig: {
+      jurisdiction: string;
+      service: string;
+      caseType?: string; // made optional for family cases
+      region: string;
+      cluster: string;
+      hearingCentre: string;
+      hearingTypeRef: string;
+      currentStatus: string;
+    },
+  ): Promise<{ caseNumber: string; caseName: string }> {
     const { homePage, addNewCasePage, hearingSchedulePage } = pages;
 
     // Empty cart if there is anything present
