@@ -14,6 +14,7 @@ export class ViewReportsPage extends Base {
     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
       "Newport (South Wales) Chambers 01",
     JURISDICTION_CIVIL: "Civil",
+    JURISDICTION_FAMILY: "Family",
     SERVICE_DAMAGES: "Damages",
 
     SESSION_JOH: "Before: Matthew Dunn (P)",
