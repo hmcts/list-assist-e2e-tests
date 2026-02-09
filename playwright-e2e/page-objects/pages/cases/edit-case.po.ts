@@ -77,7 +77,7 @@ export class EditNewCasePage extends Base {
     dateOfBirth: string,
     interpreter: string,
     role: string,
-    selectRoleIfExists?: true,
+    selectRoleIfExists: boolean = false,
     alternativePartyName?: string,
   ) {
     const waitForCreateNewPartyPopup = this.page.waitForEvent("popup");
