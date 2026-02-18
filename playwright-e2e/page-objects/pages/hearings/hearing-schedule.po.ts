@@ -1,6 +1,7 @@
 import { Locator, Page, expect } from "@playwright/test";
 import { Base } from "../../base";
 import { SessionBookingPage } from "./session-booking.po.ts";
+import { DataUtils } from "../../../utils/data.utils";
 
 interface TableRow {
   roomName: string;
@@ -19,6 +20,18 @@ export class HearingSchedulePage extends Base {
   readonly header = this.page.locator("#hs-header");
   readonly tabList = this.page.locator("#joh-tabs");
   readonly table = this.page.locator("#membersOrRoomsTable");
+  readonly primaryFilterToggleButton = this.page.locator(
+    "#togglePrimaryFilter",
+  );
+  readonly primaryFilterFromDateInput = this.page.locator(
+    "#primaryFilter_fromDate_input",
+  );
+  readonly primaryFilterToDateInput = this.page.locator(
+    "#primaryFilter_toDate_input",
+  );
+  readonly applyPrimaryFilterButton = this.page.locator(
+    'button.mcms-btn-solid:has-text("Apply")',
+  );
   readonly tableHeaders = this.table.locator("thead th");
   readonly schedulePopup = {
     createSession: this.page.locator("#createSession"),
@@ -126,6 +139,14 @@ export class HearingSchedulePage extends Base {
     this.cancelRescheduleReasonModel.locator("#cancelReason");
 
   readonly multiDayEditTable = this.page.locator("table#vuetable");
+
+  //primary filters
+  //date selectors
+  primaryFilterDateInput(date: string): Locator {
+    return this.page.locator(
+      `.vc-pane-container .vc-day.id-${date}.in-month .vc-day-content`,
+    );
+  }
 
   constructor(page: Page) {
     super(page);

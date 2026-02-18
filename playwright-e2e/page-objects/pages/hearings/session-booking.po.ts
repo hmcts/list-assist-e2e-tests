@@ -21,16 +21,20 @@ export class SessionBookingPage extends Base {
       "Caernarfon Chambers 05",
     CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC:
       "Newport (South Wales) County Court and Family Court",
+    CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC: "Wrexham County and Family Court",
     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
       "Newport (South Wales) Chambers 01",
+    CASE_LISTING_LOCATION_WREXHAM_CRTRM_01: "Wrexham Courtroom 01",
 
     CASE_LISTING_JURISDICTION_FAMILY_CODE_AB: "AB",
+    CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV: "CIV",
 
     CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1: "Aberystwyth Courtroom 01",
     CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
     CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: "4",
     CASE_LISTING_SESSION_DURATION_1_00: "60",
     CASE_LISTING_COLUMN_ONE: "columnOne",
+    CASE_LISTING_COLUMN_TWO: "columnTwo",
     CASE_LISTING_HEARING_TYPE_APPLICATION: "Application",
     CASE_LISTING_CANCEL_REASON_AMEND: "Amend",
 
@@ -39,6 +43,9 @@ export class SessionBookingPage extends Base {
     AUTO_JUDICIAL_OFFICE_HOLDER_03: "Laverne, Sally (District Judge Laverne)",
     AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH:
       "AutomationTest, JOH (Automation Test JOH)",
+
+    AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH_TWO:
+      "AutomationTest, JOH-Two (AutomationTest-JOH-Two)",
 
     //session details
     SESSION_DETAILS_CANCELLATION_CODE_CANCEL: "CNCL",
@@ -375,7 +382,11 @@ export class SessionBookingPage extends Base {
 
     //cluster dropdown and cluster selection
     await this.clusterDropDown.click();
-    await this.page.getByText(cluster).click();
+    await this.page
+      .getByRole("option", { name: cluster })
+      .locator("span")
+      .nth(2)
+      .click();
 
     //locality dropdown and locality selection
     await this.localityDropDown.click();
