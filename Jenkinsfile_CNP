@@ -33,7 +33,7 @@ properties([
     string(
       name: 'RELEASE_TAG',
       defaultValue: '',
-      description: 'Specify a release tag to build from, e.g. 4.53 Leave blank to use master.'
+      description: 'Specify a release tag to build from. Leave blank to use master.'
     )
   ])
 ])
@@ -88,16 +88,21 @@ def buildPlaywrightCommand(tags) {
   return command
 }
 
-node {
+withNightlyPipeline(type, product, component, 600) {
+  // --- Add this block at the top of the closure ---
   stage('Checkout') {
-    def ref = params.RELEASE_TAG?.trim() ? "refs/tags/${params.RELEASE_TAG}" : "refs/heads/master"
-    checkout([
-      $class: 'GitSCM',
-      branches: [[name: ref]],
-      userRemoteConfigs: [[
-        url: 'https://github.com/your-org/your-repo.git'
-      ]]
-    ])
+    steps {
+      script {
+        def ref = params.RELEASE_TAG?.trim() ? "refs/tags/${params.RELEASE_TAG}" : "refs/heads/master"
+        checkout([
+          $class: 'GitSCM',
+          branches: [[name: ref]],
+          userRemoteConfigs: [[
+            url: 'https://github.com/hmcts/list-assist-e2e-tests.git'
+          ]]
+        ])
+      }
+    }
   }
   loadVaultSecrets(secrets)
   env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
