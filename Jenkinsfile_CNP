@@ -89,21 +89,6 @@ def buildPlaywrightCommand(tags) {
 }
 
 withNightlyPipeline(type, product, component, 600) {
-  // --- Add this block at the top of the closure ---
-  stage('Checkout') {
-    steps {
-      script {
-        def ref = params.RELEASE_TAG?.trim() ? "refs/tags/${params.RELEASE_TAG}" : "refs/heads/master"
-        checkout([
-          $class: 'GitSCM',
-          branches: [[name: ref]],
-          userRemoteConfigs: [[
-            url: 'https://github.com/hmcts/list-assist-e2e-tests.git'
-          ]]
-        ])
-      }
-    }
-  }
   loadVaultSecrets(secrets)
   env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
   env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
@@ -199,6 +184,20 @@ withNightlyPipeline(type, product, component, 600) {
   def bvtSpecFilesChanged = []
   def regressionSpecFilesChanged = []
 
+  stage('Checkout') {
+    steps {
+      script {
+        def ref = params.RELEASE_TAG?.trim() ? "refs/tags/${params.RELEASE_TAG}" : "refs/heads/master"
+        checkout([
+          $class: 'GitSCM',
+          branches: [[name: ref]],
+          userRemoteConfigs: [[
+            url: 'https://github.com/hmcts/list-assist-e2e-tests.git'
+          ]]
+        ])
+      }
+    }
+  }
   stage('Prepare Test Run') {
     if (isPrBuild) {
       // Detect Regression & BVT Folder Change
