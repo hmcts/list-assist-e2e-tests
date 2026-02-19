@@ -60,7 +60,7 @@ export class SessionBookingPage extends Base {
   readonly listingDuration = this.page.locator("#defListingDuration");
   readonly durationDropdownButton = this.page.locator("#defListingDuration");
   readonly sessionJohDropdown = this.page.locator(
-    'button[data-id="membersList"]',
+    'div.bootstrap-select > button[data-id="membersList"]',
   );
 
   readonly sessionStatusDropdown = this.page.getByLabel(
@@ -230,15 +230,22 @@ export class SessionBookingPage extends Base {
 
     //conditional
     if (johName) {
-      //JOH selection
-      // Click the dropdown button to open the list
-      await this.sessionJohDropdown.click();
-
-      // Wait for the dropdown menu to be visible
+      // Repeatedly click the dropdown until it is visible
       const dropdownMenu = this.page.locator(
         "div.dropdown-menu.show ul.dropdown-menu.inner.show",
       );
-      await expect(dropdownMenu).toBeVisible();
+      await expect
+        .poll(
+          async () => {
+            await this.sessionJohDropdown.click();
+            return await dropdownMenu.isVisible();
+          },
+          {
+            intervals: [500],
+            timeout: 10_000,
+          },
+        )
+        .toBeTruthy();
 
       // Click the desired option by visible text
       const johOption = dropdownMenu.getByText(johName, { exact: true });
