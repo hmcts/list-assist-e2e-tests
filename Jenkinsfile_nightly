@@ -62,6 +62,10 @@ def secrets = [
     secret('hmi-token-tenant', 'HMI_TOKEN_TENANT'),
     secret('hmi-grant-type', 'HMI_GRANT_TYPE'),
     secret('hmi-trg-api-url', 'HMI_TRG_API_URL'),
+
+    // SIT secrets
+    secret('sit-base-url', 'SIT_BASE_URL'),
+    secret('hmi-sit-api-url', 'SIT_HMI_API_URL'),
   ]
 ]
 
