@@ -25,6 +25,12 @@ properties([
       description: 'Select which test suite(s) to run',
       defaultValue: 'bvt'
     ),
+    choice(
+      name: 'ENVIRONMENT',
+      choices: ['TRG', 'SIT'],
+      description: 'Which environment to run tests against',
+      defaultValue: 'TRG'
+    ),
   ])
 ])
 
@@ -202,5 +208,21 @@ withNightlyPipeline(type, product, component, 600) {
         runRegressionStages(regressionStages)
       }
     }
+
+    // Before running tests, set environment variables based on ENVIRONMENT
+    if (params.ENVIRONMENT == 'SIT') {
+      env.TEST_USERNAME = env.EST_USERNAME
+      env.TEST_PASSWORD = env.TEST_PASSWORD
+      env.TRG_BASE_URL = env.SIT_BASE_URL
+      env.HMI_CLIENT_ID = env.HMI_CLIENT_ID
+      env.HMI_CLIENT_SECRET = env.HMI_CLIENT_SECRET
+      env.HMI_SCOPE = env.HMI_SCOPE
+      env.HMI_TOKEN_URL = env.HMI_TOKEN_URL
+      env.HMI_TOKEN_TENANT = env.HMI_TOKEN_TENANT
+      env.HMI_GRANT_TYPE = env.HMI_GRANT_TYPE
+      env.HMI_TRG_API_URL = env.HMI_SIT_API_URL
+    }
+
+    currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}<br>Suite: ${params.TEST_SUITE}"
   }
 }
