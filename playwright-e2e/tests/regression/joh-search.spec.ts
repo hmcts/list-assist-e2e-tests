@@ -42,18 +42,11 @@ test("search for JOHs by a criteria @joh-search", async ({
   await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
   await hearingSchedulePage.waitForLoad();
 
-  await hearingSchedulePage.primaryFilterToggleButton.click();
-  await hearingSchedulePage
-    .primaryFilterDateInput(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-    )
-    .click();
-  await hearingSchedulePage
-    .primaryFilterDateInput(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-    )
-    .click();
-  await hearingSchedulePage.applyPrimaryFilterButton.click();
+  await applyPrimaryDateFilter(
+    hearingSchedulePage,
+    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+  );
 
   await sessionBookingPage.advancedFiltersButton.click();
   await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
@@ -106,19 +99,14 @@ test("search for JOHs by a criteria @joh-search", async ({
   await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
   await hearingSchedulePage.waitForLoad();
 
-  await hearingSchedulePage.primaryFilterToggleButton.click();
-  await hearingSchedulePage.primaryFilterFromDateInput.click();
-  await hearingSchedulePage
-    .primaryFilterDateInput(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-    )
-    .click();
-  await hearingSchedulePage
-    .primaryFilterDateInput(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-    )
-    .click();
-  await hearingSchedulePage.applyPrimaryFilterButton.click();
+  await applyPrimaryDateFilter(
+    hearingSchedulePage,
+    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+  );
+
+  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+  await hearingSchedulePage.waitForLoad();
 
   await hearingSchedulePage.scheduleHearingWithBasket(
     sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
@@ -183,19 +171,11 @@ test("search for JOHs by a criteria @joh-search", async ({
   await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
   await hearingSchedulePage.waitForLoad();
 
-  await hearingSchedulePage.primaryFilterToggleButton.click();
-  await hearingSchedulePage.primaryFilterFromDateInput.click();
-  await hearingSchedulePage
-    .primaryFilterDateInput(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
-    )
-    .click();
-  await hearingSchedulePage
-    .primaryFilterDateInput(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
-    )
-    .click();
-  await hearingSchedulePage.applyPrimaryFilterButton.click();
+  await applyPrimaryDateFilter(
+    hearingSchedulePage,
+    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+  );
 
   //schedule hearing
   await hearingSchedulePage.waitForLoad();
@@ -265,4 +245,19 @@ async function clearDownWrexhamSchedule(
     dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
     dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
   );
+}
+
+async function applyPrimaryDateFilter(
+  hearingSchedulePage,
+  dateTo: string,
+  dateFrom: string,
+) {
+  await hearingSchedulePage.primaryFilterToggleButton.click();
+  await hearingSchedulePage.primaryFilterFromDateInput.click();
+  await hearingSchedulePage.waitForLoad();
+  await hearingSchedulePage.primaryFilterDateInput(dateFrom).click();
+  await hearingSchedulePage.waitForLoad();
+  await hearingSchedulePage.primaryFilterDateInput(dateTo).click();
+  await hearingSchedulePage.waitForLoad();
+  await hearingSchedulePage.applyPrimaryFilterButton.click();
 }
