@@ -1,10 +1,3 @@
-import type { Locator, Page } from "@playwright/test";
-import {
-  regions,
-  clusters,
-  localities,
-  locations,
-} from "../../data/drop-down-data";
 import { test, expect } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
 import { clearDownSchedule } from "../../utils/reporting.utils.js";
@@ -52,18 +45,6 @@ test("search for JOHs by a criteria @joh-search", async ({
   await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
   //ensure the advanced filter is cleared
   await sessionBookingPage.clearAdvanceFilterButton.click();
-
-  // //region dropdown
-  // await assertAdvFilterDropdownOptions(sessionBookingPage.regionDropdown, regions, page);
-
-  // //cluster dropdown
-  // await assertAdvFilterDropdownOptions(sessionBookingPage.clusterDropDown, clusters, page);
-
-  // //locality dropdown
-  // await assertAdvFilterDropdownOptions(sessionBookingPage.localityDropDown, localities, page);
-
-  // //location dropdown
-  // await assertAdvFilterDropdownOptions(sessionBookingPage.locationDropDown, locations, page);
 
   //select a single locality
   await sessionBookingPage.localityDropDown.click();
@@ -129,47 +110,13 @@ test("search for JOHs by a criteria @joh-search", async ({
   await caseDetailsPage.addToCartButton.click();
   await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
 
-  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-  await hearingSchedulePage.waitForLoad();
-
-  await sessionBookingPage.advancedFiltersButton.click();
-  await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
-  //ensure the advanced filter is cleared
-  await sessionBookingPage.clearAdvanceFilterButton.click();
-
-  //select a single locality
-  await sessionBookingPage.localityDropDown.click();
-  await page
-    .getByRole("option", {
-      name: sessionBookingPage.CONSTANTS
-        .CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
-      exact: true,
-    })
-    .locator("span")
-    .nth(2)
-    .click();
-
-  //location dropdown and location selection
-  await sessionBookingPage.locationDropDown.click();
-  await page
-    .getByRole("option", {
-      name: sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
-      exact: true,
-    })
-    .locator("span")
-    .nth(2)
-    .click();
-  // Use the class property here
-  await sessionBookingPage.locationFilterToggleButton.click();
-
-  //apply filter
-  await sessionBookingPage.applyButton.click();
-
-  //schedule hearing
-  await hearingSchedulePage.waitForLoad();
-
-  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-  await hearingSchedulePage.waitForLoad();
+  await reloadHearingSchedulePage(
+    page,
+    hearingSchedulePage,
+    sessionBookingPage,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
+  );
 
   await applyPrimaryDateFilter(
     hearingSchedulePage,
@@ -193,25 +140,57 @@ test("search for JOHs by a criteria @joh-search", async ({
     sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV,
   );
 
+  //two sessions booked with different JOH
+  //change date range to not include test data
+  await reloadHearingSchedulePage(
+    page,
+    hearingSchedulePage,
+    sessionBookingPage,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
+  );
+
+  await applyPrimaryDateFilter(
+    hearingSchedulePage,
+    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(2),
+    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(2),
+  );
+
+  await hearingSchedulePage.waitForLoad();
+  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+  await hearingSchedulePage.waitForLoad();
+
+  await expect(page.locator('table td:has-text("Add booking")')).toBeVisible();
+
+  //change date to include current date
+  await reloadHearingSchedulePage(
+    page,
+    hearingSchedulePage,
+    sessionBookingPage,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
+  );
+
+  await applyPrimaryDateFilter(
+    hearingSchedulePage,
+    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+  );
+
+  await hearingSchedulePage.waitForLoad();
+  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+  await hearingSchedulePage.waitForLoad();
+
+  await expect(
+    page.locator(`table td:has-text("JOH AutomationTest")`),
+  ).toBeVisible();
+
   await clearDownWrexhamSchedule(
     sessionBookingPage,
     hearingSchedulePage,
     dataUtils,
   );
 });
-
-async function assertAdvFilterDropdownOptions(
-  dropdown: Locator,
-  options: string[],
-  page: Page,
-) {
-  await dropdown.click();
-  for (const option of options) {
-    await expect(
-      page.getByRole("option", { name: option, exact: true }),
-    ).toBeVisible();
-  }
-}
 
 async function clearDownWrexhamSchedule(
   sessionBookingPage,
@@ -260,4 +239,53 @@ async function applyPrimaryDateFilter(
   await hearingSchedulePage.primaryFilterDateInput(dateTo).click();
   await hearingSchedulePage.waitForLoad();
   await hearingSchedulePage.applyPrimaryFilterButton.click();
+}
+
+async function reloadHearingSchedulePage(
+  page,
+  hearingSchedulePage,
+  sessionBookingPage,
+  locality,
+  location,
+) {
+  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+  await hearingSchedulePage.waitForLoad();
+
+  await sessionBookingPage.advancedFiltersButton.click();
+  await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
+  //ensure the advanced filter is cleared
+  await sessionBookingPage.clearAdvanceFilterButton.click();
+
+  //select a single locality
+  await sessionBookingPage.localityDropDown.click();
+  await page
+    .getByRole("option", {
+      name: locality,
+      exact: true,
+    })
+    .locator("span")
+    .nth(2)
+    .click();
+
+  //location dropdown and location selection
+  await sessionBookingPage.locationDropDown.click();
+  await page
+    .getByRole("option", {
+      name: location,
+      exact: true,
+    })
+    .locator("span")
+    .nth(2)
+    .click();
+  // Use the class property here
+  await sessionBookingPage.locationFilterToggleButton.click();
+
+  //apply filter
+  await sessionBookingPage.applyButton.click();
+
+  //schedule hearing
+  await hearingSchedulePage.waitForLoad();
+
+  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+  await hearingSchedulePage.waitForLoad();
 }
