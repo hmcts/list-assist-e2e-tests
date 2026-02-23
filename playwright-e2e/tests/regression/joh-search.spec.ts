@@ -185,6 +185,24 @@ test("search for JOHs by a criteria @joh-search", async ({
     page.locator(`table td:has-text("JOH AutomationTest")`),
   ).toBeVisible();
 
+  await reloadHearingSchedulePage(
+    page,
+    hearingSchedulePage,
+    sessionBookingPage,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
+  );
+
+  await applyPrimaryDateFilter(
+    hearingSchedulePage,
+    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+  );
+
+  await expect(
+    page.locator(`table td:has-text("JOH-Two AutomationTest")`),
+  ).toBeVisible();
+
   await clearDownWrexhamSchedule(
     sessionBookingPage,
     hearingSchedulePage,
