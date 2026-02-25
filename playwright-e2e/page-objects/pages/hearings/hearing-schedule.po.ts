@@ -147,6 +147,17 @@ export class HearingSchedulePage extends Base {
     );
   }
 
+  //advanced filters
+  readonly advJurisdictionFilter = this.page.locator(
+    'div.multiselect[role="combobox"][name="advancedFilter_jurisdictionTypes_multiselectService"]',
+  );
+  readonly johInclusionFilter = this.page.locator(
+    'div.multiselect[role="combobox"][name="advancedFilter_memTypesIn_multiselectService"]',
+  );
+  readonly johExclusionFilter = this.page.locator(
+    'div.multiselect[role="combobox"][name="advancedFilter_memTypeEx_multiselectService"]',
+  );
+
   constructor(page: Page) {
     super(page);
     this.sessionBookingPage = new SessionBookingPage(page);
@@ -395,5 +406,16 @@ export class HearingSchedulePage extends Base {
   async bookingSessionId(roomName: string, date, page) {
     const id = `[id*="addBookingColor"][id*="${roomName}"][id*="${date}"]`;
     return page.locator(id);
+  }
+
+  async applyPrimaryDateFilter(dateTo: string, dateFrom: string) {
+    await this.primaryFilterToggleButton.click();
+    await this.primaryFilterFromDateInput.click();
+    await this.waitForLoad();
+    await this.primaryFilterDateInput(dateFrom).click();
+    await this.waitForLoad();
+    await this.primaryFilterDateInput(dateTo).click();
+    await this.waitForLoad();
+    await this.applyPrimaryFilterButton.click();
   }
 }
