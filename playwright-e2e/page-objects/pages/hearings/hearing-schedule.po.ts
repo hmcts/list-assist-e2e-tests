@@ -242,19 +242,23 @@ export class HearingSchedulePage extends Base {
     //schedule hearing
     await this.waitForLoad();
 
-    if (await this.confirmListingReleasedStatus.isVisible()) {
-      await this.confirmListingReleasedStatus.click();
+    const releasedStatusCheck = this.page.locator(
+      'button[title="Show booking details"] .hs-session-status',
+      {
+        hasText: "Released",
+      },
+    );
+
+    if (await releasedStatusCheck.first().isVisible()) {
+      await releasedStatusCheck.first().click();
+
+      await this.waitForLoad();
 
       await expect
-        .poll(
-          async () => {
-            return await scheduleButton.isVisible();
-          },
-          {
-            intervals: [2_000],
-            timeout: 10_000,
-          },
-        )
+        .poll(async () => await scheduleButton.isVisible(), {
+          intervals: [2_000],
+          timeout: 10_000,
+        })
         .toBeTruthy();
 
       await scheduleButton.click();
@@ -273,7 +277,12 @@ export class HearingSchedulePage extends Base {
         .toBeTruthy();
 
       //delete session from inside of session details page, if available
-      if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
+
+      const found = await this.waitForElementVisible(
+        this.deleteSessionInSessionDetailsButton,
+      );
+
+      if (found) {
         await this.deleteSessionInSessionDetailsButton.click();
         await this.page.locator("#cancellationCode").click();
         await this.page
@@ -417,5 +426,27 @@ export class HearingSchedulePage extends Base {
     await this.primaryFilterDateInput(dateTo).click();
     await this.waitForLoad();
     await this.applyPrimaryFilterButton.click();
+  }
+
+  /**
+   * Polls for an element to become visible within a timeout.
+   * @param locator The Playwright Locator to check.
+   * @param timeoutMs Maximum time to wait in ms (default 10_000).
+   * @param intervalMs Polling interval in ms (default 500).
+   * @returns Promise<boolean> true if visible, false if not.
+   */
+  async waitForElementVisible(
+    locator: Locator,
+    timeoutMs = 10_000,
+    intervalMs = 500,
+  ): Promise<boolean> {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      if (await locator.isVisible()) {
+        return true;
+      }
+      await this.page.waitForTimeout(intervalMs);
+    }
+    return false;
   }
 }
