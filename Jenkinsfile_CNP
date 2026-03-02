@@ -98,10 +98,13 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Case Creation Tests', grep: '@add-new-case'],
     [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting'],
     [name: 'Hearing Channel Tests', grep: '@hearing-channel'],
-    [name: 'UI Tests', grep: '@ui-test'],
-    [name: 'Add new user test', grep: '@add-user', skip: 'true'],
+    [name: 'Homepage UI Tests', grep: '@ui-test'],
+    [name: 'Hearing Session UI tests', grep: '@hs-ui', skipCreateCase: 'true'],
+    [name: 'Add new user test', grep: '@add-user', skipCreateCase: 'true'],
     [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
-    [name: 'anonymisation tests', grep: '@anonymisation', skipCreateCase: 'true'],
+    [name: 'Anonymisation tests', grep: '@anonymisation', skipCreateCase: 'true'],
+    [name: 'JOH filtering tests', grep: '@joh-filtering'],
+
     // Only run Amend Api Tests before listing in Chrome
     [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: 'true', browsers: ['chrome']],
     // Only run Amend Api test after listing in Chrome
@@ -113,7 +116,7 @@ withNightlyPipeline(type, product, component, 600) {
       [
         name: "${browser.capitalize()} - ${cfg.name}",
         command: "playwright test --project=${browser} --grep ${cfg.grep}",
-        skip: cfg.skip
+        skipCreateCase: cfg.skipCreateCase
       ]
     }
   } + [
