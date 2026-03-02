@@ -19,6 +19,18 @@ export class HearingSchedulePage extends Base {
   readonly header = this.page.locator("#hs-header");
   readonly tabList = this.page.locator("#joh-tabs");
   readonly table = this.page.locator("#membersOrRoomsTable");
+  readonly primaryFilterToggleButton = this.page.locator(
+    "#togglePrimaryFilter",
+  );
+  readonly primaryFilterFromDateInput = this.page.locator(
+    "#primaryFilter_fromDate_input",
+  );
+  readonly primaryFilterToDateInput = this.page.locator(
+    "#primaryFilter_toDate_input",
+  );
+  readonly applyPrimaryFilterButton = this.page.locator(
+    'button.mcms-btn-solid:has-text("Apply")',
+  );
   readonly tableHeaders = this.table.locator("thead th");
   readonly schedulePopup = {
     createSession: this.page.locator("#createSession"),
@@ -127,6 +139,25 @@ export class HearingSchedulePage extends Base {
 
   readonly multiDayEditTable = this.page.locator("table#vuetable");
 
+  //primary filters
+  //date selectors
+  primaryFilterDateInput(date: string): Locator {
+    return this.page.locator(
+      `.vc-pane-container .vc-day.id-${date}.in-month .vc-day-content`,
+    );
+  }
+
+  //advanced filters
+  readonly advJurisdictionFilter = this.page.locator(
+    'div.multiselect[role="combobox"][name="advancedFilter_jurisdictionTypes_multiselectService"]',
+  );
+  readonly johInclusionFilter = this.page.locator(
+    'div.multiselect[role="combobox"][name="advancedFilter_memTypesIn_multiselectService"]',
+  );
+  readonly johExclusionFilter = this.page.locator(
+    'div.multiselect[role="combobox"][name="advancedFilter_memTypeEx_multiselectService"]',
+  );
+
   constructor(page: Page) {
     super(page);
     this.sessionBookingPage = new SessionBookingPage(page);
@@ -211,19 +242,23 @@ export class HearingSchedulePage extends Base {
     //schedule hearing
     await this.waitForLoad();
 
-    if (await this.confirmListingReleasedStatus.isVisible()) {
-      await this.confirmListingReleasedStatus.click();
+    const releasedStatusCheck = this.page.locator(
+      'button[title="Show booking details"] .hs-session-status',
+      {
+        hasText: "Released",
+      },
+    );
+
+    if (await releasedStatusCheck.first().isVisible()) {
+      await releasedStatusCheck.first().click();
+
+      await this.waitForLoad();
 
       await expect
-        .poll(
-          async () => {
-            return await scheduleButton.isVisible();
-          },
-          {
-            intervals: [2_000],
-            timeout: 10_000,
-          },
-        )
+        .poll(async () => await scheduleButton.isVisible(), {
+          intervals: [2_000],
+          timeout: 10_000,
+        })
         .toBeTruthy();
 
       await scheduleButton.click();
@@ -242,7 +277,12 @@ export class HearingSchedulePage extends Base {
         .toBeTruthy();
 
       //delete session from inside of session details page, if available
-      if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
+
+      const found = await this.waitForElementVisible(
+        this.deleteSessionInSessionDetailsButton,
+      );
+
+      if (found) {
         await this.deleteSessionInSessionDetailsButton.click();
         await this.page.locator("#cancellationCode").click();
         await this.page
@@ -375,5 +415,38 @@ export class HearingSchedulePage extends Base {
   async bookingSessionId(roomName: string, date, page) {
     const id = `[id*="addBookingColor"][id*="${roomName}"][id*="${date}"]`;
     return page.locator(id);
+  }
+
+  async applyPrimaryDateFilter(dateTo: string, dateFrom: string) {
+    await this.primaryFilterToggleButton.click();
+    await this.primaryFilterFromDateInput.click();
+    await this.waitForLoad();
+    await this.primaryFilterDateInput(dateFrom).click();
+    await this.waitForLoad();
+    await this.primaryFilterDateInput(dateTo).click();
+    await this.waitForLoad();
+    await this.applyPrimaryFilterButton.click();
+  }
+
+  /**
+   * Polls for an element to become visible within a timeout.
+   * @param locator The Playwright Locator to check.
+   * @param timeoutMs Maximum time to wait in ms (default 10_000).
+   * @param intervalMs Polling interval in ms (default 500).
+   * @returns Promise<boolean> true if visible, false if not.
+   */
+  async waitForElementVisible(
+    locator: Locator,
+    timeoutMs = 10_000,
+    intervalMs = 500,
+  ): Promise<boolean> {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      if (await locator.isVisible()) {
+        return true;
+      }
+      await this.page.waitForTimeout(intervalMs);
+    }
+    return false;
   }
 }
