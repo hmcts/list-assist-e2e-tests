@@ -249,7 +249,6 @@ export class SessionBookingPage extends Base {
 
       // Click the desired option by visible text
       const johOption = dropdownMenu.getByText(johName, { exact: true });
-      await johOption.waitFor({ state: "visible", timeout: 5000 });
       await johOption.click();
     }
 
