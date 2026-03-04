@@ -12,7 +12,7 @@ test.describe("Hearing session UI test", () => {
   test.describe.configure({ mode: "serial" });
 });
 
-test("Check all expected values are present in advanced filters @hs-ui", async ({
+test("Check all expected values are present in advanced filters @ui-test @regression", async ({
   page,
   loginPage,
   hearingSchedulePage,
