@@ -288,7 +288,6 @@ export class HearingSchedulePage extends Base {
         .locator("#cancellationCode")
         .selectOption(cancellationCode);
       await this.page.getByRole("button", { name: "Yes" }).click();
-      await this.waitForLoad();
 
       //delete session from schedule page
       await expect(this.deleteSessionButton).toBeVisible();
@@ -308,11 +307,13 @@ export class HearingSchedulePage extends Base {
       await this.page.locator("#cancellationCode").click();
       await this.page.locator("#cancellationCode").selectOption("CNCL");
       await this.page.getByRole("button", { name: "Yes" }).click();
-      await this.waitForLoad();
     } else {
       return;
     }
-    await this.page.locator("#dvb").click();
+
+    //delete session from schedule page
+    await expect(this.deleteSessionButton).toBeVisible();
+    await this.deleteSessionButton.click();
     await expect(this.header).toBeVisible();
   }
 
