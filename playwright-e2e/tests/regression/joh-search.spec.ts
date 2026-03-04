@@ -4,6 +4,7 @@ import { clearDownSchedule } from "../../utils/reporting.utils.js";
 
 test.describe("JOH filtering in hearing sessions", () => {
   test.describe.configure({ mode: "serial" });
+  process.env.JOH_USERS_REQUIRED = "true";
 });
 
 test.afterEach(

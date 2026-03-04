@@ -354,7 +354,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
   //Family Cases --- -- case type suppression (default)
 
-  test("Family Case (Private Law) with parties; case type suppression (default)", async ({
+  test("Family Case (Private Law) with parties; case type suppression (default) @anon-nightly", async ({
     page,
     sessionBookingPage,
     caseSearchPage,
