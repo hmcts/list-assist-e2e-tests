@@ -5,7 +5,7 @@ import {
   runAutomationBookingQueueJob,
 } from "../../utils/reporting.utils.js";
 
-test.describe("Data Reporting And Export @data-reporting", () => {
+test.describe("Data Reporting And Export @data-reporting @regression", () => {
   test.describe.configure({ mode: "serial" });
   test.beforeEach(
     async ({

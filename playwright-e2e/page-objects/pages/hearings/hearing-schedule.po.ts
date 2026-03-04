@@ -278,24 +278,42 @@ export class HearingSchedulePage extends Base {
 
       //delete session from inside of session details page, if available
 
-      const found = await this.waitForElementVisible(
-        this.deleteSessionInSessionDetailsButton,
-      );
-
-      if (found) {
-        await this.deleteSessionInSessionDetailsButton.click();
-        await this.page.locator("#cancellationCode").click();
-        await this.page
-          .locator("#cancellationCode")
-          .selectOption(cancellationCode);
-        await this.page.getByRole("button", { name: "Yes" }).click();
-      }
+      await this.deleteSessionInSessionDetailsButton.waitFor({
+        state: "visible",
+        timeout: 10_000,
+      });
+      await this.deleteSessionInSessionDetailsButton.click();
+      await this.page.locator("#cancellationCode").click();
+      await this.page
+        .locator("#cancellationCode")
+        .selectOption(cancellationCode);
+      await this.page.getByRole("button", { name: "Yes" }).click();
+      await this.waitForLoad();
 
       //delete session from schedule page
       await expect(this.deleteSessionButton).toBeVisible();
       await this.deleteSessionButton.click();
       await expect(this.header).toBeVisible();
     }
+  }
+
+  async deleteSessionInstance(): Promise<void> {
+    await this.goToSessionDetailsButton.click();
+    await this.deleteSessionInSessionDetailsButton.waitFor({
+      state: "visible",
+      timeout: 10_000,
+    });
+    if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
+      await this.deleteSessionInSessionDetailsButton.click();
+      await this.page.locator("#cancellationCode").click();
+      await this.page.locator("#cancellationCode").selectOption("CNCL");
+      await this.page.getByRole("button", { name: "Yes" }).click();
+      await this.waitForLoad();
+    } else {
+      return;
+    }
+    await this.page.locator("#dvb").click();
+    await expect(this.header).toBeVisible();
   }
 
   async clearDownMultiDaySchedule(room: string, date: string): Promise<void> {
