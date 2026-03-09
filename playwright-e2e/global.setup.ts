@@ -58,4 +58,20 @@ setup.describe("Global Setup", () => {
       );
     },
   );
+
+  setup(
+    "Clean down JOH users in sessions",
+    async ({ loginPage, page, config, hearingSchedulePage, dataUtils }) => {
+      //uncomment to test locally
+      // setup.skip(process.env.JOH_USERS_REQUIRED == "false");
+
+      await page.goto(config.urls.baseUrl);
+      await loginPage.login(config.users.testUser);
+
+      await hearingSchedulePage.clearDownJohSession(
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      );
+    },
+  );
 });

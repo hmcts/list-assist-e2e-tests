@@ -94,18 +94,20 @@ withNightlyPipeline(type, product, component, 600) {
 
   def browsers = ['chrome', 'firefox']
   def testConfigs = [
+    [name: 'UI Tests', grep: '@ui-test'],
     [name: 'Add Participant Tests', grep: '@add-participant'],
     [name: 'Case Creation Tests', grep: '@add-new-case'],
-    [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting'],
-    [name: 'Hearing Channel Tests', grep: '@hearing-channel'],
-    [name: 'UI Tests', grep: '@ui-test'],
-    [name: 'Add new user test', grep: '@add-user', skip: 'true'],
+    [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting', johUsersRequired: 'true'],
+    [name: 'Hearing Channel Tests', grep: '@hearing-channel', johUsersRequired: 'true'],
+    [name: 'Add new user test', grep: '@add-user', skipCreateCase: 'true'],
     [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
-    [name: 'anonymisation tests', grep: '@anonymisation', skipCreateCase: 'true'],
+    [name: 'Anonymisation tests', grep: '@anonymisation', skipCreateCase: 'true'],
+    [name: 'JOH filtering tests', grep: '@joh-filtering', johUsersRequired: 'true'],
+
     // Only run Amend Api Tests before listing in Chrome
-    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: 'true', browsers: ['chrome']],
+    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: 'true', browsers: ['chrome'], johUsersRequired: 'true'],
     // Only run Amend Api test after listing in Chrome
-    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: 'true', browsers: ['chrome']]
+    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: 'true', browsers: ['chrome'], johUsersRequired: 'true']
   ]
 
   def bvtStages = browsers.collectMany { browser ->
@@ -113,7 +115,7 @@ withNightlyPipeline(type, product, component, 600) {
       [
         name: "${browser.capitalize()} - ${cfg.name}",
         command: "playwright test --project=${browser} --grep ${cfg.grep}",
-        skip: cfg.skip
+        skipCreateCase: cfg.skipCreateCase
       ]
     }
   } + [
@@ -134,11 +136,16 @@ withNightlyPipeline(type, product, component, 600) {
     }
   }
 
-  def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
+  def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null, johUsersRequired = null ->
     stage(stageName) {
       try {
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = skipCreateCase
+        }
+        if (johUsersRequired != null) {
+          env.JOH_USERS_REQUIRED = johUsersRequired ? 'true' : 'false'
+        } else {
+          env.JOH_USERS_REQUIRED = 'false'
         }
         yarnBuilder.yarn(command)
       } catch (Error) {
@@ -155,19 +162,20 @@ withNightlyPipeline(type, product, component, 600) {
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = null
         }
+        env.JOH_USERS_REQUIRED = null
       }
     }
   }
 
   def runBvtStages = { stages ->
     stages.each { s ->
-      runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null)
+      runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null, s.johUsersRequired ?: null)
     }
   }
 
   def runRegressionStages = { stages ->
     stages.each { s ->
-      runPlaywrightStage(s.name, s.command, s.name)
+      runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null, s.johUsersRequired ?: null)
     }
   }
 

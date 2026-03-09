@@ -19,6 +19,20 @@ export class HearingSchedulePage extends Base {
   readonly header = this.page.locator("#hs-header");
   readonly tabList = this.page.locator("#joh-tabs");
   readonly table = this.page.locator("#membersOrRoomsTable");
+  readonly bookingCell = this.page.locator("div.droparea.addBooking");
+  readonly tabNameJudicialOfficeHolders = "Judicial Office Holders";
+  readonly primaryFilterToggleButton = this.page.locator(
+    "#togglePrimaryFilter",
+  );
+  readonly primaryFilterFromDateInput = this.page.locator(
+    "#primaryFilter_fromDate_input",
+  );
+  readonly primaryFilterToDateInput = this.page.locator(
+    "#primaryFilter_toDate_input",
+  );
+  readonly applyPrimaryFilterButton = this.page.locator(
+    'button.mcms-btn-solid:has-text("Apply")',
+  );
   readonly tableHeaders = this.table.locator("thead th");
   readonly schedulePopup = {
     createSession: this.page.locator("#createSession"),
@@ -127,6 +141,52 @@ export class HearingSchedulePage extends Base {
 
   readonly multiDayEditTable = this.page.locator("table#vuetable");
 
+  //primary filters
+  //date selectors
+  primaryFilterDateInput(date: string): Locator {
+    return this.page.locator(
+      `.vc-pane-container .vc-day.id-${date}.in-month .vc-day-content`,
+    );
+  }
+
+  readonly primaryFilterClearAllLocalityFilterOptions = this.page
+    .getByRole("group", { name: /locality filter list/i })
+    .getByLabel("Clear all selected options");
+  readonly primaryFilterClearAllSessionTypeFilterOptions = this.page
+    .getByRole("group", { name: /session type filter list/i })
+    .getByLabel("Clear All selected options");
+  readonly primaryFilterClearAllJohTierFilterOptions = this.page
+    .getByRole("group", { name: /JOH Tier \(Inclusion\) filter/i })
+    .getByLabel("Clear All selected options");
+  readonly primaryFilterClearAllJohInclusionFilterOptions = this.page
+    .getByRole("group", { name: /JOH \(Inclusion\) filter list/i })
+    .getByLabel("Clear all selected options");
+  readonly primaryFilterJohInclusionFilterInput = this.page
+    .getByLabel("JOH (Inclusion) filter list")
+    .getByText("Select an item");
+  readonly primaryFilterJohInclusionTextbox = this.page.getByRole("textbox", {
+    name: "JOH (Inclusion)",
+  });
+  readonly primaryFilterJohInclusionFirstOption = this.page
+    .locator(
+      "#primaryFilter_memTypesIn_listbox > li > .multiselect__option > .multiselect__options-container > .multiselect__options-checkmark",
+    )
+    .first();
+  readonly primaryFilterApplyButton = this.page.getByRole("button", {
+    name: "Apply filter criteria",
+  });
+
+  //advanced filters
+  readonly advJurisdictionFilter = this.page.locator(
+    'div.multiselect[role="combobox"][name="advancedFilter_jurisdictionTypes_multiselectService"]',
+  );
+  readonly johInclusionFilter = this.page.locator(
+    'div.multiselect[role="combobox"][name="advancedFilter_memTypesIn_multiselectService"]',
+  );
+  readonly johExclusionFilter = this.page.locator(
+    'div.multiselect[role="combobox"][name="advancedFilter_memTypeEx_multiselectService"]',
+  );
+
   constructor(page: Page) {
     super(page);
     this.sessionBookingPage = new SessionBookingPage(page);
@@ -211,19 +271,23 @@ export class HearingSchedulePage extends Base {
     //schedule hearing
     await this.waitForLoad();
 
-    if (await this.confirmListingReleasedStatus.isVisible()) {
-      await this.confirmListingReleasedStatus.click();
+    const releasedStatusCheck = this.page.locator(
+      'button[title="Show booking details"] .hs-session-status',
+      {
+        hasText: "Released",
+      },
+    );
+
+    if (await releasedStatusCheck.first().isVisible()) {
+      await releasedStatusCheck.first().click();
+
+      await this.waitForLoad();
 
       await expect
-        .poll(
-          async () => {
-            return await scheduleButton.isVisible();
-          },
-          {
-            intervals: [2_000],
-            timeout: 10_000,
-          },
-        )
+        .poll(async () => await scheduleButton.isVisible(), {
+          intervals: [2_000],
+          timeout: 10_000,
+        })
         .toBeTruthy();
 
       await scheduleButton.click();
@@ -242,20 +306,86 @@ export class HearingSchedulePage extends Base {
         .toBeTruthy();
 
       //delete session from inside of session details page, if available
-      if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
-        await this.deleteSessionInSessionDetailsButton.click();
-        await this.page.locator("#cancellationCode").click();
-        await this.page
-          .locator("#cancellationCode")
-          .selectOption(cancellationCode);
-        await this.page.getByRole("button", { name: "Yes" }).click();
-      }
+
+      await this.deleteSessionInSessionDetailsButton.waitFor({
+        state: "visible",
+        timeout: 10_000,
+      });
+      await this.deleteSessionInSessionDetailsButton.click();
+      await this.page.locator("#cancellationCode").click();
+      await this.page
+        .locator("#cancellationCode")
+        .selectOption(cancellationCode);
+      await this.page.getByRole("button", { name: "Yes" }).click();
 
       //delete session from schedule page
       await expect(this.deleteSessionButton).toBeVisible();
       await this.deleteSessionButton.click();
       await expect(this.header).toBeVisible();
     }
+  }
+
+  async clearDownJohSession(dateFrom: string, dateTo: string): Promise<void> {
+    await this.sidebarComponent.openHearingSchedulePage();
+    await this.waitForLoad();
+    await this.page
+      .getByRole("tab", { name: this.tabNameJudicialOfficeHolders })
+      .click();
+    await this.waitForLoad();
+    await this.applyPrimaryDateFilter(dateFrom, dateTo);
+    await this.waitForLoad();
+    await this.primaryFilterClearAllLocalityFilterOptions.click();
+    await this.waitForLoad();
+    await this.primaryFilterClearAllSessionTypeFilterOptions.click();
+    await this.waitForLoad();
+    await this.primaryFilterClearAllJohTierFilterOptions.click();
+    await this.waitForLoad();
+    await this.primaryFilterClearAllJohInclusionFilterOptions.click();
+    await this.waitForLoad();
+    await this.primaryFilterJohInclusionFilterInput.click();
+
+    await this.primaryFilterJohInclusionTextbox.fill("automation");
+    await this.primaryFilterJohInclusionFirstOption.click();
+    await this.waitForLoad();
+    await this.primaryFilterApplyButton.click();
+    await this.waitForLoad();
+
+    await this.page.waitForTimeout(5000);
+    const parentRow = this.bookingCell.locator("..").locator("..");
+    const releasedCell = parentRow.locator("td", { hasText: "Released" });
+
+    const releasedCellCount = await releasedCell.count();
+    if (releasedCellCount === 0) return;
+
+    const cellText = await releasedCell.first().textContent();
+    if (!cellText?.includes("Released")) return;
+
+    await this.page.click('button.btn.p-0[title="Expand"]');
+    await this.page.click(
+      'div.droparea[role="button"], div.droparea[tabindex="0"]',
+    );
+    await this.deleteSessionInstance();
+  }
+
+  async deleteSessionInstance(): Promise<void> {
+    await this.goToSessionDetailsButton.click();
+    await this.deleteSessionInSessionDetailsButton.waitFor({
+      state: "visible",
+      timeout: 10_000,
+    });
+    if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
+      await this.deleteSessionInSessionDetailsButton.click();
+      await this.page.locator("#cancellationCode").click();
+      await this.page.locator("#cancellationCode").selectOption("CNCL");
+      await this.page.getByRole("button", { name: "Yes" }).click();
+    } else {
+      return;
+    }
+
+    //delete session from schedule page
+    await expect(this.deleteSessionButton).toBeVisible();
+    await this.deleteSessionButton.click();
+    await expect(this.header).toBeVisible();
   }
 
   async clearDownMultiDaySchedule(room: string, date: string): Promise<void> {
@@ -375,5 +505,38 @@ export class HearingSchedulePage extends Base {
   async bookingSessionId(roomName: string, date, page) {
     const id = `[id*="addBookingColor"][id*="${roomName}"][id*="${date}"]`;
     return page.locator(id);
+  }
+
+  async applyPrimaryDateFilter(dateTo: string, dateFrom: string) {
+    await this.primaryFilterToggleButton.click();
+    await this.primaryFilterFromDateInput.click();
+    await this.waitForLoad();
+    await this.primaryFilterDateInput(dateFrom).click();
+    await this.waitForLoad();
+    await this.primaryFilterDateInput(dateTo).click();
+    await this.waitForLoad();
+    await this.applyPrimaryFilterButton.click();
+  }
+
+  /**
+   * Polls for an element to become visible within a timeout.
+   * @param locator The Playwright Locator to check.
+   * @param timeoutMs Maximum time to wait in ms (default 10_000).
+   * @param intervalMs Polling interval in ms (default 500).
+   * @returns Promise<boolean> true if visible, false if not.
+   */
+  async waitForElementVisible(
+    locator: Locator,
+    timeoutMs = 10_000,
+    intervalMs = 500,
+  ): Promise<boolean> {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      if (await locator.isVisible()) {
+        return true;
+      }
+      await this.page.waitForTimeout(intervalMs);
+    }
+    return false;
   }
 }
