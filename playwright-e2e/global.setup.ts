@@ -62,7 +62,10 @@ setup.describe("Global Setup", () => {
   setup(
     "Clean down JOH users in sessions",
     async ({ loginPage, page, config, hearingSchedulePage, dataUtils }) => {
-      setup.skip(process.env.JOH_USERS_REQUIRED == "false");
+      setup.skip(
+        !process.env.JOH_USERS_REQUIRED ||
+          process.env.JOH_USERS_REQUIRED == "false",
+      );
 
       await page.goto(config.urls.baseUrl);
       await loginPage.login(config.users.testUser);
