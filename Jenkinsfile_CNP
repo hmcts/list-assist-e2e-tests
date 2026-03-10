@@ -145,6 +145,7 @@ withNightlyPipeline(type, product, component, 600) {
         }
         if (johUsersRequired != null) {
           env.JOH_USERS_REQUIRED = johUsersRequired
+          echo "johUsersRequired value: ${johUsersRequired}"
         }
         yarnBuilder.yarn(command)
       } catch (Error) {
