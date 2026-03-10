@@ -144,9 +144,7 @@ withNightlyPipeline(type, product, component, 600) {
           env.SKIP_CREATE_CASE = skipCreateCase
         }
         if (johUsersRequired != null) {
-          env.JOH_USERS_REQUIRED = johUsersRequired ? 'true' : 'false'
-        } else {
-          env.JOH_USERS_REQUIRED = 'false'
+          env.JOH_USERS_REQUIRED = johUsersRequired
         }
         yarnBuilder.yarn(command)
       } catch (Error) {
