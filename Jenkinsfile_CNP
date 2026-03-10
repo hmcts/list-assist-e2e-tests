@@ -92,7 +92,7 @@ withNightlyPipeline(type, product, component, 600) {
 
   def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
-  def browsers = ['chrome', 'firefox']
+  def browsers = ['chrome']
   def testConfigs = [
     [name: 'UI Tests', grep: '@ui-test'],
     [name: 'Add Participant Tests', grep: '@add-participant'],
@@ -105,9 +105,9 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'JOH filtering tests', grep: '@joh-filtering', johUsersRequired: 'true'],
 
     // Only run Amend Api Tests before listing in Chrome
-    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: 'true', browsers: ['chrome'], johUsersRequired: 'true'],
+    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: 'true', johUsersRequired: 'true'],
     // Only run Amend Api test after listing in Chrome
-    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: 'true', browsers: ['chrome'], johUsersRequired: 'true']
+    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: 'true', johUsersRequired: 'true']
   ]
 
   def bvtStages = browsers.collectMany { browser ->
@@ -119,7 +119,8 @@ withNightlyPipeline(type, product, component, 600) {
       ]
     }
   } + [
-    [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke']
+    [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke'],
+    [name: 'Firefox - Smoke Tests', command: 'playwright test --project=firefox --grep @smoke']
   ]
 
   def regressionBrowsers = ['chrome']
