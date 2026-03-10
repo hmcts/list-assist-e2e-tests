@@ -62,6 +62,9 @@ test.describe("Hearing channel test @hearing-channel", () => {
         sessionBookingPage.CONSTANTS.CASE_LISTING_CANCEL_REASON_AMEND,
     };
 
+    await addNewCasePage.sidebarComponent.openSearchCasePage();
+    await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
+
     //LISTING REQUIREMENTS
     await editNewCasePage.sidebarComponent.openListingRequirementsPage();
     //checks header
