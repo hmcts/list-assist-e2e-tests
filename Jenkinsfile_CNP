@@ -145,7 +145,6 @@ withNightlyPipeline(type, product, component, 600) {
         }
         if (johUsersRequired != null) {
           env.JOH_USERS_REQUIRED = johUsersRequired
-          echo "johUsersRequired value: ${johUsersRequired}"
         }
         yarnBuilder.yarn(command)
       } catch (Error) {
@@ -162,7 +161,9 @@ withNightlyPipeline(type, product, component, 600) {
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = null
         }
-        env.JOH_USERS_REQUIRED = null
+        if (johUsersRequired != null) {
+          env.JOH_USERS_REQUIRED = null
+        }
       }
     }
   }
