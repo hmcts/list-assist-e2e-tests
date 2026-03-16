@@ -130,7 +130,7 @@ test("should filter and display JOHs correctly using inclusion and exclusion cri
     await applyPrimaryDateFilterForSameDay(
       hearingSchedulePage,
       dataUtils,
-      4,
+      5,
       2,
     );
 
