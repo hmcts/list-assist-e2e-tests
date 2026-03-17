@@ -2,6 +2,15 @@ import { test, expect } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
 import { clearDownSchedule } from "../../utils/reporting.utils.js";
 
+/**
+ * NOTE:
+ * - Tests rely on sessions being available for today and today + 1.
+ * - If run on a Friday, tests must look for sessions on today + 3 and + 4 (to skip the weekend).
+ * - Use applyPrimaryDateFilterForSameDay for single-date filtering.
+ * - Use applyPrimaryDateFilterForDifferentDays for date range filtering.
+ * - If this logic is not followed, tests may fail due to no sessions being available on weekends.
+ */
+
 test.describe("JOH filtering in hearing sessions", () => {
   test.describe.configure({ mode: "serial" });
 });
