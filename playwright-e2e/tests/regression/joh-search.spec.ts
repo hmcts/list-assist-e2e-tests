@@ -2,6 +2,15 @@ import { test, expect } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
 import { clearDownSchedule } from "../../utils/reporting.utils.js";
 
+/**
+ * NOTE:
+ * - Tests rely on sessions being available for today and today + 1.
+ * - If run on a Friday, tests must look for sessions on today + 3 and + 4 (to skip the weekend).
+ * - Use applyPrimaryDateFilterForSameDay for single-date filtering.
+ * - Use applyPrimaryDateFilterForDifferentDays for date range filtering.
+ * - If this logic is not followed, tests may fail due to no sessions being available on weekends.
+ */
+
 test.describe("JOH filtering in hearing sessions", () => {
   test.describe.configure({ mode: "serial" });
 });
@@ -96,10 +105,14 @@ test("should filter and display JOHs correctly using inclusion and exclusion cri
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
     );
-    await hearingSchedulePage.applyPrimaryDateFilter(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+
+    await applyPrimaryDateFilterForSameDay(
+      hearingSchedulePage,
+      dataUtils,
+      3,
+      1,
     );
+
     await hearingSchedulePage.waitForLoad();
     await hearingSchedulePage.scheduleHearingWithBasket(
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
@@ -123,10 +136,13 @@ test("should filter and display JOHs correctly using inclusion and exclusion cri
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
     );
-    await hearingSchedulePage.applyPrimaryDateFilter(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(2),
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(2),
+    await applyPrimaryDateFilterForSameDay(
+      hearingSchedulePage,
+      dataUtils,
+      5,
+      2,
     );
+
     await hearingSchedulePage.waitForLoad();
     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
     await hearingSchedulePage.waitForLoad();
@@ -146,10 +162,14 @@ test("should filter and display JOHs correctly using inclusion and exclusion cri
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
     );
-    await hearingSchedulePage.applyPrimaryDateFilter(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+
+    await applyPrimaryDateFilterForSameDay(
+      hearingSchedulePage,
+      dataUtils,
+      3,
+      1,
     );
+
     await expect(hearingSchedulePage.table).toContainText(
       "JOH-Two AutomationTest",
     );
@@ -166,10 +186,16 @@ test("should filter and display JOHs correctly using inclusion and exclusion cri
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
     );
-    await hearingSchedulePage.applyPrimaryDateFilter(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+
+    await applyPrimaryDateFilterForDifferentDays(
+      hearingSchedulePage,
+      dataUtils,
+      0,
+      3,
+      0,
+      1,
     );
+
     await sessionBookingPage.advancedFiltersButton.click();
     await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
     await page.getByRole("button", { name: "Session", exact: true }).click();
@@ -201,10 +227,15 @@ test("should filter and display JOHs correctly using inclusion and exclusion cri
   });
 
   await test.step("Apply JOH inclusion filter", async () => {
-    await hearingSchedulePage.applyPrimaryDateFilter(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+    await applyPrimaryDateFilterForDifferentDays(
+      hearingSchedulePage,
+      dataUtils,
+      0,
+      3,
+      0,
+      1,
     );
+
     await reloadHearingSchedulePage(
       page,
       hearingSchedulePage,
@@ -245,10 +276,16 @@ test("should filter and display JOHs correctly using inclusion and exclusion cri
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
     );
-    await hearingSchedulePage.applyPrimaryDateFilter(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+
+    await applyPrimaryDateFilterForDifferentDays(
+      hearingSchedulePage,
+      dataUtils,
+      0,
+      3,
+      0,
+      1,
     );
+
     await openAdvFiltersAndSelectLocalityAndLocation(
       page,
       sessionBookingPage,
@@ -277,6 +314,108 @@ test("should filter and display JOHs correctly using inclusion and exclusion cri
   });
 });
 
+// test("should filter and display JOS correctly using tier inclusion and exclusion criteria", async ({
+//   page,
+//   loginPage,
+//   hearingSchedulePage,
+//   sessionBookingPage,
+//   caseSearchPage,
+//   caseDetailsPage,
+//   dataUtils,
+// }) => {
+//   await test.step("Login and clear down Wrexham schedule", async () => {
+//     await page.goto(config.urls.baseUrl);
+//     await loginPage.login(config.users.testUser);
+//     await clearDownWrexhamSchedule(
+//       sessionBookingPage,
+//       hearingSchedulePage,
+//       dataUtils,
+//     );
+//   });
+
+//   await test.step("Add case to cart and open hearing schedule", async () => {
+//     await caseSearchPage.sidebarComponent.openSearchCasePage();
+//     await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
+//     await expect(caseDetailsPage.addToCartButton).toBeVisible();
+//     await caseDetailsPage.addToCartButton.click();
+//     await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
+//     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+//     await hearingSchedulePage.waitForLoad();
+//   });
+
+//   await test.step("Apply primary date filter and select locality/location", async () => {
+//     await hearingSchedulePage.applyPrimaryDateFilter(
+//       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+//       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+//     );
+//     await openAdvFiltersAndSelectLocalityAndLocation(
+//       page,
+//       sessionBookingPage,
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
+//     );
+//     await sessionBookingPage.applyButton.click();
+//     await hearingSchedulePage.waitForLoad();
+//     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+//     await hearingSchedulePage.waitForLoad();
+//   });
+
+//   await test.step("Book session with JOH AutomationTest", async () => {
+//     await hearingSchedulePage.applyPrimaryDateFilter(
+//       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+//       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+//     );
+//     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+//     await hearingSchedulePage.waitForLoad();
+//     await hearingSchedulePage.scheduleHearingWithBasket(
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
+//       process.env.CASE_NAME as string,
+//     );
+//     await sessionBookingPage.bookSession(
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+//       sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_FAMILY_CODE_AB,
+//     );
+//   });
+
+//   await test.step("Book session with JOH-Two AutomationTest", async () => {
+//     await caseSearchPage.sidebarComponent.openSearchCasePage();
+//     await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
+//     await expect(caseDetailsPage.addToCartButton).toBeVisible();
+//     await caseDetailsPage.addToCartButton.click();
+//     await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
+//     await reloadHearingSchedulePage(
+//       page,
+//       hearingSchedulePage,
+//       sessionBookingPage,
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
+//     );
+//     await applyPrimaryDateFilterForSameDay(
+//       hearingSchedulePage,
+//       dataUtils,
+//       3,
+//       1,
+//     );
+
+//     await hearingSchedulePage.waitForLoad();
+//     await hearingSchedulePage.scheduleHearingWithBasket(
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
+//       process.env.CASE_NAME as string,
+//     );
+//     await sessionBookingPage.bookSession(
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
+//       sessionBookingPage.CONSTANTS
+//         .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH_TWO,
+//       sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV,
+//     );
+//   });
+// });
+
 async function clearDownWrexhamSchedule(
   sessionBookingPage,
   hearingSchedulePage,
@@ -296,19 +435,39 @@ async function clearDownWrexhamSchedule(
     dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
   );
 
-  await clearDownSchedule(
-    sessionBookingPage,
-    hearingSchedulePage,
-    sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-    sessionBookingPage.CONSTANTS
-      .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
-    sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
-    sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-    dataUtils.generateDateInDdMmYyyyWithHypenSeparators(1),
-    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
-    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
-  );
+  //need to check if test is being run on a Friday.
+  //if run on a Friday, schedule needs to be checked for the following Monday.
+  const today = new Date();
+  if (today.getDay() === 5) {
+    // Friday
+    await clearDownSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
+      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(3),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(3),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(3),
+    );
+  } else {
+    await clearDownSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
+      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(1),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+    );
+  }
 }
 
 async function reloadHearingSchedulePage(
@@ -392,4 +551,48 @@ async function openAdvFiltersAndSelectLocalityAndLocation(
     .nth(2)
     .click();
   await sessionBookingPage.locationFilterToggleButton.click();
+}
+
+function applyPrimaryDateFilterForSameDay(
+  hearingSchedulePage,
+  dataUtils,
+  ifFriday: number,
+  ifNotFriday: number,
+) {
+  const today = new Date();
+  if (today.getDay() === 5) {
+    // 5 = Friday
+    return hearingSchedulePage.applyPrimaryDateFilter(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifFriday),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifFriday),
+    );
+  } else {
+    return hearingSchedulePage.applyPrimaryDateFilter(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifNotFriday),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifNotFriday),
+    );
+  }
+}
+
+function applyPrimaryDateFilterForDifferentDays(
+  hearingSchedulePage,
+  dataUtils,
+  ifFridayFrom: number,
+  ifFridayTo: number,
+  ifNotFridayFrom: number,
+  ifNotFridayTo: number,
+) {
+  const today = new Date();
+  if (today.getDay() === 5) {
+    // Friday
+    return hearingSchedulePage.applyPrimaryDateFilter(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifFridayFrom),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifFridayTo),
+    );
+  } else {
+    return hearingSchedulePage.applyPrimaryDateFilter(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifNotFridayFrom),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifNotFridayTo),
+    );
+  }
 }
