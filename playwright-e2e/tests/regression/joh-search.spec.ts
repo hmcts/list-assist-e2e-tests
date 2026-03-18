@@ -263,7 +263,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     });
   });
 
-  test("should filter and display JOH correctly using tier inclusion @joh-filtering", async ({
+  test("Filter and display JOH correctly using tier inclusion @joh-filtering", async ({
     page,
     loginPage,
     hearingSchedulePage,
