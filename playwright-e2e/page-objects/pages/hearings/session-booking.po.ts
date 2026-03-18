@@ -230,7 +230,6 @@ export class SessionBookingPage extends Base {
 
     //conditional
     if (johName) {
-      // Repeatedly click the dropdown until it is visible
       const dropdownMenu = this.page.locator(
         "div.dropdown-menu.show ul.dropdown-menu.inner.show",
       );
@@ -238,7 +237,18 @@ export class SessionBookingPage extends Base {
         .poll(
           async () => {
             await this.sessionJohDropdown.click();
-            return await dropdownMenu.isVisible();
+            if (await dropdownMenu.isVisible()) {
+              const johOption = dropdownMenu.getByText(johName, {
+                exact: true,
+              });
+              try {
+                await johOption.click();
+                return true;
+              } catch {
+                return false;
+              }
+            }
+            return false;
           },
           {
             intervals: [500],
@@ -246,10 +256,6 @@ export class SessionBookingPage extends Base {
           },
         )
         .toBeTruthy();
-
-      // Click the desired option by visible text
-      const johOption = dropdownMenu.getByText(johName, { exact: true });
-      await johOption.click();
     }
 
     let validationPopup;
