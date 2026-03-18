@@ -362,15 +362,6 @@ export class HearingSchedulePage extends Base {
     await this.waitForLoad();
     await this.applyPrimaryDateFilter(dateFrom, dateTo);
     await this.clearAllPrimaryFilters();
-    // await this.waitForLoad();
-    // await this.primaryFilterClearAllLocalityFilterOptions.click();
-    // await this.waitForLoad();
-    // await this.primaryFilterClearAllSessionTypeFilterOptions.click();
-    // await this.waitForLoad();
-    // await this.primaryFilterClearAllJohTierFilterOptions.click();
-    // await this.waitForLoad();
-    // await this.primaryFilterClearAllJohInclusionFilterOptions.click();
-    // await this.waitForLoad();
     await this.primaryFilterJohInclusionFilterInput.click();
 
     await this.primaryFilterJohInclusionTextbox.fill("automation");
