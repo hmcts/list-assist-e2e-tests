@@ -152,12 +152,40 @@ export class HearingSchedulePage extends Base {
   readonly primaryFilterClearAllLocalityFilterOptions = this.page
     .getByRole("group", { name: /locality filter list/i })
     .getByLabel("Clear all selected options");
+  readonly primaryFilterLocalityDropdown = this.page.locator(
+    'div.multiselect[role="combobox"][name="primaryFilter_locality_multiselectService"] > span[role="button"][title="Toggle"]',
+  );
   readonly primaryFilterClearAllSessionTypeFilterOptions = this.page
     .getByRole("group", { name: /session type filter list/i })
     .getByLabel("Clear All selected options");
   readonly primaryFilterClearAllJohTierFilterOptions = this.page
     .getByRole("group", { name: /JOH Tier \(Inclusion\) filter/i })
     .getByLabel("Clear All selected options");
+  readonly johTierInclusionToggleButton = this.page.locator(
+    'div[role="combobox"][name="primaryFilter_employeeWorkTypesIn_multiselectLov"] .multiselect__custom-select[role="button"][title="Toggle"]',
+  );
+
+  getJohTierInclusionOption(optionText: string): Locator {
+    return this.page
+      .locator(
+        "#primaryFilter_employeeWorkTypesIn_listbox .multiselect__element .multiselect__options-item",
+      )
+      .getByText(optionText, { exact: true });
+  }
+
+  readonly johTierInclusionTextbox = this.page.locator(
+    'input.multiselect__input[aria-label="JOH Tiers (Inclusion)"][placeholder="Search an item"]',
+  );
+  readonly primaryFilterJohTierDropdown = this.page.locator(
+    'div.multiselect[role="combobox"][name="primaryFilter_employeeWorkTypesIn_multiselectLov"] > span[role="button"][title="Toggle"]',
+  );
+  readonly primaryFilterJohTierFilter = this.page.locator(
+    'div.multiselect[role="combobox"][name="primaryFilter_employeeWorkTypesIn_multiselectLov"] input.multiselect__input[aria-label="JOH Tier (Inclusion)"]',
+  );
+
+  async primaryFilterJohTierInput(searchText: string) {
+    await this.primaryFilterJohTierFilter.fill(searchText);
+  }
   readonly primaryFilterClearAllJohInclusionFilterOptions = this.page
     .getByRole("group", { name: /JOH \(Inclusion\) filter list/i })
     .getByLabel("Clear all selected options");
@@ -333,15 +361,7 @@ export class HearingSchedulePage extends Base {
       .click();
     await this.waitForLoad();
     await this.applyPrimaryDateFilter(dateFrom, dateTo);
-    await this.waitForLoad();
-    await this.primaryFilterClearAllLocalityFilterOptions.click();
-    await this.waitForLoad();
-    await this.primaryFilterClearAllSessionTypeFilterOptions.click();
-    await this.waitForLoad();
-    await this.primaryFilterClearAllJohTierFilterOptions.click();
-    await this.waitForLoad();
-    await this.primaryFilterClearAllJohInclusionFilterOptions.click();
-    await this.waitForLoad();
+    await this.clearAllPrimaryFilters();
     await this.primaryFilterJohInclusionFilterInput.click();
 
     await this.primaryFilterJohInclusionTextbox.fill("automation");
@@ -516,6 +536,22 @@ export class HearingSchedulePage extends Base {
     await this.primaryFilterDateInput(dateTo).click();
     await this.waitForLoad();
     await this.applyPrimaryFilterButton.click();
+  }
+
+  async clearAllPrimaryFilters() {
+    await this.waitForLoad();
+    await this.primaryFilterClearAllLocalityFilterOptions.click();
+    await this.primaryFilterClearAllSessionTypeFilterOptions.click();
+    await this.primaryFilterClearAllJohTierFilterOptions.click();
+    await this.primaryFilterClearAllJohInclusionFilterOptions.click();
+  }
+
+  async primaryFilterSelectLocality(locality: string) {
+    await this.primaryFilterLocalityDropdown.click();
+    // Then select an option from the list, e.g.:
+    await this.page
+      .getByRole("option", { name: locality, exact: true })
+      .click();
   }
 
   /**
