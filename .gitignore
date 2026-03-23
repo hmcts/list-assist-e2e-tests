@@ -1,6 +1,7 @@
 crash.log
 .swp
 .env
+env.example
 .DS_Store
 *.lock.hcl
 .idea/
