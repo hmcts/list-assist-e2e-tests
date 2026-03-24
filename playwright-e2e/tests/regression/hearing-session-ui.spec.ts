@@ -58,7 +58,7 @@ test("Check all expected values are present in advanced filters @ui-test @regres
   );
 });
 
-test("Filter and display JOH exclusion filter correctly using tier exclusion @ui-test @regression @this", async ({
+test("Filter and display JOH exclusion filter correctly using tier exclusion @ui-test @regression", async ({
   page,
   loginPage,
   hearingSchedulePage,
