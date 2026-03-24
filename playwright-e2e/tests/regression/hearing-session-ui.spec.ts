@@ -58,7 +58,7 @@ test("Check all expected values are present in advanced filters @ui-test @regres
   );
 });
 
-test("Filter and display JOH exclusion filter correctly using tier exclusion @ui-test @regression", async ({
+test("Filter and display JOH exclusion filter correctly using tier exclusion @ui-test @regression @this", async ({
   page,
   loginPage,
   hearingSchedulePage,
@@ -94,7 +94,8 @@ test("Filter and display JOH exclusion filter correctly using tier exclusion @ui
       // Trim whitespace from each option
       const trimmedOptions = options.map((opt) => opt.trim());
 
-      expect(trimmedOptions).toContain("AutomationTest, JOH");
+      await expect(trimmedOptions).toContain("AutomationTest, JOH");
+      await expect(trimmedOptions).not.toContain("JOH-Two AutomationTest");
     });
   });
 });
