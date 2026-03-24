@@ -389,9 +389,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     loginPage,
     hearingSchedulePage,
     sessionBookingPage,
-    caseSearchPage,
-    caseDetailsPage,
-    dataUtils,
   }) => {
     await test.step("Login and clear down Wrexham schedule", async () => {
       await page.goto(config.urls.baseUrl);
@@ -399,7 +396,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
 
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
       await hearingSchedulePage.waitForLoad();
-      
 
       await openAdvFiltersAndSelectLocalityAndLocation(
         page,
@@ -418,22 +414,25 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
         .locator('li[id^="advancedFilter_employeeWorkTypeEx_option_"]')
         .getByText("District Judge", { exact: true })
         .click();
-      await page.locator(
-  'span[role="button"][aria-label="Close listbox"].multiselect__custom-select'
-).click();
+      await page
+        .locator(
+          'span[role="button"][aria-label="Close listbox"].multiselect__custom-select',
+        )
+        .click();
 
       await test.step("Verify 'AutomationTest, JOH' is present in JOH Exclusion LOV", async () => {
-  await hearingSchedulePage.johExclusionFilter.click();
-  const options = await page
-    .locator('ul#advancedFilter_memTypeEx_listbox li[role="option"] .multiselect__options-item')
-    .allTextContents();
+        await hearingSchedulePage.johExclusionFilter.click();
+        const options = await page
+          .locator(
+            'ul#advancedFilter_memTypeEx_listbox li[role="option"] .multiselect__options-item',
+          )
+          .allTextContents();
 
-  // Trim whitespace from each option
-  const trimmedOptions = options.map(opt => opt.trim());
+        // Trim whitespace from each option
+        const trimmedOptions = options.map((opt) => opt.trim());
 
-  expect(trimmedOptions).toContain("AutomationTest, JOH");
-});
-
+        expect(trimmedOptions).toContain("AutomationTest, JOH");
+      });
     });
   });
 
