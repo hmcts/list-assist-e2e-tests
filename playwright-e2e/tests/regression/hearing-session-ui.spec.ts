@@ -58,6 +58,55 @@ test("Check all expected values are present in advanced filters @ui-test @regres
   );
 });
 
+test("Filter and display JOH exclusion filter correctly using tier exclusion @ui-test @regression", async ({
+  page,
+  loginPage,
+  hearingSchedulePage,
+  sessionBookingPage,
+}) => {
+  await test.step("Login and clear down Wrexham schedule", async () => {
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser);
+
+    await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+    await hearingSchedulePage.waitForLoad();
+
+    await sessionBookingPage.advancedFiltersButton.click();
+    await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
+    await sessionBookingPage.clearAdvanceFilterButton.click();
+
+    await page.getByRole("button", { name: "Who", exact: true }).click();
+
+    await hearingSchedulePage.johTierExclusionFilter.click();
+    await page
+      .getByRole("textbox", { name: "JOH Tier (Exclusion)" })
+      .fill("District Judge");
+    await page
+      .locator('li[id^="advancedFilter_employeeWorkTypeEx_option_"]')
+      .getByText("District Judge", { exact: true })
+      .click();
+    await page
+      .locator(
+        'span[role="button"][aria-label="Close listbox"].multiselect__custom-select',
+      )
+      .click();
+
+    await test.step("Verify 'AutomationTest, JOH' is present in JOH Exclusion LOV", async () => {
+      await hearingSchedulePage.johExclusionFilter.click();
+      const options = await page
+        .locator(
+          'ul#advancedFilter_memTypeEx_listbox li[role="option"] .multiselect__options-item',
+        )
+        .allTextContents();
+
+      // Trim whitespace from each option
+      const trimmedOptions = options.map((opt) => opt.trim());
+
+      expect(trimmedOptions).toContain("AutomationTest, JOH");
+    });
+  });
+});
+
 async function assertAdvFilterDropdownOptions(
   dropdown: Locator,
   options: string[],
