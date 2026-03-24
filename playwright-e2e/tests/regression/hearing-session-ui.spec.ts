@@ -58,7 +58,7 @@ test("Check all expected values are present in advanced filters @ui-test @regres
   );
 });
 
-test("Filter and display JOH exclusion filter correctly using tier exclusion @ui-test @regression", async ({
+test("Filter and display JOH exclusion filter correctly using tier exclusion @ui-test @regression @this", async ({
   page,
   loginPage,
   hearingSchedulePage,
@@ -81,23 +81,15 @@ test("Filter and display JOH exclusion filter correctly using tier exclusion @ui
     await page
       .getByRole("textbox", { name: "JOH Tier (Exclusion)" })
       .fill("District Judge");
-    await page
-      .locator('li[id^="advancedFilter_employeeWorkTypeEx_option_"]')
+    await hearingSchedulePage.johTierExclusionListSelect
       .getByText("District Judge", { exact: true })
       .click();
-    await page
-      .locator(
-        'span[role="button"][aria-label="Close listbox"].multiselect__custom-select',
-      )
-      .click();
+    await hearingSchedulePage.johTierExclusionToggleClose.click();
 
     await test.step("Verify 'AutomationTest, JOH' is present in JOH Exclusion LOV", async () => {
       await hearingSchedulePage.johExclusionFilter.click();
-      const options = await page
-        .locator(
-          'ul#advancedFilter_memTypeEx_listbox li[role="option"] .multiselect__options-item',
-        )
-        .allTextContents();
+      const options =
+        await hearingSchedulePage.johExlusionListOptions.allTextContents();
 
       // Trim whitespace from each option
       const trimmedOptions = options.map((opt) => opt.trim());

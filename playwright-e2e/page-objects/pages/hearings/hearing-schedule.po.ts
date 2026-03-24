@@ -216,9 +216,19 @@ export class HearingSchedulePage extends Base {
   );
 
   readonly johTierExclusionFilter = this.page.locator(
-  'div.multiselect[role="combobox"][name="advancedFilter_employeeWorkTypeEx_multiselectLov"]',
-);
+    'div.multiselect[role="combobox"][name="advancedFilter_employeeWorkTypeEx_multiselectLov"]',
+  );
 
+  readonly johTierExclusionListSelect = this.page.locator(
+    'li[id^="advancedFilter_employeeWorkTypeEx_option_"]',
+  );
+  readonly johTierExclusionToggleClose = this.page.locator(
+    'span[role="button"][aria-label="Close listbox"].multiselect__custom-select',
+  );
+
+  readonly johExlusionListOptions = this.page.locator(
+    'ul#advancedFilter_memTypeEx_listbox li[role="option"] .multiselect__options-item',
+  );
 
   constructor(page: Page) {
     super(page);
