@@ -215,6 +215,11 @@ export class HearingSchedulePage extends Base {
     'div.multiselect[role="combobox"][name="advancedFilter_memTypeEx_multiselectService"]',
   );
 
+  readonly johTierExclusionFilter = this.page.locator(
+  'div.multiselect[role="combobox"][name="advancedFilter_employeeWorkTypeEx_multiselectLov"]',
+);
+
+
   constructor(page: Page) {
     super(page);
     this.sessionBookingPage = new SessionBookingPage(page);

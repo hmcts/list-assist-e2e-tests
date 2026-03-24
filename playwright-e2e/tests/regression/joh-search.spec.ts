@@ -384,7 +384,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     });
   });
 
-  test("Filter and display JOH correctly using tier exclusion @joh-filtering", async ({
+  test("Filter and display JOH exclusion filter correctly using tier exclusion @joh-filtering @this", async ({
     page,
     loginPage,
     hearingSchedulePage,
@@ -396,55 +396,44 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     await test.step("Login and clear down Wrexham schedule", async () => {
       await page.goto(config.urls.baseUrl);
       await loginPage.login(config.users.testUser);
-      await clearDownWrexhamSchedule(
-        sessionBookingPage,
-        hearingSchedulePage,
-        dataUtils,
-      );
-    });
 
-    await bookSessionWithJoh(
-      page,
-      sessionBookingPage,
-      hearingSchedulePage,
-      caseSearchPage,
-      caseDetailsPage,
-      dataUtils,
-      "JOH AutomationTest",
-      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_FAMILY_CODE_AB,
-      0,
-    );
+      await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+      await hearingSchedulePage.waitForLoad();
+      
 
-    await bookSessionWithJoh(
-      page,
-      sessionBookingPage,
-      hearingSchedulePage,
-      caseSearchPage,
-      caseDetailsPage,
-      dataUtils,
-      "JOH-Two AutomationTest",
-      sessionBookingPage.CONSTANTS
-        .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH_TWO,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV,
-      1,
-    );
-
-    await test.step("Reload hearing schedule and apply date filter for different days", async () => {
-      await reloadHearingSchedulePage(
+      await openAdvFiltersAndSelectLocalityAndLocation(
         page,
-        hearingSchedulePage,
         sessionBookingPage,
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
       );
 
-      await applyPrimaryDateFilterForDifferentDays(
-        hearingSchedulePage,
-        dataUtils,
-        0,
-        1,
-      );
+      await page.getByRole("button", { name: "Who", exact: true }).click();
+
+      await hearingSchedulePage.johTierExclusionFilter.click();
+      await page
+        .getByRole("textbox", { name: "JOH Tier (Exclusion)" })
+        .fill("District Judge");
+      await page
+        .locator('li[id^="advancedFilter_employeeWorkTypeEx_option_"]')
+        .getByText("District Judge", { exact: true })
+        .click();
+      await page.locator(
+  'span[role="button"][aria-label="Close listbox"].multiselect__custom-select'
+).click();
+
+      await test.step("Verify 'AutomationTest, JOH' is present in JOH Exclusion LOV", async () => {
+  await hearingSchedulePage.johExclusionFilter.click();
+  const options = await page
+    .locator('ul#advancedFilter_memTypeEx_listbox li[role="option"] .multiselect__options-item')
+    .allTextContents();
+
+  // Trim whitespace from each option
+  const trimmedOptions = options.map(opt => opt.trim());
+
+  expect(trimmedOptions).toContain("AutomationTest, JOH");
+});
+
     });
   });
 
