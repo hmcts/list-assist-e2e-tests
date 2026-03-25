@@ -58,46 +58,42 @@ test("Check all expected values are present in advanced filters @ui-test @regres
   );
 });
 
-test("Filter and display JOH exclusion filter correctly using tier exclusion @ui-test @regression @this", async ({
+test("Filter and display JOH exclusion filter correctly using tier exclusion @ui-test @regression", async ({
   page,
   loginPage,
   hearingSchedulePage,
   sessionBookingPage,
 }) => {
-  await test.step("Login and clear down Wrexham schedule", async () => {
-    await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser);
+  await page.goto(config.urls.baseUrl);
+  await loginPage.login(config.users.testUser);
 
-    await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-    await hearingSchedulePage.waitForLoad();
+  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+  await hearingSchedulePage.waitForLoad();
 
-    await sessionBookingPage.advancedFiltersButton.click();
-    await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
-    await sessionBookingPage.clearAdvanceFilterButton.click();
+  await sessionBookingPage.advancedFiltersButton.click();
+  await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
+  await sessionBookingPage.clearAdvanceFilterButton.click();
 
-    await page.getByRole("button", { name: "Who", exact: true }).click();
+  await page.getByRole("button", { name: "Who", exact: true }).click();
 
-    await hearingSchedulePage.johTierExclusionFilter.click();
-    await page
-      .getByRole("textbox", { name: "JOH Tier (Exclusion)" })
-      .fill("District Judge");
-    await hearingSchedulePage.johTierExclusionListSelect
-      .getByText("District Judge", { exact: true })
-      .click();
-    await hearingSchedulePage.johTierExclusionToggleClose.click();
+  await hearingSchedulePage.johTierExclusionFilter.click();
+  await page
+    .getByRole("textbox", { name: "JOH Tier (Exclusion)" })
+    .fill("District Judge");
+  await hearingSchedulePage.johTierExclusionListSelect
+    .getByText("District Judge", { exact: true })
+    .click();
+  await hearingSchedulePage.johTierExclusionToggleClose.click();
 
-    await test.step("Verify 'AutomationTest, JOH' is present in JOH Exclusion LOV", async () => {
-      await hearingSchedulePage.johExclusionFilter.click();
-      const options =
-        await hearingSchedulePage.johExlusionListOptions.allTextContents();
+  await hearingSchedulePage.johExclusionFilter.click();
+  const options =
+    await hearingSchedulePage.johExlusionListOptions.allTextContents();
 
-      // Trim whitespace from each option
-      const trimmedOptions = options.map((opt) => opt.trim());
+  // Trim whitespace from each option
+  const trimmedOptions = options.map((opt) => opt.trim());
 
-      await expect(trimmedOptions).toContain("AutomationTest, JOH");
-      await expect(trimmedOptions).not.toContain("JOH-Two AutomationTest");
-    });
-  });
+  await expect(trimmedOptions).toContain("AutomationTest, JOH");
+  await expect(trimmedOptions).not.toContain("JOH-Two AutomationTest");
 });
 
 async function assertAdvFilterDropdownOptions(
