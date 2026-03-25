@@ -54,8 +54,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       "JOH AutomationTest",
       sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
       sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_FAMILY_CODE_AB,
-      0, // offset if Friday
-      0, // offset if not Friday
+      0,
     );
 
     await bookSessionWithJoh(
@@ -69,8 +68,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       sessionBookingPage.CONSTANTS
         .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH_TWO,
       sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV,
-      3, // offset if Friday
-      1, // offset if not Friday
+      1,
     );
 
     await test.step("Assert filtering by date range, current date +2 (no JOHs expected)", async () => {
@@ -81,12 +79,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
       );
-      await applyPrimaryDateFilterForSameDay(
-        hearingSchedulePage,
-        dataUtils,
-        5,
-        2,
-      );
+      await applyPrimaryDateFilterForSameDay(hearingSchedulePage, dataUtils, 2);
 
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
@@ -108,12 +101,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
       );
 
-      await applyPrimaryDateFilterForSameDay(
-        hearingSchedulePage,
-        dataUtils,
-        3,
-        1,
-      );
+      await applyPrimaryDateFilterForSameDay(hearingSchedulePage, dataUtils, 1);
 
       await expect(hearingSchedulePage.table).toContainText(
         "JOH-Two AutomationTest",
@@ -135,8 +123,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await applyPrimaryDateFilterForDifferentDays(
         hearingSchedulePage,
         dataUtils,
-        0,
-        3,
         0,
         1,
       );
@@ -177,8 +163,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await applyPrimaryDateFilterForDifferentDays(
         hearingSchedulePage,
         dataUtils,
-        0,
-        3,
         0,
         1,
       );
@@ -229,8 +213,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await applyPrimaryDateFilterForDifferentDays(
         hearingSchedulePage,
         dataUtils,
-        0,
-        3,
         0,
         1,
       );
@@ -292,8 +274,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       "JOH AutomationTest",
       sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
       sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_FAMILY_CODE_AB,
-      0, // offset if Friday
-      0, // offset if not Friday
+      0,
     );
 
     await bookSessionWithJoh(
@@ -307,8 +288,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       sessionBookingPage.CONSTANTS
         .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH_TWO,
       sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV,
-      3, // offset if Friday
-      1, // offset if not Friday
+      1,
     );
 
     await test.step("Reload hearing schedule and apply date filter for different days", async () => {
@@ -323,8 +303,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await applyPrimaryDateFilterForDifferentDays(
         hearingSchedulePage,
         dataUtils,
-        0,
-        3,
         0,
         1,
       );
@@ -546,45 +524,28 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
   function applyPrimaryDateFilterForSameDay(
     hearingSchedulePage,
     dataUtils,
-    ifFriday: number,
-    ifNotFriday: number,
+    offset: number,
   ) {
     const today = new Date();
-    if (today.getDay() === 5) {
-      // 5 = Friday
-      return hearingSchedulePage.applyPrimaryDateFilter(
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifFriday),
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifFriday),
-      );
-    } else {
-      return hearingSchedulePage.applyPrimaryDateFilter(
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifNotFriday),
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifNotFriday),
-      );
-    }
+    const adjustedOffset = today.getDay() === 5 ? offset + 3 : offset;
+    return hearingSchedulePage.applyPrimaryDateFilter(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
+    );
   }
 
   function applyPrimaryDateFilterForDifferentDays(
     hearingSchedulePage,
     dataUtils,
-    ifFridayFrom: number,
-    ifFridayTo: number,
-    ifNotFridayFrom: number,
-    ifNotFridayTo: number,
+    fromOffset: number,
+    toOffset: number,
   ) {
     const today = new Date();
-    if (today.getDay() === 5) {
-      // Friday
-      return hearingSchedulePage.applyPrimaryDateFilter(
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifFridayFrom),
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifFridayTo),
-      );
-    } else {
-      return hearingSchedulePage.applyPrimaryDateFilter(
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifNotFridayFrom),
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifNotFridayTo),
-      );
-    }
+    const offset = today.getDay() === 5 ? 3 : 0;
+    return hearingSchedulePage.applyPrimaryDateFilter(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(fromOffset + offset),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(toOffset + offset),
+    );
   }
 
   /**
@@ -600,12 +561,11 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     johName: string,
     johConstant: string,
     jurisdictionConstant: string,
-    offsetIfFriday: number,
-    offsetIfNotFriday: number,
+    baseOffset: number,
   ) {
     const today = new Date();
-    const dateOffset =
-      today.getDay() === 5 ? offsetIfFriday : offsetIfNotFriday;
+    // If Friday, add 3 to the base offset, otherwise use base offset
+    const dateOffset = today.getDay() === 5 ? baseOffset + 3 : baseOffset;
 
     await caseSearchPage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
