@@ -66,6 +66,29 @@ def secrets = [
     // SIT secrets
     secret('sit-base-url', 'SIT_BASE_URL'),
     secret('hmi-sit-api-url', 'SIT_HMI_API_URL'),
+
+    //Test Users
+    secret('user_christopher_hall', 'USER_CHRISTOPHER_HALL'),
+    secret('password_christopher_hall', 'PASSWORD_CHRISTOPHER_HALL'),
+    secret('user_olivia_clark', 'USER_OLIVIA_CLARK'),
+    secret('password_olivia_clark', 'PASSWORD_OLIVIA_CLARK'),
+    secret('user_patrick_lewis', 'USER_PATRICK_LEWIS'),
+    secret('password_patrick_lewis', 'PASSWORD_PATRICK_LEWIS'),
+    secret('user_isabella_walker', 'USER_ISABELLA_WALKER'),
+    secret('password_isabella_walker', 'PASSWORD_ISABELLA_WALKER'),
+    secret('user_kevin_young', 'USER_KEVIN_YOUNG'),
+    secret('password_kevin_young', 'PASSWORD_KEVIN_YOUNG'),
+    secret('user_amelia_king', 'USER_AMELIA_KING'),
+    secret('password_amelia_king', 'PASSWORD_AMELIA_KING'),
+    secret('user_ryan_wright', 'USER_RYAN_WRIGHT'),
+    secret('password_ryan_wright', 'PASSWORD_RYAN_WRIGHT'),
+    secret('user_sophia_lopez', 'USER_SOPHIA_LOPEZ'),
+    secret('password_sophia_lopez', 'PASSWORD_SOPHIA_LOPEZ'),
+    secret('user_jason_martin', 'USER_JASON_MARTIN'),
+    secret('password_jason_martin', 'PASSWORD_JASON_MARTIN'),
+    secret('user_mia_rodriguez', 'USER_MIA_RODRIGUEZ'),
+    secret('password_mia_rodriguez', 'PASSWORD_MIA_RODRIGUEZ'),
+
   ]
 ]
 
