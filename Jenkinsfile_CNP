@@ -52,8 +52,8 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 def secrets = [
   'snl-automation-bts-stg': [
     // TRG secrets
-    secret('test-password', 'TEST_USERNAME'),
-    secret('test-username', 'TEST_PASSWORD'),
+    secret('test-password', 'TEST_PASSWORD'),
+    secret('test-username', 'TEST_USERNAME'),
     secret('trg-base-url', 'TRG_BASE_URL'),
     secret('hmi-client-id', 'HMI_CLIENT_ID'),
     secret('hmi-client-secret', 'HMI_CLIENT_SECRET'),
