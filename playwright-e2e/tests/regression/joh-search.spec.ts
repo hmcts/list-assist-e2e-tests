@@ -25,7 +25,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     },
   );
 
-  test("Filter and display JOHs correctly using inclusion and exclusion criteria @joh-filtering", async ({
+  test("Filter and display JOHs correctly using inclusion and exclusion criteria @joh-filtering @combined", async ({
     page,
     loginPage,
     hearingSchedulePage,

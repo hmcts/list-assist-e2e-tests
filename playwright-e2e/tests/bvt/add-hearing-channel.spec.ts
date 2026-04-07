@@ -14,7 +14,7 @@ import { log } from "console";
 //   storageState: config.users.testUser.sessionFile,
 // });
 
-test.describe("Hearing channel test @hearing-channel", () => {
+test.describe("Hearing channel test @hearing-channel @combined", () => {
   test.beforeEach(
     async ({
       page,
