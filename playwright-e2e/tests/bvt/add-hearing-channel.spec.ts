@@ -8,7 +8,6 @@ import {
 import { clearDownSchedule } from "../../utils/reporting.utils.js";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po";
 import { config } from "../../utils";
-import { log } from "console";
 
 // test.use({
 //   storageState: config.users.testUser.sessionFile,
