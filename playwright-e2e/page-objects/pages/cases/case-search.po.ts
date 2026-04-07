@@ -25,7 +25,7 @@ export class CaseSearchPage extends Base {
           try {
             await this.addToCartButton.waitFor({
               state: "visible",
-              timeout: 5000,
+              timeout: 10000,
             });
             return true;
           } catch {

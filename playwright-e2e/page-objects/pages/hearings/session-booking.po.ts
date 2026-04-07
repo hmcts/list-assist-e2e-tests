@@ -6,14 +6,17 @@ export class SessionBookingPage extends Base {
     //case listing
     CASE_LISTING_REGION_WALES: "Wales",
     CASE_LISTING_REGION_MIDLANDS: "Midlands",
+    CASE_LISTING_REGION_NORTH_EAST: "North East",
     CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS:
       "Wales Civil, Family and Tribunals",
     CASE_LISTING_CLUSTER_MIDLANDS_LEICESTERSHIRE_RUTLAND_LINCOLNSHIRE_NORTH:
       "Leicestershire, Rutland, Lincolnshire and North",
+    CASE_LISTING_CLUSTER_CLEVELAND_DURHAM_TEES_VALLEY: "Cleveland, Durham and Northumbria Group",
+
     CASE_LISTING_LOCATION_LEICESTER_CC_7: "Leicester County Courtroom 07",
     CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
-    CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT:
-      "Pontypridd County Court and",
+    CASE_LISTING_LOCALITY_DARLINGTON_COUNTY_COURT: "Darlington County Court and Family Court",
+    CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT: "Pontypridd County Court and",
     CASE_LISTING_LOCALITY_LEICESTER_CC: "Leicester Combined Court",
     CASE_LISTING_LOCALITY_CAERNARFON_JC: "Caernarfon Justice Centre",
     CASE_LISTING_LOCALITY_ABERYSTWYTH_JC: "Aberystwyth Justice Centre",
@@ -22,10 +25,10 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC:
       "Newport (South Wales) County Court and Family Court",
     CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC: "Wrexham County and Family Court",
-    CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
-      "Newport (South Wales) Chambers 01",
-    CASE_LISTING_LOCATION_WREXHAM_CRTRM_01: "Wrexham Courtroom 01",
-
+     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
+       "Newport (South Wales) Chambers 01",
+     CASE_LISTING_LOCATION_WREXHAM_CRTRM_01: "Wrexham Courtroom 01",
+    CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1: "Darlington County Courtroom 01",
     CASE_LISTING_JURISDICTION_FAMILY_CODE_AB: "AB",
     CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV: "CIV",
 

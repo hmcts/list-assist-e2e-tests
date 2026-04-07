@@ -12,7 +12,7 @@ export class MultiDayCartPage extends Base {
   });
   readonly submitButton = this.page.locator("#submitSession");
   readonly applyFilterButton = this.page.locator("#applyFilter");
-
+  readonly selectHearingType = this.page.getByRole("combobox",{ name: /Hearing Type/i });
   readonly selectCaseBoxSelect = this.page.locator(".multiselect__select");
   readonly listingRequirementsDropDown = this.page.locator(
     'label.select-header:has-text("Select a Listing Requirement") + div.multiselect',
@@ -36,6 +36,13 @@ export class MultiDayCartPage extends Base {
   readonly createListingsOnlyButton = this.page.locator(
     "#saveAdditionalListingData",
   );
+
+  // Label locators for session/duration summary
+  readonly listingRequirementsLabel = this.page.getByText(/^Listing requirements:/);
+  readonly requiredLabel = this.page.getByText(/^Required:/);
+  readonly listedLabel = this.page.getByText(/^Listed:/);
+  readonly currentlySelectedLabel = this.page.getByText(/^Currently selected:/);
+  readonly remainingToAllocateLabel = this.page.getByText(/^Remaining to allocate:/);
 
   constructor(page: Page) {
     super(page);
@@ -106,5 +113,9 @@ export class MultiDayCartPage extends Base {
         { intervals: [1000], timeout: 10_000 },
       )
       .toBeTruthy();
+  }
+
+  async assertLabelValue(labelLocator, expected) {
+    await expect(labelLocator).toContainText(expected);
   }
 }

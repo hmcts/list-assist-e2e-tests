@@ -420,10 +420,26 @@ export class HearingSchedulePage extends Base {
 
     const releasedStatusCheck = this.page.locator(
       'button[title="Show booking details"] .hs-session-status',
-      {
-        hasText: "Released",
-      },
+      { hasText: "Released" },
     );
+
+    // temporary Debugging
+    const releasedCount = await releasedStatusCheck.count();
+    for (let i = 0; i < releasedCount; i++) {
+      const isVisible = await releasedStatusCheck.nth(i).isVisible();
+      const text = await releasedStatusCheck.nth(i).textContent();
+      console.log(`Released element [${i}]: visible=${isVisible}, text='${text}'`);
+    }
+    // const isReleasedVisible = await releasedStatusCheck.first().isVisible();
+    // console.log('Is Released visible (first):', isReleasedVisible);
+    // if (!isReleasedVisible) {
+    //   return;
+    // }
+    //
+    // Exit early if no released session is visible
+     // if (!(await releasedStatusCheck.first().isVisible())) {
+     //   return;
+     // }
 
     if (await releasedStatusCheck.first().isVisible()) {
       await releasedStatusCheck.first().click();
@@ -457,28 +473,25 @@ export class HearingSchedulePage extends Base {
         await releasedStatusCheck.first().click();
 
         await this.waitForLoad();
-
-        await expect
-          .poll(async () => await scheduleButton.isVisible(), {
-            intervals: [2_000],
-            timeout: 10_000,
-          })
-          .toBeTruthy();
       }
-
+      await expect
+        .poll(async () => await scheduleButton.isVisible(), {
+          intervals: [2_000],
+          timeout: 20_000,
+        })
+        .toBeTruthy();
       await scheduleButton.click();
       await this.goToSessionDetailsButton.first().click();
-
       await expect
         .poll(async () => await this.sessionBookingPage.heading.isVisible(), {
           intervals: [2_000],
           timeout: 10_000,
         })
         .toBeTruthy();
-
       await this.deleteMultiDayListingsPlaceholders();
     }
   }
+
   async deleteExistingMultiDayListings(): Promise<void> {
     if (await this.multiDayLink.isVisible()) {
       await this.multiDayLink.click();

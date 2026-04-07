@@ -3,6 +3,8 @@ import { Base } from "../../base";
 
 export class ListingRequirementsPage extends Base {
   readonly multidayHearingDaysTextBox = this.page.locator("#multidayHearing");
+  readonly multidayHearingHoursTextBox = this.page.locator("#multidayHearingHours");
+
 
   readonly CONSTANTS = {
     PARENT_HEARING_CHANNEL_IN_PERSON: "In Person (parent)",
