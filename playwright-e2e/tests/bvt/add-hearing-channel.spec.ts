@@ -8,15 +8,23 @@ import {
 import { clearDownSchedule } from "../../utils/reporting.utils.js";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po";
 import { config } from "../../utils";
+import { log } from "console";
 
-test.use({
-  storageState: config.users.testUser.sessionFile,
-});
+// test.use({
+//   storageState: config.users.testUser.sessionFile,
+// });
 
 test.describe("Hearing channel test @hearing-channel", () => {
   test.beforeEach(
-    async ({ page, hearingSchedulePage, sessionBookingPage, dataUtils }) => {
+    async ({
+      page,
+      loginPage,
+      hearingSchedulePage,
+      sessionBookingPage,
+      dataUtils,
+    }) => {
       await page.goto(config.urls.baseUrl);
+      await loginPage.login("OLIVIA_CLARK");
       //empties cart if there is anything present
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
 

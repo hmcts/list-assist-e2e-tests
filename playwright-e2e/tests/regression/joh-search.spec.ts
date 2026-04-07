@@ -36,7 +36,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
   }) => {
     await test.step("Login and clear down Wrexham schedule", async () => {
       await page.goto(config.urls.baseUrl);
-      await loginPage.login(config.users.testUser);
+      await loginPage.login("CHRISTOPHER_HALL");
       await clearDownWrexhamSchedule(
         sessionBookingPage,
         hearingSchedulePage,
@@ -256,7 +256,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
   }) => {
     await test.step("Login and clear down Wrexham schedule", async () => {
       await page.goto(config.urls.baseUrl);
-      await loginPage.login(config.users.testUser);
+      await loginPage.login("CHRISTOPHER_HALL");
       await clearDownWrexhamSchedule(
         sessionBookingPage,
         hearingSchedulePage,
