@@ -95,17 +95,7 @@ def buildPlaywrightCommand(tags) {
   return command
 }
 
-withNightlyPipeline(type, product, component, 600) {
-  loadVaultSecrets(secrets)
-  env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
-  env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
-  env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
-  enableSlackNotifications(channel)
-
-  def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
-
-  def browsers = ['chrome']
-  def testConfigs = [
+def testConfigs = [
     [name: 'UI Tests', grep: '@ui-test', skipCreateCase: 'true'],
     [name: 'Add Participant Tests', grep: '@add-participant'],
     [name: 'Case Creation Tests', grep: '@add-new-case'],
@@ -123,7 +113,16 @@ withNightlyPipeline(type, product, component, 600) {
     //
     [name: 'Combined tests', grep: '@combined'],
   ]
+withNightlyPipeline(type, product, component, 600) {
+  loadVaultSecrets(secrets)
+  env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
+  env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
+  env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
+  enableSlackNotifications(channel)
 
+  def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
+
+  def browsers = ['chrome']
   def bvtStages = browsers.collectMany { browser ->
     testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
       [
