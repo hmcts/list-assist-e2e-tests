@@ -50,6 +50,7 @@ export class HearingSchedulePage extends Base {
       hasText: "Released",
     },
   );
+  readonly listingSquareIcons = this.page.locator('div.hs-booking-shape');
   readonly rowWithHmctsCn = this.page.locator('tr[role="row"]');
   readonly addBookingButton = this.page
     .locator("div.droparea.addBooking > button.btn.text-center")
@@ -439,7 +440,7 @@ export class HearingSchedulePage extends Base {
     // Exit early if no released session is visible
      // if (!(await releasedStatusCheck.first().isVisible())) {
      //   return;
-     // }
+    // // }
 
     if (await releasedStatusCheck.first().isVisible()) {
       await releasedStatusCheck.first().click();

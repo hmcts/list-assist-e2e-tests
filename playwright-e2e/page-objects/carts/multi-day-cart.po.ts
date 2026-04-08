@@ -118,4 +118,36 @@ export class MultiDayCartPage extends Base {
   async assertLabelValue(labelLocator, expected) {
     await expect(labelLocator).toContainText(expected);
   }
+
+  async assertMultiDayCartDurations(expected: {
+    listingRequirements: string;
+    required: string;
+    listed: string;
+    currentlySelected: string;
+    remainingToAllocate: string;
+  }) {
+    const normalise = (text: string | null | undefined) =>
+        text?.replace(/\s+/g, ' ').trim() ?? '';
+
+    await expect.poll(async () =>
+        normalise(await this.listingRequirementsLabel.textContent())
+    ).toContain(expected.listingRequirements);
+
+    await expect.poll(async () =>
+        normalise(await this.requiredLabel.textContent())
+    ).toContain(expected.required);
+
+    await expect.poll(async () =>
+        normalise(await this.listedLabel.textContent())
+    ).toContain(expected.listed);
+
+    await expect.poll(async () =>
+        normalise(await this.currentlySelectedLabel.textContent())
+    ).toContain(expected.currentlySelected);
+
+    await expect.poll(async () =>
+        normalise(await this.remainingToAllocateLabel.textContent())
+    ).toContain(expected.remainingToAllocate);
+  }
+
 }

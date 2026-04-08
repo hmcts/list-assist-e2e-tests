@@ -4,10 +4,12 @@ import { clearDownSchedule } from "../../utils/reporting.utils.ts";
 import * as process from "node:process";
 
 
+
 test.describe.only("Multi-day case listing @multi-day", () => {
 
     test.slow();
     test.describe.configure({ mode: "serial" });
+
     test("Multi-day case listing and reporting @multi-day", async ({
         addNewCasePage,
         caseSearchPage,
@@ -21,20 +23,6 @@ test.describe.only("Multi-day case listing @multi-day", () => {
         page,
         loginPage
     }) => {
-        // Test data
-        const caseData = {
-            // hmctsCaseNumberHeaderValue:
-            //     addNewCasePage.CONSTANTS.HMCTS_CASE_NUMBER_HEADER_VALUE,
-            // caseNameHeaderValue: addNewCasePage.CONSTANTS.CASE_NAME_HEADER_VALUE,
-            // jurisdiction: addNewCasePage.CONSTANTS.JURISDICTION_CIVIL,
-            // service: addNewCasePage.CONSTANTS.SERVICE_DAMAGES,
-            // caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
-            // region: addNewCasePage.CONSTANTS.REGION_WALES,
-            // cluster: addNewCasePage.CONSTANTS.CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-            // hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-            hearingTypeRef: addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF,
-            // currentStatus: addNewCasePage.CONSTANTS.CURRENT_STATUS_AWAITING_LISTING,
-        };
 
         await test.step('Go to base URL', async () => {
             await page.goto(config.urls.baseUrl);
@@ -43,6 +31,7 @@ test.describe.only("Multi-day case listing @multi-day", () => {
 
 
         await test.step('Search for case and add to cart', async () => {
+
             await addNewCasePage.sidebarComponent.openSearchCasePage();
             await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
             //await caseSearchPage.searchCase("HMCTS_CN_A412AB06-2A1B-4C54-8636-26FA0E0D78DB");
@@ -65,7 +54,7 @@ test.describe.only("Multi-day case listing @multi-day", () => {
                 )
                 .toBeTruthy();
             await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
-            await caseDetailsPage.hearingTypeSelect.selectOption(caseData.hearingTypeRef);
+            await caseDetailsPage.hearingTypeSelect.selectOption(addNewCasePage.CONSTANTS.HEARING_TYPE_APPLICATION_REF);
             await listingRequirementsPage.multidayHearingHoursTextBox.fill("2");
             await listingRequirementsPage.multidayHearingDaysTextBox.fill("3");
             await caseDetailsPage.saveButton.click();
@@ -86,7 +75,6 @@ test.describe.only("Multi-day case listing @multi-day", () => {
                 sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1,
                 dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
             );
-            await page.waitForTimeout(5_000); //wait for 5 seconds to ensure schedule is cleared down before proceeding with test
         });
 
         await test.step('Create a new session with recurrence', async () => {
@@ -111,14 +99,13 @@ test.describe.only("Multi-day case listing @multi-day", () => {
                 sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
             );
             await hearingSchedulePage.saveButton.click();
-           // await hearingSchedulePage.waitForLoad();
         });
 
         await test.step('Cart all sessions', async () => {
             const cartAllSessionsButton = hearingSchedulePage.page.locator(
                 `button[title="Cart all sessions of room: ${sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1}"][aria-label="Cart all sessions of room: ${sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1}"]`,
             );
-            await expect(cartAllSessionsButton).toBeVisible();
+            await expect(cartAllSessionsButton,'Cart All Sessions button should be visible').toBeVisible();
             await cartAllSessionsButton.click();
         });
 
@@ -158,23 +145,13 @@ test.describe.only("Multi-day case listing @multi-day", () => {
             // );
 
             await multiDayCartPage.assertMultiDaysCartPageHasLoaded();
-            await page.waitForTimeout(5_000);
-
-
-            const listingRequirementsText = (await multiDayCartPage.listingRequirementsLabel.textContent())?.replace(/\s+/g, ' ');
-            expect(listingRequirementsText).toContain('Listing requirements:2 hr(s) 03 day(s) 0 week(s)');
-
-            const requiredText = (await multiDayCartPage.requiredLabel.textContent())?.replace(/\s+/g, ' ');
-            expect(requiredText).toContain('Required:4 session(s), total duration 17:00');
-
-            const listedText = (await multiDayCartPage.listedLabel.textContent())?.replace(/\s+/g, ' ');
-            expect(listedText).toContain('Listed:0 session(s), total duration 00:00');
-
-            const currentlySelectedText = (await multiDayCartPage.currentlySelectedLabel.textContent())?.replace(/\s+/g, ' ');
-            expect(currentlySelectedText).toContain('Currently selected:0 session(s), total duration 00:00');
-
-            const remainingToAllocateText = (await multiDayCartPage.remainingToAllocateLabel.textContent())?.replace(/\s+/g, ' ');
-            expect(remainingToAllocateText).toContain('Remaining to allocate:4 session(s), total duration 17:00');
+            await multiDayCartPage.assertMultiDayCartDurations({
+                listingRequirements: 'Listing requirements:2 hr(s) 03 day(s) 0 week(s)',
+                required: 'Required:4 session(s), total duration 17:00',
+                listed: 'Listed:0 session(s), total duration 00:00',
+                currentlySelected: 'Currently selected:0 session(s), total duration 00:00',
+                remainingToAllocate: 'Remaining to allocate:4 session(s), total duration 17:00',
+            });
         });
 
 
@@ -189,7 +166,7 @@ test.describe.only("Multi-day case listing @multi-day", () => {
             const pagePromise = multiDayCartPage.page.waitForEvent("popup", {
               timeout: 2000,
             });
-            //await page.pause();
+            await expect(multiDayCartPage.okbuttonOnValidationPopup, 'Validation popup OK button should be visible').toBeVisible();
             await multiDayCartPage.okbuttonOnValidationPopup.click();
 
             //listing validation popup
@@ -214,8 +191,7 @@ test.describe.only("Multi-day case listing @multi-day", () => {
         });
 
         await test.step('Assert 5 listings are present', async () => {
-            const listingSquareIcons = page.locator('div.hs-booking-shape');
-            await expect(listingSquareIcons).toHaveCount(5);
+            await expect(hearingSchedulePage.listingSquareIcons, 'Should display 5 square icons for sessions').toHaveCount(5);
         });
     });
 });
@@ -244,6 +220,7 @@ async function clearDownDarlingtCountCourtSchedule(
         sessionBookingPage.CONSTANTS
             .CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1,
         sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+
         dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
     );
 }
