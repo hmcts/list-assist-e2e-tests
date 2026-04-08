@@ -97,7 +97,7 @@ def buildPlaywrightCommand(tags) {
     return;
   }
   def tagList = tags.split(',').collect { it.trim() }
-  def command = 'playwright test'
+  def command = "playwright test --workers=${params.FUNCTIONAL_TESTS_WORKERS}"
   tagList.each { tag ->
     if (!tag.isEmpty()) {
       command += " --grep ${tag} --project ${params.browser}"
@@ -135,13 +135,13 @@ withNightlyPipeline(type, product, component, 600) {
     testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
       [
         name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test --project=${browser} --grep ${cfg.grep}",
+        command: "playwright test --project=${browser} --grep ${cfg.grep} --workers=${params.FUNCTIONAL_TESTS_WORKERS}",
         skipCreateCase: cfg.skipCreateCase
       ]
     }
   } + [
-    [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke'],
-    [name: 'Firefox - Smoke Tests', command: 'playwright test --project=firefox --grep @smoke']
+    [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke --workers=' + params.FUNCTIONAL_TESTS_WORKERS],
+    [name: 'Firefox - Smoke Tests', command: 'playwright test --project=firefox --grep @smoke --workers=' + params.FUNCTIONAL_TESTS_WORKERS]
   ]
 
   def regressionBrowsers = ['chrome']
@@ -153,7 +153,7 @@ withNightlyPipeline(type, product, component, 600) {
     regressionConfigs.collect { cfg ->
       [
         name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test ${cfg.path} --project=${browser} --grep ${cfg.grep}"
+        command: "playwright test ${cfg.path} --project=${browser} --grep ${cfg.grep} --workers=${params.FUNCTIONAL_TESTS_WORKERS}"
       ]
     }
   }
@@ -304,7 +304,7 @@ withNightlyPipeline(type, product, component, 600) {
         stage("PR: @pr-build Tagged Tests") {
           try {
             currentBuild.displayName = "PR: @pr-build Tagged Tests"
-            yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
+            yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser} --workers=${params.FUNCTIONAL_TESTS_WORKERS}")
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
           } finally {
@@ -324,7 +324,7 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: BVT Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: BVT Changed File - ${file}"
-              yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+              yarnBuilder.yarn("playwright test ${file} --project=${params.browser} --workers=${params.FUNCTIONAL_TESTS_WORKERS}")
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
             } finally {
@@ -345,7 +345,7 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: Regression Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: Regression Changed File - ${file}"
-              yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+              yarnBuilder.yarn("playwright test ${file} --project=${params.browser} --workers=${params.FUNCTIONAL_TESTS_WORKERS}")
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
             } finally {
