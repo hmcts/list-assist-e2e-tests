@@ -23,7 +23,7 @@ test.describe("Hearing channel test @hearing-channel @combined", () => {
       dataUtils,
     }) => {
       await page.goto(config.urls.baseUrl);
-      await loginPage.login("OLIVIA_CLARK");
+      await loginPage.login("PATRICK_LEWIS");
       //empties cart if there is anything present
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
 
