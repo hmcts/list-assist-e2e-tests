@@ -142,6 +142,8 @@ export class HearingSchedulePage extends Base {
 
   readonly multiDayEditTable = this.page.locator("table#vuetable");
 
+
+
   //primary filters
   //date selectors
   primaryFilterDateInput(date: string): Locator {
@@ -491,6 +493,15 @@ export class HearingSchedulePage extends Base {
         .toBeTruthy();
       await this.deleteMultiDayListingsPlaceholders();
     }
+  }
+
+  async clickCartAllSessions(room: string) {
+    const button = this.page.locator(
+        `button[title="Cart all sessions of room: ${room}"][aria-label="Cart all sessions of room: ${room}"]`
+    );
+
+    await expect(button, 'Cart All Sessions button should be visible').toBeVisible();
+    await button.click();
   }
 
   async deleteExistingMultiDayListings(): Promise<void> {

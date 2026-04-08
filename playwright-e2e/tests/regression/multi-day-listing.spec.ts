@@ -102,11 +102,9 @@ test.describe.only("Multi-day case listing @multi-day", () => {
         });
 
         await test.step('Cart all sessions', async () => {
-            const cartAllSessionsButton = hearingSchedulePage.page.locator(
-                `button[title="Cart all sessions of room: ${sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1}"][aria-label="Cart all sessions of room: ${sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1}"]`,
+            await hearingSchedulePage.clickCartAllSessions(
+                sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1
             );
-            await expect(cartAllSessionsButton,'Cart All Sessions button should be visible').toBeVisible();
-            await cartAllSessionsButton.click();
         });
 
         await test.step('Check multi-day cart is populated', async () => {
