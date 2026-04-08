@@ -97,7 +97,7 @@ def buildPlaywrightCommand(tags) {
     return;
   }
   def tagList = tags.split(',').collect { it.trim() }
-  def command = "playwright test --workers=${params.FUNCTIONAL_TESTS_WORKERS}"
+  def command = 'playwright test'
   tagList.each { tag ->
     if (!tag.isEmpty()) {
       command += " --grep ${tag} --project ${params.browser}"
@@ -117,13 +117,16 @@ withNightlyPipeline(type, product, component, 600) {
 
   def browsers = ['chrome']
   def testConfigs = [
-    [name: 'Combined stage tests', grep: '@combined'],
+    [name: 'Parallel Tests', grep: '@add-new-case|@hearing-channel|@joh-filtering'],
     [name: 'UI Tests', grep: '@ui-test'],
     [name: 'Add Participant Tests', grep: '@add-participant'],
+    // [name: 'Case Creation Tests', grep: '@add-new-case'],
     [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting'],
+    // [name: 'Hearing Channel Tests', grep: '@hearing-channel'],
     [name: 'Add new user test', grep: '@add-user', skipCreateCase: true],
     [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
     [name: 'Anonymisation tests', grep: '@anonymisation', skipCreateCase: true],
+    // [name: 'JOH filtering tests', grep: '@joh-filtering'],
 
     // Only run Amend Api Tests before listing in Chrome
     [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true],
@@ -135,13 +138,13 @@ withNightlyPipeline(type, product, component, 600) {
     testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
       [
         name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test --project=${browser} --grep ${cfg.grep} --workers=${params.FUNCTIONAL_TESTS_WORKERS}",
+        command: "playwright test --project=${browser} --grep ${cfg.grep}",
         skipCreateCase: cfg.skipCreateCase
       ]
     }
   } + [
-    [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke --workers=' + params.FUNCTIONAL_TESTS_WORKERS],
-    [name: 'Firefox - Smoke Tests', command: 'playwright test --project=firefox --grep @smoke --workers=' + params.FUNCTIONAL_TESTS_WORKERS]
+    [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke'],
+    [name: 'Firefox - Smoke Tests', command: 'playwright test --project=firefox --grep @smoke']
   ]
 
   def regressionBrowsers = ['chrome']
@@ -153,7 +156,7 @@ withNightlyPipeline(type, product, component, 600) {
     regressionConfigs.collect { cfg ->
       [
         name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test ${cfg.path} --project=${browser} --grep ${cfg.grep} --workers=${params.FUNCTIONAL_TESTS_WORKERS}"
+        command: "playwright test ${cfg.path} --project=${browser} --grep ${cfg.grep}"
       ]
     }
   }
@@ -304,7 +307,7 @@ withNightlyPipeline(type, product, component, 600) {
         stage("PR: @pr-build Tagged Tests") {
           try {
             currentBuild.displayName = "PR: @pr-build Tagged Tests"
-            yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser} --workers=${params.FUNCTIONAL_TESTS_WORKERS}")
+            yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
           } finally {
@@ -324,7 +327,7 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: BVT Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: BVT Changed File - ${file}"
-              yarnBuilder.yarn("playwright test ${file} --project=${params.browser} --workers=${params.FUNCTIONAL_TESTS_WORKERS}")
+              yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
             } finally {
@@ -345,7 +348,7 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: Regression Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: Regression Changed File - ${file}"
-              yarnBuilder.yarn("playwright test ${file} --project=${params.browser} --workers=${params.FUNCTIONAL_TESTS_WORKERS}")
+              yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
             } finally {
