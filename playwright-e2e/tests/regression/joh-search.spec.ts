@@ -13,7 +13,7 @@ test.describe.configure({ mode: "serial" });
  * - If this logic is not followed, tests may fail due to no sessions being available on weekends.
  */
 
-test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering", () => {
+test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering @combined", () => {
   test.afterEach(
     async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
       await page.goto(config.urls.baseUrl);

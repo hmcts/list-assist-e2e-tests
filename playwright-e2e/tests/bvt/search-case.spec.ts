@@ -5,7 +5,7 @@ import { config } from "../../utils";
 //   storageState: config.users.testUser.sessionFile,
 // });
 
-test.describe("Case creation @add-new-case", () => {
+test.describe("Case creation @add-new-case @combined", () => {
   test.beforeEach(async ({ page, loginPage }) => {
     await page.goto(config.urls.baseUrl);
     await loginPage.login("OLIVIA_CLARK");
