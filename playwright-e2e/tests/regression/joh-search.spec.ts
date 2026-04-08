@@ -13,7 +13,7 @@ test.describe.configure({ mode: "serial" });
  * - If this logic is not followed, tests may fail due to no sessions being available on weekends.
  */
 
-test.describe("JOH filtering in hearing sessions with Rooms View", () => {
+test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering", () => {
   test.afterEach(
     async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
       await page.goto(config.urls.baseUrl);
@@ -25,7 +25,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     },
   );
 
-  test("Filter and display JOHs correctly using inclusion and exclusion criteria @joh-filtering @combined", async ({
+  test("Filter and display JOHs correctly using inclusion and exclusion criteria", async ({
     page,
     loginPage,
     hearingSchedulePage,
@@ -136,8 +136,8 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
           async () => {
             try {
               await page
-                .locator("#advancedFilter_jurisdictionTypes_option_4")
-                .getByText("Family", { exact: true })
+                .locator('li[role="option"]')
+                .filter({ hasText: "Family" })
                 .click();
               return true;
             } catch {
