@@ -1,10 +1,6 @@
 import { expect, test } from "../../fixtures";
 import { config } from "../../utils";
 
-// test.use({
-//   storageState: config.users.testUser.sessionFile,
-// });
-
 test.describe("Case creation @add-new-case @combined", () => {
   test.beforeEach(async ({ page, loginPage }) => {
     await page.goto(config.urls.baseUrl);

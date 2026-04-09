@@ -9,10 +9,6 @@ import { clearDownSchedule } from "../../utils/reporting.utils.js";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po";
 import { config } from "../../utils";
 
-// test.use({
-//   storageState: config.users.testUser.sessionFile,
-// });
-
 test.describe("Hearing channel test @hearing-channel @combined", () => {
   test.beforeEach(
     async ({
