@@ -6,6 +6,7 @@ crash.log
 .idea/
 *.iml
 node_modules/
+.playwright-mcp
 /test-results/
 /playwright-report/
 /blob-report/
@@ -17,3 +18,4 @@ node_modules/
 .sessions/
 .prettierignore
 .prettierrc
+
