@@ -1,0 +1,193 @@
+- generic [ref=e2]:
+  - status
+  - generic [ref=e3]:
+    - banner:
+      - link "Skip to Navigation" [ref=e4] [cursor=pointer]:
+        - /url: javascript:skipToNavigationAction()
+        - generic [ref=e5]: 
+        - text: Skip to Navigation
+      - link "Skip to Content" [ref=e6] [cursor=pointer]:
+        - /url: javascript:skipToContentAction()
+        - generic [ref=e7]: 
+        - text: Skip to Content
+    - generic [ref=e8]:
+      - navigation "Sidebar menu" [ref=e9]:
+        - button "Collapse left menu" [ref=e11] [cursor=pointer]:
+          - generic [ref=e12]: 
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - link "HM Courts and Tribunals Service homepage" [ref=e16] [cursor=pointer]:
+              - /url: /casehqtraining/CMSHomeAction.do?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+              - img "HM Courts and Tribunals Service logo" [ref=e17]
+            - list [ref=e19]:
+              - listitem:
+                - link "Home":
+                  - /url: /casehqtraining/CMSHomeAction.do?showAll=false&XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                  - generic:
+                    - generic: 
+                    - generic: Home
+                  - text: 
+                - text: 
+              - listitem:
+                - link "Work History":
+                  - /url: javascript:showInIFrame('/casehqtraining/MatterWorkHistory.action','workHistory');
+                  - generic:
+                    - generic: 
+                    - generic: Work History
+                  - text: 
+                - text: 
+              - listitem:
+                - link "Search":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Search
+                  - generic: 
+                - text:     
+              - listitem:
+                - link "Participants":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Participants
+                  - generic: 
+                - text:     
+              - listitem:
+                - link "Cases":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Cases
+                  - generic: 
+                - text:       
+              - listitem:
+                - link "Hearings":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Hearings
+                  - generic: 
+                - text:                 
+              - listitem:
+                - link "Reports":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Reports
+                  - generic: 
+                - text:                                               
+              - listitem:
+                - link "Online Reports":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Online Reports
+                  - generic: 
+                - text:       
+              - listitem:
+                - link "InHearing":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: InHearing
+                  - generic: 
+                - text:   
+              - listitem:
+                - link "Administration":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Administration
+                  - generic: 
+                - text:                                                                       
+              - listitem:
+                - link "Multi Day Cart":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Multi Day Cart
+                  - generic: 
+                - text: 
+              - listitem [ref=e20]:
+                - button "Listing Cart" [disabled]:
+                  - generic:
+                    - generic: 
+                    - generic: Listing Cart
+                  - text: 
+              - listitem [ref=e21]:
+                - button "Case Cart" [disabled]:
+                  - generic:
+                    - generic: 
+                    - generic: Case Cart
+                  - text: 
+              - listitem [ref=e22]:
+                - button "Quick Listing" [disabled] [ref=e23] [cursor=pointer]:
+                  - generic [ref=e24]:
+                    - generic [ref=e25]: 
+                    - generic [ref=e26]: Quick Listing
+                  - generic [ref=e27]: 
+            - generic [ref=e28]:
+              - generic [ref=e29]: Automation Test
+              - link "Logout from sidebar menu" [ref=e31] [cursor=pointer]:
+                - /url: /casehqtraining/LogoutAction.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                - generic [ref=e32]: 
+          - generic [ref=e33]: © McGirr Technology 2026
+      - generic [ref=e34]:
+        - navigation [ref=e35]:
+          - list [ref=e36]:
+            - listitem [ref=e37]:
+              - link "Show help dialog" [ref=e38] [cursor=pointer]:
+                - /url: "#"
+                - generic [ref=e39]: 
+                - generic [ref=e40]: Help
+            - listitem [ref=e41]:
+              - link "Logout from top navigation" [ref=e42] [cursor=pointer]:
+                - /url: /casehqtraining/LogoutAction.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                - generic [ref=e43]: 
+                - generic [ref=e44]: Logout
+        - main [ref=e47]:
+          - generic [ref=e49]:
+            - generic [ref=e50]:
+              - heading [level=1]
+              - generic [ref=e51]:
+                - combobox "List of saved searches" [ref=e56]:
+                  - option "Apply a Saved Search" [selected]
+                - button "Advanced Filters" [ref=e57] [cursor=pointer]:
+                  - generic [ref=e58]: 
+                  - generic [ref=e59]: Advanced Filters
+                - button "Primary Filters" [ref=e60] [cursor=pointer]:
+                  - generic [ref=e61]: 
+                  - generic [ref=e62]: Primary Filters
+                - button "Show custom keyboard shortcuts list" [ref=e63] [cursor=pointer]:
+                  - generic [ref=e64]: 
+            - generic [ref=e70]:
+              - search "Primary filters":
+                - text:    +  +  +  + 
+                - generic:
+                  - generic:  
+              - generic [ref=e71]:
+                - tablist [ref=e74]:
+                  - tab "Rooms" [ref=e75] [cursor=pointer]
+                  - tab "Judicial Office Holders" [ref=e76] [cursor=pointer]
+                  - tab "JOH Calendar" [ref=e77] [cursor=pointer]
+                  - tab "Room Calendar" [ref=e78] [cursor=pointer]
+                - text:   
+              - generic [ref=e81]:
+                - table "Members or Rooms table":
+                  - rowgroup
+          - generic:
+            - generic: 
+          - generic:
+            - generic: 
+          - generic:
+            - generic:  
+          - generic:
+            - generic: 
+          - generic: 
+          - generic:
+            - generic:  
+            - generic: 
+            - generic: 
+      - generic:
+        - generic: 
+        - generic: 

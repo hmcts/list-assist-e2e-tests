@@ -1,0 +1,208 @@
+- generic [ref=e2]:
+  - status
+  - generic [ref=e3]:
+    - banner:
+      - link "Skip to Navigation" [ref=e4] [cursor=pointer]:
+        - /url: javascript:skipToNavigationAction()
+        - generic [ref=e5]: 
+        - text: Skip to Navigation
+      - link "Skip to Content" [ref=e6] [cursor=pointer]:
+        - /url: javascript:skipToContentAction()
+        - generic [ref=e7]: 
+        - text: Skip to Content
+    - generic [ref=e8]:
+      - navigation "Sidebar menu" [ref=e9]:
+        - button "Collapse left menu" [ref=e11] [cursor=pointer]:
+          - generic [ref=e12]: 
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - link "HM Courts and Tribunals Service homepage" [ref=e16] [cursor=pointer]:
+              - /url: /casehqtraining/CMSHomeAction.do?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+              - img "HM Courts and Tribunals Service logo" [ref=e17]
+            - list [ref=e19]:
+              - listitem:
+                - link "Home":
+                  - /url: /casehqtraining/CMSHomeAction.do?showAll=false&XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                  - generic:
+                    - generic: 
+                    - generic: Home
+                  - text: 
+                - text: 
+              - listitem:
+                - link "Work History":
+                  - /url: javascript:showInIFrame('/casehqtraining/MatterWorkHistory.action','workHistory');
+                  - generic:
+                    - generic: 
+                    - generic: Work History
+                  - text: 
+                - text: 
+              - listitem:
+                - link "Search":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Search
+                  - generic: 
+                - text:     
+              - listitem:
+                - link "Participants":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Participants
+                  - generic: 
+                - text:     
+              - listitem:
+                - link "Cases":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Cases
+                  - generic: 
+                - text:       
+              - listitem:
+                - link "Hearings":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Hearings
+                  - generic: 
+                - text:                 
+              - listitem:
+                - link "Reports":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Reports
+                  - generic: 
+                - text:                                               
+              - listitem:
+                - link "Online Reports":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Online Reports
+                  - generic: 
+                - text:       
+              - listitem:
+                - link "InHearing":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: InHearing
+                  - generic: 
+                - text:   
+              - listitem:
+                - link "Administration":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Administration
+                  - generic: 
+                - text:                                                                       
+              - listitem:
+                - link "Multi Day Cart":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Multi Day Cart
+                  - generic: 
+                - text: 
+              - listitem [ref=e20]:
+                - button "Listing Cart" [disabled]:
+                  - generic:
+                    - generic: 
+                    - generic: Listing Cart
+                  - text: 
+              - listitem [ref=e21]:
+                - button "Case Cart" [disabled]:
+                  - generic:
+                    - generic: 
+                    - generic: Case Cart
+                  - text: 
+              - listitem [ref=e22]:
+                - button "Quick Listing" [disabled] [ref=e23] [cursor=pointer]:
+                  - generic [ref=e24]:
+                    - generic [ref=e25]: 
+                    - generic [ref=e26]: Quick Listing
+                  - generic [ref=e27]: 
+            - generic [ref=e28]:
+              - generic [ref=e29]: Automation Test
+              - link "Logout from sidebar menu" [ref=e31] [cursor=pointer]:
+                - /url: /casehqtraining/LogoutAction.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                - generic [ref=e32]: 
+          - generic [ref=e33]: © McGirr Technology 2026
+      - generic [ref=e34]:
+        - navigation [ref=e35]:
+          - list [ref=e36]:
+            - listitem [ref=e37]:
+              - link "Show help dialog" [ref=e38] [cursor=pointer]:
+                - /url: "#"
+                - generic [ref=e39]: 
+                - generic [ref=e40]: Help
+            - listitem [ref=e41]:
+              - link "Logout from top navigation" [ref=e42] [cursor=pointer]:
+                - /url: /casehqtraining/LogoutAction.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                - generic [ref=e43]: 
+                - generic [ref=e44]: Logout
+        - main [ref=e47]:
+          - status [ref=e48]:
+            - img "Loading..." [ref=e50]
+          - generic [ref=e51]:
+            - generic [ref=e52]:
+              - generic [ref=e53]:
+                - heading "Welcome Automation Test" [level=1] [ref=e54]
+                - generic [ref=e55]:
+                  - generic [ref=e59]:
+                    - generic [ref=e65]: Apply a saved search
+                    - button "Manage your saved searches" [ref=e66] [cursor=pointer]:
+                      - generic [ref=e67]: 
+                  - button "Add/Remove reports to your home page" [ref=e68] [cursor=pointer]:
+                    - generic [ref=e69]: 
+              - generic [ref=e70]:
+                - generic [ref=e73]:
+                  - link "My Calendar" [ref=e77] [cursor=pointer]:
+                    - /url: /casehqtraining/vue/CalendarV2/init.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                  - link "Case Search" [ref=e81] [cursor=pointer]:
+                    - /url: /casehqtraining/LoadMatterSearch.action?timbo=sideBarMenu&XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                  - link "Add a Case" [ref=e85] [cursor=pointer]:
+                    - /url: /casehqtraining/ViewMatter.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                  - link "Hearing Schedule" [ref=e89] [cursor=pointer]:
+                    - /url: /casehqtraining/vue/Html5ResourceScheduler/init.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                  - link "Weekly Work Patterns" [ref=e93] [cursor=pointer]:
+                    - /url: /casehqtraining/vue/UserManagement/initFromUserList.action?userId=29344&selectedTab=weeklyWorkPatternTab&XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                  - link "Awaiting Listing" [ref=e97] [cursor=pointer]:
+                    - /url: /casehqtraining/vue/MatterAwaitingListSearchLoad.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                  - link "Decline Session Booking" [ref=e101] [cursor=pointer]:
+                    - /url: /casehqtraining/vue/DeclineBooking/init.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                - generic [ref=e104]:
+                  - button "Hearing Schedule" [ref=e106] [cursor=pointer]:
+                    - generic [ref=e107]: 
+                    - generic [ref=e108]: Hearing Schedule
+                  - separator [ref=e109]
+                  - text:  
+                - generic [ref=e112]:
+                  - generic [ref=e113] [cursor=pointer]:
+                    - button "Current Activities" [ref=e114]:
+                      - generic [ref=e115]: 
+                      - generic [ref=e116]: Current Activities
+                    - link "0 overdue" [ref=e117]:
+                      - /url: "#"
+                  - separator [ref=e118]
+                  - text: 
+                - generic [ref=e121]:
+                  - button "Reports" [ref=e123] [cursor=pointer]:
+                    - generic [ref=e124]: 
+                    - generic [ref=e125]: Reports
+                  - separator [ref=e126]
+                  - text: 
+            - generic: 
+            - generic: 
+            - generic: 
+            - generic: 
+            - generic:
+              - generic:  +  +  +  +  +  +  +  +  +  +     + 
+              - generic: 
+      - generic:
+        - generic: 
+        - generic: 

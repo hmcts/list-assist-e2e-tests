@@ -1,0 +1,1510 @@
+- generic [ref=e2]:
+  - status
+  - generic [ref=e3]:
+    - banner:
+      - link "Skip to Navigation" [ref=e4] [cursor=pointer]:
+        - /url: javascript:skipToNavigationAction()
+        - generic [ref=e5]: 
+        - text: Skip to Navigation
+      - link "Skip to Content" [ref=e6] [cursor=pointer]:
+        - /url: javascript:skipToContentAction()
+        - generic [ref=e7]: 
+        - text: Skip to Content
+    - generic [ref=e8]:
+      - navigation "Sidebar menu" [ref=e9]:
+        - button "Collapse left menu" [ref=e11] [cursor=pointer]:
+          - generic [ref=e12]: 
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - link "HM Courts and Tribunals Service homepage" [ref=e16] [cursor=pointer]:
+              - /url: /casehqtraining/CMSHomeAction.do?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+              - img "HM Courts and Tribunals Service logo" [ref=e17]
+            - list [ref=e19]:
+              - listitem:
+                - link "Home":
+                  - /url: /casehqtraining/CMSHomeAction.do?showAll=false&XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                  - generic:
+                    - generic: 
+                    - generic: Home
+                  - text: 
+                - text: 
+              - listitem:
+                - link "Work History":
+                  - /url: javascript:showInIFrame('/casehqtraining/MatterWorkHistory.action','workHistory');
+                  - generic:
+                    - generic: 
+                    - generic: Work History
+                  - text: 
+                - text: 
+              - listitem:
+                - link "Search":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Search
+                  - generic: 
+                - text:     
+              - listitem:
+                - link "Participants":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Participants
+                  - generic: 
+                - text:     
+              - listitem:
+                - link "Cases":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Cases
+                  - generic: 
+                - text:       
+              - listitem:
+                - link "Hearings":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Hearings
+                  - generic: 
+                - text:                 
+              - listitem:
+                - link "Reports":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Reports
+                  - generic: 
+                - text:                                               
+              - listitem:
+                - link "Online Reports":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Online Reports
+                  - generic: 
+                - text:       
+              - listitem:
+                - link "InHearing":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: InHearing
+                  - generic: 
+                - text:   
+              - listitem:
+                - link "Administration":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Administration
+                  - generic: 
+                - text:                                                                       
+              - listitem:
+                - link "Multi Day Cart":
+                  - /url: javascript:;
+                  - generic:
+                    - generic: 
+                    - generic: Multi Day Cart
+                  - generic: 
+                - text: 
+              - listitem [ref=e20]:
+                - button "Listing Cart" [disabled]:
+                  - generic:
+                    - generic: 
+                    - generic: Listing Cart
+                  - text: 
+              - listitem [ref=e21]:
+                - button "Case Cart" [disabled]:
+                  - generic:
+                    - generic: 
+                    - generic: Case Cart
+                  - text: 
+              - listitem [ref=e22]:
+                - button "Quick Listing" [disabled] [ref=e23] [cursor=pointer]:
+                  - generic [ref=e24]:
+                    - generic [ref=e25]: 
+                    - generic [ref=e26]: Quick Listing
+                  - generic [ref=e27]: 
+            - generic [ref=e28]:
+              - generic [ref=e29]: Automation Test
+              - link "Logout from sidebar menu" [ref=e31] [cursor=pointer]:
+                - /url: /casehqtraining/LogoutAction.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                - generic [ref=e32]: 
+          - generic [ref=e33]: © McGirr Technology 2026
+      - generic [ref=e34]:
+        - navigation [ref=e35]:
+          - list [ref=e36]:
+            - listitem [ref=e37]:
+              - link "Show help dialog" [ref=e38] [cursor=pointer]:
+                - /url: "#"
+                - generic [ref=e39]: 
+                - generic [ref=e40]: Help
+            - listitem [ref=e41]:
+              - link "Logout from top navigation" [ref=e42] [cursor=pointer]:
+                - /url: /casehqtraining/LogoutAction.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                - generic [ref=e43]: 
+                - generic [ref=e44]: Logout
+        - generic [ref=e47]:
+          - table [ref=e48]:
+            - rowgroup [ref=e49]:
+              - row "Session Booking" [ref=e50]:
+                - cell "Session Booking" [ref=e51]:
+                  - generic [ref=e52]: Session Booking
+                - cell [ref=e53]
+          - generic [ref=e54]:
+            - heading "Session Booking Details" [level=2] [ref=e56]
+            - generic [ref=e58]:
+              - generic [ref=e59]:
+                - generic [ref=e60]:
+                  - generic [ref=e61]:
+                    - text: "Date:"
+                    - generic [ref=e62]: DD-MM-YYYY
+                    - generic [ref=e63]: This field is required
+                  - generic [ref=e64]:
+                    - generic [ref=e65]:
+                      - textbox "Date DD-MM-YYYY This field is required" [ref=e66]:
+                        - /placeholder: DD-MM-YYYY
+                        - text: 09-04-2026
+                      - generic [ref=e68] [cursor=pointer]: 
+                    - text: "*"
+                    - generic [ref=e69]:
+                      - checkbox "Recurrence" [ref=e70] [cursor=pointer]
+                      - generic [ref=e71]: Recurrence
+                - text: 
+                - generic [ref=e72]:
+                  - generic [ref=e73]:
+                    - text: "Start Time:"
+                    - generic [ref=e74]: HH:MM
+                    - generic [ref=e75]: This field is required
+                  - generic [ref=e76]:
+                    - combobox "Start Time HH:MM This field is required" [ref=e77]:
+                      - option "Please Choose..."
+                      - option "08:00"
+                      - option "08:05"
+                      - option "08:10"
+                      - option "08:15"
+                      - option "08:20"
+                      - option "08:25"
+                      - option "08:30"
+                      - option "08:35"
+                      - option "08:40"
+                      - option "08:45"
+                      - option "08:50"
+                      - option "08:55"
+                      - option "09:00"
+                      - option "09:05"
+                      - option "09:10"
+                      - option "09:15"
+                      - option "09:20"
+                      - option "09:25"
+                      - option "09:30"
+                      - option "09:35"
+                      - option "09:40"
+                      - option "09:45"
+                      - option "09:50"
+                      - option "09:55"
+                      - option "10:00" [selected]
+                      - option "10:05"
+                      - option "10:10"
+                      - option "10:15"
+                      - option "10:20"
+                      - option "10:25"
+                      - option "10:30"
+                      - option "10:35"
+                      - option "10:40"
+                      - option "10:45"
+                      - option "10:50"
+                      - option "10:55"
+                      - option "11:00"
+                      - option "11:05"
+                      - option "11:10"
+                      - option "11:15"
+                      - option "11:20"
+                      - option "11:25"
+                      - option "11:30"
+                      - option "11:35"
+                      - option "11:40"
+                      - option "11:45"
+                      - option "11:50"
+                      - option "11:55"
+                      - option "12:00"
+                      - option "12:05"
+                      - option "12:10"
+                      - option "12:15"
+                      - option "12:20"
+                      - option "12:25"
+                      - option "12:30"
+                      - option "12:35"
+                      - option "12:40"
+                      - option "12:45"
+                      - option "12:50"
+                      - option "12:55"
+                      - option "13:00"
+                      - option "13:05"
+                      - option "13:10"
+                      - option "13:15"
+                      - option "13:20"
+                      - option "13:25"
+                      - option "13:30"
+                      - option "13:35"
+                      - option "13:40"
+                      - option "13:45"
+                      - option "13:50"
+                      - option "13:55"
+                      - option "14:00"
+                      - option "14:05"
+                      - option "14:10"
+                      - option "14:15"
+                      - option "14:20"
+                      - option "14:25"
+                      - option "14:30"
+                      - option "14:35"
+                      - option "14:40"
+                      - option "14:45"
+                      - option "14:50"
+                      - option "14:55"
+                      - option "15:00"
+                      - option "15:05"
+                      - option "15:10"
+                      - option "15:15"
+                      - option "15:20"
+                      - option "15:25"
+                      - option "15:30"
+                      - option "15:35"
+                      - option "15:40"
+                      - option "15:45"
+                      - option "15:50"
+                      - option "15:55"
+                      - option "16:00"
+                      - option "16:05"
+                      - option "16:10"
+                      - option "16:15"
+                      - option "16:20"
+                      - option "16:25"
+                      - option "16:30"
+                      - option "16:35"
+                      - option "16:40"
+                      - option "16:45"
+                      - option "16:50"
+                      - option "16:55"
+                      - option "17:00"
+                      - option "17:05"
+                      - option "17:10"
+                      - option "17:15"
+                      - option "17:20"
+                      - option "17:25"
+                      - option "17:30"
+                      - option "17:35"
+                      - option "17:40"
+                      - option "17:45"
+                      - option "17:50"
+                      - option "17:55"
+                      - option "18:00"
+                      - option "18:05"
+                      - option "18:10"
+                      - option "18:15"
+                      - option "18:20"
+                      - option "18:25"
+                      - option "18:30"
+                      - option "18:35"
+                      - option "18:40"
+                      - option "18:45"
+                    - text: "*"
+                - generic [ref=e78]:
+                  - generic [ref=e79]:
+                    - text: "End Time:"
+                    - generic [ref=e80]: HH:MM
+                    - generic [ref=e81]: This field is required
+                  - generic [ref=e82]:
+                    - combobox "End Time HH:MM This field is required" [ref=e83]:
+                      - option "Please Choose..."
+                      - option "08:00"
+                      - option "08:05"
+                      - option "08:10"
+                      - option "08:15"
+                      - option "08:20"
+                      - option "08:25"
+                      - option "08:30"
+                      - option "08:35"
+                      - option "08:40"
+                      - option "08:45"
+                      - option "08:50"
+                      - option "08:55"
+                      - option "09:00"
+                      - option "09:05"
+                      - option "09:10"
+                      - option "09:15"
+                      - option "09:20"
+                      - option "09:25"
+                      - option "09:30"
+                      - option "09:35"
+                      - option "09:40"
+                      - option "09:45"
+                      - option "09:50"
+                      - option "09:55"
+                      - option "10:00"
+                      - option "10:05"
+                      - option "10:10"
+                      - option "10:15"
+                      - option "10:20"
+                      - option "10:25"
+                      - option "10:30"
+                      - option "10:35"
+                      - option "10:40"
+                      - option "10:45"
+                      - option "10:50"
+                      - option "10:55"
+                      - option "11:00"
+                      - option "11:05"
+                      - option "11:10"
+                      - option "11:15"
+                      - option "11:20"
+                      - option "11:25"
+                      - option "11:30"
+                      - option "11:35"
+                      - option "11:40"
+                      - option "11:45"
+                      - option "11:50"
+                      - option "11:55"
+                      - option "12:00"
+                      - option "12:05"
+                      - option "12:10"
+                      - option "12:15"
+                      - option "12:20"
+                      - option "12:25"
+                      - option "12:30"
+                      - option "12:35"
+                      - option "12:40"
+                      - option "12:45"
+                      - option "12:50"
+                      - option "12:55"
+                      - option "13:00"
+                      - option "13:05"
+                      - option "13:10"
+                      - option "13:15"
+                      - option "13:20"
+                      - option "13:25"
+                      - option "13:30"
+                      - option "13:35"
+                      - option "13:40"
+                      - option "13:45"
+                      - option "13:50"
+                      - option "13:55"
+                      - option "14:00"
+                      - option "14:05"
+                      - option "14:10"
+                      - option "14:15"
+                      - option "14:20"
+                      - option "14:25"
+                      - option "14:30"
+                      - option "14:35"
+                      - option "14:40"
+                      - option "14:45"
+                      - option "14:50"
+                      - option "14:55"
+                      - option "15:00"
+                      - option "15:05"
+                      - option "15:10"
+                      - option "15:15"
+                      - option "15:20"
+                      - option "15:25"
+                      - option "15:30"
+                      - option "15:35"
+                      - option "15:40"
+                      - option "15:45"
+                      - option "15:50"
+                      - option "15:55"
+                      - option "16:00" [selected]
+                      - option "16:05"
+                      - option "16:10"
+                      - option "16:15"
+                      - option "16:20"
+                      - option "16:25"
+                      - option "16:30"
+                      - option "16:35"
+                      - option "16:40"
+                      - option "16:45"
+                      - option "16:50"
+                      - option "16:55"
+                      - option "17:00"
+                      - option "17:05"
+                      - option "17:10"
+                      - option "17:15"
+                      - option "17:20"
+                      - option "17:25"
+                      - option "17:30"
+                      - option "17:35"
+                      - option "17:40"
+                      - option "17:45"
+                      - option "17:50"
+                      - option "17:55"
+                      - option "18:00"
+                      - option "18:05"
+                      - option "18:10"
+                      - option "18:15"
+                      - option "18:20"
+                      - option "18:25"
+                      - option "18:30"
+                      - option "18:35"
+                      - option "18:40"
+                      - option "18:45"
+                    - text: "*"
+                - generic [ref=e84]:
+                  - generic [ref=e85]: "Sessions:"
+                  - generic [ref=e86]:
+                    - paragraph
+                - generic [ref=e87]:
+                  - generic [ref=e88]:
+                    - text: "Locality:"
+                    - generic [ref=e89]: This field is required
+                  - generic [ref=e90]:
+                    - generic [ref=e91]:
+                      - 'combobox "Locality: This field is required" [ref=e92]':
+                        - option "Please Choose..."
+                        - option "Aberdeen Tribunal Hearing Centre"
+                        - option "Aberystwyth Justice Centre"
+                        - option "Aldershot Justice Centre"
+                        - option "Alloa Sheriff Court"
+                        - option "Ashford Tribunal Hearing Centre"
+                        - option "Ayr Social Security and Child Support Tribunal"
+                        - option "Barkingside Magistrates' Court"
+                        - option "Barnet County Court"
+                        - option "Barnsley Law Courts"
+                        - option "Barnstaple Magistrates' , County and Family Court"
+                        - option "Barrow-in-Furness Magistrates' and County Court"
+                        - option "Basildon Combined Court"
+                        - option "Basildon Magistrates' Court and Family Court"
+                        - option "Basingstoke Magistrates and County Court"
+                        - option "BAT Venue 15012026"
+                        - option "Bath Law Courts"
+                        - option "Bedford County Court"
+                        - option "Belfast Laganside Court"
+                        - option "Belfast RCJ"
+                        - option "Berwick upon Tweed Magistrates' Court"
+                        - option "Beverley Magistrates' Court and Hearing Centre"
+                        - option "Bexley Magistrates' Court"
+                        - option "Birkenhead County Court"
+                        - option "Birmingham Civil Justice Centre"
+                        - option "Birmingham Employment Tribunal (Midlands West)"
+                        - option "Birmingham SSCS Tribunal"
+                        - option "Blackburn Family Court"
+                        - option "Blackburn Social Security and Child Support Tribunal"
+                        - option "Blackpool Family Court"
+                        - option "Blackpool Magistrates' and Civil Court"
+                        - option "Blackpool Tribunal Venue"
+                        - option "Blackwood Civil and Family Court"
+                        - option "Bodmin Law Courts"
+                        - option "Bolton Social Security and Child Support Tribunal"
+                        - option "Boston Magistrates' and County Court"
+                        - option "Bournemouth Combined Court"
+                        - option "Bradford and Keighley Magistrates' Court"
+                        - option "Bradford Combined Court"
+                        - option "Bradford Tribunal Hearing Centre"
+                        - option "Brentford County Court"
+                        - option "Bridlington Magistrates' Court and Hearing Centre"
+                        - option "Brighton County Court"
+                        - option "Brighton Family Centre / Hearing Centre"
+                        - option "Brighton Magistrates' Court"
+                        - option "Brighton Tribunal Hearing Centre"
+                        - option "Bristol Civil Justice Centre"
+                        - option "Bristol Crown Court"
+                        - option "Bristol Magistrates' Court"
+                        - option "Bromley County Court"
+                        - option "Bromley Magistrates' Court"
+                        - option "Burnley Combined Court Centre"
+                        - option "Burnley Social Security and Child Support Tribunal(St James' House)"
+                        - option "Bury St Edmunds County Court and Family Court"
+                        - option "Caernarfon Justice Centre"
+                        - option "Cambridge County Court"
+                        - option "Cambridge Magistrates' Court"
+                        - option "Canterbury Combined Court"
+                        - option "Canterbury Magistrates' Court"
+                        - option "Cardiff Civil and Family Justice Centre"
+                        - option "Cardiff Crown Court"
+                        - option "Cardiff Magistrates' Court"
+                        - option "Cardiff Social Security & Child Support Tribunal"
+                        - option "Carlisle Combined Court"
+                        - option "Carlisle Magistrates' Court"
+                        - option "Carmarthen County Court and Family Court"
+                        - option "Central Family Court"
+                        - option "Chelmsford County and Family Court"
+                        - option "Chelmsford Crown Court"
+                        - option "Chelmsford Magistrates' Court and Family Court"
+                        - option "Cheltenham Magistrates' Court"
+                        - option "Chester Civil and Family Justice Centre"
+                        - option "Chesterfield Justice Centre"
+                        - option "City of London Magistrates' Court"
+                        - option "Clerkenwell and Shoreditch County and Family Court"
+                        - option "Colchester Magistrates' Court and Family Court"
+                        - option "Coventry Combined Court"
+                        - option "Coventry Magistrates' Court"
+                        - option "Crawley Magistrates' Court"
+                        - option "Crewe Magistrates & County Court"
+                        - option "Croydon Combined Court"
+                        - option "Croydon Magistrates' Court"
+                        - option "Croydon Nightingale Court"
+                        - option "Darlington County Court and Family Court"
+                        - option "Darlington Magistrates' Court"
+                        - option "Dartford County Court and Family Court"
+                        - option "Derby Combined Court"
+                        - option "Derby Magistrates' Court"
+                        - option "Doncaster Justice Centre South"
+                        - option "Dudley Magistrates' and County Court"
+                        - option "Dundee Tribunal Hearing Centre"
+                        - option "Dunfermline SSCS Venue"
+                        - option "Durham County Court and Family Court"
+                        - option "East London Family Court"
+                        - option "East London Tribunal Hearing Centre (Import Building)"
+                        - option "Edinburgh Social Security and Child Support Tribunal"
+                        - option "Edmonton County Court"
+                        - option "Enfield Social Security and Child Support Tribunal"
+                        - option "ET National"
+                        - option "Exeter Law Courts"
+                        - option "Exeter Tribunals - Keble House"
+                        - option "Field House Tribunal Hearing Centre"
+                        - option "Fleetwood Magistrates' Court"
+                        - option "Fox Court Social Security and Child Support Tribunal"
+                        - option "Gateshead Law Courts"
+                        - option "Glasgow Tribunals Centre"
+                        - option "Gloucester Crown Court"
+                        - option "Gloucestershire County Court"
+                        - option "Great Grimsby Combined Court Centre"
+                        - option "Great Yarmouth Magistrates' Court and Family Court"
+                        - option "Greenock SSCS Venue"
+                        - option "Grimsby Magistrates' Court and Family Court"
+                        - option "Guildford Magistrates and County Court"
+                        - option "Hamilton Social Security and Child Support Tribunal"
+                        - option "Harmondsworth Tribunal Hearing Centre"
+                        - option "Harrogate Justice Centre"
+                        - option "Hastings Law Courts"
+                        - option "Hatton Cross Tribunal Hearing Centre"
+                        - option "Havant Justice Centre"
+                        - option "Haverfordwest County and Family Court"
+                        - option "Hendon Magistrates Court"
+                        - option "Hereford Justice Centre"
+                        - option "Hertford County Court"
+                        - option "High Wycombe Magistrates' and County Court"
+                        - option "Horsham Magistrates' and County Court"
+                        - option "Hove Trial Centre"
+                        - option "Huddersfield County Court"
+                        - option "Hull and Holderness Magistrates' Court and Hearing Centre"
+                        - option "Huntingdon Law Courts"
+                        - option "IAC National (Virtual)"
+                        - option "Inverness Social Security and Child Support Tribunal (Inverness Justice Centre)"
+                        - option "Ipswich County Court and Family Hearing Centre"
+                        - option "Ipswich Magistrates' Court"
+                        - option "Isle of Wight Combined Court"
+                        - option "Kidderminster Magistrates' Court"
+                        - option "Kings Lynn Magistrates' Court and Family Court"
+                        - option "Kingston Upon Thames County Court"
+                        - option "Kingston-Upon-Hull Combined Court"
+                        - option "Kirkcaldy SSCS Venue"
+                        - option "Kirklees Magistrates' Court"
+                        - option "Lancaster Magistrates and County Court"
+                        - option "Leeds Combined Court"
+                        - option "Leeds Family and Magistrates' Court"
+                        - option "Leeds Social Security and Child Support Tribunal"
+                        - option "Leeds Tribunal Business & Property Court"
+                        - option "Leicester Combined Court"
+                        - option "Leicester Magistrates Court"
+                        - option "Leicester Tribunal Hearing Centre"
+                        - option "Lewes Combined Court Centre"
+                        - option "Lewis SSCS Venue"
+                        - option "Leyland Family Hearing Centre"
+                        - option "Lincoln County Court"
+                        - option "Lincoln Magistrates' Court"
+                        - option "Liverpool Civil and Family Court"
+                        - option "Liverpool Queen Elizabeth II Law Courts"
+                        - option "Liverpool SSCS Tribunal"
+                        - option "Llandrindod Wells Magistrates' and Family Court"
+                        - option "Llandudno Magistrates' Court"
+                        - option "Llanelli Law Courts"
+                        - option "London Tribunals Centre"
+                        - option "Loughborough Magistrates' Court"
+                        - option "Luton Justice Centre"
+                        - option "Luton Magistrates' Court"
+                        - option "Maidstone Combined Court Centre"
+                        - option "Maidstone Magistrates' Court"
+                        - option "Manchester & Salford Magistrates' Court"
+                        - option "Manchester Civil Justice Centre"
+                        - option "Manchester Crown Court (Crown Square)"
+                        - option "Manchester Crown Court (Minshull St)"
+                        - option "Manchester Employment Tribunal"
+                        - option "Manchester Tribunal Hearing Centre - Piccadilly Exchange"
+                        - option "Mansfield Magistrates' and County Court"
+                        - option "Margate Magistrates' and Thanet County Court"
+                        - option "Mayor's and City of London Court"
+                        - option "Medway Civil & Family / County Court"
+                        - option "Medway Magistrates' Court"
+                        - option "Merthyr Tydfil Combined Court Centre"
+                        - option "Mid and South East Northumberland Law Courts"
+                        - option "Milton Keynes County and Family Court"
+                        - option "Milton Keynes Magistrates Court and Family Court"
+                        - option "Mold Justice Centre"
+                        - option "Newcastle Civil & Family Courts and Tribunals Centre"
+                        - option "Newcastle Moot Hall"
+                        - option "Newcastle upon Tyne Crown Court and Magistrates' Court"
+                        - option "Newport (South Wales) County Court and Family Court"
+                        - option "Newport (South Wales) Immigration and Asylum Tribunal"
+                        - option "Newport (South Wales) Magistrates' Court"
+                        - option "Newton Abbot Magistrates' Court"
+                        - option "Newton Aycliffe Magistrates' Court"
+                        - option "North Shields County Court and Family Court"
+                        - option "North Somerset Court House"
+                        - option "North Staffordshire Justice Centre"
+                        - option "North Tyneside Magistrates' Court"
+                        - option "Northampton County Court"
+                        - option "Northampton Magistrates' Court"
+                        - option "Northampton Social Security and Child Support Tribunal (St Katherine's House)"
+                        - option "Norwich Combined Court Centre"
+                        - option "Norwich Magistrates' Court"
+                        - option "Norwich SSCS Tribunal"
+                        - option "Nottingham Crown and County Court"
+                        - option "Nottingham Justice Centre"
+                        - option "Nuneaton County Court"
+                        - option "Oban SSCS Venue"
+                        - option "Oxford Combined Court Centre"
+                        - option "Oxford Magistrates' Court"
+                        - option "Peterborough Combined Court"
+                        - option "Peterborough Magistrates' Court"
+                        - option "Peterlee Magistrates' Court"
+                        - option "Plymouth Combined Court"
+                        - option "Plymouth Magistrates' Court"
+                        - option "Plymouth St Catherine's House - Plymouth Tribunal"
+                        - option "Pontypridd County Court and Family Court"
+                        - option "Poole Magistrates' Court"
+                        - option "Port Talbot Justice Centre"
+                        - option "Portsmouth Combined Court Centre"
+                        - option "Portsmouth Magistrates Court"
+                        - option "Prestatyn Justice Centre"
+                        - option "Preston Combined Court"
+                        - option "Preston Crown Court and Family Court"
+                        - option "Preston Magistrates' Court"
+                        - option "Reading County and Family Court"
+                        - option "Reading Magistrates' Court"
+                        - option "Redditch Magistrates' Court"
+                        - option "Reedley Family Hearing Centre"
+                        - option "Rochdale Social Security and Child Support Tribunal"
+                        - option "Romford County Court"
+                        - option "Romford Magistrates' Court"
+                        - option "Royal Courts of Justice"
+                        - option "Salisbury Law Courts"
+                        - option "Scarborough Justice Centre"
+                        - option "Sevenoaks Magistrates' Court"
+                        - option "Sheffield Combined Court Centre"
+                        - option "Sheffield Designated Family Court"
+                        - option "Sheffield Magistrates' Court"
+                        - option "Shrewsbury Crown Court"
+                        - option "Skipton Magistrates' and County Court"
+                        - option "Slough County and Family Court"
+                        - option "South Shields Combined Court"
+                        - option "Southampton Combined Court Centre"
+                        - option "Southampton Magistrates' Court"
+                        - option "Southampton Western Range/Barrack Block"
+                        - option "Southend County Court and Family Court"
+                        - option "St Helens County Court and Family Court"
+                        - option "Stafford Combined Court"
+                        - option "Staines Magistrates and County Court"
+                        - option "Stevenage Magistrates' Court"
+                        - option "Stirling Tribunal Hearing Centre"
+                        - option "Stockport Magistrates' and County Court"
+                        - option "Stoke on Trent Combined Court"
+                        - option "Stratford Magistrates' Court"
+                        - option "Sunderland Courts and Tribunal Centre"
+                        - option "Sutton SSCS Tribunal"
+                        - option "Swansea Civil Justice Centre"
+                        - option "Swansea Magistrates' Court"
+                        - option "Swindon Combined Court"
+                        - option "Swindon Magistrates' Court"
+                        - option "Taunton Combined Court"
+                        - option "Taunton Magistrates' Court"
+                        - option "Taylor House Tribunal Hearing Centre"
+                        - option "Teesside Combined Court Centre"
+                        - option "Teesside Magistrates' Court"
+                        - option "Telford Justice Centre"
+                        - option "Telford Justice Centre - Annex"
+                        - option "Torquay and Newton Abbot County and Family Court"
+                        - option "Truro Combined Court"
+                        - option "Truro Magistrates' Court"
+                        - option "Uxbridge County Court and Family Court"
+                        - option "Uxbridge Magistrates' Court"
+                        - option "Wakefield Civil Justice Centre"
+                        - option "Walsall County Court"
+                        - option "Walsall Magistrates' Court"
+                        - option "Wandsworth County Court and Family Court"
+                        - option "Warwick Justice Centre"
+                        - option "Watford County Court"
+                        - option "Watford Tribunal Hearing Centre"
+                        - option "Wellingborough Magistrates' Court"
+                        - option "Welshpool Magistrates' Court"
+                        - option "West Cumbria Courthouse"
+                        - option "West London Family Court"
+                        - option "Westminster Magistrates' Court"
+                        - option "Weymouth Combined Court"
+                        - option "Wigan and Leigh Magistrates' and County Court"
+                        - option "Willesden County Court and Family Court"
+                        - option "Winchester Combined Court Centre"
+                        - option "Wolverhampton Combined Court"
+                        - option "Wolverhampton Magistrates' Court"
+                        - option "Wolverhampton Social Security and Child Support Tribunal"
+                        - option "Worcester Combined Court"
+                        - option "Worcester Justice Centre"
+                        - option "Worthing Magistrates' and County Court"
+                        - option "Wrexham County and Family Court" [selected]
+                        - option "Yarl's Wood Immigration and Asylum Hearing Centre"
+                        - option "Yeovil Law Courts"
+                        - option "York County Court"
+                        - option "York Magistrates' Court"
+                      - button "Wrexham County and Family Court" [ref=e93] [cursor=pointer]:
+                        - generic [ref=e96]: Wrexham County and Family Court
+                    - text: "*"
+                - generic [ref=e97]:
+                  - generic [ref=e98]:
+                    - text: "Location:"
+                    - generic [ref=e99]: This field is required
+                  - generic [ref=e100]:
+                    - generic [ref=e101]:
+                      - combobox "Location This field is required" [ref=e102]:
+                        - option "Please Choose..."
+                        - option "Wrexham Counter"
+                        - option "Wrexham Courtroom 01" [selected]
+                        - option "Wrexham Courtroom 02"
+                        - option "Wrexham Courtroom 03"
+                        - option "Wrexham Courtroom 04"
+                        - option "Wrexham Courtroom 05"
+                        - option "Wrexham Courtroom 06"
+                        - option "Wrexham CVP Room"
+                        - option "Wrexham Fines Room"
+                        - option "Wrexham Remote 01"
+                        - option "Wrexham Remote 02"
+                        - option "Wrexham Remote 03"
+                        - option "Wrexham Remote 04"
+                        - option "Wrexham sitting at Aberystwyth"
+                        - option "Wrexham sitting at Blackwood"
+                        - option "Wrexham sitting at Caernarfon County Court"
+                        - option "Wrexham sitting at Cardiff"
+                        - option "Wrexham sitting at Carmarthen"
+                        - option "Wrexham sitting at Haverfordwest"
+                        - option "Wrexham sitting at Llandudno Magistrates' Court"
+                        - option "Wrexham sitting at Llanelli"
+                        - option "Wrexham sitting at Merthyr Tydfil"
+                        - option "Wrexham sitting at Mold"
+                        - option "Wrexham sitting at Newport"
+                        - option "Wrexham sitting at Pontypridd"
+                        - option "Wrexham sitting at Port Talbot"
+                        - option "Wrexham sitting at Prestatyn"
+                        - option "Wrexham sitting at Swansea"
+                      - button "Wrexham Courtroom 01" [ref=e103] [cursor=pointer]:
+                        - generic [ref=e106]: Wrexham Courtroom 01
+                    - text: "*"
+                - generic [ref=e107]:
+                  - generic [ref=e108]: Break?
+                  - generic [ref=e109]:
+                    - button "Add a session break" [ref=e110] [cursor=pointer]: Add Break
+                    - button "Add an overlapping session" [ref=e111] [cursor=pointer]: Overlapping Session
+                - generic [ref=e112]:
+                  - generic [ref=e113]: "Multiple Linked Rooms:"
+                  - generic [ref=e114]:
+                    - button "Room Search" [ref=e115] [cursor=pointer]
+                    - button "Portable Equipment Search" [ref=e116] [cursor=pointer]
+                - generic [ref=e117]:
+                  - generic [ref=e118]: "Jurisdiction:"
+                  - combobox "Jurisdiction" [ref=e120]:
+                    - option "Please Choose..." [selected]
+                    - option "Civil"
+                    - option "Family"
+                    - option "Social Entitlement Chamber"
+                - generic [ref=e121]:
+                  - generic [ref=e122]:
+                    - text: "Session Status:"
+                    - generic [ref=e123]: This field is required
+                  - generic [ref=e124]:
+                    - combobox "Session Status This field is required" [ref=e125]:
+                      - option "Please Choose..."
+                      - option "Draft"
+                      - option "Approved"
+                      - option "Released" [selected]
+                      - option "Actuals"
+                    - text: "*"
+                - generic [ref=e126]:
+                  - generic [ref=e127]: "Session Type:"
+                  - combobox "Session Type" [ref=e129]:
+                    - option "Please Choose..." [selected]
+                    - option "SSCS 02 AM"
+                    - option "SSCS 01 AM"
+                    - option "SSCS 01 PM"
+                    - option "SSCS 02 PM"
+                    - option "SSCS 03 AM"
+                    - option "SSCS 03 PM"
+                    - option "SSCS 04 AM"
+                    - option "SSCS 04 PM"
+                    - option "SSCS 05 AM"
+                    - option "SSCS 05 PM"
+                    - option "SSCS 07 AM"
+                    - option "SSCS 06 PM"
+                    - option "SSCS 06 AM"
+                    - option "SSCS 07 PM"
+                    - option "SSCS 08 AM"
+                    - option "SSCS 08 PM"
+                - generic [ref=e130]:
+                  - generic [ref=e131]: "Service:"
+                  - combobox "Service:" [ref=e133]:
+                    - option "Please Choose..." [selected]
+                - generic [ref=e134]:
+                  - generic [ref=e135]: "Overbooking Allowed:"
+                  - checkbox "Overbooking Allowed" [ref=e137]
+                  - generic [ref=e138]: "Listing Limit (Max. Cases):"
+                  - textbox "Listing Limit (Max. Cases):" [disabled] [ref=e140]
+                  - generic [ref=e141]: "Percentage Limit:"
+                  - textbox "Percentage Limit:" [disabled] [ref=e143]
+                - generic [ref=e144]:
+                  - generic [ref=e145]: "Group Booking:"
+                  - checkbox "Group Booking" [ref=e147]
+                - generic [ref=e148]:
+                  - generic [ref=e149]:
+                    - text: "Default Listing Duration (hours):"
+                    - generic [ref=e150]: This field is required
+                  - generic [ref=e151]:
+                    - combobox "Default Listing Duration (hours) This field is required" [ref=e152]:
+                      - option "Please Choose..." [selected]
+                      - option "0:05"
+                      - option "0:10"
+                      - option "0:15"
+                      - option "0:20"
+                      - option "0:25"
+                      - option "0:30"
+                      - option "0:35"
+                      - option "0:40"
+                      - option "0:45"
+                      - option "0:50"
+                      - option "0:55"
+                      - option "1:00"
+                      - option "1:05"
+                      - option "1:10"
+                      - option "1:15"
+                      - option "1:20"
+                      - option "1:25"
+                      - option "1:30"
+                      - option "1:35"
+                      - option "1:40"
+                      - option "1:45"
+                      - option "1:50"
+                      - option "1:55"
+                      - option "2:00"
+                      - option "2:05"
+                      - option "2:10"
+                      - option "2:15"
+                      - option "2:20"
+                      - option "2:25"
+                      - option "2:30"
+                      - option "2:35"
+                      - option "2:40"
+                      - option "2:45"
+                      - option "2:50"
+                      - option "2:55"
+                      - option "3:00"
+                      - option "3:05"
+                      - option "3:10"
+                      - option "3:15"
+                      - option "3:20"
+                      - option "3:25"
+                      - option "3:30"
+                      - option "3:35"
+                      - option "3:40"
+                      - option "3:45"
+                      - option "3:50"
+                      - option "3:55"
+                      - option "4:00"
+                      - option "4:05"
+                      - option "4:10"
+                      - option "4:15"
+                      - option "4:20"
+                      - option "4:25"
+                      - option "4:30"
+                      - option "4:35"
+                      - option "4:40"
+                      - option "4:45"
+                      - option "4:50"
+                      - option "4:55"
+                      - option "5:00"
+                      - option "5:05"
+                      - option "5:10"
+                      - option "5:15"
+                      - option "5:20"
+                      - option "5:25"
+                      - option "5:30"
+                      - option "5:35"
+                      - option "5:40"
+                      - option "5:45"
+                      - option "5:50"
+                      - option "5:55"
+                      - option "6:00"
+                      - option "6:05"
+                      - option "6:10"
+                      - option "6:15"
+                      - option "6:20"
+                      - option "6:25"
+                      - option "6:30"
+                      - option "6:35"
+                      - option "6:40"
+                      - option "6:45"
+                      - option "6:50"
+                      - option "6:55"
+                      - option "7:00"
+                      - option "7:05"
+                      - option "7:10"
+                      - option "7:15"
+                      - option "7:20"
+                      - option "7:25"
+                      - option "7:30"
+                      - option "7:35"
+                      - option "7:40"
+                      - option "7:45"
+                      - option "7:50"
+                      - option "7:55"
+                      - option "8:00"
+                    - text: "*"
+              - generic [ref=e153]:
+                - generic [ref=e156]:
+                  - generic [ref=e157]: Auto List?
+                  - checkbox "Auto List?" [ref=e159]
+                - generic [ref=e162]:
+                  - generic [ref=e163]: Youth Session?
+                  - checkbox "Youth Session?" [ref=e165]
+                - generic [ref=e168]:
+                  - generic [ref=e169]: "Attributes / Equipment:"
+                  - paragraph [ref=e171]: Hearing Loop, Video Conferencing, Security Search
+                - generic [ref=e174]:
+                  - generic [ref=e175]: "Room Layout:"
+                  - generic [ref=e176]:
+                    - paragraph
+                - generic [ref=e179]:
+                  - generic [ref=e180]: "Room Suitability:"
+                  - generic [ref=e181]:
+                    - paragraph
+                - generic [ref=e184]:
+                  - generic [ref=e185]: "Seating Capacity:"
+                  - paragraph [ref=e187]: Room - 10
+                - generic [ref=e190]:
+                  - generic [ref=e191]: "Preferred Hearing Type(s):"
+                  - generic [ref=e192]:
+                    - paragraph
+                - generic [ref=e195]:
+                  - generic [ref=e196]: "Accessibility Options:"
+                  - generic [ref=e197]:
+                    - paragraph
+                - generic [ref=e200]:
+                  - generic [ref=e201]: "Preferred Linked Rooms:"
+                  - generic [ref=e202]:
+                    - paragraph
+                - generic [ref=e205]:
+                  - generic [ref=e206]: Mobile Resource
+                  - combobox "Mobile Resource" [ref=e208]:
+                    - option "Please Choose..." [selected]
+                    - option "Portable Induction Loop"
+                    - option "Video Facility"
+                - generic [ref=e211]:
+                  - generic [ref=e212]: Fee incurred
+                  - combobox "Fee incurred" [ref=e214]:
+                    - option "Please Choose..." [selected]
+                    - option "Room Booking Fee"
+                - generic [ref=e217]:
+                  - generic [ref=e218]: "Internal Comments:"
+                  - textbox "Internal Comments:" [ref=e220]
+                - generic [ref=e223]:
+                  - generic [ref=e224]: "External Comments:"
+                  - textbox "External Comments:" [ref=e226]
+                - generic [ref=e229]:
+                  - generic [ref=e230]: "Hearing Channel:"
+                  - generic [ref=e232]:
+                    - listbox "Hearing Channel:" [ref=e233]:
+                      - option "In Person (child)" [ref=e234]
+                      - option "On the Papers" [ref=e235]
+                      - option "Not Attending" [ref=e236]
+                      - option "Telephone - CVP Audio" [ref=e237]
+                      - option "Telephone - Other" [ref=e238]
+                      - option "Telephone - Skype" [ref=e239]
+                      - option "Video - CVP" [ref=e240]
+                      - option "Video - Other" [ref=e241]
+                      - option "Video - Prison Video (Child)" [ref=e242]
+                      - option "Video - Skype" [ref=e243]
+                      - option "Video - Teams" [ref=e244]
+                      - option "Video - Video Hearing Service (VHS)" [ref=e245]
+                    - button "Nothing selected" [ref=e246] [cursor=pointer]:
+                      - generic [ref=e249]: Nothing selected
+          - generic [ref=e250]:
+            - heading "Session Type Details" [level=2] [ref=e252]
+            - generic [ref=e254]:
+              - table [ref=e255]:
+                - rowgroup [ref=e256]:
+                  - row "Jurisdiction Session Type Service Start Time End Time Group Booking Over Booking Listing % Max Cases Delete" [ref=e257]:
+                    - columnheader "Jurisdiction" [ref=e258]
+                    - columnheader "Session Type" [ref=e259]
+                    - columnheader "Service" [ref=e260]
+                    - columnheader "Start Time" [ref=e261]
+                    - columnheader "End Time" [ref=e262]
+                    - columnheader "Group Booking" [ref=e263]
+                    - columnheader "Over Booking" [ref=e264]
+                    - columnheader "Listing %" [ref=e265]
+                    - columnheader "Max Cases" [ref=e266]
+                    - columnheader "Delete" [ref=e267]
+                - rowgroup [ref=e268]:
+                  - row "No data available in table" [ref=e269]:
+                    - cell "No data available in table" [ref=e270]
+              - status [ref=e271]: Showing 0 to 0 of 0 entries
+          - generic [ref=e272]:
+            - heading "Panel Details" [level=2] [ref=e274]
+            - generic [ref=e275]:
+              - generic [ref=e278]:
+                - generic [ref=e279]: "JOH Tier:"
+                - generic [ref=e281]:
+                  - listbox "JOH Tier:" [ref=e282]:
+                    - option "Magistrate" [ref=e283]
+                    - option "Appointed Person" [ref=e284]
+                    - option "Chief Coroner" [ref=e285]
+                    - option "Circuit Judge" [ref=e286]
+                    - option "District Judge (PRFD)" [ref=e287]
+                    - option "Investigatory Powers Commissioner" [ref=e288]
+                    - option "Principle Judge" [ref=e289]
+                    - option "Senior Judge of The Court of Protection" [ref=e290]
+                    - option "Insolvency and Companies Court Judges" [ref=e291]
+                    - option "Deputy Insolvency and Companies Court Judge" [ref=e292]
+                    - option "Deputy Vice-President of the Unified Tribunals" [ref=e293]
+                    - option "Arbitrator" [ref=e294]
+                    - option "Deputy Vice President" [ref=e295]
+                    - option "Senior Coroner" [ref=e296]
+                    - option "Area Coroner" [ref=e297]
+                    - option "Assistant Coroner" [ref=e298]
+                    - option "Deputy Chief Coroner" [ref=e299]
+                    - option "Schedule 10 Judge Coroner" [ref=e300]
+                    - option "Acting Senior Coroner" [ref=e301]
+                    - option "Chief Insolvency and Companies Court Judge" [ref=e302]
+                    - option "Chairman of the Recruitment Advisory Committee" [ref=e303]
+                    - option "Chairman of the Conduct Advisory Committee" [ref=e304]
+                    - option "Assistant Judge Advocate General" [ref=e305]
+                    - option "Senior Chairman of Health Medicine's Tribunal" [ref=e306]
+                    - option "Chairman" [ref=e307]
+                    - option "Chancellor of the High Court" [ref=e308]
+                    - option "Chief Commissioner" [ref=e309]
+                    - option "Chief Master" [ref=e310]
+                    - option "Chief Registrar" [ref=e311]
+                    - option "Advisory Committee Member - Magistrate" [ref=e312]
+                    - option "Court of Appeal Judge" [ref=e313]
+                    - option "Diversity Role Models" [ref=e314]
+                    - option "Court of Appeal Judge- Sitting in Retirement" [ref=e315]
+                    - option "Common Serjeant" [ref=e316]
+                    - option "Costs Judge" [ref=e317]
+                    - option "Deputy District Judge- Fee-Paid" [ref=e318]
+                    - option "Deputy District Judge- Sitting in Retirement" [ref=e319]
+                    - option "Deputy District Judge (MC)- Fee paid" [ref=e320]
+                    - option "Tribunal Member Dentist" [ref=e321]
+                    - option "Deputy Chairman" [ref=e322]
+                    - option "Advisory Committee Member - Non Magistrate" [ref=e323]
+                    - option "Deputy Circuit Judge" [ref=e324]
+                    - option "Deputy Costs Judge" [ref=e325]
+                    - option "Deputy Chamber President" [ref=e326]
+                    - option "Deputy High Court Judge" [ref=e327]
+                    - option "Deputy Judge Advocate General" [ref=e328]
+                    - option "Deputy President" [ref=e329]
+                    - option "Deputy Kings Bench Master- Fee-Paid" [ref=e330]
+                    - option "Deputy Queen’s Bench Master- Sitting in Retirement" [ref=e331]
+                    - option "Deputy Regional Judge" [ref=e332]
+                    - option "Deputy Regional Valuer" [ref=e333]
+                    - option "Chairman of the Advisory Committee" [ref=e334]
+                    - option "Deputy Senior District Judge (Chief Magistrate)" [ref=e335]
+                    - option "Deputy Tribunal Judge" [ref=e336]
+                    - option "Deputy Umpire" [ref=e337]
+                    - option "Deputy Upper Tribunal Judge" [ref=e338]
+                    - option "Tribunal Member Disability" [ref=e339]
+                    - option "District Judge" [ref=e340]
+                    - option "District Judge (MC)" [ref=e341]
+                    - option "Tribunal Member Drainage" [ref=e342]
+                    - option "Employment Judge" [ref=e343]
+                    - option "Tribunal Member Farmer" [ref=e344]
+                    - option "Tribunal Member Financially Qualified" [ref=e345]
+                    - option "High Court Judge" [ref=e346]
+                    - option "High Court Judge- Sitting in Retirement" [ref=e347]
+                    - option "Judge Advocate General" [ref=e348]
+                    - option "Tribunal Member Landowner" [ref=e349]
+                    - option "Tribunal Member Lay" [ref=e350]
+                    - option "Lord Chief Justice" [ref=e351]
+                    - option "Master" [ref=e352]
+                    - option "Tribunal Member Medical" [ref=e353]
+                    - option "Master of the Rolls" [ref=e354]
+                    - option "Tribunal Member Optometrist" [ref=e355]
+                    - option "Person on a List" [ref=e356]
+                    - option "President of the Family Division" [ref=e357]
+                    - option "Tribunal Member Pharmacist" [ref=e358]
+                    - option "President of the Kings Bench Division" [ref=e359]
+                    - option "President of Tribunal" [ref=e360]
+                    - option "Tribunal Member Professional" [ref=e361]
+                    - option "Recorder" [ref=e362]
+                    - option "Recorder of London" [ref=e363]
+                    - option "Regional Medical Member" [ref=e364]
+                    - option "MAGS - AC Admin User" [ref=e365]
+                    - option "Registrar" [ref=e366]
+                    - option "Regional Employment Judge" [ref=e367]
+                    - option "Regional Tribunal Judge" [ref=e368]
+                    - option "Senior Circuit Judge" [ref=e369]
+                    - option "Senior District Judge" [ref=e370]
+                    - option "Senior District Judge (Chief Magistrate)" [ref=e371]
+                    - option "WorkTypeCodeTableDescription" [ref=e372]
+                    - option "Senior District Judge (CoP)" [ref=e373]
+                    - option "Senior Cost Judge" [ref=e374]
+                    - option "Acting President" [ref=e375]
+                    - option "Senior Master" [ref=e376]
+                    - option "Tribunal Member Service" [ref=e377]
+                    - option "Specialist Circuit Judge" [ref=e378]
+                    - option "Senior President of Tribunals" [ref=e379]
+                    - option "Tribunal Judge" [ref=e380]
+                    - option "Tribunal Member" [ref=e381]
+                    - option "Umpire" [ref=e382]
+                    - option "Unknown" [ref=e383]
+                    - option "Tribunal Member Valuer" [ref=e384]
+                    - option "Tribunal Member Valuer Chairman" [ref=e385]
+                    - option "Adjudicator" [ref=e386]
+                    - option "Vice Judge Advocate General" [ref=e387]
+                    - option "Diversity Mentors" [ref=e388]
+                    - option "Vice President" [ref=e389]
+                    - option "CRTS TRIB - RS Admin User" [ref=e390]
+                    - option "President of the Court of Protection" [ref=e391]
+                    - option "Deputy Master" [ref=e392]
+                    - option "Deputy Registrar" [ref=e393]
+                    - option "Commissioner" [ref=e394]
+                    - option "Deputy District Judge - PRFD" [ref=e395]
+                    - option "Designated Civil Judge" [ref=e396]
+                    - option "District Tribunal Judge" [ref=e397]
+                    - option "Mentor Judge" [ref=e398]
+                    - option "Resident Immigration Judge" [ref=e399]
+                    - option "Resident Judge" [ref=e400]
+                  - button "None selected" [ref=e402] [cursor=pointer]: None selected
+              - generic [ref=e406]:
+                - generic [ref=e407]: "JOH Ticket(s):"
+                - generic [ref=e409]:
+                  - listbox "JOH Ticket(s):" [ref=e410]:
+                    - option "00 - Interlocutory" [ref=e411]
+                    - option "01 - Social Security" [ref=e412]
+                    - option "02 - Child Support" [ref=e413]
+                    - option "03 - Disability Living Allowance" [ref=e414]
+                    - option "04 - Incapacity Benefit Employment Support" [ref=e415]
+                    - option "05 - Industrial Injuries" [ref=e416]
+                    - option "06 - Industrial injuries 2" [ref=e417]
+                    - option "07 - Vaccine Damage" [ref=e418]
+                    - option "08 - Infected Blood Compensation" [ref=e419]
+                    - option "Administrative Court" [ref=e420]
+                    - option "Admiralty (KBD)" [ref=e421]
+                    - option "Adult Crime" [ref=e422]
+                    - option "Adult Crime Presiding Justice" [ref=e423]
+                    - option "Agricultural Land and Drainage" [ref=e424]
+                    - option "Agricultural Lands Tribunal Wales" [ref=e425]
+                    - option "Ancillary Relief Appeals" [ref=e426]
+                    - option "Appeals in Crown Court" [ref=e427]
+                    - option "Asylum Support" [ref=e428]
+                    - option "Attempted Murder" [ref=e429]
+                    - option "Business and Property Courts" [ref=e430]
+                    - option "Care Standards" [ref=e431]
+                    - option "Central Criminal Court" [ref=e432]
+                    - option "Chancery" [ref=e433]
+                    - option "Chancery Business in the County Court" [ref=e434]
+                    - option "Charity" [ref=e435]
+                    - option "Circuit Commercial Court" [ref=e436]
+                    - option "Circuit Judge" [ref=e437]
+                    - option "Circuit Judge" [ref=e438]
+                    - option "Civil Authorisation" [ref=e439]
+                    - option "Civil Authorisation (High Court Judge Chancery Division)" [ref=e440]
+                    - option "Claims Management Services" [ref=e441]
+                    - option "Commercial" [ref=e442]
+                    - option "Community Rights to Bid" [ref=e443]
+                    - option "Companies Court" [ref=e444]
+                    - option "Competition Appeal Tribunal" [ref=e445]
+                    - option "Consumer Credit" [ref=e446]
+                    - option "Copyright Tribunal" [ref=e447]
+                    - option "Court of Appeal Criminal Division" [ref=e448]
+                    - option "Court of Protection" [ref=e449]
+                    - option "Criminal Authorisation" [ref=e450]
+                    - option "Criminal Injuries Compensations" [ref=e451]
+                    - option "Deputy District Judge" [ref=e452]
+                    - option "Deputy District Judge" [ref=e453]
+                    - option "Design Tribunal" [ref=e454]
+                    - option "Direct and Indirect Taxation" [ref=e455]
+                    - option "Direct Recruitment to Family" [ref=e456]
+                    - option "District Judge" [ref=e457]
+                    - option "District Judge" [ref=e458]
+                    - option "District Judge in the County Court" [ref=e459]
+                    - option "Election Rota" [ref=e460]
+                    - option "Employment Appeal Tribunal" [ref=e461]
+                    - option "Employment Tribunal (England & Wales)" [ref=e462]
+                    - option "Employment Tribunal (Scotland)" [ref=e463]
+                    - option "Environment" [ref=e464]
+                    - option "Estate Agents" [ref=e465]
+                    - option "Extradition" [ref=e466]
+                    - option "Family Presiding Justice" [ref=e467]
+                    - option "Family Winger" [ref=e468]
+                    - option "Financial List" [ref=e469]
+                    - option "Financial Remedy" [ref=e470]
+                    - option "Financial Remedy Appeals" [ref=e471]
+                    - option "First Tier - General Regulatory" [ref=e472]
+                    - option "First Tier - Health, Education and Social Care" [ref=e473]
+                    - option "First Tier - Immigration and Asylum" [ref=e474]
+                    - option "First Tier - Property" [ref=e475]
+                    - option "First Tier - Social Entitlement" [ref=e476]
+                    - option "First Tier - Tax" [ref=e477]
+                    - option "First Tier - War Pensions and Armed Forces Compensation" [ref=e478]
+                    - option "Food" [ref=e479]
+                    - option "Freezing Orders in the County Court" [ref=e480]
+                    - option "Gambling" [ref=e481]
+                    - option "Immigration Services" [ref=e482]
+                    - option "Information Rights" [ref=e483]
+                    - option "IPEC" [ref=e484]
+                    - option "Judicial Review - England and Wales" [ref=e485]
+                    - option "Judicial Review - Northern Ireland" [ref=e486]
+                    - option "Judicial Review - Scotland" [ref=e487]
+                    - option "Land Registration" [ref=e488]
+                    - option "Licensing and Standards" [ref=e489]
+                    - option "Local Government Standards - England" [ref=e490]
+                    - option "London Circuit Commercial Court" [ref=e491]
+                    - option "Media and Communications List" [ref=e492]
+                    - option "Mental Health" [ref=e493]
+                    - option "Mental Health Tribunal Wales" [ref=e494]
+                    - option "Mercantile - KBD" [ref=e495]
+                    - option "Motor Insurers Bureau" [ref=e496]
+                    - option "MP's Expenses" [ref=e497]
+                    - option "Murder" [ref=e498]
+                    - option "Murder - Deputy Circuit Judges Only" [ref=e499]
+                    - option "National security" [ref=e500]
+                    - option "Ordinary Planning" [ref=e501]
+                    - option "Others - Gender Recognition Panel" [ref=e502]
+                    - option "Others - Proscribed Org Appl Commission" [ref=e503]
+                    - option "Others-Pathogens Access Appl Commission" [ref=e504]
+                    - option "Others-Spcl Immigration Appl Commission" [ref=e505]
+                    - option "Patents" [ref=e506]
+                    - option "Pensions Regulations" [ref=e507]
+                    - option "Police Appeal Tribunal" [ref=e508]
+                    - option "Pool Of Judges" [ref=e509]
+                    - option "Primary Health List" [ref=e510]
+                    - option "Private Law" [ref=e511]
+                    - option "Professional Regulations" [ref=e512]
+                    - option "Public Law" [ref=e513]
+                    - option "Race Panel" [ref=e514]
+                    - option "Recorder" [ref=e515]
+                    - option "Recorder" [ref=e516]
+                    - option "Reinstatement Committee" [ref=e517]
+                    - option "Reserve Forces" [ref=e518]
+                    - option "Residential Property" [ref=e519]
+                    - option "Residential Property Tribunal Wales" [ref=e520]
+                    - option "Restricted Patients Panel" [ref=e521]
+                    - option "s.52 Deputies" [ref=e522]
+                    - option "s.52 Deputy" [ref=e523]
+                    - option "S9(4) Appointment - Chancery" [ref=e524]
+                    - option "S9(4) Appointment - Family" [ref=e525]
+                    - option "S9(4) Appointment - Kings Bench" [ref=e526]
+                    - option "Section 9(1) Chancery" [ref=e527]
+                    - option "Section 9(1) Kings Bench" [ref=e528]
+                    - option "Section 9(1) Kings Bench - Admin ONLY" [ref=e529]
+                    - option "Section 9-1 Family" [ref=e530]
+                    - option "Serious Sexual Offences" [ref=e531]
+                    - option "Serious Sexual Offences - Youth Court" [ref=e532]
+                    - option "Significant Planning" [ref=e533]
+                    - option "Social Security and Child Support" [ref=e534]
+                    - option "Special Educational Needs and Disability" [ref=e535]
+                    - option "Super Planning" [ref=e536]
+                    - option "Technology and Construction Court" [ref=e537]
+                    - option "Terrorism" [ref=e538]
+                    - option "TradeMark Tribunal" [ref=e539]
+                    - option "Transport" [ref=e540]
+                    - option "Tribunal Judge" [ref=e541]
+                    - option "Tribunal Judge" [ref=e542]
+                    - option "Upper - Administrative Appeals" [ref=e543]
+                    - option "Upper - Immigration and Asylum" [ref=e544]
+                    - option "Upper - Lands" [ref=e545]
+                    - option "Upper - Tax and Chancery" [ref=e546]
+                    - option "Valuation Tribunal England" [ref=e547]
+                    - option "Welfare of Animals" [ref=e548]
+                    - option "Welsh Language" [ref=e549]
+                    - option "Youth Presiding Justice" [ref=e550]
+                    - option "Youth Winger" [ref=e551]
+                  - button "None selected" [ref=e553] [cursor=pointer]: None selected
+              - generic [ref=e556]:
+                - generic [ref=e557]: "Specialism:"
+                - generic [ref=e559]:
+                  - listbox "Specialism:" [ref=e560]:
+                    - option "Cardiologist" [ref=e561]
+                    - option "Carer" [ref=e562]
+                    - option "Eye Surgeon" [ref=e563]
+                    - option "General Practitioner" [ref=e564]
+                    - option "Dermatologist" [ref=e565]
+                    - option "ENT Surgeon" [ref=e566]
+                    - option "Psychiatrist" [ref=e567]
+                    - option "General Physician" [ref=e568]
+                    - option "Neurologist" [ref=e569]
+                    - option "General Surgeon" [ref=e570]
+                    - option "Orthopaedic Surgeon" [ref=e571]
+                    - option "Plastic Surgeon" [ref=e572]
+                    - option "Chest Physician" [ref=e573]
+                    - option "Urologist" [ref=e574]
+                    - option "Chest Specialist" [ref=e575]
+                    - option "Paediatrician" [ref=e576]
+                    - option "Rheumatic Physician" [ref=e577]
+                    - option "Renal Physician" [ref=e578]
+                    - option "Appeals" [ref=e579]
+                    - option "Clinical Negligence" [ref=e580]
+                    - option "TLATA" [ref=e581]
+                    - option "Serious Personal Injury" [ref=e582]
+                    - option "Historical sexual abuse" [ref=e583]
+                    - option "CAT (Cancel, Asbestos & Terminal illness)" [ref=e584]
+                    - option "False imprisonment" [ref=e585]
+                    - option "Breach of injunctions" [ref=e586]
+                    - option "Flight delay" [ref=e587]
+                    - option "Equality act claims" [ref=e588]
+                    - option "Defamation / slander" [ref=e589]
+                    - option "FDAC" [ref=e590]
+                    - option "Judicial Mediation" [ref=e591]
+                    - option "Equal pay cases" [ref=e592]
+                    - option "Financial Remedy" [ref=e593]
+                    - option "Welsh Speaking" [ref=e594]
+                    - option "RPT Northern" [ref=e595]
+                  - button "None selected" [ref=e597] [cursor=pointer]: None selected
+              - generic [ref=e600]:
+                - generic [ref=e601]: "Appointment Type:"
+                - generic [ref=e603]:
+                  - listbox "Appointment Type:" [ref=e604]:
+                    - option "Fee Paid" [ref=e605]
+                    - option "Salaried" [ref=e606]
+                    - option "Sitting in Retirement (Fee Paid)" [ref=e607]
+                    - option "SPTW-80%" [ref=e608]
+                    - option "SPTW-40%" [ref=e609]
+                    - option "Voluntary" [ref=e610]
+                    - option "SPTW-50%" [ref=e611]
+                  - button "None selected" [ref=e613] [cursor=pointer]: None selected
+              - generic [ref=e616]:
+                - generic [ref=e617]: "Location Priority:"
+                - generic [ref=e619]:
+                  - listbox "Location Priority:" [ref=e620]:
+                    - option "Primary" [ref=e621]
+                    - option "Secondary" [ref=e622]
+                    - option "Tertiary" [ref=e623]
+                  - button "None selected" [ref=e625] [cursor=pointer]: None selected
+              - generic [ref=e628]:
+                - generic [ref=e629]: "Judicial Office Holder Name:"
+                - generic [ref=e630]:
+                  - generic [ref=e632]:
+                    - 'combobox "Judicial Office Holder Name: Cancel/Reschedule Reason" [ref=e633]':
+                      - option "Please Choose..." [selected]
+                      - option "AutomationTest, JOH (Automation Test JOH)"
+                      - option "AutomationTest, JOH-Two (AutomationTest-JOH-Two)"
+                      - option "Banning, Duncan (Banning)"
+                      - option "Benson, David (Mr David Benson)"
+                      - option "Budgens, Cathleen (District Judge Budgens)"
+                      - option "CLARK, OLIVIA (OLIVIA_CLARK)"
+                      - option "HALL, CHRISTOPHER (CHRISTOPHER_HALL)"
+                      - option "Hammersmith, John (DJ Hammersmith)"
+                      - option "Hughes, Emily (Mrs Justice HighCourtFamily)"
+                      - option "Laverne, Sally (District Judge Laverne)"
+                      - option "LEWIS, PATRICK (PATRICK_LEWIS)"
+                      - option "UserStory4, MCGIRRSD-34503 (MCGIRRSD-34503_UserStory4)"
+                    - button "Please Choose..." [ref=e634] [cursor=pointer]:
+                      - generic [ref=e637]: Please Choose...
+                  - generic [ref=e638]:
+                    - checkbox "Show Can Travel Only" [ref=e639] [cursor=pointer]
+                    - generic [ref=e640]: Show Can Travel Only
+                  - generic [ref=e641]:
+                    - checkbox "NRP" [ref=e642] [cursor=pointer]
+                    - generic [ref=e643]: NRP
+                  - generic [ref=e644]:
+                    - checkbox "Show All" [ref=e645] [cursor=pointer]
+                    - generic [ref=e646]: Show All
+                  - generic [ref=e647]:
+                    - checkbox "Short Notice" [ref=e648] [cursor=pointer]
+                    - generic [ref=e649]: Short Notice
+              - table [ref=e652]:
+                - rowgroup [ref=e653]:
+                  - row "Name Roles Specialisms Presiding Judicial Office Holder Other Remove" [ref=e654]:
+                    - columnheader "Name" [ref=e655]
+                    - columnheader "Roles" [ref=e656]
+                    - columnheader "Specialisms" [ref=e657]
+                    - columnheader "Presiding Judicial Office Holder" [ref=e658]
+                    - columnheader "Other" [ref=e659]
+                    - columnheader "Remove" [ref=e660]
+          - generic [ref=e661]:
+            - heading "Breaks" [level=2] [ref=e663]
+            - generic [ref=e665]:
+              - table [ref=e666]:
+                - rowgroup [ref=e667]:
+                  - row "Start Time End Time Edit Delete" [ref=e668]:
+                    - columnheader "Start Time" [ref=e669]
+                    - columnheader "End Time" [ref=e670]
+                    - columnheader "Edit" [ref=e671]
+                    - columnheader "Delete" [ref=e672]
+                - rowgroup [ref=e673]:
+                  - row "No data available in table" [ref=e674]:
+                    - cell "No data available in table" [ref=e675]
+              - status [ref=e676]: Showing 0 to 0 of 0 entries
+          - generic [ref=e677]:
+            - heading "Linked Rooms" [level=2] [ref=e679]
+            - generic [ref=e681]:
+              - table [ref=e682]:
+                - rowgroup [ref=e683]:
+                  - row "Room Date Start Time End Time Type Comments Delete" [ref=e684]:
+                    - columnheader "Room" [ref=e685]
+                    - columnheader "Date" [ref=e686]
+                    - columnheader "Start Time" [ref=e687]
+                    - columnheader "End Time" [ref=e688]
+                    - columnheader "Type" [ref=e689]
+                    - columnheader "Comments" [ref=e690]
+                    - columnheader "Delete" [ref=e691]
+                - rowgroup [ref=e692]:
+                  - row "No data available in table" [ref=e693]:
+                    - cell "No data available in table" [ref=e694]
+              - status [ref=e695]: Showing 0 to 0 of 0 entries
+          - generic [ref=e696]:
+            - heading "Portable Equipment" [level=2] [ref=e698]
+            - generic [ref=e700]:
+              - table [ref=e701]:
+                - rowgroup [ref=e702]:
+                  - row "Description Brand Additional Info Start Time End Time Delete" [ref=e703]:
+                    - columnheader "Description" [ref=e704]
+                    - columnheader "Brand" [ref=e705]
+                    - columnheader "Additional Info" [ref=e706]
+                    - columnheader "Start Time" [ref=e707]
+                    - columnheader "End Time" [ref=e708]
+                    - columnheader "Delete" [ref=e709]
+                - rowgroup [ref=e710]:
+                  - row "No data available in table" [ref=e711]:
+                    - cell "No data available in table" [ref=e712]
+              - status [ref=e713]: Showing 0 to 0 of 0 entries
+          - generic [ref=e714]:
+            - heading "Listings" [level=2] [ref=e716]
+            - table [ref=e719]:
+              - rowgroup [ref=e720]:
+                - row "Session Type Start Time End Time Location Duration Status Hearing Type Case Number Case Title Allocated to Auto Listed Creator Details Edit Linked Hearing Recurrence Cancel Listing" [ref=e721]:
+                  - columnheader "Session Type" [ref=e722]
+                  - columnheader "Start Time" [ref=e723]
+                  - columnheader "End Time" [ref=e724]
+                  - columnheader "Location" [ref=e725]
+                  - columnheader "Duration" [ref=e726]
+                  - columnheader "Status" [ref=e727]
+                  - columnheader "Hearing Type" [ref=e728]
+                  - columnheader "Case Number" [ref=e729]
+                  - columnheader "Case Title" [ref=e730]
+                  - columnheader "Allocated to" [ref=e731]
+                  - columnheader "Auto Listed" [ref=e732]
+                  - columnheader "Creator Details" [ref=e733]
+                  - columnheader "Edit" [ref=e734]
+                  - columnheader "Linked Hearing" [ref=e735]
+                  - columnheader "Recurrence" [ref=e736]
+                  - columnheader "Cancel Listing" [ref=e737]
+              - rowgroup [ref=e738]:
+                - row "No data found" [ref=e739]:
+                  - cell "No data found" [ref=e740]
+          - generic [ref=e741]:
+            - button "Save" [ref=e742] [cursor=pointer]
+            - button "Cancel" [ref=e743] [cursor=pointer]
+          - generic [ref=e744]:
+            - heading "Change History" [level=2] [ref=e746]:
+              - link "Change History" [ref=e747] [cursor=pointer]:
+                - /url: "#collapseChangeHistory"
+            - text: ↑ ↓ ↑ ↓ ↑ ↓ ↑ ↓ ↑ ↓ ↑ ↓ ↑ ↓
+      - generic:
+        - generic: 
+        - generic: 

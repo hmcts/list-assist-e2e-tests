@@ -1,0 +1,338 @@
+- generic [ref=e2]:
+  - status
+  - generic [ref=e3]:
+    - banner:
+      - link "Skip to Navigation" [ref=e4] [cursor=pointer]:
+        - /url: javascript:skipToNavigationAction()
+        - generic [ref=e5]: 
+        - text: Skip to Navigation
+      - link "Skip to Content" [ref=e6] [cursor=pointer]:
+        - /url: javascript:skipToContentAction()
+        - generic [ref=e7]: 
+        - text: Skip to Content
+    - generic [ref=e8]:
+      - navigation "Sidebar menu" [ref=e9]:
+        - button "Collapse left menu" [ref=e11] [cursor=pointer]:
+          - generic [ref=e12]: 
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - link "HM Courts and Tribunals Service homepage" [ref=e16] [cursor=pointer]:
+              - /url: /casehqtraining/CMSHomeAction.do?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+              - img "HM Courts and Tribunals Service logo" [ref=e17]
+            - list [ref=e19]:
+              - listitem [ref=e83]:
+                - link "Home" [ref=e84] [cursor=pointer]:
+                  - /url: /casehqtraining/CMSHomeAction.do?showAll=false&XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                  - generic [ref=e85]:
+                    - generic [ref=e86]: 
+                    - generic [ref=e87]: Home
+                  - text: 
+                - text: 
+              - listitem [ref=e88]:
+                - link "Work History" [ref=e89] [cursor=pointer]:
+                  - /url: javascript:showInIFrame('/casehqtraining/MatterWorkHistory.action','workHistory');
+                  - generic [ref=e90]:
+                    - generic [ref=e91]: 
+                    - generic [ref=e92]: Work History
+                  - text: 
+                - text: 
+              - listitem [ref=e93]:
+                - link "Search" [ref=e94] [cursor=pointer]:
+                  - /url: javascript:;
+                  - generic [ref=e95]:
+                    - generic [ref=e96]: 
+                    - generic [ref=e97]: Search
+                  - generic [ref=e98]: 
+                - text:     
+              - listitem [ref=e99]:
+                - link "Participants" [ref=e100] [cursor=pointer]:
+                  - /url: javascript:;
+                  - generic [ref=e101]:
+                    - generic [ref=e102]: 
+                    - generic [ref=e103]: Participants
+                  - generic [ref=e104]: 
+                - text:     
+              - listitem [ref=e105]:
+                - link "Cases" [ref=e106] [cursor=pointer]:
+                  - /url: javascript:;
+                  - generic [ref=e107]:
+                    - generic [ref=e108]: 
+                    - generic [ref=e109]: Cases
+                  - generic [ref=e110]: 
+                - text:       
+              - listitem [ref=e111]:
+                - link "Hearings" [ref=e112] [cursor=pointer]:
+                  - /url: javascript:;
+                  - generic [ref=e113]:
+                    - generic [ref=e114]: 
+                    - generic [ref=e115]: Hearings
+                  - generic [ref=e116]: 
+                - text:                 
+              - listitem [ref=e117]:
+                - link "Reports" [ref=e118] [cursor=pointer]:
+                  - /url: javascript:;
+                  - generic [ref=e119]:
+                    - generic [ref=e120]: 
+                    - generic [ref=e121]: Reports
+                  - generic [ref=e122]: 
+                - text:                                               
+              - listitem [ref=e123]:
+                - link "Online Reports" [ref=e124] [cursor=pointer]:
+                  - /url: javascript:;
+                  - generic [ref=e125]:
+                    - generic [ref=e126]: 
+                    - generic [ref=e127]: Online Reports
+                  - generic [ref=e128]: 
+                - text:       
+              - listitem [ref=e129]:
+                - link "InHearing" [ref=e130] [cursor=pointer]:
+                  - /url: javascript:;
+                  - generic [ref=e131]:
+                    - generic [ref=e132]: 
+                    - generic [ref=e133]: InHearing
+                  - generic [ref=e134]: 
+                - text:   
+              - listitem [ref=e135]:
+                - link "Administration" [ref=e136] [cursor=pointer]:
+                  - /url: javascript:;
+                  - generic [ref=e137]:
+                    - generic [ref=e138]: 
+                    - generic [ref=e139]: Administration
+                  - generic [ref=e140]: 
+                - text:                                                                       
+              - listitem [ref=e141]:
+                - link "Multi Day Cart" [ref=e142] [cursor=pointer]:
+                  - /url: javascript:;
+                  - generic [ref=e143]:
+                    - generic [ref=e144]: 
+                    - generic [ref=e145]: Multi Day Cart
+                  - generic [ref=e146]: 
+                - text: 
+              - listitem [ref=e20]:
+                - button "Listing Cart" [disabled]:
+                  - generic:
+                    - generic: 
+                    - generic: Listing Cart
+                  - text: 
+              - listitem [ref=e21]:
+                - button "Case Cart" [disabled]:
+                  - generic:
+                    - generic: 
+                    - generic: Case Cart
+                  - text: 
+              - listitem [ref=e22]:
+                - button "Quick Listing" [disabled] [ref=e23] [cursor=pointer]:
+                  - generic [ref=e24]:
+                    - generic [ref=e25]: 
+                    - generic [ref=e26]: Quick Listing
+                  - generic [ref=e27]: 
+            - generic [ref=e28]:
+              - generic [ref=e29]: Automation Test
+              - link "Logout from sidebar menu" [ref=e31] [cursor=pointer]:
+                - /url: /casehqtraining/LogoutAction.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                - generic [ref=e32]: 
+          - generic [ref=e33]: © McGirr Technology 2026
+      - generic [ref=e34]:
+        - navigation [ref=e35]:
+          - list [ref=e36]:
+            - listitem [ref=e37]:
+              - link "Show help dialog" [ref=e38] [cursor=pointer]:
+                - /url: "#"
+                - generic [ref=e39]: 
+                - generic [ref=e40]: Help
+            - listitem [ref=e41]:
+              - link "Logout from top navigation" [ref=e42] [cursor=pointer]:
+                - /url: /casehqtraining/LogoutAction.action?XSRF-TOKEN=271e3595-61dc-45af-9388-16e8112685ae
+                - generic [ref=e43]: 
+                - generic [ref=e44]: Logout
+        - main [ref=e47]:
+          - generic [ref=e147]: "Total multi-day sessions in cart: 0"
+          - generic [ref=e49]:
+            - generic [ref=e50]:
+              - heading "Hearing Schedule" [level=1] [ref=e148]
+              - generic [ref=e51]:
+                - combobox "List of saved searches" [ref=e56]:
+                  - option "Apply a Saved Search" [selected]
+                - button "Advanced Filters" [ref=e57] [cursor=pointer]:
+                  - generic [ref=e58]: 
+                  - generic [ref=e59]: Advanced Filters
+                - button "Primary Filters" [expanded] [ref=e60] [cursor=pointer]:
+                  - generic [ref=e61]: 
+                  - generic [ref=e62]: Primary Filters
+                - button "Show custom keyboard shortcuts list" [ref=e63] [cursor=pointer]:
+                  - generic [ref=e64]: 
+            - generic [ref=e70]:
+              - search "Primary filters" [ref=e6268]:
+                - generic [ref=e6269]:
+                  - generic [ref=e6272]:
+                    - group [ref=e6273]:
+                      - generic [ref=e6274]: Start Date
+                      - generic [ref=e6276]:
+                        - textbox "Start date" [ref=e6277]:
+                          - /placeholder: DD-MM-YYYY
+                          - text: 09-04-2026
+                        - generic [ref=e6280] [cursor=pointer]: 
+                    - group [ref=e6281]:
+                      - generic [ref=e6282]: End Date
+                      - generic [ref=e6284]:
+                        - textbox "End date" [ref=e6285]:
+                          - /placeholder: DD-MM-YYYY
+                          - text: 15-04-2026
+                        - generic [ref=e6288] [cursor=pointer]: 
+                    - generic [ref=e6289]:
+                      - button "Show current date data" [ref=e6290] [cursor=pointer]:
+                        - generic [ref=e6291]: Today
+                      - generic [ref=e6292]: "|"
+                      - button "Show current week data" [ref=e6293] [cursor=pointer]:
+                        - generic [ref=e6294]: This Week
+                      - generic [ref=e6295]: "|"
+                      - button "Show current month data" [ref=e6296] [cursor=pointer]:
+                        - generic [ref=e6297]: This Month
+                      - generic [ref=e6298]: "|"
+                      - button "Show next available session data" [ref=e6299] [cursor=pointer]:
+                        - generic [ref=e6300]: Next Available Session
+                  - generic [ref=e6301]:
+                    - group "Locality filter list with 1 options selected" [ref=e7894]:
+                      - generic [ref=e6305]:
+                        - generic [ref=e6306]:
+                          - generic [ref=e6307]: Locality
+                          - generic [ref=e6308]: "1"
+                        - button "Clear all selected options" [ref=e6309] [cursor=pointer]: 
+                      - combobox [ref=e6310]:
+                        - button "Open listbox" [ref=e6311] [cursor=pointer]:
+                          - generic [ref=e6312]: +
+                        - generic [ref=e7895] [cursor=pointer]:
+                          - text: Wrexham County and Family Court
+                          - button [ref=e7896]:
+                            - generic [ref=e7897]: 
+                        - text: 
+                    - group "Session Type filter list with 0 options selected" [ref=e6422]:
+                      - generic [ref=e6423]:
+                        - generic [ref=e6424]:
+                          - generic [ref=e6425]: Session Type
+                          - generic [ref=e6426]: "0"
+                        - button "Clear All selected options" [ref=e6427] [cursor=pointer]: 
+                      - combobox [ref=e6428]:
+                        - button "Open listbox" [ref=e6429] [cursor=pointer]:
+                          - generic [ref=e6430]: +
+                        - generic [ref=e6433]: Select an item
+                    - group "JOH Tier (Inclusion) filter list with 0 options selected" [ref=e6436]:
+                      - generic [ref=e6437]:
+                        - generic [ref=e6438]:
+                          - generic [ref=e6439]: JOH Tier (Inclusion)
+                          - generic [ref=e6440]: "0"
+                        - button "Clear All selected options" [ref=e6441] [cursor=pointer]: 
+                      - combobox [ref=e6442]:
+                        - button "Open listbox" [ref=e6443] [cursor=pointer]:
+                          - generic [ref=e6444]: +
+                        - generic [ref=e6447]: Select an item
+                    - group "JOH (Inclusion) filter list with 0 options selected" [ref=e6454]:
+                      - generic [ref=e6455]:
+                        - generic [ref=e6456]:
+                          - generic [ref=e6457]: JOH (Inclusion)
+                          - generic [ref=e6458]: "0"
+                        - button "Clear all selected options" [ref=e6459] [cursor=pointer]: 
+                      - combobox [ref=e6460]:
+                        - button "Open listbox" [ref=e6461] [cursor=pointer]:
+                          - generic [ref=e6462]: +
+                        - generic [ref=e6465]: Select an item
+                  - generic [ref=e6468]:
+                    - button "Apply filter criteria" [ref=e6469] [cursor=pointer]:
+                      - generic [ref=e6470]: 
+                      - generic [ref=e6471]: Apply
+                    - button "Show Saved Search dialog" [ref=e6475] [cursor=pointer]:
+                      - generic [ref=e6476]: Save Search
+                    - button "Clear filter criteria" [ref=e6477] [cursor=pointer]:
+                      - generic [ref=e6478]: Clear
+                - generic:
+                  - generic:  
+              - generic [ref=e71]:
+                - tablist [ref=e74]:
+                  - tab "Rooms" [selected] [ref=e75] [cursor=pointer]
+                  - tab "Judicial Office Holders" [ref=e76] [cursor=pointer]
+                  - tab "JOH Calendar" [ref=e77] [cursor=pointer]
+                  - tab "Room Calendar" [ref=e78] [cursor=pointer]
+                - generic [ref=e152]:
+                  - button "Add all sessions" [ref=e156] [cursor=pointer]:
+                    - generic [ref=e157]: 
+                    - generic [ref=e158]: Cart all sessions
+                  - button "Previous dates data" [ref=e159] [cursor=pointer]:
+                    - generic [ref=e160]: 
+                    - generic [ref=e161]: Previous
+                  - generic [ref=e162]: "|"
+                  - button "Next dates Data" [ref=e163] [cursor=pointer]:
+                    - generic [ref=e164]: Next
+                    - generic [ref=e165]: 
+              - table "Members or Rooms table" [ref=e166]:
+                - rowgroup [ref=e167]:
+                  - row "Toggle details of all sessions for all rooms, from 09-04-2026 to 15-04-2026 09-04-2026 (THU) 10-04-2026 (FRI) 13-04-2026 (MON) 14-04-2026 (TUE) 15-04-2026 (WED)" [ref=e168]:
+                    - columnheader "Toggle details of all sessions for all rooms, from 09-04-2026 to 15-04-2026" [ref=e169]:
+                      - button "Toggle details of all sessions for all rooms, from 09-04-2026 to 15-04-2026" [ref=e172] [cursor=pointer]:
+                        - generic [ref=e173]: 
+                        - generic [ref=e174]: Rooms
+                    - columnheader "09-04-2026 (THU)" [ref=e175]:
+                      - generic [ref=e177]:
+                        - text: 09-04-2026
+                        - text: (THU)
+                    - columnheader "10-04-2026 (FRI)" [ref=e178]:
+                      - generic [ref=e180]:
+                        - text: 10-04-2026
+                        - text: (FRI)
+                    - columnheader "13-04-2026 (MON)" [ref=e181]:
+                      - generic [ref=e183]:
+                        - text: 13-04-2026
+                        - text: (MON)
+                    - columnheader "14-04-2026 (TUE)" [ref=e184]:
+                      - generic [ref=e186]:
+                        - text: 14-04-2026
+                        - text: (TUE)
+                    - columnheader "15-04-2026 (WED)" [ref=e187]:
+                      - generic [ref=e189]:
+                        - text: 15-04-2026
+                        - text: (WED)
+                - rowgroup [ref=e190]:
+                  - 'row "Toggle sessions details for room: Wrexham Courtroom 01 Cart all sessions of room: Wrexham Courtroom 01 Wrexham Courtroom 01 Add new booking for Wrexham Courtroom 01 on 04-09-2026 Add new booking for Wrexham Courtroom 01 on 04-10-2026 Add new booking for Wrexham Courtroom 01 on 04-13-2026 Add new booking for Wrexham Courtroom 01 on 04-14-2026 Add new booking for Wrexham Courtroom 01 on 04-15-2026" [ref=e8037]':
+                    - 'cell "Toggle sessions details for room: Wrexham Courtroom 01 Cart all sessions of room: Wrexham Courtroom 01 Wrexham Courtroom 01" [ref=e8038]':
+                      - generic [ref=e194]:
+                        - 'button "Toggle sessions details for room: Wrexham Courtroom 01" [ref=e8039] [cursor=pointer]':
+                          - generic [ref=e197]: 
+                        - generic [ref=e198]:
+                          - 'button "Cart all sessions of room: Wrexham Courtroom 01" [ref=e8040] [cursor=pointer]':
+                            - generic [ref=e200]: 
+                          - text: Wrexham Courtroom 01
+                    - cell "Add new booking for Wrexham Courtroom 01 on 04-09-2026" [ref=e8041]:
+                      - button "Add new booking for Wrexham Courtroom 01 on 04-09-2026" [ref=e8042] [cursor=pointer]:
+                        - generic [ref=e215]: +
+                        - text: Add booking Wrexham Courtroom 01 09-04-2026 THU
+                    - cell "Add new booking for Wrexham Courtroom 01 on 04-10-2026" [ref=e8043]:
+                      - button "Add new booking for Wrexham Courtroom 01 on 04-10-2026" [ref=e8044] [cursor=pointer]:
+                        - generic [ref=e230]: +
+                        - text: Add booking Wrexham Courtroom 01 10-04-2026 FRI
+                    - cell "Add new booking for Wrexham Courtroom 01 on 04-13-2026" [ref=e8045]:
+                      - button "Add new booking for Wrexham Courtroom 01 on 04-13-2026" [ref=e8046] [cursor=pointer]:
+                        - generic [ref=e245]: +
+                        - text: Add booking Wrexham Courtroom 01 13-04-2026 MON
+                    - cell "Add new booking for Wrexham Courtroom 01 on 04-14-2026" [ref=e8047]:
+                      - button "Add new booking for Wrexham Courtroom 01 on 04-14-2026" [ref=e8048] [cursor=pointer]:
+                        - generic [ref=e260]: +
+                        - text: Add booking Wrexham Courtroom 01 14-04-2026 TUE
+                    - cell "Add new booking for Wrexham Courtroom 01 on 04-15-2026" [ref=e8049]:
+                      - button "Add new booking for Wrexham Courtroom 01 on 04-15-2026" [ref=e8050] [cursor=pointer]:
+                        - generic [ref=e275]: +
+                        - text: Add booking Wrexham Courtroom 01 15-04-2026 WED
+          - generic:
+            - generic: 
+          - generic:
+            - generic: 
+          - generic:
+            - generic:  
+          - generic:
+            - generic: 
+          - generic: 
+          - generic:
+            - generic:  
+            - generic: 
+            - generic: 
+      - generic:
+        - generic: 
+        - generic: 

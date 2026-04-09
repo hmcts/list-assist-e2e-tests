@@ -1,0 +1,16 @@
+[    1161ms] [LOG] Loading the deferred stylesheets @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/HomePage/init.action?XSRF-TOKEN=8509b2af-4e45-4cc3-b887-09496298c646:135
+[    1161ms] [LOG] adding deferred stylesheet - /casehqtraining/css/mcms-custom.css @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/HomePage/init.action?XSRF-TOKEN=8509b2af-4e45-4cc3-b887-09496298c646:142
+[    1391ms] [WARNING] [Vue-Multiselect warn]: ClearOnSelect and Multiple props canâ€™t be both set to false. @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/lib/vue-multiselect.min.js:0
+[    1391ms] [WARNING] [Vue-Multiselect warn]: ClearOnSelect and Multiple props canâ€™t be both set to false. @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/lib/vue-multiselect.min.js:0
+[    1391ms] [WARNING] [Vue-Multiselect warn]: ClearOnSelect and Multiple props canâ€™t be both set to false. @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/lib/vue-multiselect.min.js:0
+[    1830ms] [WARNING] [Vue-Multiselect warn]: ClearOnSelect and Multiple props canâ€™t be both set to false. @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/lib/vue-multiselect.min.js:0
+[    1849ms] [WARNING] [Vue-Multiselect warn]: ClearOnSelect and Multiple props canâ€™t be both set to false. @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/lib/vue-multiselect.min.js:0
+[    1850ms] [WARNING] [Vue-Multiselect warn]: ClearOnSelect and Multiple props canâ€™t be both set to false. @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/lib/vue-multiselect.min.js:0
+[    1851ms] [WARNING] [Vue-Multiselect warn]: ClearOnSelect and Multiple props canâ€™t be both set to false. @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/lib/vue-multiselect.min.js:0
+[    1852ms] [WARNING] [Vue-Multiselect warn]: ClearOnSelect and Multiple props canâ€™t be both set to false. @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/lib/vue-multiselect.min.js:0
+[    1852ms] [WARNING] [Vue-Multiselect warn]: ClearOnSelect and Multiple props canâ€™t be both set to false. @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/lib/vue-multiselect.min.js:0
+[    1855ms] [WARNING] [Vue-Multiselect warn]: ClearOnSelect and Multiple props canâ€™t be both set to false. @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/lib/vue-multiselect.min.js:0
+[    1855ms] [WARNING] [Vue-Multiselect warn]: ClearOnSelect and Multiple props canâ€™t be both set to false. @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/lib/vue-multiselect.min.js:0
+[    1856ms] [WARNING] [Vue-Multiselect warn]: ClearOnSelect and Multiple props canâ€™t be both set to false. @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/vue/lib/vue-multiselect.min.js:0
+[   32620ms] [LOG] Loading the deferred stylesheets @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/CMSHomeAction.do?XSRF-TOKEN=8509b2af-4e45-4cc3-b887-09496298c646:109
+[   32620ms] [LOG] adding deferred stylesheet - /casehqtraining/css/mcms-custom.css @ https://trg.list-assist.service.justice.gov.uk/casehqtraining/CMSHomeAction.do?XSRF-TOKEN=8509b2af-4e45-4cc3-b887-09496298c646:116

@@ -1,0 +1,12 @@
+- generic [ref=e2]:
+  - status
+  - generic [ref=e3]:
+    - banner:
+      - link "Skip to Navigation" [ref=e4] [cursor=pointer]:
+        - /url: javascript:skipToNavigationAction()
+        - generic [ref=e5]: 
+        - text: Skip to Navigation
+      - link "Skip to Content" [ref=e6] [cursor=pointer]:
+        - /url: javascript:skipToContentAction()
+        - generic [ref=e7]: 
+        - text: Skip to Content
