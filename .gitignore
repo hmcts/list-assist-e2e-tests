@@ -6,7 +6,7 @@ crash.log
 .idea/
 *.iml
 node_modules/
-.playwright-mcp
+.playwright-mcp/
 /test-results/
 /playwright-report/
 /blob-report/
