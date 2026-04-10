@@ -14,77 +14,17 @@ test.describe.configure({ mode: "serial" });
  */
 
 test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering", () => {
-  test.beforeEach(async ({ page }) => {
-    // Add page crash and error detection handlers
-    page.on("close", () => {
-      console.log("WARNING: Page was closed unexpectedly during test");
-    });
-
-    page.on("pageerror", (err: Error) => {
-      // Log detailed error information for debugging
-      console.error("Page error detected:", {
-        message: err.message,
-        stack: err.stack,
-        name: err.name,
-      });
-
-      // Suppress non-critical measurement errors to prevent test failures
-      // These typically occur during UI rendering and don't affect test execution
-      if (
-        err.message?.includes("clientHeight") ||
-        err.message?.includes("Cannot read properties")
-      ) {
-        console.warn(
-          "Non-critical measurement error detected, continuing test execution",
-        );
-      }
-    });
-
-    page.on("console", (msg) => {
-      if (msg.type() === "error") {
-        console.error("Browser console error:", msg.text());
-      }
-    });
-  });
-
   test.afterEach(
     async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
-      try {
-        // Check if page is still valid before using it
-        if (!page.isClosed()) {
-          try {
-            await page.goto(config.urls.baseUrl, {
-              waitUntil: "domcontentloaded",
-              timeout: 10000,
-            });
-
-            // Give the page time to render before attempting cleanup
-            await page.waitForTimeout(500);
-
-            await clearDownWrexhamSchedule(
-              sessionBookingPage,
-              hearingSchedulePage,
-              dataUtils,
-            );
-          } catch (navigationError) {
-            const errorMessage =
-              navigationError instanceof Error
-                ? navigationError.message
-                : String(navigationError);
-            console.error(
-              "Navigation or cleanup failed during afterEach:",
-              errorMessage,
-            );
-            // Don't fail the test if cleanup fails
-          }
-        } else {
-          console.log("Page was already closed, skipping afterEach cleanup");
-        }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        console.error("Unexpected error in afterEach:", errorMessage);
-      }
+      await page.goto(config.urls.baseUrl, {
+        waitUntil: "load",
+        timeout: 15000,
+      });
+      await clearDownWrexhamSchedule(
+        sessionBookingPage,
+        hearingSchedulePage,
+        dataUtils,
+      );
     },
   );
 
@@ -102,9 +42,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
         waitUntil: "load",
         timeout: 15000,
       });
-      await ensurePageStability(page, 3000);
       await loginPage.login(config.users.testUser);
-      await ensurePageStability(page, 3000);
       await page.waitForLoadState("load", { timeout: 15000 }).catch(() => {
         console.log("Load state timeout, proceeding anyway");
       });
@@ -330,9 +268,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
         waitUntil: "load",
         timeout: 15000,
       });
-      await ensurePageStability(page, 3000);
       await loginPage.login(config.users.testUser);
-      await ensurePageStability(page, 3000);
       await page.waitForLoadState("load", { timeout: 15000 }).catch(() => {
         console.log("Load state timeout, proceeding anyway");
       });
@@ -517,23 +453,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
     }
   }
 
-  /**
-   * Ensures page stability by waiting for network and DOM to be ready
-   */
-  async function ensurePageStability(page, timeout = 3000) {
-    try {
-      await page.waitForLoadState("domcontentloaded", { timeout }).catch(() => {
-        console.log("DOM content loaded timeout, continuing");
-      });
-      await page.waitForTimeout(250); // Brief pause for rendering
-    } catch (e) {
-      console.log(
-        "Page stability check encountered issue:",
-        e instanceof Error ? e.message : String(e),
-      );
-    }
-  }
-
   async function reloadHearingSchedulePage(
     page,
     hearingSchedulePage,
@@ -542,7 +461,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
     location,
   ) {
     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-    await ensurePageStability(page);
     await hearingSchedulePage.waitForLoad();
 
     await sessionBookingPage.advancedFiltersButton.click();
@@ -662,14 +580,12 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
     baseOffset: number,
   ) {
     await caseSearchPage.sidebarComponent.openSearchCasePage();
-    await ensurePageStability(page);
     await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
     await expect(caseDetailsPage.addToCartButton).toBeVisible();
     await caseDetailsPage.addToCartButton.click();
     await expect(caseDetailsPage.sidebarComponent.cartButton).toBeEnabled();
 
     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-    await ensurePageStability(page);
     await hearingSchedulePage.waitForLoad();
 
     const adjustedOffset = await getAdjustedOffset(baseOffset);
