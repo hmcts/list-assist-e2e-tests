@@ -32,7 +32,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
         if (!page.isClosed()) {
           try {
             await page.goto(config.urls.baseUrl, {
-              waitUntil: "networkidle",
+              waitUntil: "load",
               timeout: 10000,
             });
             await clearDownWrexhamSchedule(
@@ -73,15 +73,13 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
   }) => {
     await test.step("Login and clear down Wrexham schedule", async () => {
       await page.goto(config.urls.baseUrl, {
-        waitUntil: "networkidle",
+        waitUntil: "load",
         timeout: 15000,
       });
       await loginPage.login(config.users.testUser);
-      await page
-        .waitForLoadState("networkidle", { timeout: 15000 })
-        .catch(() => {
-          console.log("Network idle timeout, proceeding anyway");
-        });
+      await page.waitForLoadState("load", { timeout: 15000 }).catch(() => {
+        console.log("Load state timeout, proceeding anyway");
+      });
       await clearDownWrexhamSchedule(
         sessionBookingPage,
         hearingSchedulePage,
@@ -301,15 +299,13 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
   }) => {
     await test.step("Login and clear down Wrexham schedule", async () => {
       await page.goto(config.urls.baseUrl, {
-        waitUntil: "networkidle",
+        waitUntil: "load",
         timeout: 15000,
       });
       await loginPage.login(config.users.testUser);
-      await page
-        .waitForLoadState("networkidle", { timeout: 15000 })
-        .catch(() => {
-          console.log("Network idle timeout, proceeding anyway");
-        });
+      await page.waitForLoadState("load", { timeout: 15000 }).catch(() => {
+        console.log("Load state timeout, proceeding anyway");
+      });
       await clearDownWrexhamSchedule(
         sessionBookingPage,
         hearingSchedulePage,
