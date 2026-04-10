@@ -9,7 +9,7 @@ import { clearDownSchedule } from "../../utils/reporting.utils.js";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po";
 import { config } from "../../utils";
 
-test.describe("Hearing channel test @hearing-channel @combined", () => {
+test.describe("Hearing channel test @hearing-channel", () => {
   test.beforeEach(
     async ({
       page,
