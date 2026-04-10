@@ -53,15 +53,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
         // Check if page is still valid before using it
         if (!page.isClosed()) {
           try {
-            // Add stability check: wait for network to be idle before cleanup
-            await page
-              .waitForLoadState("networkidle", { timeout: 5000 })
-              .catch(() => {
-                console.log(
-                  "Network idle timeout during cleanup, continuing anyway",
-                );
-              });
-
             await page.goto(config.urls.baseUrl, {
               waitUntil: "domcontentloaded",
               timeout: 10000,
@@ -536,7 +527,10 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       });
       await page.waitForTimeout(250); // Brief pause for rendering
     } catch (e) {
-      console.log("Page stability check encountered issue:", e instanceof Error ? e.message : String(e));
+      console.log(
+        "Page stability check encountered issue:",
+        e instanceof Error ? e.message : String(e),
+      );
     }
   }
 
