@@ -298,8 +298,9 @@ export class SessionBookingPage extends Base {
                 await johOption.click();
                 return true;
               } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                console.error('Failed to click JOH option:', errorMessage);
+                const errorMessage =
+                  error instanceof Error ? error.message : String(error);
+                console.error("Failed to click JOH option:", errorMessage);
                 return false;
               }
             }
@@ -352,17 +353,15 @@ export class SessionBookingPage extends Base {
   async selectListingDuration(duration: string) {
     // Wait for dropdown to be stable before selecting
     await this.listingDuration.waitFor({ state: "visible", timeout: 5000 });
-    // Optional network idle wait if needed
+    // Optional load state wait if needed
     try {
-      await this.page
-        .waitForLoadState("networkidle", { timeout: 3000 })
-        .catch(() => {
-          console.log(
-            "Network idle timeout in selectListingDuration, proceeding anyway",
-          );
-        });
+      await this.page.waitForLoadState("load", { timeout: 3000 }).catch(() => {
+        console.log(
+          "Load state timeout in selectListingDuration, proceeding anyway",
+        );
+      });
     } catch (error) {
-      console.error("Error during networkidle wait:", error);
+      console.error("Error during load state wait:", error);
     }
     await this.listingDuration.selectOption(duration);
   }

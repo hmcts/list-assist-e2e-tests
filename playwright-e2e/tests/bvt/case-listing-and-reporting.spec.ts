@@ -361,7 +361,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
     await listingRequirementsPage.multidayHearingDaysTextBox.fill("3");
     await caseDetailsPage.saveButton.click();
-    await caseDetailsPage.page.waitForLoadState("networkidle");
+    await caseDetailsPage.page.waitForLoadState("load");
 
     //open hearing schedule page
     await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
@@ -400,7 +400,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
     await hearingSchedulePage.saveButton.click();
     await hearingSchedulePage.waitForLoad();
-    await hearingSchedulePage.page.waitForLoadState("networkidle");
+    await hearingSchedulePage.page.waitForLoadState("load");
 
     //confirms that there are more than 1 and less than or equal to 5 sessions created
     // let releaseStatusCount =
@@ -416,7 +416,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       timeout: 10_000,
     });
     await cartAllSessionsButton.click();
-    await hearingSchedulePage.page.waitForLoadState("networkidle");
+    await hearingSchedulePage.page.waitForLoadState("load");
 
     //check multi-day cart is populated
     await hearingSchedulePage.sidebarComponent.checkMultiDayCartButtonEnabled();
