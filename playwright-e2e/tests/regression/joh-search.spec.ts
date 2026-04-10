@@ -521,30 +521,31 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering 
     await sessionBookingPage.locationFilterToggleButton.click();
   }
 
-  function applyPrimaryDateFilterForSameDay(
+  async function applyPrimaryDateFilterForSameDay(
     hearingSchedulePage,
     dataUtils,
     offset: number,
   ) {
-    const today = new Date();
-    const adjustedOffset = today.getDay() === 5 ? offset + 3 : offset;
+    const adjustedOffset = await getAdjustedOffset(offset);
+
     return hearingSchedulePage.applyPrimaryDateFilter(
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
     );
   }
 
-  function applyPrimaryDateFilterForDifferentDays(
+  async function applyPrimaryDateFilterForDifferentDays(
     hearingSchedulePage,
     dataUtils,
     fromOffset: number,
     toOffset: number,
   ) {
-    const today = new Date();
-    const offset = today.getDay() === 5 ? 3 : 0;
+    const adjustedFrom = await getAdjustedOffset(fromOffset);
+    const adjustedTo = await getAdjustedOffset(toOffset);
+
     return hearingSchedulePage.applyPrimaryDateFilter(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(fromOffset + offset),
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(toOffset + offset),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedFrom),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedTo),
     );
   }
 
@@ -563,10 +564,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering 
     jurisdictionConstant: string,
     baseOffset: number,
   ) {
-    const today = new Date();
-    // If Friday, add 3 to the base offset, otherwise use base offset
-    const dateOffset = today.getDay() === 5 ? baseOffset + 3 : baseOffset;
-
     await caseSearchPage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
     await expect(caseDetailsPage.addToCartButton).toBeVisible();
@@ -576,10 +573,12 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering 
     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
     await hearingSchedulePage.waitForLoad();
 
+    const adjustedOffset = await getAdjustedOffset(baseOffset);
     await hearingSchedulePage.applyPrimaryDateFilter(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(dateOffset),
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(dateOffset),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
     );
+
     await hearingSchedulePage.waitForLoad();
 
     await hearingSchedulePage.scheduleHearingWithBasket(
@@ -593,5 +592,31 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering 
       johConstant,
       jurisdictionConstant,
     );
+  }
+  async function getAdjustedOffset(offset: number): Promise<number> {
+    const today = new Date();
+
+    if (offset === 0) {
+      return 0;
+    }
+    if (today.getDay() === 5) {
+      // Friday
+      if (offset === 1) {
+        return 3;
+      }
+      if (offset > 1) {
+        return offset + 3;
+      }
+    }
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + offset);
+    const day = targetDate.getDay();
+    if (day === 6) {
+      return offset + 2; // Saturday → Monday
+    }
+    if (day === 0) {
+      return offset + 1; // Sunday → Monday
+    }
+    return offset;
   }
 });
