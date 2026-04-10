@@ -543,30 +543,78 @@ export class HearingSchedulePage extends Base {
   }
 
   async applyPrimaryDateFilter(dateTo: string, dateFrom: string) {
+    await this.primaryFilterToggleButton.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.primaryFilterToggleButton.click();
+    await this.page.waitForTimeout(300); // Wait for filter UI to expand
+
+    await this.primaryFilterFromDateInput.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.primaryFilterFromDateInput.click();
     await this.waitForLoad();
-    await this.primaryFilterDateInput(dateFrom).click();
+
+    const fromDateInput = this.primaryFilterDateInput(dateFrom);
+    await fromDateInput.waitFor({ state: "visible", timeout: 5000 });
+    await fromDateInput.click();
     await this.waitForLoad();
-    await this.primaryFilterDateInput(dateTo).click();
+
+    const toDateInput = this.primaryFilterDateInput(dateTo);
+    await toDateInput.waitFor({ state: "visible", timeout: 5000 });
+    await toDateInput.click();
     await this.waitForLoad();
+
+    await this.applyPrimaryFilterButton.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.applyPrimaryFilterButton.click();
   }
 
   async clearAllPrimaryFilters() {
     await this.waitForLoad();
+    await this.primaryFilterClearAllLocalityFilterOptions.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.primaryFilterClearAllLocalityFilterOptions.click();
+
+    await this.primaryFilterClearAllSessionTypeFilterOptions.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.primaryFilterClearAllSessionTypeFilterOptions.click();
+
+    await this.primaryFilterClearAllJohTierFilterOptions.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.primaryFilterClearAllJohTierFilterOptions.click();
+
+    await this.primaryFilterClearAllJohInclusionFilterOptions.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.primaryFilterClearAllJohInclusionFilterOptions.click();
   }
 
   async primaryFilterSelectLocality(locality: string) {
+    await this.primaryFilterLocalityDropdown.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.primaryFilterLocalityDropdown.click();
+    await this.page.waitForTimeout(300); // Wait for dropdown animation
     // Then select an option from the list, e.g.:
-    await this.page
-      .getByRole("option", { name: locality, exact: true })
-      .click();
+    const option = this.page.getByRole("option", {
+      name: locality,
+      exact: true,
+    });
+    await option.waitFor({ state: "visible", timeout: 5000 });
+    await option.click();
   }
 
   /**

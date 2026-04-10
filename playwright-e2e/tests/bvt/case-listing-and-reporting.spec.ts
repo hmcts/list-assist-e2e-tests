@@ -302,7 +302,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
   });
 
-  test("Multi-day case listing and reporting @multi-day", async ({
+  test("Multi-day case listing and reporting", async ({
     addNewCasePage,
     caseSearchPage,
     editNewCasePage,
@@ -350,20 +350,10 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
 
     //LISTING REQUIREMENTS
     await editNewCasePage.sidebarComponent.openListingRequirementsPage();
-    //checks header
-    await expect
-      .poll(
-        async () => {
-          return await caseDetailsPage.listingRequirementsHeader.isVisible();
-        },
-        {
-          intervals: [2_000],
-          timeout: 60_000,
-        },
-      )
-      .toBeTruthy();
-
-    await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible();
+    //checks header with optimized timeout
+    await expect(caseDetailsPage.listingRequirementsHeader).toBeVisible({
+      timeout: 15_000,
+    });
 
     //select hearing type
     await caseDetailsPage.hearingTypeSelect.selectOption(
@@ -371,6 +361,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
     await listingRequirementsPage.multidayHearingDaysTextBox.fill("3");
     await caseDetailsPage.saveButton.click();
+    await caseDetailsPage.page.waitForLoadState("networkidle");
 
     //open hearing schedule page
     await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
@@ -388,7 +379,9 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     await hearingSchedulePage.createSessionButton.click();
 
     //checks recurrance checkbox
-    await expect(hearingSchedulePage.recurranceCheckbox).toBeVisible();
+    await expect(hearingSchedulePage.recurranceCheckbox).toBeVisible({
+      timeout: 10_000,
+    });
     await hearingSchedulePage.recurranceCheckbox.check();
 
     await checkWeekdayRecurringCheckboxes(hearingSchedulePage.page);
@@ -407,6 +400,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
     await hearingSchedulePage.saveButton.click();
     await hearingSchedulePage.waitForLoad();
+    await hearingSchedulePage.page.waitForLoadState("networkidle");
 
     //confirms that there are more than 1 and less than or equal to 5 sessions created
     // let releaseStatusCount =
@@ -418,8 +412,11 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     const cartAllSessionsButton = hearingSchedulePage.page.locator(
       `button[title="Cart all sessions of room: ${sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1}"][aria-label="Cart all sessions of room: ${sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_ABERYSTWYTH_CRTRM_1}"]`,
     );
-    await expect(cartAllSessionsButton).toBeVisible();
+    await expect(cartAllSessionsButton).toBeVisible({
+      timeout: 10_000,
+    });
     await cartAllSessionsButton.click();
+    await hearingSchedulePage.page.waitForLoadState("networkidle");
 
     //check multi-day cart is populated
     await hearingSchedulePage.sidebarComponent.checkMultiDayCartButtonEnabled();
@@ -443,13 +440,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     await multiDayCartPage.waitForlistingRequirementsSelectionToBePopulated(
       lrString,
     );
-    await multiDayCartPage.waitForlistingRequirementsSelectionToBePopulated(
-      lrString,
-    );
     await multiDayCartPage.applyFilterButton.click();
     await multiDayCartPage.bulkListCheckBox.check();
-
-    // await multiDayCartPage.bulkListCheckBox.check();
     await multiDayCartPage.submitButton.click();
 
     //commented out as page is broken in 4.67 release

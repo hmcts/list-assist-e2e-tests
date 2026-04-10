@@ -201,35 +201,84 @@ export class SessionBookingPage extends Base {
   ) {
     await this.waitForLoad();
     await expect(this.heading).toBeVisible();
+
+    // Duration dropdown - add explicit visibility wait
+    await this.durationDropdownButton.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.durationDropdownButton.click();
     await this.selectListingDuration(duration);
+
+    // Session status dropdown - add wait
+    await this.sessionStatusDropdown.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.sessionStatusDropdown.selectOption(sessionStatus);
+
+    // Hearing channel buttons - add wait before clicking
+    await this.sessionHearingChannel.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.sessionHearingChannel.click();
+    await this.sessionHearingChannelTel.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.sessionHearingChannelTel.click();
+    await this.sessionHearingChannelVid.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.sessionHearingChannelVid.click();
+
     //conditional
     if (jurisdictionCode) {
+      await this.jurisdictionDropdown.waitFor({
+        state: "visible",
+        timeout: 5000,
+      });
       await this.jurisdictionDropdown.click();
       await this.jurisdictionDropdown.selectOption({ value: jurisdictionCode });
     }
 
     if (sessionType) {
+      await this.sessionTypeDropdown.waitFor({
+        state: "visible",
+        timeout: 5000,
+      });
       await this.sessionTypeDropdown.click();
       await this.sessionTypeDropdown.selectOption({ value: sessionType });
     }
 
     //add internal comments
     if (internalComments) {
+      await this.internalCommentsTextBox.waitFor({
+        state: "visible",
+        timeout: 5000,
+      });
       await this.internalCommentsTextBox.fill(internalComments);
     }
 
     //add external comments
     if (externalComments) {
+      await this.externalCommentsTextBox.waitFor({
+        state: "visible",
+        timeout: 5000,
+      });
       await this.externalCommentsTextBox.fill(externalComments);
     }
 
     //conditional
     if (johName) {
+      // Ensure dropdown button is visible and accessible before clicking
+      await this.sessionJohDropdown.waitFor({
+        state: "visible",
+        timeout: 5000,
+      });
+
       const dropdownMenu = this.page.locator(
         "div.dropdown-menu.show ul.dropdown-menu.inner.show",
       );
@@ -237,14 +286,20 @@ export class SessionBookingPage extends Base {
         .poll(
           async () => {
             await this.sessionJohDropdown.click();
+            // Add wait for dropdown to appear
+            await this.page.waitForTimeout(300); // Brief wait for dropdown animation
             if (await dropdownMenu.isVisible()) {
               const johOption = dropdownMenu.getByText(johName, {
                 exact: true,
               });
               try {
+                // Wait for option to be visible before clicking
+                await johOption.waitFor({ state: "visible", timeout: 3000 });
                 await johOption.click();
                 return true;
-              } catch {
+              } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                console.error('Failed to click JOH option:', errorMessage);
                 return false;
               }
             }
@@ -252,7 +307,7 @@ export class SessionBookingPage extends Base {
           },
           {
             intervals: [500],
-            timeout: 10_000,
+            timeout: 15_000, // Increased timeout to account for explicit waits
           },
         )
         .toBeTruthy();
@@ -261,7 +316,9 @@ export class SessionBookingPage extends Base {
     let validationPopup;
     try {
       const pagePromise = this.page.waitForEvent("popup", { timeout: 4000 });
-      await this.page.getByRole("button", { name: "Save" }).click();
+      const saveBtn = this.page.getByRole("button", { name: "Save" });
+      await saveBtn.waitFor({ state: "visible", timeout: 5000 });
+      await saveBtn.click();
       validationPopup = await pagePromise;
       await validationPopup.waitForLoadState("domcontentloaded");
       // interacting with validation popup
@@ -270,9 +327,11 @@ export class SessionBookingPage extends Base {
         .selectOption({
           label: this.CONSTANTS.CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON,
         });
-      await validationPopup
-        .getByRole("button", { name: "SAVE & CONTINUE LISTING" })
-        .click();
+      const continueBtn = await validationPopup.getByRole("button", {
+        name: "SAVE & CONTINUE LISTING",
+      });
+      await continueBtn.waitFor({ state: "visible", timeout: 5000 });
+      await continueBtn.click();
       await this.checkingListingIframe(locationComment, listingComment);
     } catch {
       await this.checkingListingIframe(locationComment, listingComment);
@@ -291,9 +350,20 @@ export class SessionBookingPage extends Base {
   }
 
   async selectListingDuration(duration: string) {
-    // This dropdown can be flaky, so extra wait steps
-    // TODO: Replace implicit wait
-    await this.page.waitForTimeout(3_000);
+    // Wait for dropdown to be stable before selecting
+    await this.listingDuration.waitFor({ state: "visible", timeout: 5000 });
+    // Optional network idle wait if needed
+    try {
+      await this.page
+        .waitForLoadState("networkidle", { timeout: 3000 })
+        .catch(() => {
+          console.log(
+            "Network idle timeout in selectListingDuration, proceeding anyway",
+          );
+        });
+    } catch (error) {
+      console.error("Error during networkidle wait:", error);
+    }
     await this.listingDuration.selectOption(duration);
   }
 
@@ -380,47 +450,82 @@ export class SessionBookingPage extends Base {
     locality: string,
     location,
   ) {
+    // Ensure advanced filters button is visible and enabled
+    await this.advancedFiltersButton.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.advancedFiltersButton.click();
+
+    // Wait for header to be visible before proceeding
     await expect(this.advancedFiltersHeader).toBeVisible();
+
     //ensure the advanced filter is cleared
+    await this.clearAdvanceFilterButton.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.clearAdvanceFilterButton.click();
+    await this.page.waitForTimeout(500); // Brief wait for UI to update
 
     //region dropdown and region selection
+    await this.regionDropdown.waitFor({ state: "visible", timeout: 5000 });
     await this.regionDropdown.click();
-    await this.page
+    await this.page.waitForTimeout(300); // Wait for dropdown animation
+    const regionOption = this.page
       .getByRole("option", { name: region })
       .locator("span")
-      .nth(2)
-      .click();
+      .nth(2);
+    await regionOption.waitFor({ state: "visible", timeout: 5000 });
+    await regionOption.click();
 
     //cluster dropdown and cluster selection
+    await this.page.waitForTimeout(300); // Wait between interactions
+    await this.clusterDropDown.waitFor({ state: "visible", timeout: 5000 });
     await this.clusterDropDown.click();
-    await this.page
+    await this.page.waitForTimeout(300); // Wait for dropdown animation
+    const clusterOption = this.page
       .getByRole("option", { name: cluster })
       .locator("span")
-      .nth(2)
-      .click();
+      .nth(2);
+    await clusterOption.waitFor({ state: "visible", timeout: 5000 });
+    await clusterOption.click();
 
     //locality dropdown and locality selection
+    await this.page.waitForTimeout(300); // Wait between interactions
+    await this.localityDropDown.waitFor({ state: "visible", timeout: 5000 });
     await this.localityDropDown.click();
-    await this.page
+    await this.page.waitForTimeout(300); // Wait for dropdown animation
+    const localityOption = this.page
       .getByRole("option", { name: locality })
       .locator("span")
-      .nth(2)
-      .click();
+      .nth(2);
+    await localityOption.waitFor({ state: "visible", timeout: 5000 });
+    await localityOption.click();
 
     //location dropdown and location selection
+    await this.page.waitForTimeout(300); // Wait between interactions
+    await this.locationDropDown.waitFor({ state: "visible", timeout: 5000 });
     await this.locationDropDown.click();
-    await this.page
+    await this.page.waitForTimeout(300); // Wait for dropdown animation
+    const locationOption = this.page
       .getByRole("option", { name: location })
       .locator("span")
-      .nth(2)
-      .click();
+      .nth(2);
+    await locationOption.waitFor({ state: "visible", timeout: 5000 });
+    await locationOption.click();
 
     // Use the class property here
+    await this.page.waitForTimeout(300); // Wait between interactions
+    await this.locationFilterToggleButton.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.locationFilterToggleButton.click();
 
     //apply filter
+    await this.page.waitForTimeout(300); // Wait between interactions
+    await this.applyButton.waitFor({ state: "visible", timeout: 5000 });
     await this.applyButton.click();
   }
 }

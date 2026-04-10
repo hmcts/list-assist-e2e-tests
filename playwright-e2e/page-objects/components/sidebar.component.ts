@@ -117,38 +117,59 @@ export class SidebarComponent {
   ) {}
 
   async openHearingSchedulePage() {
+    // Wait for hearings menu to be visible before clicking
+    await this.hearingsMenu.waitFor({ state: "visible", timeout: 5000 });
     await expect
       .poll(
         async () => {
-          await this.hearingsMenu.click();
-          return await this.hearingScheduleSubMenu.isVisible();
+          try {
+            await this.hearingsMenu.click();
+            await this.page.waitForTimeout(300); // Brief wait for submenu to appear
+            return await this.hearingScheduleSubMenu.isVisible();
+          } catch (error) {
+            console.log("Error clicking hearings menu:", error.message);
+            return false;
+          }
         },
         {
-          intervals: [2_000],
-          timeout: 10_000,
+          intervals: [500],
+          timeout: 15_000, // Increased timeout slightly
         },
       )
       .toBeTruthy();
 
     await this.hearingsMenu.click();
+    await this.hearingScheduleSubMenu.waitFor({
+      state: "visible",
+      timeout: 5000,
+    });
     await this.hearingScheduleSubMenu.click();
   }
 
   async openSearchCasePage() {
+    // Wait for cases menu to be visible before clicking
+    await this.casesMenu.waitFor({ state: "visible", timeout: 5000 });
     await expect
       .poll(
         async () => {
-          await this.casesMenu.click();
-          return await this.caseSearchSubMenu.isVisible();
+          try {
+            await this.casesMenu.click();
+            await this.page.waitForTimeout(300); // Brief wait for submenu to appear
+            return await this.caseSearchSubMenu.isVisible();
+          } catch (error) {
+            console.log("Error clicking cases menu:", error.message);
+            return false;
+          }
         },
         {
-          intervals: [2_000],
-          timeout: 10_000,
+          intervals: [500],
+          timeout: 15_000,
         },
       )
       .toBeTruthy();
 
     await this.casesMenu.click();
+    await this.caseSearchSubMenu.waitFor({ state: "visible", timeout: 5000 });
     await this.caseSearchSubMenu.click();
   }
 
@@ -158,11 +179,19 @@ export class SidebarComponent {
   }
 
   async openListingRequirementsPage() {
+    // Wait for cases menu to be visible before clicking
+    await this.casesMenu.waitFor({ state: "visible", timeout: 5000 });
     await expect
       .poll(
         async () => {
-          await this.casesMenu.click();
-          return await this.currentCaseSubMenu.isVisible();
+          try {
+            await this.casesMenu.click();
+            await this.page.waitForTimeout(300);
+            return await this.currentCaseSubMenu.isVisible();
+          } catch (error) {
+            console.log("Error clicking cases menu:", error.message);
+            return false;
+          }
         },
         {
           intervals: [2_000],

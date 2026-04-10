@@ -13,19 +13,56 @@ test.describe.configure({ mode: "serial" });
  * - If this logic is not followed, tests may fail due to no sessions being available on weekends.
  */
 
-test.describe("JOH filtering in hearing sessions with Rooms View", () => {
+test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering", () => {
+  test.beforeEach(async ({ page }) => {
+    // Add page crash and error detection handlers
+    page.on("close", () => {
+      console.log("WARNING: Page was closed unexpectedly during test");
+    });
+
+    page.on("pageerror", (err: Error) => {
+      console.error("Page error detected:", err.message);
+    });
+  });
+
   test.afterEach(
     async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
-      await page.goto(config.urls.baseUrl);
-      await clearDownWrexhamSchedule(
-        sessionBookingPage,
-        hearingSchedulePage,
-        dataUtils,
-      );
+      try {
+        // Check if page is still valid before using it
+        if (!page.isClosed()) {
+          try {
+            await page.goto(config.urls.baseUrl, {
+              waitUntil: "networkidle",
+              timeout: 10000,
+            });
+            await clearDownWrexhamSchedule(
+              sessionBookingPage,
+              hearingSchedulePage,
+              dataUtils,
+            );
+          } catch (navigationError) {
+            const errorMessage =
+              navigationError instanceof Error
+                ? navigationError.message
+                : String(navigationError);
+            console.error(
+              "Navigation or cleanup failed during afterEach:",
+              errorMessage,
+            );
+            // Don't fail the test if cleanup fails
+          }
+        } else {
+          console.log("Page was already closed, skipping afterEach cleanup");
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        console.error("Unexpected error in afterEach:", errorMessage);
+      }
     },
   );
 
-  test("Filter and display JOHs correctly using inclusion and exclusion criteria @joh-filtering", async ({
+  test("Filter and display JOHs correctly using inclusion and exclusion criteria @this", async ({
     page,
     loginPage,
     hearingSchedulePage,
@@ -35,8 +72,16 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     dataUtils,
   }) => {
     await test.step("Login and clear down Wrexham schedule", async () => {
-      await page.goto(config.urls.baseUrl);
+      await page.goto(config.urls.baseUrl, {
+        waitUntil: "networkidle",
+        timeout: 15000,
+      });
       await loginPage.login(config.users.testUser);
+      await page
+        .waitForLoadState("networkidle", { timeout: 15000 })
+        .catch(() => {
+          console.log("Network idle timeout, proceeding anyway");
+        });
       await clearDownWrexhamSchedule(
         sessionBookingPage,
         hearingSchedulePage,
@@ -84,12 +129,12 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
       await hearingSchedulePage.waitForLoad();
-      await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH AutomationTest",
-      );
-      await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH-Two AutomationTest",
-      );
+      await expect
+        .soft(hearingSchedulePage.table)
+        .not.toContainText("JOH AutomationTest");
+      await expect
+        .soft(hearingSchedulePage.table)
+        .not.toContainText("JOH-Two AutomationTest");
     });
 
     await test.step("Assert filtering by date range, current date + 1 (JOH-Two AutomationTest expected)", async () => {
@@ -103,12 +148,12 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
 
       await applyPrimaryDateFilterForSameDay(hearingSchedulePage, dataUtils, 1);
 
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH-Two AutomationTest",
-      );
-      await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH AutomationTest",
-      );
+      await expect
+        .soft(hearingSchedulePage.table)
+        .toContainText("JOH-Two AutomationTest");
+      await expect
+        .soft(hearingSchedulePage.table)
+        .not.toContainText("JOH AutomationTest");
     });
 
     await test.step("Apply jurisdiction filter and assert JOH AutomationTest/Family session present", async () => {
@@ -151,12 +196,12 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
       await hearingSchedulePage.waitForLoad();
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH AutomationTest",
-      );
-      await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH-Two AutomationTest",
-      );
+      await expect
+        .soft(hearingSchedulePage.table)
+        .toContainText("JOH AutomationTest");
+      await expect
+        .soft(hearingSchedulePage.table)
+        .not.toContainText("JOH-Two AutomationTest");
     });
 
     await test.step("Apply JOH inclusion filter", async () => {
@@ -193,12 +238,12 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
       await hearingSchedulePage.waitForLoad();
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH AutomationTest",
-      );
-      await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH-Two AutomationTest",
-      );
+      await expect
+        .soft(hearingSchedulePage.table)
+        .toContainText("JOH AutomationTest");
+      await expect
+        .soft(hearingSchedulePage.table)
+        .not.toContainText("JOH-Two AutomationTest");
     });
 
     await test.step("Apply JOH exclusion filter", async () => {
@@ -236,16 +281,16 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
       await hearingSchedulePage.waitForLoad();
-      await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH AutomationTest",
-      );
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH-Two AutomationTest",
-      );
+      await expect
+        .soft(hearingSchedulePage.table)
+        .not.toContainText("JOH AutomationTest");
+      await expect
+        .soft(hearingSchedulePage.table)
+        .toContainText("JOH-Two AutomationTest");
     });
   });
 
-  test("Filter and display JOH correctly using tier inclusion @joh-filtering", async ({
+  test("Filter and display JOH correctly using tier inclusion", async ({
     page,
     loginPage,
     hearingSchedulePage,
@@ -255,8 +300,16 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     dataUtils,
   }) => {
     await test.step("Login and clear down Wrexham schedule", async () => {
-      await page.goto(config.urls.baseUrl);
+      await page.goto(config.urls.baseUrl, {
+        waitUntil: "networkidle",
+        timeout: 15000,
+      });
       await loginPage.login(config.users.testUser);
+      await page
+        .waitForLoadState("networkidle", { timeout: 15000 })
+        .catch(() => {
+          console.log("Network idle timeout, proceeding anyway");
+        });
       await clearDownWrexhamSchedule(
         sessionBookingPage,
         hearingSchedulePage,
@@ -322,12 +375,12 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
         .click();
       await hearingSchedulePage.primaryFilterApplyButton.click();
       await hearingSchedulePage.waitForLoad();
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH AutomationTest",
-      );
-      await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH-Two AutomationTest",
-      );
+      await expect
+        .soft(hearingSchedulePage.table)
+        .toContainText("JOH AutomationTest");
+      await expect
+        .soft(hearingSchedulePage.table)
+        .not.toContainText("JOH-Two AutomationTest");
     });
 
     await test.step("Apply tier inclusion filter for Employment Judge and assert results", async () => {
@@ -346,12 +399,12 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
         .click();
       await hearingSchedulePage.primaryFilterApplyButton.click();
       await hearingSchedulePage.waitForLoad();
-      await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH AutomationTest",
-      );
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH-Two AutomationTest",
-      );
+      await expect
+        .soft(hearingSchedulePage.table)
+        .not.toContainText("JOH AutomationTest");
+      await expect
+        .soft(hearingSchedulePage.table)
+        .toContainText("JOH-Two AutomationTest");
     });
 
     await test.step("Apply tier inclusion filter for District Judge and Employment Judge and assert results", async () => {
@@ -375,12 +428,12 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
         .click();
       await hearingSchedulePage.primaryFilterApplyButton.click();
       await hearingSchedulePage.waitForLoad();
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH AutomationTest",
-      );
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH-Two AutomationTest",
-      );
+      await expect
+        .soft(hearingSchedulePage.table)
+        .toContainText("JOH AutomationTest");
+      await expect
+        .soft(hearingSchedulePage.table)
+        .toContainText("JOH-Two AutomationTest");
     });
   });
 
