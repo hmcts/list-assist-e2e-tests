@@ -127,7 +127,9 @@ export class SidebarComponent {
             await this.page.waitForTimeout(300); // Brief wait for submenu to appear
             return await this.hearingScheduleSubMenu.isVisible();
           } catch (error) {
-            console.log("Error clicking hearings menu:", error.message);
+            const errorMessage =
+              error instanceof Error ? error.message : String(error);
+            console.log("Error clicking hearings menu:", errorMessage);
             return false;
           }
         },
@@ -157,7 +159,9 @@ export class SidebarComponent {
             await this.page.waitForTimeout(300); // Brief wait for submenu to appear
             return await this.caseSearchSubMenu.isVisible();
           } catch (error) {
-            console.log("Error clicking cases menu:", error.message);
+            const errorMessage =
+              error instanceof Error ? error.message : String(error);
+            console.log("Error clicking cases menu:", errorMessage);
             return false;
           }
         },
@@ -189,7 +193,9 @@ export class SidebarComponent {
             await this.page.waitForTimeout(300);
             return await this.currentCaseSubMenu.isVisible();
           } catch (error) {
-            console.log("Error clicking cases menu:", error.message);
+            const errorMessage =
+              error instanceof Error ? error.message : String(error);
+            console.log("Error clicking cases menu:", errorMessage);
             return false;
           }
         },
