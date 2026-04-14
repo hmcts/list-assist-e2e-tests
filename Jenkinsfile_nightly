@@ -46,6 +46,7 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 
 def secrets = [
   'snl-automation-bts-stg': [
+    // TRG secrets
     secret('test-password', 'TEST_PASSWORD'),
     secret('test-username', 'TEST_USERNAME'),
     secret('trg-base-url', 'TRG_BASE_URL'),
@@ -56,6 +57,10 @@ def secrets = [
     secret('hmi-token-tenant', 'HMI_TOKEN_TENANT'),
     secret('hmi-grant-type', 'HMI_GRANT_TYPE'),
     secret('hmi-trg-api-url', 'HMI_TRG_API_URL'),
+
+    // SIT secrets
+    secret('sit-base-url', 'SIT_BASE_URL'),
+    secret('hmi-sit-api-url', 'SIT_HMI_API_URL'),
 
     //Test Users
     secret('user-christopher-hall', 'USER_CHRISTOPHER_HALL'),
@@ -78,6 +83,7 @@ def secrets = [
     secret('password-jason-martin', 'PASSWORD_JASON_MARTIN'),
     secret('user-mia-rodriguez', 'USER_MIA_RODRIGUEZ'),
     secret('password-mia-rodriguez', 'PASSWORD_MIA_RODRIGUEZ'),
+
   ]
 ]
 
@@ -106,14 +112,16 @@ withNightlyPipeline(type, product, component, 600) {
 
   def browsers = ['chrome']
   def testConfigs = [
-    [name: 'Parallel Tests', grep: '@add-new-case|@hearing-channel|@joh-filtering'],
     [name: 'UI Tests', grep: '@ui-test', skipCreateCase: 'true'],
     [name: 'Add Participant Tests', grep: '@add-participant'],
+    [name: 'Case Creation Tests', grep: '@add-new-case'],
     [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting'],
+    [name: 'Hearing Channel Tests', grep: '@hearing-channel'],
     [name: 'Add new user test', grep: '@add-user', skipCreateCase: true],
     [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
     //this only runs a subset of anonymisation tests in the nightly run. 
     [name: 'Anonymisation tests', grep: '@anon-nightly', skipCreateCase: true],
+    [name: 'JOH filtering tests', grep: '@joh-filtering'],
     // Only run Amend Api Tests before listing in Chrome
     [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true],
     // Only run Amend Api test after listing in Chrome
