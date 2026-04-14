@@ -100,15 +100,7 @@ def buildPlaywrightCommand(tags) {
   def command = "playwright test --workers=${params.FUNCTIONAL_TESTS_WORKERS}"
   tagList.each { tag ->
     if (!tag.isEmpty()) {
-      command += " --grep ${tag} --project ${params.browser}"
-    }
-  }
-  return command
-}
-
-withNightlyPipeline(type, product, component, 600) {
-  loadVaultSecrets(secrets)
-  env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
+      command += " --grep \"${tag}\" --project ${params.browser}"
   env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
@@ -117,13 +109,15 @@ withNightlyPipeline(type, product, component, 600) {
 
   def browsers = ['chrome']
   def testConfigs = [
-    [name: 'Parallel Tests', grep: '@add-new-case|@hearing-channel|@joh-filtering'],
     [name: 'UI Tests', grep: '@ui-test'],
     [name: 'Add Participant Tests', grep: '@add-participant'],
+    [name: 'Case Creation Tests', grep: '@add-new-case'],
     [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting'],
+    [name: 'Hearing Channel Tests', grep: '@hearing-channel'],
     [name: 'Add new user test', grep: '@add-user', skipCreateCase: true],
     [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
     [name: 'Anonymisation tests', grep: '@anonymisation', skipCreateCase: true],
+    [name: 'JOH filtering tests', grep: '@joh-filtering'],
 
     // Only run Amend Api Tests before listing in Chrome
     [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true],
@@ -135,7 +129,7 @@ withNightlyPipeline(type, product, component, 600) {
     testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
       [
         name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test --project=${browser} --grep ${cfg.grep} --workers=${params.FUNCTIONAL_TESTS_WORKERS}",
+        command: "playwright test --project=${browser} --grep \"${cfg.grep}\" --workers=${params.FUNCTIONAL_TESTS_WORKERS}",
         skipCreateCase: cfg.skipCreateCase
       ]
     }
@@ -153,7 +147,7 @@ withNightlyPipeline(type, product, component, 600) {
     regressionConfigs.collect { cfg ->
       [
         name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test ${cfg.path} --project=${browser} --grep ${cfg.grep} --workers=${params.FUNCTIONAL_TESTS_WORKERS}"
+        command: "playwright test ${cfg.path} --project=${browser} --grep \"${cfg.grep}\" --workers=${params.FUNCTIONAL_TESTS_WORKERS}"
       ]
     }
   }
