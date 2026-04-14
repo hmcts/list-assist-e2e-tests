@@ -46,8 +46,8 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 
 def secrets = [
   'snl-automation-bts-stg': [
-    secret('test-password', 'TEST_PASSWORD'),
-    secret('test-username', 'TEST_USERNAME'),
+    secret('test-password', 'TEST_USERNAME'),
+    secret('test-username', 'TEST_PASSWORD'),
     secret('trg-base-url', 'TRG_BASE_URL'),
     secret('hmi-client-id', 'HMI_CLIENT_ID'),
     secret('hmi-client-secret', 'HMI_CLIENT_SECRET'),
@@ -56,28 +56,6 @@ def secrets = [
     secret('hmi-token-tenant', 'HMI_TOKEN_TENANT'),
     secret('hmi-grant-type', 'HMI_GRANT_TYPE'),
     secret('hmi-trg-api-url', 'HMI_TRG_API_URL'),
-
-    //Test Users
-    secret('user-christopher-hall', 'USER_CHRISTOPHER_HALL'),
-    secret('password-christopher-hall', 'PASSWORD_CHRISTOPHER_HALL'),
-    secret('user-olivia-clark', 'USER_OLIVIA_CLARK'),
-    secret('password-olivia-clark', 'PASSWORD_OLIVIA_CLARK'),
-    secret('user-patrick-lewis', 'USER_PATRICK_LEWIS'),
-    secret('password-patrick-lewis', 'PASSWORD_PATRICK_LEWIS'),
-    secret('user-isabella-walker', 'USER_ISABELLA_WALKER'),
-    secret('password-isabella-walker', 'PASSWORD_ISABELLA_WALKER'),
-    secret('user-kevin-young', 'USER_KEVIN_YOUNG'),
-    secret('password-kevin-young', 'PASSWORD_KEVIN_YOUNG'),
-    secret('user-amelia-king', 'USER_AMELIA_KING'),
-    secret('password-amelia-king', 'PASSWORD_AMELIA_KING'),
-    secret('user-ryan-wright', 'USER_RYAN_WRIGHT'),
-    secret('password-ryan-wright', 'PASSWORD_RYAN_WRIGHT'),
-    secret('user-sophia-lopez', 'USER_SOPHIA_LOPEZ'),
-    secret('password-sophia-lopez', 'PASSWORD_SOPHIA_LOPEZ'),
-    secret('user-jason-martin', 'USER_JASON_MARTIN'),
-    secret('password-jason-martin', 'PASSWORD_JASON_MARTIN'),
-    secret('user-mia-rodriguez', 'USER_MIA_RODRIGUEZ'),
-    secret('password-mia-rodriguez', 'PASSWORD_MIA_RODRIGUEZ'),
   ]
 ]
 
@@ -106,17 +84,16 @@ withNightlyPipeline(type, product, component, 600) {
 
   def browsers = ['chrome']
   def testConfigs = [
-    [name: 'UI Tests', grep: '@ui-test'],
+    [name: 'UI Tests', grep: '@ui-test', skipCreateCase: 'true'],
     [name: 'Add Participant Tests', grep: '@add-participant'],
     [name: 'Case Creation Tests', grep: '@add-new-case'],
     [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting'],
     [name: 'Hearing Channel Tests', grep: '@hearing-channel'],
     [name: 'Add new user test', grep: '@add-user', skipCreateCase: true],
     [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
-    [name: 'Anonymisation tests', grep: '@anonymisation', skipCreateCase: true],
-    [name: 'JOH filtering tests', grep: '@joh-filtering'],
     //this only runs a subset of anonymisation tests in the nightly run. 
     [name: 'Anonymisation tests', grep: '@anon-nightly', skipCreateCase: true],
+    [name: 'JOH filtering tests', grep: '@joh-filtering'],
     // Only run Amend Api Tests before listing in Chrome
     [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true],
     // Only run Amend Api test after listing in Chrome
