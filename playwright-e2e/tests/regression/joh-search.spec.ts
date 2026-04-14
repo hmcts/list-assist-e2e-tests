@@ -1,6 +1,12 @@
 import { test, expect } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
 import { clearDownSchedule } from "../../utils/reporting.utils.js";
+import { LoginPage } from "../../page-objects/pages/login.po.js";
+import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.js";
+import { HearingSchedulePage } from "../../page-objects/pages/hearings/hearing-schedule.po.js";
+import { CaseSearchPage } from "../../page-objects/pages/cases/case-search.po.js";
+import { CaseDetailsPage } from "../../page-objects/pages/cases/case-details.po.js";
+import { DataUtils } from "../../utils/data.utils.js";
 
 test.describe.configure({ mode: "serial" });
 
@@ -13,36 +19,24 @@ test.describe.configure({ mode: "serial" });
  * - If this logic is not followed, tests may fail due to no sessions being available on weekends.
  */
 
-test.describe("JOH filtering in hearing sessions with Rooms View", () => {
-  test.afterEach(
-    async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
-      await page.goto(config.urls.baseUrl);
-      await clearDownWrexhamSchedule(
-        sessionBookingPage,
-        hearingSchedulePage,
-        dataUtils,
-      );
-    },
-  );
+test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering", () => {
+  test.beforeAll(async ({ browser }) => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    const loginPage = new LoginPage(page);
+    const sessionBookingPage = new SessionBookingPage(page);
+    const hearingSchedulePage = new HearingSchedulePage(page);
+    const caseSearchPage = new CaseSearchPage(page);
+    const caseDetailsPage = new CaseDetailsPage(page);
+    const dataUtils = new DataUtils();
 
-  test("Filter and display JOHs correctly using inclusion and exclusion criteria @joh-filtering", async ({
-    page,
-    loginPage,
-    hearingSchedulePage,
-    sessionBookingPage,
-    caseSearchPage,
-    caseDetailsPage,
-    dataUtils,
-  }) => {
-    await test.step("Login and clear down Wrexham schedule", async () => {
-      await page.goto(config.urls.baseUrl);
-      await loginPage.login(config.users.testUser);
-      await clearDownWrexhamSchedule(
-        sessionBookingPage,
-        hearingSchedulePage,
-        dataUtils,
-      );
-    });
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login("CHRISTOPHER_HALL");
+    await clearDownWrexhamSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
 
     await bookSessionWithJoh(
       page,
@@ -70,6 +64,38 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV,
       1,
     );
+
+    await context.close();
+  });
+
+  test.afterAll(async ({ browser }) => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    const loginPage = new LoginPage(page);
+    const sessionBookingPage = new SessionBookingPage(page);
+    const hearingSchedulePage = new HearingSchedulePage(page);
+    const dataUtils = new DataUtils();
+
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login("CHRISTOPHER_HALL");
+    await clearDownWrexhamSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
+
+    await context.close();
+  });
+
+  test("Filter and display JOHs correctly using inclusion and exclusion criteria", async ({
+    page,
+    loginPage,
+    hearingSchedulePage,
+    sessionBookingPage,
+    dataUtils,
+  }) => {
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login("CHRISTOPHER_HALL");
 
     await test.step("Assert filtering by date range, current date +2 (no JOHs expected)", async () => {
       await reloadHearingSchedulePage(
@@ -136,8 +162,8 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
           async () => {
             try {
               await page
-                .locator("#advancedFilter_jurisdictionTypes_option_4")
-                .getByText("Family", { exact: true })
+                .locator('li[role="option"]')
+                .filter({ hasText: "Family" })
                 .click();
               return true;
             } catch {
@@ -250,46 +276,10 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     loginPage,
     hearingSchedulePage,
     sessionBookingPage,
-    caseSearchPage,
-    caseDetailsPage,
     dataUtils,
   }) => {
-    await test.step("Login and clear down Wrexham schedule", async () => {
-      await page.goto(config.urls.baseUrl);
-      await loginPage.login(config.users.testUser);
-      await clearDownWrexhamSchedule(
-        sessionBookingPage,
-        hearingSchedulePage,
-        dataUtils,
-      );
-    });
-
-    await bookSessionWithJoh(
-      page,
-      sessionBookingPage,
-      hearingSchedulePage,
-      caseSearchPage,
-      caseDetailsPage,
-      dataUtils,
-      "JOH AutomationTest",
-      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_FAMILY_CODE_AB,
-      0,
-    );
-
-    await bookSessionWithJoh(
-      page,
-      sessionBookingPage,
-      hearingSchedulePage,
-      caseSearchPage,
-      caseDetailsPage,
-      dataUtils,
-      "JOH-Two AutomationTest",
-      sessionBookingPage.CONSTANTS
-        .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH_TWO,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV,
-      1,
-    );
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login("CHRISTOPHER_HALL");
 
     await test.step("Reload hearing schedule and apply date filter for different days", async () => {
       await reloadHearingSchedulePage(
@@ -586,6 +576,8 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       process.env.CASE_NAME as string,
     );
+    await page.waitForTimeout(1000);
+
     await sessionBookingPage.bookSession(
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,

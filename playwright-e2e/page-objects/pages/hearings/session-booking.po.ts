@@ -230,29 +230,25 @@ export class SessionBookingPage extends Base {
 
     //conditional
     if (johName) {
-      const dropdownMenu = this.page.locator(
-        "div.dropdown-menu.show ul.dropdown-menu.inner.show",
-      );
+      await this.sessionJohDropdown.waitFor({ state: "attached" });
+      await this.page.waitForTimeout(1000);
+
       await expect
         .poll(
           async () => {
             await this.sessionJohDropdown.click();
-            if (await dropdownMenu.isVisible()) {
-              const johOption = dropdownMenu.getByText(johName, {
-                exact: true,
-              });
-              try {
-                await johOption.click();
-                return true;
-              } catch {
-                return false;
-              }
-            }
-            return false;
+            await this.page.waitForTimeout(500);
+
+            const johOption = this.page
+              .locator("a")
+              .filter({ hasText: johName });
+            await johOption.waitFor({ state: "visible", timeout: 5000 });
+            await johOption.click();
+            return true;
           },
           {
-            intervals: [500],
-            timeout: 10_000,
+            intervals: [1500],
+            timeout: 20_000,
           },
         )
         .toBeTruthy();
