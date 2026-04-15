@@ -385,35 +385,34 @@ export class HearingSchedulePage extends Base {
     await this.primaryFilterApplyButton.click();
     await this.waitForLoad();
 
+    await this.page.waitForTimeout(5000);
     const parentRow = this.bookingCell.locator("..").locator("..");
     const releasedCell = parentRow.locator("td", { hasText: "Released" });
 
     const releasedCellCount = await releasedCell.count();
     if (releasedCellCount === 0) return;
 
-    await releasedCell.first().waitFor({ state: "visible", timeout: 3000 });
-
     const cellText = await releasedCell.first().textContent();
     if (!cellText?.includes("Released")) return;
 
-    await this.page.locator('button.btn.p-0[title="Expand"]').click();
-    await this.page.locator('div.droparea[role="button"], div.droparea[tabindex="0"]').click();
+    await this.page.locator('button.btn.p-0[title="Expand"]').first().click();
+    await this.page
+      .locator('div.droparea[role="button"], div.droparea[tabindex="0"]')
+      .first()
+      .click();
     await this.deleteSessionInstance();
   }
 
   async deleteSessionInstance(): Promise<void> {
     await this.goToSessionDetailsButton.click();
-    await this.deleteSessionInSessionDetailsButton.waitFor({
-      state: "visible",
-      timeout: 10_000,
-    });
-    if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
+
+    const isDeleteButtonVisible =
+      await this.deleteSessionInSessionDetailsButton.isVisible();
+    if (isDeleteButtonVisible) {
       await this.deleteSessionInSessionDetailsButton.click();
       await this.page.locator("#cancellationCode").click();
       await this.page.locator("#cancellationCode").selectOption("CNCL");
       await this.page.getByRole("button", { name: "Yes" }).click();
-    } else {
-      return;
     }
 
     //delete session from schedule page
