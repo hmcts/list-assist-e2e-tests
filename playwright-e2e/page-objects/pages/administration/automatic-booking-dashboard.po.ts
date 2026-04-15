@@ -348,20 +348,11 @@ export class AutomaticBookingDashboardPage extends Base {
   }
 
   async waitForPublishExternalListRunsToBeVisible() {
-    // Wait for duplicate report confirmation and handle it if present
-    try {
-      await expect
-        .poll(
-          async () => {
-            return await this.page
-              .getByRole("button", { name: "OK", exact: true })
-              .click();
-          },
-          { intervals: [5000], timeout: 30_000 },
-        )
-        .toBeTruthy();
-    } catch {
-      // If the confirmation does not appear, continue
+    // Click duplicate report confirmation if present and visible
+    const okButton = this.page.getByRole("button", { name: "OK", exact: true });
+    const isOkButtonVisible = await okButton.isVisible().catch(() => false);
+    if (isOkButtonVisible) {
+      await okButton.click();
     }
 
     // Wait for "Publish External List Runs" header to be visible
@@ -398,10 +389,10 @@ export class AutomaticBookingDashboardPage extends Base {
     dateTo: string,
   ) {
     //filters table
-    await this.publishExternalListClearFilterButton.isVisible();
+    await expect(this.publishExternalListClearFilterButton).toBeVisible();
     await this.publishExternalListClearFilterButton.click();
 
-    await this.publishExternalListLocalityFilter.isVisible();
+    await expect(this.publishExternalListLocalityFilter).toBeVisible();
     await this.publishExternalListLocalityFilter.click();
     await this.page
       .getByRole("option", { name: locality })
@@ -434,10 +425,13 @@ export class AutomaticBookingDashboardPage extends Base {
       const runTime = dataUtils.getCurrentTimeInFormatHHMM();
 
       // Check for either 'View error' button or 'Retry' status in the first row
-      const retryVisible = await this.retryStatusInRow.first().isVisible();
+      await expect(this.retryStatusInRow.first()).toBeHidden().catch(() => {});
+      await expect(this.viewErrorButtonInRow.first()).toBeHidden().catch(() => {});
+      const retryVisible = await this.retryStatusInRow.first().isVisible().catch(() => false);
       const viewErrorVisible = await this.viewErrorButtonInRow
         .first()
-        .isVisible();
+        .isVisible()
+        .catch(() => false);
       const reportStatus = retryVisible || viewErrorVisible;
 
       if (reportStatus) {
