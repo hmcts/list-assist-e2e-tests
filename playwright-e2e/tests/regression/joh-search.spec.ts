@@ -1,6 +1,12 @@
 import { test, expect } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
 import { clearDownSchedule } from "../../utils/reporting.utils.js";
+import { LoginPage } from "../../page-objects/pages/login.po.js";
+import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.js";
+import { HearingSchedulePage } from "../../page-objects/pages/hearings/hearing-schedule.po.js";
+import { CaseSearchPage } from "../../page-objects/pages/cases/case-search.po.js";
+import { CaseDetailsPage } from "../../page-objects/pages/cases/case-details.po.js";
+import { DataUtils } from "../../utils/data.utils.js";
 
 test.describe.configure({ mode: "serial" });
 
@@ -13,36 +19,24 @@ test.describe.configure({ mode: "serial" });
  * - If this logic is not followed, tests may fail due to no sessions being available on weekends.
  */
 
-test.describe("JOH filtering in hearing sessions with Rooms View", () => {
-  test.afterEach(
-    async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
-      await page.goto(config.urls.baseUrl);
-      await clearDownWrexhamSchedule(
-        sessionBookingPage,
-        hearingSchedulePage,
-        dataUtils,
-      );
-    },
-  );
+test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering", () => {
+  test.beforeAll(async ({ browser }) => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    const loginPage = new LoginPage(page);
+    const sessionBookingPage = new SessionBookingPage(page);
+    const hearingSchedulePage = new HearingSchedulePage(page);
+    const caseSearchPage = new CaseSearchPage(page);
+    const caseDetailsPage = new CaseDetailsPage(page);
+    const dataUtils = new DataUtils();
 
-  test("Filter and display JOHs correctly using inclusion and exclusion criteria @joh-filtering", async ({
-    page,
-    loginPage,
-    hearingSchedulePage,
-    sessionBookingPage,
-    caseSearchPage,
-    caseDetailsPage,
-    dataUtils,
-  }) => {
-    await test.step("Login and clear down Wrexham schedule", async () => {
-      await page.goto(config.urls.baseUrl);
-      await loginPage.login(config.users.testUser);
-      await clearDownWrexhamSchedule(
-        sessionBookingPage,
-        hearingSchedulePage,
-        dataUtils,
-      );
-    });
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login("CHRISTOPHER_HALL");
+    await clearDownWrexhamSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
 
     await bookSessionWithJoh(
       page,
@@ -54,8 +48,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       "JOH AutomationTest",
       sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
       sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_FAMILY_CODE_AB,
-      0, // offset if Friday
-      0, // offset if not Friday
+      0,
     );
 
     await bookSessionWithJoh(
@@ -69,9 +62,40 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       sessionBookingPage.CONSTANTS
         .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH_TWO,
       sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV,
-      3, // offset if Friday
-      1, // offset if not Friday
+      1,
     );
+
+    await context.close();
+  });
+
+  test.afterAll(async ({ browser }) => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    const loginPage = new LoginPage(page);
+    const sessionBookingPage = new SessionBookingPage(page);
+    const hearingSchedulePage = new HearingSchedulePage(page);
+    const dataUtils = new DataUtils();
+
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login("CHRISTOPHER_HALL");
+    await clearDownWrexhamSchedule(
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+    );
+
+    await context.close();
+  });
+
+  test("Filter and display JOHs correctly using inclusion and exclusion criteria", async ({
+    page,
+    loginPage,
+    hearingSchedulePage,
+    sessionBookingPage,
+    dataUtils,
+  }) => {
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login("CHRISTOPHER_HALL");
 
     await test.step("Assert filtering by date range, current date +2 (no JOHs expected)", async () => {
       await reloadHearingSchedulePage(
@@ -81,12 +105,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC,
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
       );
-      await applyPrimaryDateFilterForSameDay(
-        hearingSchedulePage,
-        dataUtils,
-        5,
-        2,
-      );
+      await applyPrimaryDateFilterForSameDay(hearingSchedulePage, dataUtils, 2);
 
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
@@ -108,12 +127,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_WREXHAM_CRTRM_01,
       );
 
-      await applyPrimaryDateFilterForSameDay(
-        hearingSchedulePage,
-        dataUtils,
-        3,
-        1,
-      );
+      await applyPrimaryDateFilterForSameDay(hearingSchedulePage, dataUtils, 1);
 
       await expect(hearingSchedulePage.table).toContainText(
         "JOH-Two AutomationTest",
@@ -136,8 +150,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
         hearingSchedulePage,
         dataUtils,
         0,
-        3,
-        0,
         1,
       );
 
@@ -145,22 +157,11 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
       await page.getByRole("button", { name: "Session", exact: true }).click();
       await hearingSchedulePage.advJurisdictionFilter.click();
-      await expect
-        .poll(
-          async () => {
-            try {
-              await page
-                .locator("#advancedFilter_jurisdictionTypes_option_4")
-                .getByText("Family", { exact: true })
-                .click();
-              return true;
-            } catch {
-              return false;
-            }
-          },
-          { timeout: 10000, intervals: [1000] },
-        )
-        .toBe(true);
+      const familyOption = page
+        .locator('li[role="option"]')
+        .filter({ hasText: "Family" });
+      await familyOption.waitFor({ state: "visible", timeout: 5000 });
+      await familyOption.click();
       await sessionBookingPage.applyButton.click();
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
@@ -177,8 +178,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await applyPrimaryDateFilterForDifferentDays(
         hearingSchedulePage,
         dataUtils,
-        0,
-        3,
         0,
         1,
       );
@@ -201,10 +200,11 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await page
         .getByRole("textbox", { name: "JOH (Inclusion)" })
         .fill("automationtest");
-      await page
+      const inclusionOption = page
         .locator("#advancedFilter_memTypesIn_option_1")
-        .getByText("AutomationTest, JOH")
-        .click();
+        .getByText("AutomationTest, JOH");
+      await inclusionOption.waitFor({ state: "visible", timeout: 5000 });
+      await inclusionOption.click();
       await sessionBookingPage.applyButton.click();
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
@@ -230,8 +230,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
         hearingSchedulePage,
         dataUtils,
         0,
-        3,
-        0,
         1,
       );
 
@@ -246,10 +244,11 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await page
         .getByRole("textbox", { name: "JOH (Exclusion)" })
         .fill("automationtest");
-      await page
+      const exclusionOption = page
         .locator("#advancedFilter_memTypeEx_option_1")
-        .getByText("AutomationTest, JOH")
-        .click();
+        .getByText("AutomationTest, JOH");
+      await exclusionOption.waitFor({ state: "visible", timeout: 5000 });
+      await exclusionOption.click();
       await sessionBookingPage.applyButton.click();
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
@@ -268,48 +267,10 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     loginPage,
     hearingSchedulePage,
     sessionBookingPage,
-    caseSearchPage,
-    caseDetailsPage,
     dataUtils,
   }) => {
-    await test.step("Login and clear down Wrexham schedule", async () => {
-      await page.goto(config.urls.baseUrl);
-      await loginPage.login(config.users.testUser);
-      await clearDownWrexhamSchedule(
-        sessionBookingPage,
-        hearingSchedulePage,
-        dataUtils,
-      );
-    });
-
-    await bookSessionWithJoh(
-      page,
-      sessionBookingPage,
-      hearingSchedulePage,
-      caseSearchPage,
-      caseDetailsPage,
-      dataUtils,
-      "JOH AutomationTest",
-      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_FAMILY_CODE_AB,
-      0, // offset if Friday
-      0, // offset if not Friday
-    );
-
-    await bookSessionWithJoh(
-      page,
-      sessionBookingPage,
-      hearingSchedulePage,
-      caseSearchPage,
-      caseDetailsPage,
-      dataUtils,
-      "JOH-Two AutomationTest",
-      sessionBookingPage.CONSTANTS
-        .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH_TWO,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV,
-      3, // offset if Friday
-      1, // offset if not Friday
-    );
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login("CHRISTOPHER_HALL");
 
     await test.step("Reload hearing schedule and apply date filter for different days", async () => {
       await reloadHearingSchedulePage(
@@ -323,8 +284,6 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       await applyPrimaryDateFilterForDifferentDays(
         hearingSchedulePage,
         dataUtils,
-        0,
-        3,
         0,
         1,
       );
@@ -543,48 +502,32 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     await sessionBookingPage.locationFilterToggleButton.click();
   }
 
-  function applyPrimaryDateFilterForSameDay(
+  async function applyPrimaryDateFilterForSameDay(
     hearingSchedulePage,
     dataUtils,
-    ifFriday: number,
-    ifNotFriday: number,
+    offset: number,
   ) {
-    const today = new Date();
-    if (today.getDay() === 5) {
-      // 5 = Friday
-      return hearingSchedulePage.applyPrimaryDateFilter(
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifFriday),
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifFriday),
-      );
-    } else {
-      return hearingSchedulePage.applyPrimaryDateFilter(
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifNotFriday),
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifNotFriday),
-      );
-    }
+    const adjustedOffset = await getAdjustedOffset(offset);
+
+    return hearingSchedulePage.applyPrimaryDateFilter(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
+    );
   }
 
-  function applyPrimaryDateFilterForDifferentDays(
+  async function applyPrimaryDateFilterForDifferentDays(
     hearingSchedulePage,
     dataUtils,
-    ifFridayFrom: number,
-    ifFridayTo: number,
-    ifNotFridayFrom: number,
-    ifNotFridayTo: number,
+    fromOffset: number,
+    toOffset: number,
   ) {
-    const today = new Date();
-    if (today.getDay() === 5) {
-      // Friday
-      return hearingSchedulePage.applyPrimaryDateFilter(
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifFridayFrom),
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifFridayTo),
-      );
-    } else {
-      return hearingSchedulePage.applyPrimaryDateFilter(
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifNotFridayFrom),
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(ifNotFridayTo),
-      );
-    }
+    const adjustedFrom = await getAdjustedOffset(fromOffset);
+    const adjustedTo = await getAdjustedOffset(toOffset);
+
+    return hearingSchedulePage.applyPrimaryDateFilter(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedFrom),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedTo),
+    );
   }
 
   /**
@@ -600,13 +543,8 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     johName: string,
     johConstant: string,
     jurisdictionConstant: string,
-    offsetIfFriday: number,
-    offsetIfNotFriday: number,
+    baseOffset: number,
   ) {
-    const today = new Date();
-    const dateOffset =
-      today.getDay() === 5 ? offsetIfFriday : offsetIfNotFriday;
-
     await caseSearchPage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
     await expect(caseDetailsPage.addToCartButton).toBeVisible();
@@ -616,10 +554,12 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
     await hearingSchedulePage.waitForLoad();
 
+    const adjustedOffset = await getAdjustedOffset(baseOffset);
     await hearingSchedulePage.applyPrimaryDateFilter(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(dateOffset),
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(dateOffset),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
     );
+
     await hearingSchedulePage.waitForLoad();
 
     await hearingSchedulePage.scheduleHearingWithBasket(
@@ -627,11 +567,39 @@ test.describe("JOH filtering in hearing sessions with Rooms View", () => {
       sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
       process.env.CASE_NAME as string,
     );
+    await page.waitForTimeout(1000);
+
     await sessionBookingPage.bookSession(
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
       sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_STATUS_TYPE_RELEASED,
       johConstant,
       jurisdictionConstant,
     );
+  }
+  async function getAdjustedOffset(offset: number): Promise<number> {
+    const today = new Date();
+
+    if (offset === 0) {
+      return 0;
+    }
+    if (today.getDay() === 5) {
+      // Friday
+      if (offset === 1) {
+        return 3;
+      }
+      if (offset > 1) {
+        return offset + 3;
+      }
+    }
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + offset);
+    const day = targetDate.getDay();
+    if (day === 6) {
+      return offset + 2; // Saturday → Monday
+    }
+    if (day === 0) {
+      return offset + 1; // Sunday → Monday
+    }
+    return offset;
   }
 });

@@ -13,9 +13,10 @@ export class LoginPage extends Base {
   }
 
   async login(
-    user: UserCredentials,
+    userOrName?: UserCredentials | string,
     disableSaveSession?: boolean,
   ): Promise<void> {
+    const user = await this.resolveUser(userOrName);
     await expect
       .poll(
         async () => {
@@ -33,6 +34,40 @@ export class LoginPage extends Base {
     await this.submitBtn.click();
     if (disableSaveSession) return;
     await this.saveSession(user);
+  }
+
+  private async resolveUser(
+    userOrName?: UserCredentials | string,
+  ): Promise<UserCredentials> {
+    // If nothing provided, use config.users.testUser
+    if (!userOrName) {
+      const { config } = await import("../../utils/index.js");
+      return config.users.testUser;
+    }
+    // If already a UserCredentials object
+    if (
+      typeof userOrName === "object" &&
+      userOrName.username &&
+      userOrName.password
+    ) {
+      return userOrName;
+    }
+    // If a string, try to resolve from env
+    if (typeof userOrName === "string") {
+      const usernameEnv = `USER_${userOrName}`;
+      const passwordEnv = `PASSWORD_${userOrName}`;
+      const username = process.env[usernameEnv];
+      const password = process.env[passwordEnv];
+      if (!username || !password) {
+        throw new Error(
+          `Missing environment variables: ${usernameEnv} or ${passwordEnv}`,
+        );
+      }
+      // Session file path (optional, can be improved)
+      const sessionFile = `.sessions/${username}.json`;
+      return { username, password, sessionFile };
+    }
+    throw new Error("Invalid user argument for login");
   }
 
   private async saveSession(user: UserCredentials) {

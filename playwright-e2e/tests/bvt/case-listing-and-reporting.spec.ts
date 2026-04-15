@@ -24,7 +24,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       dataUtils,
     }) => {
       await page.goto(config.urls.baseUrl);
-      await loginPage.login(config.users.testUser);
+      await loginPage.login();
       //empties cart if there is anything present
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
       //search for the case

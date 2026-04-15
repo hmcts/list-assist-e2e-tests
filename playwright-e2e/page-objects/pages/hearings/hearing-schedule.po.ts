@@ -218,6 +218,21 @@ export class HearingSchedulePage extends Base {
     'div.multiselect[role="combobox"][name="advancedFilter_memTypeEx_multiselectService"]',
   );
 
+  readonly johTierExclusionFilter = this.page.locator(
+    'div.multiselect[role="combobox"][name="advancedFilter_employeeWorkTypeEx_multiselectLov"]',
+  );
+
+  readonly johTierExclusionListSelect = this.page.locator(
+    'li[id^="advancedFilter_employeeWorkTypeEx_option_"]',
+  );
+  readonly johTierExclusionToggleClose = this.page.locator(
+    'span[role="button"][aria-label="Close listbox"].multiselect__custom-select',
+  );
+
+  readonly johExlusionListOptions = this.page.locator(
+    'ul#advancedFilter_memTypeEx_listbox li[role="option"] .multiselect__options-item',
+  );
+
   constructor(page: Page) {
     super(page);
     this.sessionBookingPage = new SessionBookingPage(page);
@@ -561,6 +576,7 @@ export class HearingSchedulePage extends Base {
     await this.primaryFilterDateInput(dateTo).click();
     await this.waitForLoad();
     await this.applyPrimaryFilterButton.click();
+    await this.waitForLoad();
   }
 
   async clearAllPrimaryFilters() {
@@ -573,10 +589,12 @@ export class HearingSchedulePage extends Base {
 
   async primaryFilterSelectLocality(locality: string) {
     await this.primaryFilterLocalityDropdown.click();
-    // Then select an option from the list, e.g.:
-    await this.page
-      .getByRole("option", { name: locality, exact: true })
-      .click();
+    const option = this.page.getByRole("option", {
+      name: locality,
+      exact: true,
+    });
+    await option.waitFor({ state: "visible", timeout: 5000 });
+    await option.click();
   }
 
   /**

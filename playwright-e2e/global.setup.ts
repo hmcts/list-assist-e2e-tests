@@ -56,6 +56,8 @@ setup.describe("Global Setup", () => {
         process.env.HMCTS_CASE_NUMBER,
         process.env.CASE_NAME,
       );
+
+      await homePage.upperbarComponent.logoutButton.click();
     },
   );
 
