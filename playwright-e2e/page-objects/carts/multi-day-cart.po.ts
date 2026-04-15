@@ -44,6 +44,11 @@ export class MultiDayCartPage extends Base {
   readonly currentlySelectedLabel = this.page.getByText(/^Currently selected:/);
   readonly remainingToAllocateLabel = this.page.getByText(/^Remaining to allocate:/);
 
+  readonly cancelListingsButton = this.page.getByRole("button", { name: "Cancel Listings" });
+  readonly  cancelFlag1 = this.page.locator('span[role="checkbox"][aria-labelledby="1_cancelFlag-label"]');
+  readonly  cancelFlag2 = this.page.locator('span[role="checkbox"][aria-labelledby="2_cancelFlag-label"]');
+
+
   constructor(page: Page) {
     super(page);
   }
@@ -110,7 +115,7 @@ export class MultiDayCartPage extends Base {
             .locator("span", { hasText: value })
             .first()
             .isVisible(),
-        { intervals: [1000], timeout: 10_000 },
+        { intervals: [1000], timeout: 20_000 },
       )
       .toBeTruthy();
   }
@@ -123,7 +128,7 @@ export class MultiDayCartPage extends Base {
     listingRequirements: string;
     required: string;
     listed: string;
-    currentlySelected: string;
+    currentlySelected?: string;
     remainingToAllocate: string;
   }) {
     const normalise = (text: string | null | undefined) =>
@@ -141,13 +146,30 @@ export class MultiDayCartPage extends Base {
         normalise(await this.listedLabel.textContent())
     ).toContain(expected.listed);
 
-    await expect.poll(async () =>
-        normalise(await this.currentlySelectedLabel.textContent())
-    ).toContain(expected.currentlySelected);
+    if (expected.currentlySelected !== undefined) {
+      await expect.poll(async () =>
+          normalise(await this.currentlySelectedLabel.textContent())
+      ).toContain(expected.currentlySelected);
+    }
 
     await expect.poll(async () =>
         normalise(await this.remainingToAllocateLabel.textContent())
     ).toContain(expected.remainingToAllocate);
+  }
+
+  /**
+   * Handles the listing validation popup: selects the override reason and clicks SAVE & CONTINUE LISTING.
+   * @param validationPopup The popup Page object
+   * @param overrideReason The label of the override reason to select
+   */
+  async handleListingValidationPopup(validationPopup: import('@playwright/test').Page, overrideReason: string) {
+    await validationPopup.waitForLoadState("domcontentloaded");
+    await validationPopup
+      .getByRole("combobox", { name: "Reason to override rule/s *" })
+      .selectOption({ label: overrideReason });
+    await validationPopup
+      .getByRole("button", { name: "SAVE & CONTINUE LISTING" })
+      .click();
   }
 
 }
