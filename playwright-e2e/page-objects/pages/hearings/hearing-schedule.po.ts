@@ -385,20 +385,19 @@ export class HearingSchedulePage extends Base {
     await this.primaryFilterApplyButton.click();
     await this.waitForLoad();
 
-    await this.page.waitForTimeout(5000);
     const parentRow = this.bookingCell.locator("..").locator("..");
     const releasedCell = parentRow.locator("td", { hasText: "Released" });
 
     const releasedCellCount = await releasedCell.count();
     if (releasedCellCount === 0) return;
 
+    await releasedCell.first().waitFor({ state: "visible", timeout: 3000 });
+
     const cellText = await releasedCell.first().textContent();
     if (!cellText?.includes("Released")) return;
 
-    await this.page.click('button.btn.p-0[title="Expand"]');
-    await this.page.click(
-      'div.droparea[role="button"], div.droparea[tabindex="0"]',
-    );
+    await this.page.locator('button.btn.p-0[title="Expand"]').click();
+    await this.page.locator('div.droparea[role="button"], div.droparea[tabindex="0"]').click();
     await this.deleteSessionInstance();
   }
 
