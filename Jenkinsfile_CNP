@@ -103,6 +103,9 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
     [name: 'Anonymisation tests', grep: '@anonymisation', skipCreateCase: true],
     [name: 'JOH filtering tests', grep: '@joh-filtering'],
+    [name: 'Multi day listing test', grep: '@multi-day'],
+
+
 
     // Only run Amend Api Tests before listing in Chrome
     [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true],

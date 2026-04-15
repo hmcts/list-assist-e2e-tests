@@ -9,7 +9,7 @@ test.describe("Multi-day case listing @multi-day", () => {
     test.slow();
     test.describe.configure({ mode: "serial" });
 
-    test("Multi-day case listing and reporting @multi-day", async ({
+    test("Multi-day case listing @multi-day", async ({
         addNewCasePage,
         caseSearchPage,
         editNewCasePage,
