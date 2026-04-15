@@ -117,6 +117,7 @@ export class SidebarComponent {
   ) {}
 
   async openHearingSchedulePage() {
+    await expect(this.hearingsMenu).toBeVisible();
     await expect
       .poll(
         async () => {
@@ -124,13 +125,13 @@ export class SidebarComponent {
           return await this.hearingScheduleSubMenu.isVisible();
         },
         {
-          intervals: [2_000],
-          timeout: 10_000,
+          intervals: [1_000],
+          timeout: 30_000,
         },
       )
       .toBeTruthy();
 
-    await this.hearingsMenu.click();
+    await expect(this.hearingScheduleSubMenu).toBeVisible();
     await this.hearingScheduleSubMenu.click();
   }
 
@@ -243,6 +244,7 @@ export class SidebarComponent {
   }
 
   async openScheduledJobsPage() {
+    await expect(this.administrationMenu).toBeVisible();
     await expect
       .poll(
         async () => {
@@ -250,12 +252,13 @@ export class SidebarComponent {
           return await this.scheduledJobsButton.isVisible();
         },
         {
-          intervals: [2_000],
+          intervals: [1_000],
           timeout: 80_000,
         },
       )
       .toBeTruthy();
 
+    await expect(this.scheduledJobsButton).toBeVisible();
     await this.scheduledJobsButton.click();
     await expect(this.scheduledJobsHeader).toBeVisible();
   }
