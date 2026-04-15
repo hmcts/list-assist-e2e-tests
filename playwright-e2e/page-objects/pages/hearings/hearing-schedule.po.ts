@@ -550,6 +550,7 @@ export class HearingSchedulePage extends Base {
     await this.primaryFilterDateInput(dateTo).click();
     await this.waitForLoad();
     await this.applyPrimaryFilterButton.click();
+    await this.waitForLoad();
   }
 
   async clearAllPrimaryFilters() {
@@ -562,10 +563,12 @@ export class HearingSchedulePage extends Base {
 
   async primaryFilterSelectLocality(locality: string) {
     await this.primaryFilterLocalityDropdown.click();
-    // Then select an option from the list, e.g.:
-    await this.page
-      .getByRole("option", { name: locality, exact: true })
-      .click();
+    const option = this.page.getByRole("option", {
+      name: locality,
+      exact: true,
+    });
+    await option.waitFor({ state: "visible", timeout: 5000 });
+    await option.click();
   }
 
   /**
