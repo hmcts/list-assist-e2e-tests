@@ -157,22 +157,11 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
       await page.getByRole("button", { name: "Session", exact: true }).click();
       await hearingSchedulePage.advJurisdictionFilter.click();
-      await expect
-        .poll(
-          async () => {
-            try {
-              await page
-                .locator('li[role="option"]')
-                .filter({ hasText: "Family" })
-                .click();
-              return true;
-            } catch {
-              return false;
-            }
-          },
-          { timeout: 10000, intervals: [1000] },
-        )
-        .toBe(true);
+      const familyOption = page
+        .locator('li[role="option"]')
+        .filter({ hasText: "Family" });
+      await familyOption.waitFor({ state: "visible", timeout: 5000 });
+      await familyOption.click();
       await sessionBookingPage.applyButton.click();
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
@@ -211,10 +200,11 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       await page
         .getByRole("textbox", { name: "JOH (Inclusion)" })
         .fill("automationtest");
-      await page
+      const inclusionOption = page
         .locator("#advancedFilter_memTypesIn_option_1")
-        .getByText("AutomationTest, JOH")
-        .click();
+        .getByText("AutomationTest, JOH");
+      await inclusionOption.waitFor({ state: "visible", timeout: 5000 });
+      await inclusionOption.click();
       await sessionBookingPage.applyButton.click();
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
@@ -254,10 +244,11 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       await page
         .getByRole("textbox", { name: "JOH (Exclusion)" })
         .fill("automationtest");
-      await page
+      const exclusionOption = page
         .locator("#advancedFilter_memTypeEx_option_1")
-        .getByText("AutomationTest, JOH")
-        .click();
+        .getByText("AutomationTest, JOH");
+      await exclusionOption.waitFor({ state: "visible", timeout: 5000 });
+      await exclusionOption.click();
       await sessionBookingPage.applyButton.click();
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
