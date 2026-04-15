@@ -425,9 +425,10 @@ export class AutomaticBookingDashboardPage extends Base {
       const runTime = dataUtils.getCurrentTimeInFormatHHMM();
 
       // Check for either 'View error' button or 'Retry' status in the first row
-      await expect(this.retryStatusInRow.first()).toBeHidden().catch(() => {});
-      await expect(this.viewErrorButtonInRow.first()).toBeHidden().catch(() => {});
-      const retryVisible = await this.retryStatusInRow.first().isVisible().catch(() => false);
+      const retryVisible = await this.retryStatusInRow
+        .first()
+        .isVisible()
+        .catch(() => false);
       const viewErrorVisible = await this.viewErrorButtonInRow
         .first()
         .isVisible()

@@ -206,8 +206,12 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
 
     await homePage.sidebarComponent.openAutomaticBookingDashboard();
-    await expect(automaticBookingDashboardPage.autoCreationTasksHeader).toBeVisible();
-    await expect(automaticBookingDashboardPage.publishExternalListsCreate).toBeVisible();
+    await expect(
+      automaticBookingDashboardPage.autoCreationTasksHeader,
+    ).toBeVisible();
+    await expect(
+      automaticBookingDashboardPage.publishExternalListsCreate,
+    ).toBeVisible();
     await automaticBookingDashboardPage.publishExternalListsCreate.click();
 
     await automaticBookingDashboardPage.populateCreatePublishExternalListsForm(
