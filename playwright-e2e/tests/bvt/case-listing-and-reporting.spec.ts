@@ -92,8 +92,6 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       automaticBookingDashboardPage.CONSTANTS
         .SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB,
     );
-    //check the header is present after page has refreshed
-    await automaticBookingDashboardPage.sidebarComponent.scheduledJobsHeader.isVisible();
 
     const caseData = {
       hmctsCaseNumberHeaderValue:
@@ -208,7 +206,12 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
 
     await homePage.sidebarComponent.openAutomaticBookingDashboard();
-    await automaticBookingDashboardPage.createPublishExternalListsHeader.isVisible();
+    await expect(
+      automaticBookingDashboardPage.autoCreationTasksHeader,
+    ).toBeVisible();
+    await expect(
+      automaticBookingDashboardPage.publishExternalListsCreate,
+    ).toBeVisible();
     await automaticBookingDashboardPage.publishExternalListsCreate.click();
 
     await automaticBookingDashboardPage.populateCreatePublishExternalListsForm(
@@ -235,9 +238,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     let jobRun = "false";
 
     //assert publish button is now visible
-    await expect(automaticBookingDashboardPage.publishButton).toBeVisible();
-    //click publish button
-    await automaticBookingDashboardPage.publishButton.click();
+    //click publish button, dismissing any duplicate confirmation dialog
+    await automaticBookingDashboardPage.clickPublishAndDismissConfirmation();
     //wait for 'Previous Publish External List header' to be visible
     await automaticBookingDashboardPage.waitForPublishExternalListRunsToBeVisible();
     //checks that report is queued
@@ -260,9 +262,6 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
         .SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB,
     );
     jobRun = "true";
-
-    //check the header is present after page has refreshed
-    await automaticBookingDashboardPage.sidebarComponent.scheduledJobsHeader.isVisible();
 
     //checks that report has now been removed from queue
     await automaticBookingDashboardPage.sidebarComponent.openAutomaticBookingDashboard();

@@ -395,26 +395,24 @@ export class HearingSchedulePage extends Base {
     const cellText = await releasedCell.first().textContent();
     if (!cellText?.includes("Released")) return;
 
-    await this.page.click('button.btn.p-0[title="Expand"]');
-    await this.page.click(
-      'div.droparea[role="button"], div.droparea[tabindex="0"]',
-    );
+    await this.page.locator('button.btn.p-0[title="Expand"]').first().click();
+    await this.page
+      .locator('div.droparea[role="button"], div.droparea[tabindex="0"]')
+      .first()
+      .click();
     await this.deleteSessionInstance();
   }
 
   async deleteSessionInstance(): Promise<void> {
     await this.goToSessionDetailsButton.click();
-    await this.deleteSessionInSessionDetailsButton.waitFor({
-      state: "visible",
-      timeout: 10_000,
-    });
-    if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
+
+    const isDeleteButtonVisible =
+      await this.deleteSessionInSessionDetailsButton.isVisible();
+    if (isDeleteButtonVisible) {
       await this.deleteSessionInSessionDetailsButton.click();
       await this.page.locator("#cancellationCode").click();
       await this.page.locator("#cancellationCode").selectOption("CNCL");
       await this.page.getByRole("button", { name: "Yes" }).click();
-    } else {
-      return;
     }
 
     //delete session from schedule page
