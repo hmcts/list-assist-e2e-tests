@@ -347,18 +347,27 @@ export class AutomaticBookingDashboardPage extends Base {
     await expect(report.getByText(location)).toBeVisible();
   }
 
-  async waitForPublishExternalListRunsToBeVisible() {
-    // Click duplicate report confirmation if present and visible
-    const okButton = this.page.getByRole("button", { name: "OK", exact: true });
-    const isOkButtonVisible = await okButton.isVisible().catch(() => false);
-    if (isOkButtonVisible) {
-      await okButton.click();
+  async clickPublishAndDismissConfirmation() {
+    await expect(this.publishButton).toBeVisible();
+    await this.publishButton.click();
+    // Dismiss duplicate report confirmation if it appears
+    if (await this.duplicationReportOkButton.isVisible()) {
+      await this.duplicationReportOkButton.click();
     }
+  }
 
-    // Wait for "Publish External List Runs" header to be visible
+  async waitForPublishExternalListRunsToBeVisible() {
+    // Poll until the header is visible, dismissing any duplicate confirmation dialog along the way
     await expect
       .poll(
         async () => {
+          const okButton = this.page.getByRole("button", {
+            name: "OK",
+            exact: true,
+          });
+          if (await okButton.isVisible()) {
+            await okButton.click();
+          }
           return await this.previousPublishExternalListRunsHeader.isVisible();
         },
         {

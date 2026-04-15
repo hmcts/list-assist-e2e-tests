@@ -238,9 +238,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     let jobRun = "false";
 
     //assert publish button is now visible
-    await expect(automaticBookingDashboardPage.publishButton).toBeVisible();
-    //click publish button
-    await automaticBookingDashboardPage.publishButton.click();
+    //click publish button, dismissing any duplicate confirmation dialog
+    await automaticBookingDashboardPage.clickPublishAndDismissConfirmation();
     //wait for 'Previous Publish External List header' to be visible
     await automaticBookingDashboardPage.waitForPublishExternalListRunsToBeVisible();
     //checks that report is queued
