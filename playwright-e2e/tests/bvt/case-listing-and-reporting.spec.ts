@@ -10,7 +10,7 @@ import { SessionBookingPage } from "../../page-objects/pages/hearings/session-bo
 import { config } from "../../utils/index.js";
 import { clearDownSchedule } from "../../utils/reporting.utils.js";
 
-test.describe.only("Case listing and reporting @case-listing-and-reporting", () => {
+test.describe("Case listing and reporting @case-listing-and-reporting", () => {
   test.describe.configure({ mode: "serial" });
   test.beforeEach(
     async ({
