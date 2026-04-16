@@ -50,6 +50,7 @@ export class HearingSchedulePage extends Base {
       hasText: "Released",
     },
   );
+  readonly listingSquareIcons = this.page.locator('div.hs-booking-shape');
   readonly rowWithHmctsCn = this.page.locator('tr[role="row"]');
   readonly addBookingButton = this.page
     .locator("div.droparea.addBooking > button.btn.text-center")
@@ -140,6 +141,8 @@ export class HearingSchedulePage extends Base {
     this.cancelRescheduleReasonModel.locator("#cancelReason");
 
   readonly multiDayEditTable = this.page.locator("table#vuetable");
+
+
 
   //primary filters
   //date selectors
@@ -433,9 +436,7 @@ export class HearingSchedulePage extends Base {
 
     const releasedStatusCheck = this.page.locator(
       'button[title="Show booking details"] .hs-session-status',
-      {
-        hasText: "Released",
-      },
+      { hasText: "Released" },
     );
 
     if (await releasedStatusCheck.first().isVisible()) {
@@ -470,28 +471,34 @@ export class HearingSchedulePage extends Base {
         await releasedStatusCheck.first().click();
 
         await this.waitForLoad();
-
-        await expect
-          .poll(async () => await scheduleButton.isVisible(), {
-            intervals: [2_000],
-            timeout: 10_000,
-          })
-          .toBeTruthy();
       }
-
+      await expect
+        .poll(async () => await scheduleButton.isVisible(), {
+          intervals: [2_000],
+          timeout: 20_000,
+        })
+        .toBeTruthy();
       await scheduleButton.click();
       await this.goToSessionDetailsButton.first().click();
-
       await expect
         .poll(async () => await this.sessionBookingPage.heading.isVisible(), {
           intervals: [2_000],
           timeout: 10_000,
         })
         .toBeTruthy();
-
       await this.deleteMultiDayListingsPlaceholders();
     }
   }
+
+  async clickCartAllSessions(room: string) {
+    const button = this.page.locator(
+        `button[title="Cart all sessions of room: ${room}"][aria-label="Cart all sessions of room: ${room}"]`
+    );
+
+    await expect(button, 'Cart All Sessions button should be visible').toBeVisible();
+    await button.click();
+  }
+
   async deleteExistingMultiDayListings(): Promise<void> {
     if (await this.multiDayLink.isVisible()) {
       await this.multiDayLink.click();

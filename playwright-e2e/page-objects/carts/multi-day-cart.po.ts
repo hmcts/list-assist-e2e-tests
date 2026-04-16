@@ -12,7 +12,7 @@ export class MultiDayCartPage extends Base {
   });
   readonly submitButton = this.page.locator("#submitSession");
   readonly applyFilterButton = this.page.locator("#applyFilter");
-
+  readonly selectHearingType = this.page.getByRole("combobox",{ name: /Hearing Type/i });
   readonly selectCaseBoxSelect = this.page.locator(".multiselect__select");
   readonly listingRequirementsDropDown = this.page.locator(
     'label.select-header:has-text("Select a Listing Requirement") + div.multiselect',
@@ -36,6 +36,18 @@ export class MultiDayCartPage extends Base {
   readonly createListingsOnlyButton = this.page.locator(
     "#saveAdditionalListingData",
   );
+
+  // Label locators for session/duration summary
+  readonly listingRequirementsLabel = this.page.getByText(/^Listing requirements:/);
+  readonly requiredLabel = this.page.getByText(/^Required:/);
+  readonly listedLabel = this.page.getByText(/^Listed:/);
+  readonly currentlySelectedLabel = this.page.getByText(/^Currently selected:/);
+  readonly remainingToAllocateLabel = this.page.getByText(/^Remaining to allocate:/);
+
+  readonly cancelListingsButton = this.page.getByRole("button", { name: "Cancel Listings" });
+  readonly  cancelFlag1 = this.page.locator('span[role="checkbox"][aria-labelledby="1_cancelFlag-label"]');
+  readonly  cancelFlag2 = this.page.locator('span[role="checkbox"][aria-labelledby="2_cancelFlag-label"]');
+
 
   constructor(page: Page) {
     super(page);
@@ -103,8 +115,61 @@ export class MultiDayCartPage extends Base {
             .locator("span", { hasText: value })
             .first()
             .isVisible(),
-        { intervals: [1000], timeout: 10_000 },
+        { intervals: [1000], timeout: 20_000 },
       )
       .toBeTruthy();
   }
+
+  async assertLabelValue(labelLocator, expected) {
+    await expect(labelLocator).toContainText(expected);
+  }
+
+  async assertMultiDayCartDurations(expected: {
+    listingRequirements: string;
+    required: string;
+    listed: string;
+    currentlySelected?: string;
+    remainingToAllocate: string;
+  }) {
+    const normalise = (text: string | null | undefined) =>
+        text?.replace(/\s+/g, ' ').trim() ?? '';
+
+    await expect.poll(async () =>
+        normalise(await this.listingRequirementsLabel.textContent())
+    ).toContain(expected.listingRequirements);
+
+    await expect.poll(async () =>
+        normalise(await this.requiredLabel.textContent())
+    ).toContain(expected.required);
+
+    await expect.poll(async () =>
+        normalise(await this.listedLabel.textContent())
+    ).toContain(expected.listed);
+
+    if (expected.currentlySelected !== undefined) {
+      await expect.poll(async () =>
+          normalise(await this.currentlySelectedLabel.textContent())
+      ).toContain(expected.currentlySelected);
+    }
+
+    await expect.poll(async () =>
+        normalise(await this.remainingToAllocateLabel.textContent())
+    ).toContain(expected.remainingToAllocate);
+  }
+
+  /**
+   * Handles the listing validation popup: selects the override reason and clicks SAVE & CONTINUE LISTING.
+   * @param validationPopup The popup Page object
+   * @param overrideReason The label of the override reason to select
+   */
+  async handleListingValidationPopup(validationPopup: import('@playwright/test').Page, overrideReason: string) {
+    await validationPopup.waitForLoadState("domcontentloaded");
+    await validationPopup
+      .getByRole("combobox", { name: "Reason to override rule/s *" })
+      .selectOption({ label: overrideReason });
+    await validationPopup
+      .getByRole("button", { name: "SAVE & CONTINUE LISTING" })
+      .click();
+  }
+
 }
