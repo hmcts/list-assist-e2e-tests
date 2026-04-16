@@ -347,27 +347,27 @@ export class AutomaticBookingDashboardPage extends Base {
     await expect(report.getByText(location)).toBeVisible();
   }
 
-  async waitForPublishExternalListRunsToBeVisible() {
-    // Wait for duplicate report confirmation and handle it if present
-    try {
-      await expect
-        .poll(
-          async () => {
-            return await this.page
-              .getByRole("button", { name: "OK", exact: true })
-              .click();
-          },
-          { intervals: [5000], timeout: 30_000 },
-        )
-        .toBeTruthy();
-    } catch {
-      // If the confirmation does not appear, continue
+  async clickPublishAndDismissConfirmation() {
+    await expect(this.publishButton).toBeVisible();
+    await this.publishButton.click();
+    // Dismiss duplicate report confirmation if it appears
+    if (await this.duplicationReportOkButton.isVisible()) {
+      await this.duplicationReportOkButton.click();
     }
+  }
 
-    // Wait for "Publish External List Runs" header to be visible
+  async waitForPublishExternalListRunsToBeVisible() {
+    // Poll until the header is visible, dismissing any duplicate confirmation dialog along the way
     await expect
       .poll(
         async () => {
+          const okButton = this.page.getByRole("button", {
+            name: "OK",
+            exact: true,
+          });
+          if (await okButton.isVisible()) {
+            await okButton.click();
+          }
           return await this.previousPublishExternalListRunsHeader.isVisible();
         },
         {
@@ -398,10 +398,10 @@ export class AutomaticBookingDashboardPage extends Base {
     dateTo: string,
   ) {
     //filters table
-    await this.publishExternalListClearFilterButton.isVisible();
+    await expect(this.publishExternalListClearFilterButton).toBeVisible();
     await this.publishExternalListClearFilterButton.click();
 
-    await this.publishExternalListLocalityFilter.isVisible();
+    await expect(this.publishExternalListLocalityFilter).toBeVisible();
     await this.publishExternalListLocalityFilter.click();
     await this.page
       .getByRole("option", { name: locality })
@@ -434,10 +434,14 @@ export class AutomaticBookingDashboardPage extends Base {
       const runTime = dataUtils.getCurrentTimeInFormatHHMM();
 
       // Check for either 'View error' button or 'Retry' status in the first row
-      const retryVisible = await this.retryStatusInRow.first().isVisible();
+      const retryVisible = await this.retryStatusInRow
+        .first()
+        .isVisible()
+        .catch(() => false);
       const viewErrorVisible = await this.viewErrorButtonInRow
         .first()
-        .isVisible();
+        .isVisible()
+        .catch(() => false);
       const reportStatus = retryVisible || viewErrorVisible;
 
       if (reportStatus) {

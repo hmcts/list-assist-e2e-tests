@@ -19,14 +19,12 @@ test.describe("Logout functionality @ui-test @nightly @smoke", () => {
 });
 
 test.describe("Upper bar UI @ui-test @smoke", () => {
-  test.use({
-    storageState: config.users.testUser.sessionFile,
-  });
-
   test("Help button is present and works as expected @smoke", async ({
     homePage,
+    loginPage,
   }) => {
     await homePage.page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser, true);
     await expect(homePage.upperbarComponent.logoutButton).toBeVisible();
     await expect(homePage.upperbarComponent.helpButton).toBeVisible();
 
@@ -39,14 +37,12 @@ test.describe("Upper bar UI @ui-test @smoke", () => {
 });
 
 test.describe("Sidebar Menu @sidebar @ui-test @smoke", () => {
-  test.use({
-    storageState: config.users.testUser.sessionFile,
-  });
-
   test("All expected sidebar menu items are present @smoke", async ({
     homePage,
+    loginPage,
   }) => {
     await homePage.page.goto(config.urls.baseUrl);
+    await loginPage.login(config.users.testUser, true);
 
     await homePage.waitForHomePageLoad();
 
