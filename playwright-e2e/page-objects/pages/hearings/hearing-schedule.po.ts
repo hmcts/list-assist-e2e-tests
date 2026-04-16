@@ -441,24 +441,6 @@ export class HearingSchedulePage extends Base {
       { hasText: "Released" },
     );
 
-    // temporary Debugging
-    const releasedCount = await releasedStatusCheck.count();
-    for (let i = 0; i < releasedCount; i++) {
-      const isVisible = await releasedStatusCheck.nth(i).isVisible();
-      const text = await releasedStatusCheck.nth(i).textContent();
-      console.log(`Released element [${i}]: visible=${isVisible}, text='${text}'`);
-    }
-    // const isReleasedVisible = await releasedStatusCheck.first().isVisible();
-    // console.log('Is Released visible (first):', isReleasedVisible);
-    // if (!isReleasedVisible) {
-    //   return;
-    // }
-    //
-    // Exit early if no released session is visible
-     // if (!(await releasedStatusCheck.first().isVisible())) {
-     //   return;
-    // // }
-
     if (await releasedStatusCheck.first().isVisible()) {
       await releasedStatusCheck.first().click();
 
