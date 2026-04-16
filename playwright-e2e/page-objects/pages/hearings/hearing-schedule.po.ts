@@ -50,7 +50,7 @@ export class HearingSchedulePage extends Base {
       hasText: "Released",
     },
   );
-  readonly listingSquareIcons = this.page.locator('div.hs-booking-shape');
+  readonly listingSquareIcons = this.page.locator("div.hs-booking-shape");
   readonly rowWithHmctsCn = this.page.locator('tr[role="row"]');
   readonly addBookingButton = this.page
     .locator("div.droparea.addBooking > button.btn.text-center")
@@ -141,8 +141,6 @@ export class HearingSchedulePage extends Base {
     this.cancelRescheduleReasonModel.locator("#cancelReason");
 
   readonly multiDayEditTable = this.page.locator("table#vuetable");
-
-
 
   //primary filters
   //date selectors
@@ -408,14 +406,17 @@ export class HearingSchedulePage extends Base {
 
   async deleteSessionInstance(): Promise<void> {
     await this.goToSessionDetailsButton.click();
-
-    const isDeleteButtonVisible =
-      await this.deleteSessionInSessionDetailsButton.isVisible();
-    if (isDeleteButtonVisible) {
+    await this.deleteSessionInSessionDetailsButton.waitFor({
+      state: "visible",
+      timeout: 10_000,
+    });
+    if (await this.deleteSessionInSessionDetailsButton.isVisible()) {
       await this.deleteSessionInSessionDetailsButton.click();
       await this.page.locator("#cancellationCode").click();
       await this.page.locator("#cancellationCode").selectOption("CNCL");
       await this.page.getByRole("button", { name: "Yes" }).click();
+    } else {
+      return;
     }
 
     //delete session from schedule page
@@ -492,10 +493,13 @@ export class HearingSchedulePage extends Base {
 
   async clickCartAllSessions(room: string) {
     const button = this.page.locator(
-        `button[title="Cart all sessions of room: ${room}"][aria-label="Cart all sessions of room: ${room}"]`
+      `button[title="Cart all sessions of room: ${room}"][aria-label="Cart all sessions of room: ${room}"]`,
     );
 
-    await expect(button, 'Cart All Sessions button should be visible').toBeVisible();
+    await expect(
+      button,
+      "Cart All Sessions button should be visible",
+    ).toBeVisible();
     await button.click();
   }
 
