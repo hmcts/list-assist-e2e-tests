@@ -210,16 +210,16 @@ withNightlyPipeline(type, product, component, 600) {
           echo 'No blob reports found to merge, skipping.'
           return
         }
-        sh 'yarn playwright merge-reports --reporter html,junit blob-reports/'
+        sh 'yarn playwright merge-reports --reporter html,junit --output-dir merged-report blob-reports/'
         publishHTML([
           allowMissing: true,
           alwaysLinkToLastBuild: true,
           keepAll: true,
-          reportDir: 'playwright-report',
+          reportDir: 'merged-report',
           reportFiles: 'index.html',
           reportName: 'Combined Test Report'
         ])
-        junit allowEmptyResults: true, testResults: 'results.xml'
+        junit allowEmptyResults: true, testResults: 'merged-report/results.xml'
       } catch (Error) {
         unstable(message: "Merge Reports is unstable: " + Error.toString())
       }
