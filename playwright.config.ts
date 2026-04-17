@@ -11,6 +11,7 @@ export default defineConfig({
   reporter: [
     ["blob", { outputDir: process.env.BLOB_REPORT_DIR || "blob-report" }],
     ["html", { open: "never" }],
+    ["line"],
   ],
 
   projects: [
