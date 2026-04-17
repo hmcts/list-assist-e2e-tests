@@ -165,12 +165,11 @@ withNightlyPipeline(type, product, component, 600) {
 
   def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
     stage(stageName) {
-      def blobDir = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
       try {
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = skipCreateCase
         }
-        withEnv(["BLOB_REPORT_DIR=${blobDir}"]) {
+        withEnv(["BLOB_REPORT_DIR=blob-reports"]) {
           yarnBuilder.yarn(command)
         }
       } catch (Error) {
@@ -184,7 +183,6 @@ withNightlyPipeline(type, product, component, 600) {
           reportFiles: 'index.html',
           reportName: reportName
         ])
-        junit allowEmptyResults: true, testResults: "${blobDir}/results.xml"
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = null
         }
@@ -318,7 +316,7 @@ withNightlyPipeline(type, product, component, 600) {
         stage("PR: ${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
           try {
             currentBuild.displayName = "PR: ${params.TAGS_TO_RUN} E2E Tests"
-            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-${params.TAGS_TO_RUN.replaceAll('[^a-zA-Z0-9_-]', '-')}-${params.browser}"]) {
+            withEnv(["BLOB_REPORT_DIR=blob-reports"]) {
               yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
             }
           } catch (Error) {
@@ -339,7 +337,7 @@ withNightlyPipeline(type, product, component, 600) {
         stage("PR: @pr-build Tagged Tests") {
           try {
             currentBuild.displayName = "PR: @pr-build Tagged Tests"
-            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-pr-build-tagged-tests"]) {
+            withEnv(["BLOB_REPORT_DIR=blob-reports"]) {
               yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
             }
           } catch (Error) {
@@ -361,7 +359,7 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: BVT Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: BVT Changed File - ${file}"
-              withEnv(["BLOB_REPORT_DIR=blob-reports/PR-BVT-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"]) {
+              withEnv(["BLOB_REPORT_DIR=blob-reports"]) {
                 yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
               }
             } catch (Error) {
@@ -384,7 +382,7 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: Regression Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: Regression Changed File - ${file}"
-              withEnv(["BLOB_REPORT_DIR=blob-reports/PR-Regression-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"]) {
+              withEnv(["BLOB_REPORT_DIR=blob-reports"]) {
                 yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
               }
             } catch (Error) {
@@ -406,7 +404,7 @@ withNightlyPipeline(type, product, component, 600) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
           currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
-          withEnv(["BLOB_REPORT_DIR=blob-reports/${params.TAGS_TO_RUN.replaceAll('[^a-zA-Z0-9_-]', '-')}-${params.browser}"]) {
+          withEnv(["BLOB_REPORT_DIR=blob-reports"]) {
             yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
           }
         } catch (Error) {
