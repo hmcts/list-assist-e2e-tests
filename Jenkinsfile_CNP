@@ -205,13 +205,13 @@ withNightlyPipeline(type, product, component, 600) {
   def runMergeReportsStage = {
     stage('Merge Reports') {
       try {
+        sh 'echo "Checking for blob reports:" && find blob-reports -name "report.zip" -type f || echo "No report.zip files found"'
         def blobReportsExist = sh(script: 'find blob-reports -name "report.zip" 2>/dev/null | grep -q .', returnStatus: true) == 0
         if (!blobReportsExist) {
           echo 'No blob reports found to merge, skipping.'
           return
         }
-        def blobDirs = sh(script: 'find blob-reports -name "report.zip" -type f | xargs -I{} dirname {}', returnStdout: true).trim()
-        sh "yarn playwright merge-reports --reporter html,junit ${blobDirs.split('\n').join(' ')}"
+        sh 'yarn playwright merge-reports --reporter html,junit blob-reports/*/'
         publishHTML([
           allowMissing: true,
           alwaysLinkToLastBuild: true,
