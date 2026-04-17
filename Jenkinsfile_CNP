@@ -110,6 +110,7 @@ withNightlyPipeline(type, product, component, 600) {
   env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
   env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
+  env.PLAYWRIGHT_FORCE_TTY = '0'
   enableSlackNotifications(channel)
 
   def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
@@ -164,12 +165,14 @@ withNightlyPipeline(type, product, component, 600) {
 
   def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
     stage(stageName) {
+      def blobDir = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
       try {
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = skipCreateCase
         }
-        env.BLOB_REPORT_DIR = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
-        yarnBuilder.yarn(command)
+        withEnv(["BLOB_REPORT_DIR=${blobDir}"]) {
+          yarnBuilder.yarn(command)
+        }
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
@@ -181,7 +184,7 @@ withNightlyPipeline(type, product, component, 600) {
           reportFiles: 'index.html',
           reportName: reportName
         ])
-        env.BLOB_REPORT_DIR = null
+        junit allowEmptyResults: true, testResults: "${blobDir}/results.xml"
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = null
         }
@@ -204,7 +207,12 @@ withNightlyPipeline(type, product, component, 600) {
   def runMergeReportsStage = {
     stage('Merge Reports') {
       try {
-        sh 'npx playwright merge-reports --reporter html blob-reports/'
+        def blobReportsExist = sh(script: 'find blob-reports -name "*.zip" 2>/dev/null | grep -q .', returnStatus: true) == 0
+        if (!blobReportsExist) {
+          echo 'No blob reports found to merge, skipping.'
+          return
+        }
+        sh 'npx playwright merge-reports --reporter html,junit blob-reports/'
         publishHTML([
           allowMissing: true,
           alwaysLinkToLastBuild: true,
@@ -213,6 +221,7 @@ withNightlyPipeline(type, product, component, 600) {
           reportFiles: 'index.html',
           reportName: 'Combined Test Report'
         ])
+        junit allowEmptyResults: true, testResults: 'results.xml'
       } catch (Error) {
         unstable(message: "Merge Reports is unstable: " + Error.toString())
       }
@@ -309,8 +318,9 @@ withNightlyPipeline(type, product, component, 600) {
         stage("PR: ${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
           try {
             currentBuild.displayName = "PR: ${params.TAGS_TO_RUN} E2E Tests"
-            env.BLOB_REPORT_DIR = "blob-reports/PR-${params.TAGS_TO_RUN.replaceAll('[^a-zA-Z0-9_-]', '-')}-${params.browser}"
-            yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
+            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-${params.TAGS_TO_RUN.replaceAll('[^a-zA-Z0-9_-]', '-')}-${params.browser}"]) {
+              yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
+            }
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
           } finally {
@@ -329,8 +339,9 @@ withNightlyPipeline(type, product, component, 600) {
         stage("PR: @pr-build Tagged Tests") {
           try {
             currentBuild.displayName = "PR: @pr-build Tagged Tests"
-            env.BLOB_REPORT_DIR = "blob-reports/PR-pr-build-tagged-tests"
-            yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
+            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-pr-build-tagged-tests"]) {
+              yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
+            }
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
           } finally {
@@ -350,8 +361,9 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: BVT Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: BVT Changed File - ${file}"
-              env.BLOB_REPORT_DIR = "blob-reports/PR-BVT-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"
-              yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+              withEnv(["BLOB_REPORT_DIR=blob-reports/PR-BVT-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"]) {
+                yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+              }
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
             } finally {
@@ -372,8 +384,9 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: Regression Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: Regression Changed File - ${file}"
-              env.BLOB_REPORT_DIR = "blob-reports/PR-Regression-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"
-              yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+              withEnv(["BLOB_REPORT_DIR=blob-reports/PR-Regression-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"]) {
+                yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+              }
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
             } finally {
@@ -393,8 +406,9 @@ withNightlyPipeline(type, product, component, 600) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
           currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
-          env.BLOB_REPORT_DIR = "blob-reports/${params.TAGS_TO_RUN.replaceAll('[^a-zA-Z0-9_-]', '-')}-${params.browser}"
-          yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
+          withEnv(["BLOB_REPORT_DIR=blob-reports/${params.TAGS_TO_RUN.replaceAll('[^a-zA-Z0-9_-]', '-')}-${params.browser}"]) {
+            yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
+          }
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
