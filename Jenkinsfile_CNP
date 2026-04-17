@@ -168,6 +168,7 @@ withNightlyPipeline(type, product, component, 600) {
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = skipCreateCase
         }
+        env.BLOB_REPORT_DIR = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
         yarnBuilder.yarn(command)
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
@@ -180,6 +181,7 @@ withNightlyPipeline(type, product, component, 600) {
           reportFiles: 'index.html',
           reportName: reportName
         ])
+        env.BLOB_REPORT_DIR = null
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = null
         }
@@ -196,6 +198,24 @@ withNightlyPipeline(type, product, component, 600) {
   def runRegressionStages = { stages ->
     stages.each { s ->
       runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null)
+    }
+  }
+
+  def runMergeReportsStage = {
+    stage('Merge Reports') {
+      try {
+        sh 'npx playwright merge-reports --reporter html blob-reports/'
+        publishHTML([
+          allowMissing: true,
+          alwaysLinkToLastBuild: true,
+          keepAll: true,
+          reportDir: 'playwright-report',
+          reportFiles: 'index.html',
+          reportName: 'Combined Test Report'
+        ])
+      } catch (Error) {
+        unstable(message: "Merge Reports is unstable: " + Error.toString())
+      }
     }
   }
 
@@ -289,6 +309,7 @@ withNightlyPipeline(type, product, component, 600) {
         stage("PR: ${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
           try {
             currentBuild.displayName = "PR: ${params.TAGS_TO_RUN} E2E Tests"
+            env.BLOB_REPORT_DIR = "blob-reports/PR-${params.TAGS_TO_RUN.replaceAll('[^a-zA-Z0-9_-]', '-')}-${params.browser}"
             yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
@@ -308,6 +329,7 @@ withNightlyPipeline(type, product, component, 600) {
         stage("PR: @pr-build Tagged Tests") {
           try {
             currentBuild.displayName = "PR: @pr-build Tagged Tests"
+            env.BLOB_REPORT_DIR = "blob-reports/PR-pr-build-tagged-tests"
             yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
@@ -328,6 +350,7 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: BVT Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: BVT Changed File - ${file}"
+              env.BLOB_REPORT_DIR = "blob-reports/PR-BVT-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"
               yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
@@ -349,6 +372,7 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: Regression Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: Regression Changed File - ${file}"
+              env.BLOB_REPORT_DIR = "blob-reports/PR-Regression-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"
               yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
@@ -369,6 +393,7 @@ withNightlyPipeline(type, product, component, 600) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
           currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
+          env.BLOB_REPORT_DIR = "blob-reports/${params.TAGS_TO_RUN.replaceAll('[^a-zA-Z0-9_-]', '-')}-${params.browser}"
           yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
@@ -398,5 +423,6 @@ withNightlyPipeline(type, product, component, 600) {
         runRegressionStages(regressionStages)
       }
     }
+    runMergeReportsStage()
   }
 }
