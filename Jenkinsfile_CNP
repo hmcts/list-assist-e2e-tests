@@ -212,7 +212,7 @@ withNightlyPipeline(type, product, component, 600) {
           echo 'No blob reports found to merge, skipping.'
           return
         }
-        sh 'npx playwright merge-reports --reporter html,junit blob-reports/'
+        sh 'yarn playwright merge-reports --reporter html,junit blob-reports/'
         publishHTML([
           allowMissing: true,
           alwaysLinkToLastBuild: true,
