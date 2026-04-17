@@ -13,7 +13,6 @@ export default defineConfig({
       "blob",
       {
         outputDir: process.env.BLOB_REPORT_DIR || "blob-report",
-        fileName: process.env.BLOB_REPORT_FILE || "report.zip",
       },
     ],
     ["html", { open: "never" }],

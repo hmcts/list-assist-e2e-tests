@@ -169,7 +169,7 @@ withNightlyPipeline(type, product, component, 600) {
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = skipCreateCase
         }
-        withEnv(["BLOB_REPORT_DIR=blob-reports", "BLOB_REPORT_FILE=${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}.zip"]) {
+        withEnv(["BLOB_REPORT_DIR=blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"]) {
           yarnBuilder.yarn(command)
         }
       } catch (Error) {
@@ -205,12 +205,12 @@ withNightlyPipeline(type, product, component, 600) {
   def runMergeReportsStage = {
     stage('Merge Reports') {
       try {
-        def blobReportsExist = sh(script: 'find blob-reports -name "*.zip" 2>/dev/null | grep -q .', returnStatus: true) == 0
+        def blobReportsExist = sh(script: 'find blob-reports -name "report.zip" 2>/dev/null | grep -q .', returnStatus: true) == 0
         if (!blobReportsExist) {
           echo 'No blob reports found to merge, skipping.'
           return
         }
-        sh 'yarn playwright merge-reports --reporter html,junit blob-reports/'
+        sh 'yarn playwright merge-reports --reporter html,junit $(find blob-reports -name "report.zip" -type f)'
         publishHTML([
           allowMissing: true,
           alwaysLinkToLastBuild: true,
@@ -316,7 +316,7 @@ withNightlyPipeline(type, product, component, 600) {
         stage("PR: ${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
           try {
             currentBuild.displayName = "PR: ${params.TAGS_TO_RUN} E2E Tests"
-            withEnv(["BLOB_REPORT_DIR=blob-reports", "BLOB_REPORT_FILE=PR-tags-${params.browser}.zip"]) {
+            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-tags-${params.browser}"]) {
               yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
             }
           } catch (Error) {
@@ -337,7 +337,7 @@ withNightlyPipeline(type, product, component, 600) {
         stage("PR: @pr-build Tagged Tests") {
           try {
             currentBuild.displayName = "PR: @pr-build Tagged Tests"
-            withEnv(["BLOB_REPORT_DIR=blob-reports", "BLOB_REPORT_FILE=PR-pr-build-tagged-tests.zip"]) {
+            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-pr-build-tagged-tests"]) {
               yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
             }
           } catch (Error) {
@@ -359,7 +359,7 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: BVT Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: BVT Changed File - ${file}"
-              withEnv(["BLOB_REPORT_DIR=blob-reports", "BLOB_REPORT_FILE=PR-BVT-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}.zip"]) {
+              withEnv(["BLOB_REPORT_DIR=blob-reports/PR-BVT-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"]) {
                 yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
               }
             } catch (Error) {
@@ -382,7 +382,7 @@ withNightlyPipeline(type, product, component, 600) {
           stage("PR: Regression Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: Regression Changed File - ${file}"
-              withEnv(["BLOB_REPORT_DIR=blob-reports", "BLOB_REPORT_FILE=PR-Regression-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}.zip"]) {
+              withEnv(["BLOB_REPORT_DIR=blob-reports/PR-Regression-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"]) {
                 yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
               }
             } catch (Error) {
@@ -404,7 +404,7 @@ withNightlyPipeline(type, product, component, 600) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
           currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
-          withEnv(["BLOB_REPORT_DIR=blob-reports", "BLOB_REPORT_FILE=tags-${params.browser}.zip"]) {
+          withEnv(["BLOB_REPORT_DIR=blob-reports/tags-${params.browser}"]) {
             yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
           }
         } catch (Error) {
