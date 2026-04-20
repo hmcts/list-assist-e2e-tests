@@ -179,7 +179,7 @@ withNightlyPipeline(type, product, component, 600) {
           allowMissing: true,
           alwaysLinkToLastBuild: true,
           keepAll: true,
-          reportDir: \"playwright-report\",
+          reportDir: 'playwright-report',
           reportFiles: 'index.html',
           reportName: reportName
         ])
