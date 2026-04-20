@@ -214,10 +214,6 @@ withNightlyPipeline(type, product, component, 600) {
         sh 'find blob-reports -type f | sort || echo "blob-reports is empty"'
         sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
         sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
-        sh '''
-          # Remove global setup test entries from the report
-          find playwright-report -name "*.html" -type f -exec sed -i '/Global Setup/,/<\\/tr>/d' {} \\;
-        '''
         publishHTML([
           allowMissing: true,
           alwaysLinkToLastBuild: true,
