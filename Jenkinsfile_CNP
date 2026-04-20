@@ -164,11 +164,14 @@ withNightlyPipeline(type, product, component, 600) {
 
   def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
     stage(stageName) {
+      def blobDir = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
       try {
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = skipCreateCase
         }
-        yarnBuilder.yarn(command)
+        withEnv(["BLOB_REPORT_DIR=${blobDir}"]) {
+          yarnBuilder.yarn(command)
+        }
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
@@ -176,12 +179,10 @@ withNightlyPipeline(type, product, component, 600) {
           allowMissing: true,
           alwaysLinkToLastBuild: true,
           keepAll: true,
-          reportDir: "playwright-report",
+          reportDir: \"playwright-report\",
           reportFiles: 'index.html',
           reportName: reportName
         ])
-        // Archive this stage's report for the combined report
-        sh "mkdir -p all-reports && cp -r playwright-report all-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')} || true"
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = null
         }
@@ -204,49 +205,18 @@ withNightlyPipeline(type, product, component, 600) {
   def runMergeReportsStage = {
     stage('Merge Reports') {
       try {
-        sh 'find all-reports -name "index.html" && echo "Found archived reports" || echo "No archived reports found"'
-        sh '''#!/bin/bash
-          if [ -d all-reports ] && [ "$(ls -A all-reports)" ]; then
-            cat > all-reports/index.html << 'EOF'
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Combined Test Report</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { color: #333; }
-    ul { list-style-type: none; padding: 0; }
-    li { margin: 10px 0; }
-    a { color: #0066cc; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <h1>Combined Test Reports</h1>
-  <p>Individual stage reports:</p>
-  <ul>
-EOF
-            for dir in all-reports/*/; do
-              if [ -f "$dir/index.html" ]; then
-                name=$(basename "$dir")
-                echo "    <li><a href=\"$name/index.html\" target=\"_blank\">$name</a></li>" >> all-reports/index.html
-              fi
-            done
-            cat >> all-reports/index.html << 'EOF'
-  </ul>
-</body>
-</html>
-EOF
-            echo "Combined report created"
-          else
-            echo "No reports to combine"
-          fi
-        '''
+        def blobDirs = sh(script: 'find blob-reports -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort', returnStdout: true).trim().split('\n').findAll { it }
+        if (!blobDirs || blobDirs.size() == 0 || blobDirs[0].isEmpty()) {
+          echo 'No blob reports found to merge, skipping.'
+          return
+        }
+        echo "Found ${blobDirs.size()} blob report directories"
+        sh "yarn playwright merge-reports --reporter html,junit ${blobDirs.join(' ')}"
         publishHTML([
           allowMissing: true,
           alwaysLinkToLastBuild: true,
           keepAll: true,
-          reportDir: 'all-reports',
+          reportDir: 'playwright-report',
           reportFiles: 'index.html',
           reportName: 'Combined Test Report'
         ])
@@ -346,7 +316,9 @@ EOF
         stage("PR: ${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
           try {
             currentBuild.displayName = "PR: ${params.TAGS_TO_RUN} E2E Tests"
-            yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
+            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-Tags-${params.browser}"]) {
+              yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
+            }
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
           } finally {
@@ -358,7 +330,6 @@ EOF
               reportFiles: 'index.html',
               reportName: "PR: ${params.TAGS_TO_RUN} E2E Tests ${params.browser}"
             ])
-            sh "mkdir -p all-reports && cp -r playwright-report all-reports/PR-Tags-${params.browser} || true"
           }
         }
       } else {
@@ -366,7 +337,9 @@ EOF
         stage("PR: @pr-build Tagged Tests") {
           try {
             currentBuild.displayName = "PR: @pr-build Tagged Tests"
-            yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
+            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-pr-build-tagged-tests"]) {
+              yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
+            }
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
           } finally {
@@ -378,7 +351,6 @@ EOF
               reportFiles: 'index.html',
               reportName: "PR: @pr-build Tagged Tests"
             ])
-            sh "mkdir -p all-reports && cp -r playwright-report all-reports/PR-pr-build-tagged-tests || true"
           }
         }
 
@@ -387,7 +359,9 @@ EOF
           stage("PR: BVT Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: BVT Changed File - ${file}"
+              withEnv(["BLOB_REPORT_DIR=blob-reports/PR-BVT-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"]) {
                 yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+              }
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
             } finally {
@@ -399,7 +373,6 @@ EOF
                 reportFiles: 'index.html',
                 reportName: "PR: BVT Changed File - ${file}"
               ])
-              sh "mkdir -p all-reports && cp -r playwright-report all-reports/PR-BVT-${file.replaceAll('[^a-zA-Z0-9_-]', '-')} || true"
             }
           }
         }
@@ -409,7 +382,9 @@ EOF
           stage("PR: Regression Changed File - ${file}") {
             try {
               currentBuild.displayName = "PR: Regression Changed File - ${file}"
+              withEnv(["BLOB_REPORT_DIR=blob-reports/PR-Regression-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"]) {
                 yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+              }
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
             } finally {
@@ -421,7 +396,6 @@ EOF
                 reportFiles: 'index.html',
                 reportName: "PR: Regression Changed File - ${file}"
               ])
-              sh "mkdir -p all-reports && cp -r playwright-report all-reports/PR-Regression-${file.replaceAll('[^a-zA-Z0-9_-]', '-')} || true"
             }
           }
         }
@@ -430,7 +404,9 @@ EOF
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
           currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
-          yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
+          withEnv(["BLOB_REPORT_DIR=blob-reports/Tags-${params.browser}"]) {
+            yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
+          }
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -442,7 +418,6 @@ EOF
             reportFiles: 'index.html',
             reportName: "${params.TAGS_TO_RUN} E2E Tests ${params.browser}"
           ])
-          sh "mkdir -p all-reports && cp -r playwright-report all-reports/Tags-${params.browser} || true"
         }
       }
     } else if (regressionBlockChanged) {

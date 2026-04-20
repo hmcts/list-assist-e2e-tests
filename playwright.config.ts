@@ -9,6 +9,12 @@ export default defineConfig({
   testDir: "./playwright-e2e",
   snapshotDir: "./playwright-e2e/snapshots",
   reporter: [
+    [
+      "blob",
+      {
+        outputDir: process.env.BLOB_REPORT_DIR || "blob-report",
+      },
+    ],
     ["html", { open: "never" }],
     ["list"],
     [
