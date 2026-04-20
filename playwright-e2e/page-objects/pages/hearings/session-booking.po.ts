@@ -11,12 +11,15 @@ export class SessionBookingPage extends Base {
       "Wales Civil, Family and Tribunals",
     CASE_LISTING_CLUSTER_MIDLANDS_LEICESTERSHIRE_RUTLAND_LINCOLNSHIRE_NORTH:
       "Leicestershire, Rutland, Lincolnshire and North",
-    CASE_LISTING_CLUSTER_CLEVELAND_DURHAM_TEES_VALLEY: "Cleveland, Durham and Northumbria Group",
+    CASE_LISTING_CLUSTER_CLEVELAND_DURHAM_TEES_VALLEY:
+      "Cleveland, Durham and Northumbria Group",
 
     CASE_LISTING_LOCATION_LEICESTER_CC_7: "Leicester County Courtroom 07",
     CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
-    CASE_LISTING_LOCALITY_DARLINGTON_COUNTY_COURT: "Darlington County Court and Family Court",
-    CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT: "Pontypridd County Court and",
+    CASE_LISTING_LOCALITY_DARLINGTON_COUNTY_COURT:
+      "Darlington County Court and Family Court",
+    CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT:
+      "Pontypridd County Court and",
     CASE_LISTING_LOCALITY_LEICESTER_CC: "Leicester Combined Court",
     CASE_LISTING_LOCALITY_CAERNARFON_JC: "Caernarfon Justice Centre",
     CASE_LISTING_LOCALITY_ABERYSTWYTH_JC: "Aberystwyth Justice Centre",
@@ -25,9 +28,9 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC:
       "Newport (South Wales) County Court and Family Court",
     CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC: "Wrexham County and Family Court",
-     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
-       "Newport (South Wales) Chambers 01",
-     CASE_LISTING_LOCATION_WREXHAM_CRTRM_01: "Wrexham Courtroom 01",
+    CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
+      "Newport (South Wales) Chambers 01",
+    CASE_LISTING_LOCATION_WREXHAM_CRTRM_01: "Wrexham Courtroom 01",
     CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1: "Darlington County Courtroom 01",
     CASE_LISTING_JURISDICTION_FAMILY_CODE_AB: "AB",
     CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV: "CIV",
@@ -374,10 +377,10 @@ export class SessionBookingPage extends Base {
   }
 
   async updateAdvancedFilterConfig(
-    region: string,
-    cluster: string,
-    locality: string,
-    location,
+    region?: string,
+    cluster?: string,
+    locality?: string,
+    location?: string,
   ) {
     await this.advancedFiltersButton.click();
     await expect(this.advancedFiltersHeader).toBeVisible();
@@ -385,39 +388,45 @@ export class SessionBookingPage extends Base {
     await this.clearAdvanceFilterButton.click();
 
     //region dropdown and region selection
-    await this.regionDropdown.click();
-    await this.page
-      .getByRole("option", { name: region })
-      .locator("span")
-      .nth(2)
-      .click();
+    if (region) {
+      await this.regionDropdown.click();
+      await this.page
+        .getByRole("option", { name: region })
+        .locator("span")
+        .nth(2)
+        .click();
+    }
 
     //cluster dropdown and cluster selection
-    await this.clusterDropDown.click();
-    await this.page
-      .getByRole("option", { name: cluster })
-      .locator("span")
-      .nth(2)
-      .click();
+    if (cluster) {
+      await this.clusterDropDown.click();
+      await this.page
+        .getByRole("option", { name: cluster })
+        .locator("span")
+        .nth(2)
+        .click();
+    }
 
     //locality dropdown and locality selection
-    await this.localityDropDown.click();
-    await this.page
-      .getByRole("option", { name: locality })
-      .locator("span")
-      .nth(2)
-      .click();
+    if (locality) {
+      await this.localityDropDown.click();
+      await this.page
+        .getByRole("option", { name: locality })
+        .locator("span")
+        .nth(2)
+        .click();
+    }
 
     //location dropdown and location selection
-    await this.locationDropDown.click();
-    await this.page
-      .getByRole("option", { name: location })
-      .locator("span")
-      .nth(2)
-      .click();
-
-    // Use the class property here
-    await this.locationFilterToggleButton.click();
+    if (location) {
+      await this.locationDropDown.click();
+      await this.page
+        .getByRole("option", { name: location })
+        .locator("span")
+        .nth(2)
+        .click();
+      await this.locationFilterToggleButton.click();
+    }
 
     //apply filter
     await this.applyButton.click();

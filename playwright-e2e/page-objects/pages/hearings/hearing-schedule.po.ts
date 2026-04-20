@@ -1,4 +1,5 @@
 import { Locator, Page, expect } from "@playwright/test";
+import { DateTime } from "luxon";
 import { Base } from "../../base";
 import { SessionBookingPage } from "./session-booking.po.ts";
 
@@ -428,6 +429,15 @@ export class HearingSchedulePage extends Base {
   async clearDownMultiDaySchedule(room: string, date: string): Promise<void> {
     const scheduleButton = await this.bookingSessionId(room, date, this.page);
 
+    const nextDate = DateTime.fromFormat(date, "dd-MM-yyyy")
+      .plus({ days: 1 })
+      .toFormat("dd-MM-yyyy");
+    const scheduleButtonFallback = await this.bookingSessionId(
+      room,
+      nextDate,
+      this.page,
+    );
+
     //go to hearing schedule page
     await expect(this.sidebarComponent.sidebar).toBeVisible();
     await this.sidebarComponent.openHearingSchedulePage();
@@ -446,13 +456,21 @@ export class HearingSchedulePage extends Base {
       await this.waitForLoad();
 
       await expect
-        .poll(async () => await scheduleButton.isVisible(), {
-          intervals: [2_000],
-          timeout: 10_000,
-        })
+        .poll(
+          async () =>
+            (await scheduleButton.isVisible()) ||
+            (await scheduleButtonFallback.isVisible()),
+          {
+            intervals: [2_000],
+            timeout: 10_000,
+          },
+        )
         .toBeTruthy();
 
-      await scheduleButton.click();
+      const targetButton = (await scheduleButton.isVisible())
+        ? scheduleButton
+        : scheduleButtonFallback;
+      await targetButton.click();
       await this.goToSessionDetailsButton.first().click();
 
       await expect
@@ -474,12 +492,20 @@ export class HearingSchedulePage extends Base {
         await this.waitForLoad();
       }
       await expect
-        .poll(async () => await scheduleButton.isVisible(), {
-          intervals: [2_000],
-          timeout: 20_000,
-        })
+        .poll(
+          async () =>
+            (await scheduleButton.isVisible()) ||
+            (await scheduleButtonFallback.isVisible()),
+          {
+            intervals: [2_000],
+            timeout: 20_000,
+          },
+        )
         .toBeTruthy();
-      await scheduleButton.click();
+      const targetButton2 = (await scheduleButton.isVisible())
+        ? scheduleButton
+        : scheduleButtonFallback;
+      await targetButton2.click();
       await this.goToSessionDetailsButton.first().click();
       await expect
         .poll(async () => await this.sessionBookingPage.heading.isVisible(), {
