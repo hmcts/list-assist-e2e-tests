@@ -215,8 +215,14 @@ withNightlyPipeline(type, product, component, 600) {
         sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
         sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
         sh '''
-          # Collapse all test details by default by removing the 'open' attribute
-          sed -i 's/<details open>/<details>/g' playwright-report/index.html || true
+          # Collapse all test details by removing the 'open' attribute from all HTML files
+          find playwright-report -name "*.html" -type f -exec sed -i 's/<details open>/<details>/g' {} \\;
+          # Also inject a script to ensure they stay closed on page load
+          for file in $(find playwright-report -name "*.html" -type f); do
+            if grep -q "</body>" "$file"; then
+              sed -i 's|</body>|<script>document.querySelectorAll("details").forEach(d => d.open = false);</script></body>|' "$file"
+            fi
+          done
         '''
         publishHTML([
           allowMissing: true,
