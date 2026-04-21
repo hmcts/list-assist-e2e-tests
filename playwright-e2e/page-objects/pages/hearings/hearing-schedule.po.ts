@@ -425,14 +425,11 @@ export class HearingSchedulePage extends Base {
     await expect(this.header).toBeVisible();
   }
 
-  async clearDownMultiDaySchedule(room: string, date: string): Promise<void> {
-    const scheduleButton = await this.bookingSessionId(room, date, this.page);
+  async clearDownMultiDaySchedule(room: string): Promise<void> {
 
-    //go to hearing schedule page
+    // Navigate to the hearing schedule page and wait for the table to load.
     await expect(this.sidebarComponent.sidebar).toBeVisible();
     await this.sidebarComponent.openHearingSchedulePage();
-
-    //schedule hearing
     await this.waitForLoad();
 
     const releasedStatusCheck = this.page.locator(
@@ -440,21 +437,23 @@ export class HearingSchedulePage extends Base {
       { hasText: "Released" },
     );
 
+    // Only proceed if there are released (i.e., existing) sessions to clean up.
     if (await releasedStatusCheck.first().isVisible()) {
+      // === First Pass: Delete existing multi-day listings ===
       await releasedStatusCheck.first().click();
-
       await this.waitForLoad();
 
-      await expect
-        .poll(async () => await scheduleButton.isVisible(), {
-          intervals: [2_000],
-          timeout: 10_000,
-        })
-        .toBeTruthy();
+      // Helper function: finds and waits for the first visible booking cell for this room.
+    // Uses a partial match on the room name across any date column (doesn't require exact date).
+    const locateCellWithData = async (): Promise<Locator> => {
+      const cell = this.page.locator(`[id*="addBookingColor"][id*="${room}"]`).first();
+      await cell.waitFor({ state: "visible", timeout: 30_000 });
+      return cell;
+    };
 
-      await scheduleButton.click();
+      // Click the booking cell and enter the session details.
+      await (await locateCellWithData()).click();
       await this.goToSessionDetailsButton.first().click();
-
       await expect
         .poll(async () => await this.sessionBookingPage.heading.isVisible(), {
           intervals: [2_000],
@@ -462,24 +461,21 @@ export class HearingSchedulePage extends Base {
         })
         .toBeTruthy();
 
+      // Delete any existing multi-day listings for this session.
       await this.deleteExistingMultiDayListings();
 
-      //go to hearing schedule page
+      // === Second Pass: Delete multi-day listing placeholders ===
+      // Navigate back to the hearing schedule page.
       await expect(this.sidebarComponent.sidebar).toBeVisible();
       await this.sidebarComponent.openHearingSchedulePage();
 
       if (await releasedStatusCheck.first().isVisible()) {
         await releasedStatusCheck.first().click();
-
         await this.waitForLoad();
       }
-      await expect
-        .poll(async () => await scheduleButton.isVisible(), {
-          intervals: [2_000],
-          timeout: 20_000,
-        })
-        .toBeTruthy();
-      await scheduleButton.click();
+
+      // Click the booking cell again to access any remaining placeholder sessions.
+      await (await locateCellWithData()).click();
       await this.goToSessionDetailsButton.first().click();
       await expect
         .poll(async () => await this.sessionBookingPage.heading.isVisible(), {
@@ -487,6 +483,8 @@ export class HearingSchedulePage extends Base {
           timeout: 10_000,
         })
         .toBeTruthy();
+
+      // Delete any placeholder sessions (recurring session instances that haven't been booked yet).
       await this.deleteMultiDayListingsPlaceholders();
     }
   }
