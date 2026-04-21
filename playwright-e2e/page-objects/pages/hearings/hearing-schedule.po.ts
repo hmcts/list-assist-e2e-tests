@@ -428,21 +428,17 @@ export class HearingSchedulePage extends Base {
 
   async clearDownMultiDaySchedule(room: string, date: string): Promise<void> {
     const baseDate = DateTime.fromFormat(date, "dd-MM-yyyy");
-    const candidateButtons = await Promise.all(
-      Array.from({ length: 7 }, (_, i) =>
-        this.bookingSessionId(
-          room,
-          baseDate.plus({ days: i }).toFormat("dd-MM-yyyy"),
-          this.page,
-        ),
-      ),
-    );
 
-    const findVisibleButton = async () => {
-      for (const btn of candidateButtons) {
-        if (await btn.isVisible()) return btn;
+    // Starting from the given date, check each consecutive day's session cell
+    // until a visible one is found, with no hardcoded limit on how many days to look ahead.
+    const findVisibleSessionCell = async (): Promise<Locator | null> => {
+      let dayOffset = 0;
+      while (true) {
+        const cellDate = baseDate.plus({ days: dayOffset }).toFormat("dd-MM-yyyy");
+        const cell = await this.bookingSessionId(room, cellDate, this.page);
+        if (await cell.isVisible()) return cell;
+        dayOffset++;
       }
-      return null;
     };
 
     //go to hearing schedule page
@@ -462,14 +458,7 @@ export class HearingSchedulePage extends Base {
 
       await this.waitForLoad();
 
-      await expect
-        .poll(async () => (await findVisibleButton()) !== null, {
-          intervals: [2_000],
-          timeout: 10_000,
-        })
-        .toBeTruthy();
-
-      await (await findVisibleButton())!.click();
+      await (await findVisibleSessionCell())!.click();
       await this.goToSessionDetailsButton.first().click();
 
       await expect
@@ -490,13 +479,7 @@ export class HearingSchedulePage extends Base {
 
         await this.waitForLoad();
       }
-      await expect
-        .poll(async () => (await findVisibleButton()) !== null, {
-          intervals: [2_000],
-          timeout: 20_000,
-        })
-        .toBeTruthy();
-      await (await findVisibleButton())!.click();
+      await (await findVisibleSessionCell())!.click();
       await this.goToSessionDetailsButton.first().click();
       await expect
         .poll(async () => await this.sessionBookingPage.heading.isVisible(), {
