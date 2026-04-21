@@ -427,16 +427,23 @@ export class HearingSchedulePage extends Base {
   }
 
   async clearDownMultiDaySchedule(room: string, date: string): Promise<void> {
-    const scheduleButton = await this.bookingSessionId(room, date, this.page);
-
-    const nextDate = DateTime.fromFormat(date, "dd-MM-yyyy")
-      .plus({ days: 1 })
-      .toFormat("dd-MM-yyyy");
-    const scheduleButtonFallback = await this.bookingSessionId(
-      room,
-      nextDate,
-      this.page,
+    const baseDate = DateTime.fromFormat(date, "dd-MM-yyyy");
+    const candidateButtons = await Promise.all(
+      Array.from({ length: 7 }, (_, i) =>
+        this.bookingSessionId(
+          room,
+          baseDate.plus({ days: i }).toFormat("dd-MM-yyyy"),
+          this.page,
+        ),
+      ),
     );
+
+    const findVisibleButton = async () => {
+      for (const btn of candidateButtons) {
+        if (await btn.isVisible()) return btn;
+      }
+      return null;
+    };
 
     //go to hearing schedule page
     await expect(this.sidebarComponent.sidebar).toBeVisible();
@@ -456,21 +463,13 @@ export class HearingSchedulePage extends Base {
       await this.waitForLoad();
 
       await expect
-        .poll(
-          async () =>
-            (await scheduleButton.isVisible()) ||
-            (await scheduleButtonFallback.isVisible()),
-          {
-            intervals: [2_000],
-            timeout: 10_000,
-          },
-        )
+        .poll(async () => (await findVisibleButton()) !== null, {
+          intervals: [2_000],
+          timeout: 10_000,
+        })
         .toBeTruthy();
 
-      const targetButton = (await scheduleButton.isVisible())
-        ? scheduleButton
-        : scheduleButtonFallback;
-      await targetButton.click();
+      await (await findVisibleButton())!.click();
       await this.goToSessionDetailsButton.first().click();
 
       await expect
@@ -492,20 +491,12 @@ export class HearingSchedulePage extends Base {
         await this.waitForLoad();
       }
       await expect
-        .poll(
-          async () =>
-            (await scheduleButton.isVisible()) ||
-            (await scheduleButtonFallback.isVisible()),
-          {
-            intervals: [2_000],
-            timeout: 20_000,
-          },
-        )
+        .poll(async () => (await findVisibleButton()) !== null, {
+          intervals: [2_000],
+          timeout: 20_000,
+        })
         .toBeTruthy();
-      const targetButton2 = (await scheduleButton.isVisible())
-        ? scheduleButton
-        : scheduleButtonFallback;
-      await targetButton2.click();
+      await (await findVisibleButton())!.click();
       await this.goToSessionDetailsButton.first().click();
       await expect
         .poll(async () => await this.sessionBookingPage.heading.isVisible(), {
