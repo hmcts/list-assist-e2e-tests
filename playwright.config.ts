@@ -15,7 +15,7 @@ export default defineConfig({
         outputDir: process.env.BLOB_REPORT_DIR || "blob-report",
       },
     ],
-    ["html", { open: "never" }],
+    ["html", { open: "never", collapsed: true }],
     ["list"],
     [
       "junit",
