@@ -4,6 +4,23 @@ import { config } from "../../utils/index.ts";
 test.describe("Multi-day case listing @multi-day", () => {
   test.describe.configure({ mode: "serial" });
 
+  test.afterEach(async ({
+    hearingSchedulePage,
+    sessionBookingPage,
+  }) => {
+    await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
+      await sessionBookingPage.updateAdvancedFilterConfig(
+        undefined,
+        undefined,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_DARLINGTON_COUNTY_COURT,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1,
+      );
+    await hearingSchedulePage.clearDownMultiDaySchedule(
+      sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1,
+    );
+  });
+
   test("Multi-day case listing @multi-day", async ({
     addNewCasePage,
     caseSearchPage,
@@ -66,7 +83,6 @@ test.describe("Multi-day case listing @multi-day", () => {
     await test.step("Clear down multi-day schedule", async () => {
       await hearingSchedulePage.clearDownMultiDaySchedule(
         sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1,
-        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
       );
     });
 
