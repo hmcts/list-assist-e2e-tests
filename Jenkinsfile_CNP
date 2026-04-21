@@ -209,7 +209,7 @@ withNightlyPipeline(type, product, component, 600) {
         publishHTML([
           allowMissing: false,
           alwaysLinkToLastBuild: true,
-          keepAll: false,
+          keepAll: true,
           reportDir: 'playwright-report',
           reportFiles: 'index.html',
           reportName: 'Test Report'
