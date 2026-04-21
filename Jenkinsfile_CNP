@@ -175,14 +175,6 @@ withNightlyPipeline(type, product, component, 600) {
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
-        publishHTML([
-          allowMissing: true,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: 'playwright-report',
-          reportFiles: 'index.html',
-          reportName: reportName
-        ])
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = null
         }
@@ -215,12 +207,12 @@ withNightlyPipeline(type, product, component, 600) {
         sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
         sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
         publishHTML([
-          allowMissing: true,
+          allowMissing: false,
           alwaysLinkToLastBuild: true,
-          keepAll: true,
+          keepAll: false,
           reportDir: 'playwright-report',
           reportFiles: 'index.html',
-          reportName: 'Combined Test Report'
+          reportName: 'Test Report'
         ])
       } catch (Error) {
         unstable(message: "Merge Reports is unstable: " + Error.toString())
@@ -323,15 +315,6 @@ withNightlyPipeline(type, product, component, 600) {
             }
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: "PR: ${params.TAGS_TO_RUN} E2E Tests ${params.browser}"
-            ])
           }
         }
       } else {
@@ -344,15 +327,6 @@ withNightlyPipeline(type, product, component, 600) {
             }
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report",
-              reportFiles: 'index.html',
-              reportName: "PR: @pr-build Tagged Tests"
-            ])
           }
         }
 
@@ -366,15 +340,6 @@ withNightlyPipeline(type, product, component, 600) {
               }
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-            } finally {
-              publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: "playwright-report",
-                reportFiles: 'index.html',
-                reportName: "PR: BVT Changed File - ${file}"
-              ])
             }
           }
         }
@@ -389,15 +354,6 @@ withNightlyPipeline(type, product, component, 600) {
               }
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-            } finally {
-              publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: "playwright-report",
-                reportFiles: 'index.html',
-                reportName: "PR: Regression Changed File - ${file}"
-              ])
             }
           }
         }
@@ -411,15 +367,6 @@ withNightlyPipeline(type, product, component, 600) {
           }
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-        } finally {
-          publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: "playwright-report",
-            reportFiles: 'index.html',
-            reportName: "${params.TAGS_TO_RUN} E2E Tests ${params.browser}"
-          ])
         }
       }
     } else if (regressionBlockChanged) {
