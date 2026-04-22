@@ -10,7 +10,7 @@ test.describe("Add user @add-user", () => {
     createUserPage,
   }) => {
     await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser, true);
+    await loginPage.login("JASON_MARTIN");
 
     await homePage.sidebarComponent.administrationMenu.click();
     await homePage.sidebarComponent.userMenu.click();
@@ -52,11 +52,16 @@ test.describe("Add user @add-user", () => {
     //System Detail tab
 
     await createUserPage.systemDetailTab.click();
-    await createUserPage.userActiveFromDate.fill(
-      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+    await createUserPage.userActiveFromDate.waitFor({ state: "visible" });
+
+    await createUserPage.userActiveFromDate.click();
+    await createUserPage.userActiveFromDate.pressSequentially(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
     );
-    await createUserPage.userActiveToDate.fill(
-      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(5),
+
+    await createUserPage.userActiveToDate.click();
+    await createUserPage.userActiveToDate.pressSequentially(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(5),
     );
 
     // security group
