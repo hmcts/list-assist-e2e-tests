@@ -21,12 +21,12 @@ test.describe("Add user @add-user", () => {
       .replace(/-/g, "")
       .toUpperCase();
 
+    const testPassword = dataUtils.generateRandomAlphanumeric(12);
+
     await createUserPage.userLoginId.fill(userLoginId);
     await createUserPage.userEmail.fill("test@email.com");
-    await createUserPage.userPassword.fill(process.env.TEST_PASSWORD as string);
-    await createUserPage.userConfirmPassword.fill(
-      process.env.TEST_PASSWORD as string,
-    );
+    await createUserPage.userPassword.fill(testPassword);
+    await createUserPage.userConfirmPassword.fill(testPassword);
     await createUserPage.userGivenName.fill("Auto");
     await createUserPage.userSurName.fill("User");
 
@@ -97,7 +97,7 @@ test.describe("Add user @add-user", () => {
 
     // login with new user
     await loginPage.usernameInput.fill(userLoginId);
-    await loginPage.passwordInput.fill(process.env.TEST_PASSWORD as string);
+    await loginPage.passwordInput.fill(testPassword);
     await loginPage.submitBtn.click();
 
     // assert new user welcome message
