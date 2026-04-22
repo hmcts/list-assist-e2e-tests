@@ -20,7 +20,7 @@ test.beforeEach(
     config,
   }) => {
     await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser);
+    await loginPage.login("KEVIN_YOUNG");
     await clearDownMidlandsLeicesterSchedule(
       sessionBookingPage,
       hearingSchedulePage,
@@ -47,10 +47,9 @@ test.afterEach(
 );
 
 //to skip case creation when running test in isolation, uncomment this line
-// process.env.SKIP_CREATE_CASE = 'true';
+// process.env.SKIP_CREATE_CASE = "true";
 
 test.describe("HMI Amend API tests after listing @amend-api-test-after-listing", () => {
-  //using test.slow() because this test takes longer than 3 minutes to complete
   test.slow();
   test("Amended participants and their hearing method should display as expected after listing", async ({
     editNewCasePage,

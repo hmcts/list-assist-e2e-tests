@@ -49,7 +49,6 @@ export class HmiUtils {
   static async requestHearing(payload: unknown): Promise<void> {
     const context = await this.generateContext();
     const response = await context.post(`/hmi/hearings`, { data: payload });
-    console.error("Status:", response.status());
     expect(response.ok()).toBeTruthy();
   }
 
@@ -61,7 +60,6 @@ export class HmiUtils {
     const response = await context.put(`/hmi/hearings/` + caseID, {
       data: payload,
     });
-    console.error("Status:", response.status());
     expect(response.ok()).toBeTruthy();
   }
 
