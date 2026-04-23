@@ -17,9 +17,6 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     async ({
       page,
       loginPage,
-      addNewCasePage,
-      caseSearchPage,
-      editNewCasePage,
       hearingSchedulePage,
       sessionBookingPage,
       dataUtils,
@@ -28,12 +25,6 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       await loginPage.login("RYAN_WRIGHT");
       //empties cart if there is anything present
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-      //search for the case
-      await addNewCasePage.sidebarComponent.openSearchCasePage();
-      await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
-      await expect(editNewCasePage.caseNameField).toHaveText(
-        process.env.CASE_NAME as string,
-      );
 
       await clearDownWalesSchedule(
         sessionBookingPage,
@@ -44,7 +35,13 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
   );
 
   test.afterEach(
-    async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
+    async ({
+      page,
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+      homePage,
+    }) => {
       await page.goto(config.urls.baseUrl);
 
       await clearDownWalesSchedule(
@@ -52,6 +49,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
         hearingSchedulePage,
         dataUtils,
       );
+
+      await homePage.upperbarComponent.logoutButton.click();
     },
   );
 

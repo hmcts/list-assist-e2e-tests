@@ -203,6 +203,19 @@ export class AddNewCasePage extends Base {
     ).toBeVisible();
   }
 
+  /**
+   * caseData object format:
+   * {
+   *   jurisdiction: string,        // e.g., "Civil" or "Family"
+   *   service: string,             // e.g., "Damages" or "Divorce"
+   *   caseType?: string,           // (optional) e.g., "Small Claims"
+   *   region: string,              // e.g., "Wales" or "London"
+   *   hearingCentre: string,       // e.g., "Cardiff Civil and Family Justice Centre"
+   *   hmctsCaseNumber?: string,    // (optional) e.g., "1234567890" - auto-generated if not provided
+   *   caseName?: string            // (optional) e.g., "Smith v Jones" - auto-generated if not provided
+   * }
+   */
+
   async addNewCase(
     homePage: HomePage,
     hearingSchedulePage: HearingSchedulePage,

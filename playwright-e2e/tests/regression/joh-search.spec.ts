@@ -90,6 +90,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
   test("Filter and display JOHs correctly using inclusion and exclusion criteria", async ({
     page,
     loginPage,
+    homePage,
     hearingSchedulePage,
     sessionBookingPage,
     dataUtils,
@@ -259,12 +260,15 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       await expect(hearingSchedulePage.table).toContainText(
         "JOH-Two AutomationTest",
       );
+
+      await homePage.upperbarComponent.logoutButton.click();
     });
   });
 
   test("Filter and display JOH correctly using tier inclusion @joh-filtering", async ({
     page,
     loginPage,
+    homePage,
     hearingSchedulePage,
     sessionBookingPage,
     dataUtils,
@@ -362,6 +366,8 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       await expect(hearingSchedulePage.table).toContainText(
         "JOH-Two AutomationTest",
       );
+
+      await homePage.upperbarComponent.logoutButton.click();
     });
   });
 

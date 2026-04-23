@@ -18,6 +18,10 @@ test.describe("Add participant @add-participant", () => {
     },
   );
 
+  test.afterEach(async ({ homePage }) => {
+    await homePage.upperbarComponent.logoutButton.click();
+  });
+
   test("Add new participant via Case Participants menu to case and then close participant using topbar UI", async ({
     addNewCasePage,
     editNewCasePage,

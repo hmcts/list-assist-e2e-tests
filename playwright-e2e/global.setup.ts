@@ -32,7 +32,7 @@ setup.describe("Global Setup", () => {
     },
   );
 
-  setup.skip(
+  setup(
     "Clean down JOH users in sessions",
     async ({ loginPage, page, config, hearingSchedulePage, dataUtils }) => {
       await page.goto(config.urls.baseUrl);

@@ -32,6 +32,7 @@ test.beforeEach(
 test.afterEach(
   async ({
     page,
+    homePage,
     config,
     hearingSchedulePage,
     sessionBookingPage,
@@ -43,6 +44,7 @@ test.afterEach(
       hearingSchedulePage,
       dataUtils,
     );
+    await homePage.upperbarComponent.logoutButton.click();
   },
 );
 

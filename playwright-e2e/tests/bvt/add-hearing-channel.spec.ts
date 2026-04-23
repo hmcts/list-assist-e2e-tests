@@ -37,12 +37,19 @@ test.describe("Hearing channel test @hearing-channel", () => {
   );
 
   test.afterEach(
-    async ({ hearingSchedulePage, sessionBookingPage, dataUtils }) => {
+    async ({
+      homePage,
+      hearingSchedulePage,
+      sessionBookingPage,
+      dataUtils,
+    }) => {
       await clearDownMidlandsLeicesterSchedule(
         sessionBookingPage,
         hearingSchedulePage,
         dataUtils,
       );
+
+      await homePage.upperbarComponent.logoutButton.click();
     },
   );
 
