@@ -1,14 +1,12 @@
 import { expect, test } from "../../fixtures";
 import { config } from "../../utils";
 
-test.use({
-  storageState: config.users.testUser.sessionFile,
-});
-
 test.describe("Add participant @add-participant", () => {
   test.describe.configure({ mode: "serial" });
-  test.beforeEach(async ({ page }) => {
+
+  test.beforeEach(async ({ page, loginPage }) => {
     await page.goto(config.urls.baseUrl);
+    await loginPage.login("ISABELLA_WALKER");
   });
 
   test("Add new participant via Case Participants menu to case and then close participant using topbar UI", async ({

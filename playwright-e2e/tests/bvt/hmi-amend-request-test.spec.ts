@@ -30,7 +30,6 @@ test.describe("HMI Amend API tests before listing @amend-api-test", () => {
     payload["hearingRequest"]["_case"]["caseListingRequestId"] = CASE_ID;
 
     await HmiUtils.requestHearing(payload);
-    console.log("\ncase id = " + CASE_ID);
 
     // Amend request
     const amendPayload = config.data.amendHearingRequest;
@@ -40,7 +39,7 @@ test.describe("HMI Amend API tests before listing @amend-api-test", () => {
     await HmiUtils.requestAmendHearing(amendPayload, CASE_ID);
 
     await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser, true);
+    await loginPage.login("SOPHIA_LOPEZ", true);
 
     //pushes amend request through
     await caseDetailsPage.sidebarComponent.openScheduledJobsPage();

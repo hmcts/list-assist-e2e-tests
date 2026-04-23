@@ -10,7 +10,7 @@ test.describe("Add user @add-user", () => {
     createUserPage,
   }) => {
     await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser, true);
+    await loginPage.login("JASON_MARTIN");
 
     await homePage.sidebarComponent.administrationMenu.click();
     await homePage.sidebarComponent.userMenu.click();
@@ -21,12 +21,12 @@ test.describe("Add user @add-user", () => {
       .replace(/-/g, "")
       .toUpperCase();
 
+    const testPassword = dataUtils.generateRandomAlphanumeric(12);
+
     await createUserPage.userLoginId.fill(userLoginId);
     await createUserPage.userEmail.fill("test@email.com");
-    await createUserPage.userPassword.fill(process.env.TEST_PASSWORD as string);
-    await createUserPage.userConfirmPassword.fill(
-      process.env.TEST_PASSWORD as string,
-    );
+    await createUserPage.userPassword.fill(testPassword);
+    await createUserPage.userConfirmPassword.fill(testPassword);
     await createUserPage.userGivenName.fill("Auto");
     await createUserPage.userSurName.fill("User");
 
@@ -52,11 +52,16 @@ test.describe("Add user @add-user", () => {
     //System Detail tab
 
     await createUserPage.systemDetailTab.click();
-    await createUserPage.userActiveFromDate.fill(
-      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+    await createUserPage.userActiveFromDate.waitFor({ state: "visible" });
+
+    await createUserPage.userActiveFromDate.click();
+    await createUserPage.userActiveFromDate.pressSequentially(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
     );
-    await createUserPage.userActiveToDate.fill(
-      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(5),
+
+    await createUserPage.userActiveToDate.click();
+    await createUserPage.userActiveToDate.pressSequentially(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(5),
     );
 
     // security group
@@ -92,7 +97,7 @@ test.describe("Add user @add-user", () => {
 
     // login with new user
     await loginPage.usernameInput.fill(userLoginId);
-    await loginPage.passwordInput.fill(process.env.TEST_PASSWORD as string);
+    await loginPage.passwordInput.fill(testPassword);
     await loginPage.submitBtn.click();
 
     // assert new user welcome message
