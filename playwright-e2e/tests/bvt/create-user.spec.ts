@@ -2,6 +2,11 @@ import { expect, test } from "../../fixtures";
 import { config } from "../../utils";
 
 test.describe("Add user @add-user", () => {
+  test.beforeEach(async ({ page, loginPage }) => {
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login("JASON_MARTIN");
+  });
+
   test("Add new user as Listing Officer", async ({
     dataUtils,
     homePage,
@@ -9,9 +14,6 @@ test.describe("Add user @add-user", () => {
     loginPage,
     createUserPage,
   }) => {
-    await page.goto(config.urls.baseUrl);
-    await loginPage.login("JASON_MARTIN");
-
     await homePage.sidebarComponent.administrationMenu.click();
     await homePage.sidebarComponent.userMenu.click();
 

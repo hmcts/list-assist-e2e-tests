@@ -1,5 +1,8 @@
 import { Page, expect } from "@playwright/test";
+import { randomUUID } from "crypto";
 import { Base } from "../../base";
+import { HomePage } from "../home.po";
+import { HearingSchedulePage } from "../hearings/hearing-schedule.po";
 
 interface CaseData {
   jurisdiction: string;
@@ -7,6 +10,8 @@ interface CaseData {
   caseType?: string;
   region: string;
   hearingCentre: string;
+  hmctsCaseNumber?: string;
+  caseName?: string;
 }
 
 export class AddNewCasePage extends Base {
@@ -75,8 +80,9 @@ export class AddNewCasePage extends Base {
   readonly clusterListbox = this.card.locator("#registry_listbox");
 
   readonly owningHearingSelector = this.page
-    .getByLabel("Owning Hearing Location")
-    .getByText("Select One");
+    .getByRole("combobox", { name: "Owning Hearing Location" })
+    .locator("div")
+    .first();
   readonly commentInput = this.page.locator("#mtrComment");
   readonly hmctsCaseNumberInput = this.page.locator("#mtrNumberAdded");
   readonly enterNameInput = this.page.locator("#mtrAltTitleTxt");
@@ -130,8 +136,11 @@ export class AddNewCasePage extends Base {
   }
 
   async selectOwningHearing(owningHearing: string) {
-    await this.owningHearingSelector.click();
-    await this.page.getByText(owningHearing).click();
+    const currentValue = await this.owningHearingSelector.textContent();
+    if (currentValue?.trim() !== owningHearing) {
+      await this.owningHearingSelector.click();
+      await this.page.getByText(owningHearing, { exact: true }).click();
+    }
   }
 
   async populateNewCaseDetails(
@@ -192,5 +201,39 @@ export class AddNewCasePage extends Base {
     await expect(
       this.newCaseHeader.filter({ hasText: caseName }),
     ).toBeVisible();
+  }
+
+  async addNewCase(
+    homePage: HomePage,
+    hearingSchedulePage: HearingSchedulePage,
+    caseData?: CaseData,
+  ): Promise<{ caseNumber: string; caseName: string }> {
+    // Empties cart if there is anything present
+    await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+
+    // Navigate to Add New Case page
+    await homePage.sidebarComponent.openAddNewCasePage();
+
+    // Generate case details (use overrides from caseData if provided)
+    const caseNumber =
+      caseData?.hmctsCaseNumber ?? "HMCTS_CN_" + randomUUID().toUpperCase();
+    const caseName = caseData?.caseName ?? "AUTO_" + randomUUID().toUpperCase();
+
+    process.env.HMCTS_CASE_NUMBER = caseNumber;
+    process.env.CASE_NAME = caseName;
+
+    // Use provided caseData or default data
+    const finalCaseData: CaseData = caseData || {
+      jurisdiction: this.CONSTANTS.JURISDICTION_CIVIL,
+      service: this.CONSTANTS.SERVICE_DAMAGES,
+      caseType: this.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
+      region: this.CONSTANTS.REGION_WALES,
+      hearingCentre: this.CONSTANTS.HEARING_CENTRE_CARDIFF,
+    };
+
+    // Create the new case
+    await this.addNewCaseWithMandatoryData(finalCaseData, caseNumber, caseName);
+
+    return { caseNumber, caseName };
   }
 }

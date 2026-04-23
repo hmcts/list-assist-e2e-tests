@@ -17,6 +17,8 @@ test.describe("Hearing channel test @hearing-channel", () => {
       hearingSchedulePage,
       sessionBookingPage,
       dataUtils,
+      addNewCasePage,
+      homePage,
     }) => {
       await page.goto(config.urls.baseUrl);
       await loginPage.login("PATRICK_LEWIS");
@@ -29,6 +31,8 @@ test.describe("Hearing channel test @hearing-channel", () => {
         hearingSchedulePage,
         dataUtils,
       );
+
+      await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
     },
   );
 

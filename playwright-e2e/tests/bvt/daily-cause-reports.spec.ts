@@ -12,8 +12,10 @@ import { clearDownSchedule } from "../../utils/reporting.utils.ts";
 test.beforeEach(
   async ({
     page,
+    homePage,
     sessionBookingPage,
     hearingSchedulePage,
+    addNewCasePage,
     dataUtils,
     loginPage,
   }) => {
@@ -25,6 +27,8 @@ test.beforeEach(
       hearingSchedulePage,
       dataUtils,
     );
+
+    await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
   },
 );
 
