@@ -32,12 +32,12 @@ test.describe("Hearing channel test @hearing-channel", () => {
         dataUtils,
       );
 
-      await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
-
-      await hearingSchedulePage.clearDownJohSession(
+      await hearingSchedulePage.clearDownJohAndResetToRooms(
         dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
         dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
       );
+
+      await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
     },
   );
 
@@ -48,6 +48,7 @@ test.describe("Hearing channel test @hearing-channel", () => {
       sessionBookingPage,
       dataUtils,
     }) => {
+      await hearingSchedulePage.resetHearingScheduleToRoomsView();
       await clearDownMidlandsLeicesterSchedule(
         sessionBookingPage,
         hearingSchedulePage,

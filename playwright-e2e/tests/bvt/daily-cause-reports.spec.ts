@@ -28,7 +28,7 @@ test.beforeEach(
       dataUtils,
     );
 
-    await hearingSchedulePage.clearDownJohSession(
+    await hearingSchedulePage.clearDownJohAndResetToRooms(
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
     );
