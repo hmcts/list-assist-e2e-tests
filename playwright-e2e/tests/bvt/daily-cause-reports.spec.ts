@@ -28,6 +28,11 @@ test.beforeEach(
       dataUtils,
     );
 
+    await hearingSchedulePage.clearDownJohSession(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+    );
+
     await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
   },
 );

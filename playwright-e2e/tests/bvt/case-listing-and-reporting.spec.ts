@@ -31,6 +31,10 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
         hearingSchedulePage,
         dataUtils,
       );
+      await hearingSchedulePage.clearDownJohSession(
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      );
     },
   );
 

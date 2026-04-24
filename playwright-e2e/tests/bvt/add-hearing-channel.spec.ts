@@ -33,6 +33,11 @@ test.describe("Hearing channel test @hearing-channel", () => {
       );
 
       await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
+
+      await hearingSchedulePage.clearDownJohSession(
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      );
     },
   );
 
