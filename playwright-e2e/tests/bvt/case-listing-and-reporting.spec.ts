@@ -44,7 +44,13 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
   );
 
   test.afterEach(
-    async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
+    async ({
+      page,
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+      homePage,
+    }) => {
       await page.goto(config.urls.baseUrl);
 
       await clearDownWalesSchedule(
@@ -52,6 +58,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
         hearingSchedulePage,
         dataUtils,
       );
+      await homePage.upperbarComponent.logoutButton.click();
     },
   );
 

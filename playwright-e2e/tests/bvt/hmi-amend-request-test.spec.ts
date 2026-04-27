@@ -6,6 +6,10 @@ import { expect } from "@playwright/test";
 // process.env.SKIP_CREATE_CASE = 'true';
 
 test.describe("HMI Amend API tests before listing @amend-api-test", () => {
+  test.afterEach(async ({ homePage }) => {
+    await homePage.upperbarComponent.logoutButton.click();
+  });
+
   test("Amended participants and their hearing method should display as expected before listing", async ({
     editNewCasePage,
     page,
