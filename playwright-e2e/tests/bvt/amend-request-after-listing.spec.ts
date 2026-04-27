@@ -36,6 +36,7 @@ test.afterEach(
     hearingSchedulePage,
     sessionBookingPage,
     dataUtils,
+    homePage,
   }) => {
     await page.goto(config.urls.baseUrl);
     await clearDownMidlandsLeicesterSchedule(
@@ -43,6 +44,7 @@ test.afterEach(
       hearingSchedulePage,
       dataUtils,
     );
+    await homePage.upperbarComponent.logoutButton.click();
   },
 );
 

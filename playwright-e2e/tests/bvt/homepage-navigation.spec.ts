@@ -3,6 +3,10 @@ import { config } from "../../utils";
 import { sidebarMenu } from "../../data/ui-components-data";
 
 test.describe("Logout functionality @ui-test @nightly @smoke", () => {
+  test.afterEach(async ({ homePage }) => {
+    await homePage.upperbarComponent.logoutButton.click();
+  });
+
   test("Logout button is present and functions as expected @smoke", async ({
     loginPage,
     homePage,
@@ -19,6 +23,10 @@ test.describe("Logout functionality @ui-test @nightly @smoke", () => {
 });
 
 test.describe("Upper bar UI @ui-test @smoke", () => {
+  test.afterEach(async ({ homePage }) => {
+    await homePage.upperbarComponent.logoutButton.click();
+  });
+
   test("Help button is present and works as expected @smoke", async ({
     homePage,
     loginPage,
@@ -37,6 +45,10 @@ test.describe("Upper bar UI @ui-test @smoke", () => {
 });
 
 test.describe("Sidebar Menu @sidebar @ui-test @smoke", () => {
+  test.afterEach(async ({ homePage }) => {
+    await homePage.upperbarComponent.logoutButton.click();
+  });
+
   test("All expected sidebar menu items are present @smoke", async ({
     homePage,
     loginPage,

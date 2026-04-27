@@ -7,6 +7,10 @@ test.describe("Case creation @add-new-case", () => {
     await loginPage.login("OLIVIA_CLARK");
   });
 
+  test.afterEach(async ({ homePage }) => {
+    await homePage.upperbarComponent.logoutButton.click();
+  });
+
   //Skipping this test due to a bug in the 4.67 MCGIRRSD-95278 release where the Owning Hearing Location is missing on the case details screen.
   test.skip("Search for case and confirm case details are correct @smoke", async ({
     addNewCasePage,

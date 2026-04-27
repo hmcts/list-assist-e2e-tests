@@ -29,7 +29,13 @@ test.beforeEach(
 );
 
 test.afterEach(
-  async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
+  async ({
+    page,
+    sessionBookingPage,
+    hearingSchedulePage,
+    dataUtils,
+    homePage,
+  }) => {
     await page.goto(config.urls.baseUrl);
 
     await clearDownPontypriddSchedule(
@@ -37,6 +43,7 @@ test.afterEach(
       hearingSchedulePage,
       dataUtils,
     );
+    await homePage.upperbarComponent.logoutButton.click();
   },
 );
 
