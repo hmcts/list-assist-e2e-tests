@@ -12,8 +12,10 @@ import { clearDownSchedule } from "../../utils/reporting.utils.ts";
 test.beforeEach(
   async ({
     page,
+    homePage,
     sessionBookingPage,
     hearingSchedulePage,
+    addNewCasePage,
     dataUtils,
     loginPage,
   }) => {
@@ -25,11 +27,24 @@ test.beforeEach(
       hearingSchedulePage,
       dataUtils,
     );
+
+    await hearingSchedulePage.clearDownJohAndResetToRooms(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+    );
+
+    await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
   },
 );
 
 test.afterEach(
-  async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
+  async ({
+    page,
+    sessionBookingPage,
+    hearingSchedulePage,
+    dataUtils,
+    homePage,
+  }) => {
     await page.goto(config.urls.baseUrl);
 
     await clearDownPontypriddSchedule(
@@ -37,6 +52,8 @@ test.afterEach(
       hearingSchedulePage,
       dataUtils,
     );
+
+    await homePage.upperbarComponent.logoutButton.click();
   },
 );
 

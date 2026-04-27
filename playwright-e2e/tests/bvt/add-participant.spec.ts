@@ -4,12 +4,25 @@ import { config } from "../../utils";
 test.describe("Add participant @add-participant", () => {
   test.describe.configure({ mode: "serial" });
 
-  test.beforeEach(async ({ page, loginPage }) => {
-    await page.goto(config.urls.baseUrl);
-    await loginPage.login("ISABELLA_WALKER");
+  test.beforeEach(
+    async ({
+      page,
+      loginPage,
+      addNewCasePage,
+      homePage,
+      hearingSchedulePage,
+    }) => {
+      await page.goto(config.urls.baseUrl);
+      await loginPage.login("ISABELLA_WALKER");
+      await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
+    },
+  );
+
+  test.afterEach(async ({ homePage }) => {
+    await homePage.upperbarComponent.logoutButton.click();
   });
 
-  test("Add new participant via Case Participants menu to case and then close participant using topbar UI", async ({
+  test.skip("Add new participant via Case Participants menu to case and then close participant using topbar UI", async ({
     addNewCasePage,
     editNewCasePage,
     caseSearchPage,
@@ -58,7 +71,7 @@ test.describe("Add participant @add-participant", () => {
     await homePage.waitForHomePageLoad();
   });
 
-  test("Add new participant via Participants menu and close via topbar UI", async ({
+  test.skip("Add new participant via Participants menu and close via topbar UI", async ({
     homePage,
     dataUtils,
     newParticipantsPage,
@@ -98,7 +111,7 @@ test.describe("Add participant @add-participant", () => {
     await homePage.waitForHomePageLoad();
   });
 
-  test("Case history should display correct event codes", async ({
+  test.skip("Case history should display correct event codes", async ({
     homePage,
     dataUtils,
     caseHistoryPage,

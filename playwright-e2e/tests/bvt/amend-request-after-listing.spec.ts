@@ -26,12 +26,17 @@ test.beforeEach(
       hearingSchedulePage,
       dataUtils,
     );
+    await hearingSchedulePage.clearDownJohSession(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+    );
   },
 );
 
 test.afterEach(
   async ({
     page,
+    homePage,
     config,
     hearingSchedulePage,
     sessionBookingPage,
@@ -43,6 +48,7 @@ test.afterEach(
       hearingSchedulePage,
       dataUtils,
     );
+    await homePage.upperbarComponent.logoutButton.click();
   },
 );
 

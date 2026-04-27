@@ -17,9 +17,6 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     async ({
       page,
       loginPage,
-      addNewCasePage,
-      caseSearchPage,
-      editNewCasePage,
       hearingSchedulePage,
       sessionBookingPage,
       dataUtils,
@@ -28,23 +25,27 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       await loginPage.login("RYAN_WRIGHT");
       //empties cart if there is anything present
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
-      //search for the case
-      await addNewCasePage.sidebarComponent.openSearchCasePage();
-      await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
-      await expect(editNewCasePage.caseNameField).toHaveText(
-        process.env.CASE_NAME as string,
-      );
 
       await clearDownWalesSchedule(
         sessionBookingPage,
         hearingSchedulePage,
         dataUtils,
       );
+      await hearingSchedulePage.clearDownJohAndResetToRooms(
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      );
     },
   );
 
   test.afterEach(
-    async ({ page, sessionBookingPage, hearingSchedulePage, dataUtils }) => {
+    async ({
+      page,
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+      homePage,
+    }) => {
       await page.goto(config.urls.baseUrl);
 
       await clearDownWalesSchedule(
@@ -52,6 +53,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
         hearingSchedulePage,
         dataUtils,
       );
+
+      await homePage.upperbarComponent.logoutButton.click();
     },
   );
 
@@ -363,8 +366,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
       undefined,
       undefined,
-      `Automation internal comments ${process.env.HMCTS_CASE_NUMBER}`,
-      `Automation external comments ${process.env.HMCTS_CASE_NUMBER}`,
+      `Automation internal comments ${getHmctsCaseNumber(caseName)}`,
+      `Automation external comments ${getHmctsCaseNumber(caseName)}`,
     );
 
     //confirm listing
@@ -373,6 +376,11 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     ).toBeVisible();
   }
 });
+
+// Get HMCTS case number from parameter or fallback to environment variable
+function getHmctsCaseNumber(overrideValue?: string): string {
+  return overrideValue || process.env.HMCTS_CASE_NUMBER || "";
+}
 
 async function clearDownWalesSchedule(
   sessionBookingPage,
