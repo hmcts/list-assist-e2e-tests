@@ -53,6 +53,26 @@ export class SessionBookingPage extends Base {
     AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH_TWO:
       "AutomationTest, JOH-Two (AutomationTest-JOH-Two)",
 
+    // JOH filtering user - district judge
+    AUTO_JUDICIAL_OFFICE_HOLDER_USER_AUTO_ELENA_ROSSI:
+      "ROSSI, AUTO_ELENA (AUTO_ELENA_ROSSI)",
+
+    // JOH filtering user - employment judge
+    AUTO_JUDICIAL_OFFICE_HOLDER_USER_AUTO_DMITRI_VOLKOV:
+      "VOLKOV, AUTO_DMITRI (DMITRI_VOLKOV)",
+
+    // JOH User- add hearing channel
+    AUTO_JUDICIAL_OFFICE_HOLDER_USER_AUTO_SOPHIE_DUBOIS:
+      "DUBOIS, AUTO_SOPHIE (AUTO_SOPHIE_DUBOIS)",
+
+    //JOH User - case listing and reporting
+    AUTO_JUDICIAL_OFFICE_HOLDER_USER_AUTO_AHMED_ALRASHID:
+      "ALRASHID, AUTO_AHMED (AUTO_AHMED_ALRASHID)",
+
+    //JOH User - daily cause reports
+    AUTO_JUDICIAL_OFFICE_HOLDER_USER_AUTO_YUKI_TANAKA:
+      "TANAKA, AUTO_YUKI (AUTO_YUKI_TANAKA)",
+
     //session details
     SESSION_DETAILS_CANCELLATION_CODE_CANCEL: "CNCL",
     //session hearing channels

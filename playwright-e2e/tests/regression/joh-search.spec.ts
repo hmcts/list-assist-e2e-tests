@@ -46,7 +46,8 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       caseDetailsPage,
       dataUtils,
       "JOH AutomationTest",
-      sessionBookingPage.CONSTANTS.AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH,
+      sessionBookingPage.CONSTANTS
+        .AUTO_JUDICIAL_OFFICE_HOLDER_USER_AUTO_ELENA_ROSSI,
       sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_FAMILY_CODE_AB,
       0,
     );
@@ -60,7 +61,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       dataUtils,
       "JOH-Two AutomationTest",
       sessionBookingPage.CONSTANTS
-        .AUTO_JUDICIAL_OFFICE_HOLDER_AUTOMATION_JOH_TWO,
+        .AUTO_JUDICIAL_OFFICE_HOLDER_USER_AUTO_DMITRI_VOLKOV,
       sessionBookingPage.CONSTANTS.CASE_LISTING_JURISDICTION_CIVIL_CODE_CIV,
       1,
     );
@@ -111,10 +112,10 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
       await hearingSchedulePage.waitForLoad();
       await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH AutomationTest",
+        "AUTO_ELENA ROSSI",
       );
       await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH-Two AutomationTest",
+        "AUTO_DMITRI VOLKOV",
       );
     });
 
@@ -130,10 +131,10 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       await applyPrimaryDateFilterForSameDay(hearingSchedulePage, dataUtils, 1);
 
       await expect(hearingSchedulePage.table).toContainText(
-        "JOH-Two AutomationTest",
+        "AUTO_DMITRI VOLKOV",
       );
       await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH AutomationTest",
+        "AUTO_ELENA ROSSI",
       );
     });
 
@@ -166,11 +167,9 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
       await hearingSchedulePage.waitForLoad();
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH AutomationTest",
-      );
+      await expect(hearingSchedulePage.table).toContainText("AUTO_ELENA ROSSI");
       await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH-Two AutomationTest",
+        "AUTO_DMITRI VOLKOV",
       );
     });
 
@@ -199,21 +198,19 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       await hearingSchedulePage.johInclusionFilter.click();
       await page
         .getByRole("textbox", { name: "JOH (Inclusion)" })
-        .fill("automationtest");
+        .fill("ELENA");
       const inclusionOption = page
         .locator("#advancedFilter_memTypesIn_option_1")
-        .getByText("AutomationTest, JOH");
+        .getByText("ROSSI, AUTO_ELENA");
       await inclusionOption.waitFor({ state: "visible", timeout: 5000 });
       await inclusionOption.click();
       await sessionBookingPage.applyButton.click();
       await hearingSchedulePage.waitForLoad();
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
       await hearingSchedulePage.waitForLoad();
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH AutomationTest",
-      );
+      await expect(hearingSchedulePage.table).toContainText("AUTO_ELENA ROSSI");
       await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH-Two AutomationTest",
+        "AUTO_DMITRI VOLKOV",
       );
     });
 
@@ -243,10 +240,10 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       await hearingSchedulePage.johExclusionFilter.click();
       await page
         .getByRole("textbox", { name: "JOH (Exclusion)" })
-        .fill("automationtest");
+        .fill("DMITRI");
       const exclusionOption = page
         .locator("#advancedFilter_memTypeEx_option_1")
-        .getByText("AutomationTest, JOH");
+        .getByText("VOLKOV, AUTO_DMITRI");
       await exclusionOption.waitFor({ state: "visible", timeout: 5000 });
       await exclusionOption.click();
       await sessionBookingPage.applyButton.click();
@@ -254,11 +251,9 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
       await hearingSchedulePage.waitForLoad();
       await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH AutomationTest",
+        "AUTO_DMITRI VOLKOV",
       );
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH-Two AutomationTest",
-      );
+      await expect(hearingSchedulePage.table).toContainText("AUTO_ELENA ROSSI");
     });
   });
 
@@ -303,11 +298,9 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
         .click();
       await hearingSchedulePage.primaryFilterApplyButton.click();
       await hearingSchedulePage.waitForLoad();
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH AutomationTest",
-      );
+      await expect(hearingSchedulePage.table).toContainText("AUTO_ELENA ROSSI");
       await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH-Two AutomationTest",
+        "AUTO_DMITRI VOLKOV",
       );
     });
 
@@ -328,10 +321,10 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       await hearingSchedulePage.primaryFilterApplyButton.click();
       await hearingSchedulePage.waitForLoad();
       await expect(hearingSchedulePage.table).not.toContainText(
-        "JOH AutomationTest",
+        "AUTO_ELENA ROSSI",
       );
       await expect(hearingSchedulePage.table).toContainText(
-        "JOH-Two AutomationTest",
+        "AUTO_DMITRI VOLKOV",
       );
     });
 
@@ -356,11 +349,9 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
         .click();
       await hearingSchedulePage.primaryFilterApplyButton.click();
       await hearingSchedulePage.waitForLoad();
+      await expect(hearingSchedulePage.table).toContainText("AUTO_ELENA ROSSI");
       await expect(hearingSchedulePage.table).toContainText(
-        "JOH AutomationTest",
-      );
-      await expect(hearingSchedulePage.table).toContainText(
-        "JOH-Two AutomationTest",
+        "AUTO_DMITRI VOLKOV",
       );
     });
   });
