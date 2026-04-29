@@ -22,7 +22,7 @@ test.describe("Add participant @add-participant", () => {
     await homePage.upperbarComponent.logoutButton.click();
   });
 
-  test.skip("Add new participant via Case Participants menu to case and then close participant using topbar UI", async ({
+  test("Add new participant via Case Participants menu to case and then close participant using topbar UI", async ({
     addNewCasePage,
     editNewCasePage,
     caseSearchPage,
@@ -71,7 +71,7 @@ test.describe("Add participant @add-participant", () => {
     await homePage.waitForHomePageLoad();
   });
 
-  test.skip("Add new participant via Participants menu and close via topbar UI", async ({
+  test("Add new participant via Participants menu and close via topbar UI", async ({
     homePage,
     dataUtils,
     newParticipantsPage,
@@ -111,7 +111,7 @@ test.describe("Add participant @add-participant", () => {
     await homePage.waitForHomePageLoad();
   });
 
-  test.skip("Case history should display correct event codes", async ({
+  test("Case history should display correct event codes", async ({
     homePage,
     dataUtils,
     caseHistoryPage,
