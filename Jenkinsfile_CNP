@@ -333,7 +333,7 @@ withNightlyPipeline(type, product, component, 600) {
           try {
             currentBuild.displayName = "PR: @pr-build Tagged Tests"
             withEnv(["BLOB_REPORT_DIR=blob-reports/PR-pr-build-tagged-tests"]) {
-              yarnBuilder.yarn("playwright test --grep @pr-build --project=${params.browser}")
+              yarnBuilder.yarn("playwright test --grep @pr-build --project=bvt-${params.browser}")
             }
           } catch (Error) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
