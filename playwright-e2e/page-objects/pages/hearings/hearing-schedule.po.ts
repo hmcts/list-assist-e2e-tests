@@ -21,6 +21,7 @@ export class HearingSchedulePage extends Base {
   readonly table = this.page.locator("#membersOrRoomsTable");
   readonly bookingCell = this.page.locator("div.droparea.addBooking");
   readonly tabNameJudicialOfficeHolders = "Judicial Office Holders";
+  readonly tabNameRooms = "Rooms";
   readonly primaryFilterToggleButton = this.page.locator(
     "#togglePrimaryFilter",
   );
@@ -149,6 +150,10 @@ export class HearingSchedulePage extends Base {
       `.vc-pane-container .vc-day.id-${date}.in-month .vc-day-content`,
     );
   }
+
+  readonly primaryFilterJohInclusionLovToggleButon = this.page
+    .getByRole("group", { name: /JOH \(Inclusion\) filter list/i })
+    .locator('span[role="button"][aria-label="Close listbox"]');
 
   readonly primaryFilterClearAllLocalityFilterOptions = this.page
     .getByRole("group", { name: /locality filter list/i })
@@ -286,6 +291,9 @@ export class HearingSchedulePage extends Base {
     column: string,
     caseName: string,
   ): Promise<void> {
+    await this.page.locator("#roomHS").click();
+    await this.page.waitForTimeout(1000);
+    await this.waitForLoad();
     const table: TableRow[] = await this.mapTable();
     const row = table.filter((row) => row.roomName === roomName)[0];
     await expect(row[column].locator(`${this.scheduleSelector}`)).toBeVisible();
@@ -382,7 +390,15 @@ export class HearingSchedulePage extends Base {
 
     await this.primaryFilterJohInclusionTextbox.fill("automation");
     await this.primaryFilterJohInclusionFirstOption.click();
-    await this.waitForLoad();
+    await this.primaryFilterJohInclusionLovToggleButon.waitFor({
+      state: "visible",
+      timeout: 10_000,
+    });
+    await this.primaryFilterJohInclusionLovToggleButon.click();
+    await this.primaryFilterApplyButton.waitFor({
+      state: "visible",
+      timeout: 10_000,
+    });
     await this.primaryFilterApplyButton.click();
     await this.waitForLoad();
 
@@ -402,6 +418,20 @@ export class HearingSchedulePage extends Base {
       .first()
       .click();
     await this.deleteSessionInstance();
+  }
+
+  async resetHearingScheduleToRoomsView(): Promise<void> {
+    await this.page.locator("#roomHS").click();
+    await this.page.waitForTimeout(1000);
+    await this.waitForLoad();
+  }
+
+  async clearDownJohAndResetToRooms(
+    dateFrom: string,
+    dateTo: string,
+  ): Promise<void> {
+    await this.clearDownJohSession(dateFrom, dateTo);
+    await this.resetHearingScheduleToRoomsView();
   }
 
   async deleteSessionInstance(): Promise<void> {
@@ -426,7 +456,6 @@ export class HearingSchedulePage extends Base {
   }
 
   async clearDownMultiDaySchedule(room: string): Promise<void> {
-
     // Navigate to the hearing schedule page and wait for the table to load.
     await expect(this.sidebarComponent.sidebar).toBeVisible();
     await this.sidebarComponent.openHearingSchedulePage();
@@ -444,12 +473,14 @@ export class HearingSchedulePage extends Base {
       await this.waitForLoad();
 
       // Helper function: finds and waits for the first visible booking cell for this room.
-    // Uses a partial match on the room name across any date column (doesn't require exact date).
-    const locateCellWithData = async (): Promise<Locator> => {
-      const cell = this.page.locator(`[id*="addBookingColor"][id*="${room}"]`).first();
-      await cell.waitFor({ state: "visible", timeout: 30_000 });
-      return cell;
-    };
+      // Uses a partial match on the room name across any date column (doesn't require exact date).
+      const locateCellWithData = async (): Promise<Locator> => {
+        const cell = this.page
+          .locator(`[id*="addBookingColor"][id*="${room}"]`)
+          .first();
+        await cell.waitFor({ state: "visible", timeout: 30_000 });
+        return cell;
+      };
 
       // Click the booking cell and enter the session details.
       await (await locateCellWithData()).click();
