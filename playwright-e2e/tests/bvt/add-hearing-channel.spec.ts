@@ -35,6 +35,7 @@ test.describe("Hearing channel test @hearing-channel", () => {
       await hearingSchedulePage.clearDownJohAndResetToRooms(
         dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
         dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        "DUBOIS",
       );
 
       await addNewCasePage.addNewCase(homePage, hearingSchedulePage);

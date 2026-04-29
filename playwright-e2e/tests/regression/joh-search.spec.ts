@@ -38,6 +38,18 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       dataUtils,
     );
 
+    await hearingSchedulePage.clearDownJohAndResetToRooms(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      "ROSSI",
+    );
+
+    await hearingSchedulePage.clearDownJohAndResetToRooms(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      "VOLKOV",
+    );
+
     await bookSessionWithJoh(
       page,
       sessionBookingPage,

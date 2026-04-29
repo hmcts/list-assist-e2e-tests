@@ -31,6 +31,7 @@ test.beforeEach(
     await hearingSchedulePage.clearDownJohAndResetToRooms(
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      "TANAKA",
     );
 
     await addNewCasePage.addNewCase(homePage, hearingSchedulePage);

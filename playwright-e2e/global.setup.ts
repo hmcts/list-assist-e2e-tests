@@ -70,6 +70,7 @@ setup.describe("Global Setup", () => {
       await hearingSchedulePage.clearDownJohSession(
         dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
         dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        "automation",
       );
     },
   );

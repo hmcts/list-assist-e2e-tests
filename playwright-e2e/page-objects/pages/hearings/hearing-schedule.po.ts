@@ -377,7 +377,11 @@ export class HearingSchedulePage extends Base {
     }
   }
 
-  async clearDownJohSession(dateFrom: string, dateTo: string): Promise<void> {
+  async clearDownJohSession(
+    dateFrom: string,
+    dateTo: string,
+    joh: string,
+  ): Promise<void> {
     await this.sidebarComponent.openHearingSchedulePage();
     await this.waitForLoad();
     await this.page
@@ -388,7 +392,7 @@ export class HearingSchedulePage extends Base {
     await this.clearAllPrimaryFilters();
     await this.primaryFilterJohInclusionFilterInput.click();
 
-    await this.primaryFilterJohInclusionTextbox.fill("automation");
+    await this.primaryFilterJohInclusionTextbox.fill(joh);
     await this.primaryFilterJohInclusionFirstOption.click();
     await this.primaryFilterJohInclusionLovToggleButon.waitFor({
       state: "visible",
@@ -429,8 +433,9 @@ export class HearingSchedulePage extends Base {
   async clearDownJohAndResetToRooms(
     dateFrom: string,
     dateTo: string,
+    joh: string,
   ): Promise<void> {
-    await this.clearDownJohSession(dateFrom, dateTo);
+    await this.clearDownJohSession(dateFrom, dateTo, joh);
     await this.resetHearingScheduleToRoomsView();
   }
 

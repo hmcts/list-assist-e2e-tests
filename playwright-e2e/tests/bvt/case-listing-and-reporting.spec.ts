@@ -34,6 +34,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       await hearingSchedulePage.clearDownJohAndResetToRooms(
         dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
         dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        "ALRASHID",
       );
     },
   );
