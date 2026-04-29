@@ -88,6 +88,16 @@ def secrets = [
     secret('password-jason-martin', 'PASSWORD_JASON_MARTIN'),
     secret('user-mia-rodriguez', 'USER_MIA_RODRIGUEZ'),
     secret('password-mia-rodriguez', 'PASSWORD_MIA_RODRIGUEZ'),
+    secret('user-christopher-bennett', 'USER_CHRISTOPHER_BENNETT'),
+    secret('password-christopher-bennett', 'PASSWORD_CHRISTOPHER_BENNETT'),
+    secret('user-elena-rossi', 'USER_ELENA_ROSSI'),
+    secret('password-elena-rossi', 'PASSWORD_ELENA_ROSSI'),
+    secret('user-dmitri-volkov', 'USER_DMITRI_VOLKOV'),
+    secret('password-dmitri-volkov', 'PASSWORD_DMITRI_VOLKOV'),
+    secret('user-ahmed-alrashid', 'USER_AHMED_ALRASHID'),
+    secret('password-ahmed-alrashid', 'PASSWORD_AHMED_ALRASHID'),
+    secret('user-yuki-tanaka', 'USER_YUKI_TANAKA'),
+    secret('password-yuki-tanaka', 'PASSWORD_YUKI_TANAKA'),
   ]
 ]
 
@@ -139,13 +149,13 @@ withNightlyPipeline(type, product, component, 600) {
     testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
       [
         name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test --project=${browser} --grep ${cfg.grep}",
+        command: "playwright test --project=bvt-${browser} --grep ${cfg.grep}",
         skipCreateCase: cfg.skipCreateCase
       ]
     }
   } + [
-    [name: 'Webkit - Smoke Tests', command: 'playwright test --project=webkit --grep @smoke'],
-    [name: 'Firefox - Smoke Tests', command: 'playwright test --project=firefox --grep @smoke']
+    [name: 'Webkit - Smoke Tests', command: 'playwright test --project=bvt-webkit --grep @smoke'],
+    [name: 'Firefox - Smoke Tests', command: 'playwright test --project=bvt-firefox --grep @smoke']
   ]
 
   def regressionBrowsers = ['chrome']
@@ -336,7 +346,7 @@ withNightlyPipeline(type, product, component, 600) {
             try {
               currentBuild.displayName = "PR: BVT Changed File - ${file}"
               withEnv(["BLOB_REPORT_DIR=blob-reports/PR-BVT-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"]) {
-                yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
+                yarnBuilder.yarn("playwright test ${file} --project=bvt-${params.browser}")
               }
             } catch (Error) {
               unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
