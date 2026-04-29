@@ -56,14 +56,14 @@ test.describe("Add user @add-user", () => {
     await createUserPage.systemDetailTab.click();
     await createUserPage.userActiveFromDate.waitFor({ state: "visible" });
 
-    await createUserPage.userActiveFromDate.click();
+    await createUserPage.userActiveFromDate.click({ clickCount: 3 });
     await createUserPage.userActiveFromDate.pressSequentially(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
     );
 
-    await createUserPage.userActiveToDate.click();
+    await createUserPage.userActiveToDate.click({ clickCount: 3 });
     await createUserPage.userActiveToDate.pressSequentially(
-      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(5),
+      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(5),
     );
 
     // security group
