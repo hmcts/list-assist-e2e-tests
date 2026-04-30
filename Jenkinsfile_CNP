@@ -126,18 +126,12 @@ withNightlyPipeline(type, product, component, 600) {
 
   def browsers = ['chrome']
   def testConfigs = [
-    [name: 'UI Tests', grep: '@ui-test'],
     [name: 'Add Participant Tests', grep: '@add-participant'],
     [name: 'Case Creation Tests', grep: '@add-new-case'],
     [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting'],
     [name: 'Hearing Channel Tests', grep: '@hearing-channel'],
     [name: 'Add new user test', grep: '@add-user', skipCreateCase: true],
     [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
-    [name: 'Anonymisation tests', grep: '@anonymisation', skipCreateCase: true],
-    [name: 'JOH filtering tests', grep: '@joh-filtering'],
-    [name: 'Multi day listing test', grep: '@multi-day'],
-
-
 
     // Only run Amend Api Tests before listing in Chrome
     [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true],
@@ -160,7 +154,11 @@ withNightlyPipeline(type, product, component, 600) {
 
   def regressionBrowsers = ['chrome']
   def regressionConfigs = [
-    [name: 'Data Reporting Test', grep: '@data-reporting', path: 'regression']
+    [name: 'Data Reporting Test', grep: '@data-reporting', path: 'tests/regression'],
+    [name: 'Anonymisation tests', grep: '@anonymisation', skipCreateCase: true, path: 'tests/regression'],
+    [name: 'UI Tests', grep: '@ui-test', path: 'tests/regression'],
+    [name: 'JOH filtering tests', grep: '@joh-filtering', path: 'tests/regression'],
+    [name: 'Multi day listing test', grep: '@multi-day', path: 'tests/regression'],
   ]
 
   def regressionStages = regressionBrowsers.collectMany { browser ->
