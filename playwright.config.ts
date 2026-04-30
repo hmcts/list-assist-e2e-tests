@@ -38,24 +38,24 @@ export default defineConfig({
       ...ProjectsConfig.chrome,
       timeout: 360_000,
       dependencies: ["setup"],
-      testIgnore: ["**/bvt/**"],
+      testMatch: ["**/regression/**/*.spec.ts"],
     },
     {
       ...ProjectsConfig.edge,
       timeout: 360_000,
       dependencies: ["setup"],
-      testIgnore: ["**/bvt/**"],
+      testMatch: ["**/regression/**/*.spec.ts"],
     },
     {
       ...ProjectsConfig.firefox,
       timeout: 360_000,
       dependencies: ["setup"],
-      testIgnore: ["**/bvt/**"],
+      testMatch: ["**/regression/**/*.spec.ts"],
     },
     {
       ...ProjectsConfig.webkit,
       dependencies: ["setup"],
-      testIgnore: ["**/bvt/**"],
+      testMatch: ["**/regression/**/*.spec.ts"],
     },
     {
       ...ProjectsConfig.chrome,
