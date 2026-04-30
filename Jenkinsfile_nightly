@@ -122,7 +122,7 @@ withNightlyPipeline(type, product, component, 600) {
 
   def browsers = ['chrome']
   def testConfigs = [
-    [name: 'BVT UI Tests', grep: '@hearing-session-ui-test', path: 'tests/bvt'],
+    [name: 'BVT UI Tests', grep: '@homepage-ui-test', path: 'tests/bvt'],
     [name: 'Add Participant Tests', grep: '@add-participant', path: 'tests/bvt'],
     [name: 'Case Creation Tests', grep: '@add-new-case', path: 'tests/bvt'],
     [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting', path: 'tests/bvt'],

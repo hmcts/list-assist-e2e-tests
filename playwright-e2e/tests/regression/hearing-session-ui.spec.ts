@@ -8,7 +8,7 @@ import {
 import { test, expect } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
 
-test.describe("Hearing session UI test", () => {
+test.describe("Hearing session UI test @hearing-session-ui-test", () => {
   test.describe.configure({ mode: "serial" });
 });
 
@@ -58,7 +58,7 @@ test("Check all expected values are present in advanced filters @hearing-session
   );
 });
 
-test("Filter and display JOH exclusion filter correctly using tier exclusion @ui-test @regression", async ({
+test("Filter and display JOH exclusion filter correctly using tier exclusion @hearing-session-ui-test @regression", async ({
   page,
   loginPage,
   hearingSchedulePage,
