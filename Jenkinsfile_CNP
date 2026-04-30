@@ -126,30 +126,24 @@ withNightlyPipeline(type, product, component, 600) {
 
   def browsers = ['chrome']
   def testConfigs = [
-    [name: 'UI Tests', grep: '@ui-test'],
-    [name: 'Add Participant Tests', grep: '@add-participant'],
-    [name: 'Case Creation Tests', grep: '@add-new-case'],
-    [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting'],
-    [name: 'Hearing Channel Tests', grep: '@hearing-channel'],
-    [name: 'Add new user test', grep: '@add-user', skipCreateCase: true],
-    [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
-    [name: 'Anonymisation tests', grep: '@anonymisation', skipCreateCase: true],
-    [name: 'JOH filtering tests', grep: '@joh-filtering'],
-    [name: 'Multi day listing test', grep: '@multi-day'],
-
-
-
+    [name: 'BVT UI Tests', grep: '@hearing-session-ui-test', path: 'tests/bvt'],
+    [name: 'Add Participant Tests', grep: '@add-participant', path: 'tests/bvt'],
+    [name: 'Case Creation Tests', grep: '@add-new-case', path: 'tests/bvt'],
+    [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting', path: 'tests/bvt'],
+    [name: 'Hearing Channel Tests', grep: '@hearing-channel', path: 'tests/bvt'],
+    [name: 'Add new user test', grep: '@add-user', skipCreateCase: true, path: 'tests/bvt'],
+    [name: 'Daily cause reports test', grep: '@daily-cause-list-tests', path: 'tests/bvt'],
     // Only run Amend Api Tests before listing in Chrome
-    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true],
+    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true, path: 'tests/bvt'],
     // Only run Amend Api test after listing in Chrome
-    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: true]
+    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: true, path: 'tests/bvt']
   ]
 
   def bvtStages = browsers.collectMany { browser ->
     testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
       [
         name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test --project=bvt-${browser} --grep ${cfg.grep}",
+        command: "playwright test ${cfg.path} --project=bvt-${browser} --grep ${cfg.grep}",
         skipCreateCase: cfg.skipCreateCase
       ]
     }
@@ -160,7 +154,11 @@ withNightlyPipeline(type, product, component, 600) {
 
   def regressionBrowsers = ['chrome']
   def regressionConfigs = [
-    [name: 'Data Reporting Test', grep: '@data-reporting', path: 'regression']
+    [name: 'Data Reporting Test', grep: '@data-reporting', path: 'tests/regression'],
+    [name: 'Anonymisation tests', grep: '@anonymisation', skipCreateCase: true, path: 'tests/regression'],
+    [name: 'Regression UI Tests', grep: '@hearing-session-ui-test', path: 'tests/regression'],
+    [name: 'JOH filtering tests', grep: '@joh-filtering', path: 'tests/regression'],
+    [name: 'Multi day listing test', grep: '@multi-day', path: 'tests/regression'],
   ]
 
   def regressionStages = regressionBrowsers.collectMany { browser ->
@@ -247,17 +245,17 @@ withNightlyPipeline(type, product, component, 600) {
       sh "git fetch origin '${env.CHANGE_BRANCH}':'${env.CHANGE_BRANCH}'"
       sh "git fetch origin '${env.CHANGE_TARGET}':'${env.CHANGE_TARGET}'"
 
-      def diffRegressionCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep -q 'regression/'";
+      def diffRegressionCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep -q 'tests/regression/'";
       regressionBlockChanged = (sh(script: diffRegressionCmd, returnStatus: true) == 0)
 
-      def diffBvtCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep '^bvt/' || true"
+      def diffBvtCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep 'tests/bvt/' || true"
       def bvtDiffOutput = sh(script: diffBvtCmd, returnStdout: true).trim()
       if (bvtDiffOutput) {
         bvtFilesChanged = bvtDiffOutput.split('\\n')
       }
 
       // Find changed spec.ts files in bvt and regression folders
-      def diffBvtSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep 'bvt/.*\\.spec\\.ts\$' || true"
+      def diffBvtSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep 'tests/bvt/.*\\.spec\\.ts\$' || true"
       def bvtSpecDiffOutput = sh(script: diffBvtSpecCmd, returnStdout: true).trim()
       if (bvtSpecDiffOutput) {
         bvtSpecFilesChanged = bvtSpecDiffOutput.split('\n')
@@ -266,7 +264,7 @@ withNightlyPipeline(type, product, component, 600) {
         echo "No changed bvt spec files detected."
       }
 
-      def diffRegressionSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep 'regression/.*\\.spec\\.ts\$' || true"
+      def diffRegressionSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep 'tests/regression/.*\\.spec\\.ts\$' || true"
       def regressionSpecDiffOutput = sh(script: diffRegressionSpecCmd, returnStdout: true).trim()
       if (regressionSpecDiffOutput) {
         regressionSpecFilesChanged = regressionSpecDiffOutput.split('\n')
@@ -277,7 +275,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       // Find @pr-build tagged files
       def prBuildFilesOutput = sh(
-        script: "grep -rl '@pr-build' bvt/ regression/ || true",
+        script: "grep -rl '@pr-build' playwright-e2e/tests/bvt playwright-e2e/tests/regression || true",
         returnStdout: true
       ).trim()
       if (prBuildFilesOutput) {
