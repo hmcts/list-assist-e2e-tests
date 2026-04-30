@@ -122,28 +122,23 @@ withNightlyPipeline(type, product, component, 600) {
 
   def browsers = ['chrome']
   def testConfigs = [
-    [name: 'UI Tests', grep: '@ui-test', skipCreateCase: 'true'],
-    [name: 'Add Participant Tests', grep: '@add-participant'],
-    [name: 'Case Creation Tests', grep: '@add-new-case'],
-    [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting'],
-    [name: 'Hearing Channel Tests', grep: '@hearing-channel'],
-    [name: 'Daily cause reports test', grep: '@daily-cause-list-tests'],
-    //this only runs a subset of anonymisation tests in the nightly run.
-    [name: 'Anonymisation tests', grep: '@anon-nightly', skipCreateCase: true],
-    [name: 'JOH filtering tests', grep: '@joh-filtering'],
+    [name: 'BVT UI Tests', grep: '@hearing-session-ui-test', path: 'tests/bvt'],
+    [name: 'Add Participant Tests', grep: '@add-participant', path: 'tests/bvt'],
+    [name: 'Case Creation Tests', grep: '@add-new-case', path: 'tests/bvt'],
+    [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting', path: 'tests/bvt'],
+    [name: 'Hearing Channel Tests', grep: '@hearing-channel', path: 'tests/bvt'],
+    [name: 'Daily cause reports test', grep: '@daily-cause-list-tests', path: 'tests/bvt'],
     // Only run Amend Api Tests before listing in Chrome
-    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true],
+    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true, path: 'tests/bvt'],
     // Only run Amend Api test after listing in Chrome
-    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: true],
-    [name: 'Multi day listing test', grep: '@multi-day'],
-
+    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: true, path: 'tests/bvt']
   ]
 
   def bvtStages = browsers.collectMany { browser ->
     testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
       [
         name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test --project=bvt-${browser} --grep ${cfg.grep}",
+        command: "playwright test ${cfg.path} --project=bvt-${browser} --grep ${cfg.grep}",
         skipCreateCase: cfg.skipCreateCase
       ]
     }
@@ -152,9 +147,13 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Firefox - Smoke Tests', command: 'playwright test --project=bvt-firefox --grep @smoke']
   ]
 
-  def regressionBrowsers = ['chrome'] 
+  def regressionBrowsers = ['chrome']
   def regressionConfigs = [
     [name: 'Data Reporting Test', grep: '@data-reporting', path: 'tests/regression'],
+    [name: 'Anonymisation tests', grep: '@anonymisation', skipCreateCase: true, path: 'tests/regression'],
+    [name: 'Regression UI Tests', grep: '@hearing-session-ui-test', path: 'tests/regression'],
+    [name: 'JOH filtering tests', grep: '@joh-filtering', path: 'tests/regression'],
+    [name: 'Multi day listing test', grep: '@multi-day', path: 'tests/regression'],
   ]
 
   def regressionStages = regressionBrowsers.collectMany { browser ->
