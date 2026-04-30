@@ -80,9 +80,33 @@ export class EditNewCasePage extends Base {
     selectRoleIfExists: boolean = false,
     alternativePartyName?: string,
   ) {
-    const waitForCreateNewPartyPopup = this.page.waitForEvent("popup");
+    let createNewParticipant;
+
+    const popupHandler = async (popup) => {
+      const hasCreateNewBtn = await popup
+        .getByRole("button", { name: "Create New", exact: true })
+        .isVisible({ timeout: 100 })
+        .catch(() => false);
+
+      if (hasCreateNewBtn) {
+        createNewParticipant = popup;
+        this.page.off("popup", popupHandler);
+      }
+    };
+
+    this.page.on("popup", popupHandler);
     await this.addNewParticipantButton.click();
-    const createNewParticipant = await waitForCreateNewPartyPopup;
+
+    await this.page.waitForTimeout(500);
+
+    let maxAttempts = 50;
+    while (!createNewParticipant && maxAttempts > 0) {
+      await this.page.waitForTimeout(100);
+      maxAttempts--;
+    }
+
+    this.page.off("popup", popupHandler);
+
     await expect(
       createNewParticipant.getByRole("button", {
         name: "Create New",
