@@ -26,17 +26,22 @@ test.beforeEach(
       hearingSchedulePage,
       dataUtils,
     );
+    await hearingSchedulePage.clearDownJohSession(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      "BENNETT",
+    );
   },
 );
 
 test.afterEach(
   async ({
     page,
+    homePage,
     config,
     hearingSchedulePage,
     sessionBookingPage,
     dataUtils,
-    homePage,
   }) => {
     await page.goto(config.urls.baseUrl);
     await clearDownMidlandsLeicesterSchedule(
@@ -53,6 +58,7 @@ test.afterEach(
 
 test.describe("HMI Amend API tests after listing @amend-api-test-after-listing", () => {
   test.slow();
+
   test("Amended participants and their hearing method should display as expected after listing", async ({
     editNewCasePage,
     config,

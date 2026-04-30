@@ -12,8 +12,10 @@ import { clearDownSchedule } from "../../utils/reporting.utils.ts";
 test.beforeEach(
   async ({
     page,
+    homePage,
     sessionBookingPage,
     hearingSchedulePage,
+    addNewCasePage,
     dataUtils,
     loginPage,
   }) => {
@@ -25,6 +27,14 @@ test.beforeEach(
       hearingSchedulePage,
       dataUtils,
     );
+
+    await hearingSchedulePage.clearDownJohAndResetToRooms(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      "TANAKA",
+    );
+
+    await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
   },
 );
 
@@ -43,6 +53,7 @@ test.afterEach(
       hearingSchedulePage,
       dataUtils,
     );
+
     await homePage.upperbarComponent.logoutButton.click();
   },
 );

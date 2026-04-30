@@ -38,20 +38,47 @@ export default defineConfig({
       ...ProjectsConfig.chrome,
       timeout: 360_000,
       dependencies: ["setup"],
+      testIgnore: ["**/bvt/**"],
     },
     {
       ...ProjectsConfig.edge,
       timeout: 360_000,
       dependencies: ["setup"],
+      testIgnore: ["**/bvt/**"],
     },
     {
       ...ProjectsConfig.firefox,
       timeout: 360_000,
       dependencies: ["setup"],
+      testIgnore: ["**/bvt/**"],
     },
     {
       ...ProjectsConfig.webkit,
       dependencies: ["setup"],
+      testIgnore: ["**/bvt/**"],
+    },
+    {
+      ...ProjectsConfig.chrome,
+      name: "bvt-chrome",
+      timeout: 360_000,
+      testMatch: ["**/bvt/**"],
+    },
+    {
+      ...ProjectsConfig.edge,
+      name: "bvt-edge",
+      timeout: 360_000,
+      testMatch: ["**/bvt/**"],
+    },
+    {
+      ...ProjectsConfig.firefox,
+      name: "bvt-firefox",
+      timeout: 360_000,
+      testMatch: ["**/bvt/**"],
+    },
+    {
+      ...ProjectsConfig.webkit,
+      name: "bvt-webkit",
+      testMatch: ["**/bvt/**"],
     },
   ],
 });

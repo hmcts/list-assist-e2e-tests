@@ -17,6 +17,8 @@ test.describe("Hearing channel test @hearing-channel", () => {
       hearingSchedulePage,
       sessionBookingPage,
       dataUtils,
+      addNewCasePage,
+      homePage,
     }) => {
       await page.goto(config.urls.baseUrl);
       await loginPage.login("PATRICK_LEWIS");
@@ -29,21 +31,31 @@ test.describe("Hearing channel test @hearing-channel", () => {
         hearingSchedulePage,
         dataUtils,
       );
+
+      await hearingSchedulePage.clearDownJohAndResetToRooms(
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        "DUBOIS",
+      );
+
+      await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
     },
   );
 
   test.afterEach(
     async ({
+      homePage,
       hearingSchedulePage,
       sessionBookingPage,
       dataUtils,
-      homePage,
     }) => {
+      await hearingSchedulePage.resetHearingScheduleToRoomsView();
       await clearDownMidlandsLeicesterSchedule(
         sessionBookingPage,
         hearingSchedulePage,
         dataUtils,
       );
+
       await homePage.upperbarComponent.logoutButton.click();
     },
   );

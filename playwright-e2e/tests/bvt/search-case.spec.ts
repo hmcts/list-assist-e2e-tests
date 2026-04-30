@@ -2,10 +2,19 @@ import { expect, test } from "../../fixtures";
 import { config } from "../../utils";
 
 test.describe("Case creation @add-new-case", () => {
-  test.beforeEach(async ({ page, loginPage }) => {
-    await page.goto(config.urls.baseUrl);
-    await loginPage.login("OLIVIA_CLARK");
-  });
+  test.beforeEach(
+    async ({
+      page,
+      loginPage,
+      addNewCasePage,
+      homePage,
+      hearingSchedulePage,
+    }) => {
+      await page.goto(config.urls.baseUrl);
+      await loginPage.login("OLIVIA_CLARK");
+      await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
+    },
+  );
 
   test.afterEach(async ({ homePage }) => {
     await homePage.upperbarComponent.logoutButton.click();

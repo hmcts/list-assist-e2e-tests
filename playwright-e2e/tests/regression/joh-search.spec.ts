@@ -2,10 +2,12 @@ import { test, expect } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
 import { clearDownSchedule } from "../../utils/reporting.utils.js";
 import { LoginPage } from "../../page-objects/pages/login.po.js";
+import { HomePage } from "../../page-objects/pages/home.po.js";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.js";
 import { HearingSchedulePage } from "../../page-objects/pages/hearings/hearing-schedule.po.js";
 import { CaseSearchPage } from "../../page-objects/pages/cases/case-search.po.js";
 import { CaseDetailsPage } from "../../page-objects/pages/cases/case-details.po.js";
+import { AddNewCasePage } from "../../page-objects/pages/cases/add-new-case.po.js";
 import { DataUtils } from "../../utils/data.utils.js";
 
 test.describe.configure({ mode: "serial" });
@@ -24,18 +26,35 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
     const context = await browser.newContext();
     const page = await context.newPage();
     const loginPage = new LoginPage(page);
+    const homePage = new HomePage(page);
     const sessionBookingPage = new SessionBookingPage(page);
     const hearingSchedulePage = new HearingSchedulePage(page);
     const caseSearchPage = new CaseSearchPage(page);
     const caseDetailsPage = new CaseDetailsPage(page);
+    const addNewCasePage = new AddNewCasePage(page);
     const dataUtils = new DataUtils();
 
     await page.goto(config.urls.baseUrl);
     await loginPage.login("CHRISTOPHER_HALL");
+
+    await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
+
     await clearDownWrexhamSchedule(
       sessionBookingPage,
       hearingSchedulePage,
       dataUtils,
+    );
+
+    await hearingSchedulePage.clearDownJohAndResetToRooms(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      "ROSSI",
+    );
+
+    await hearingSchedulePage.clearDownJohAndResetToRooms(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      "VOLKOV",
     );
 
     await bookSessionWithJoh(

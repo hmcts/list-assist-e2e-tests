@@ -4,10 +4,19 @@ import { config } from "../../utils";
 test.describe("Add participant @add-participant", () => {
   test.describe.configure({ mode: "serial" });
 
-  test.beforeEach(async ({ page, loginPage }) => {
-    await page.goto(config.urls.baseUrl);
-    await loginPage.login("ISABELLA_WALKER");
-  });
+  test.beforeEach(
+    async ({
+      page,
+      loginPage,
+      addNewCasePage,
+      homePage,
+      hearingSchedulePage,
+    }) => {
+      await page.goto(config.urls.baseUrl);
+      await loginPage.login("ISABELLA_WALKER");
+      await addNewCasePage.addNewCase(homePage, hearingSchedulePage);
+    },
+  );
 
   test.afterEach(async ({ homePage }) => {
     await homePage.upperbarComponent.logoutButton.click();
