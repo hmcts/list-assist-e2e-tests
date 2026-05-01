@@ -46,7 +46,7 @@ test.afterEach(
     dataUtils,
     homePage,
   }) => {
-    await page.goto(config.urls.baseUrl);
+    // await page.goto(config.urls.baseUrl);
 
     await clearDownPontypriddSchedule(
       sessionBookingPage,

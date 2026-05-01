@@ -81,31 +81,39 @@ export class EditNewCasePage extends Base {
     alternativePartyName?: string,
   ) {
     let createNewParticipant;
+    let popupHandlerAttached = false;
 
     const popupHandler = async (popup) => {
-      const hasCreateNewBtn = await popup
-        .getByRole("button", { name: "Create New", exact: true })
-        .isVisible({ timeout: 100 })
-        .catch(() => false);
-
-      if (hasCreateNewBtn) {
-        createNewParticipant = popup;
+      createNewParticipant = popup;
+      if (popupHandlerAttached) {
         this.page.off("popup", popupHandler);
+        popupHandlerAttached = false;
       }
     };
 
+    popupHandlerAttached = true;
     this.page.on("popup", popupHandler);
+
+    await expect(this.addNewParticipantButton).toBeVisible();
+    await expect(this.addNewParticipantButton).toBeEnabled();
+    await this.addNewParticipantButton.scrollIntoViewIfNeeded();
     await this.addNewParticipantButton.click();
 
-    await this.page.waitForTimeout(500);
-
-    let maxAttempts = 50;
+    // Wait for popup with explicit timeout
+    let maxAttempts = 100;
     while (!createNewParticipant && maxAttempts > 0) {
-      await this.page.waitForTimeout(100);
+      await this.page.waitForTimeout(50);
       maxAttempts--;
     }
 
-    this.page.off("popup", popupHandler);
+    if (popupHandlerAttached) {
+      this.page.off("popup", popupHandler);
+      popupHandlerAttached = false;
+    }
+
+    if (!createNewParticipant) {
+      throw new Error("Participant popup failed to open after 5 seconds");
+    }
 
     await expect(
       createNewParticipant.getByRole("button", {
@@ -149,59 +157,61 @@ export class EditNewCasePage extends Base {
       )
       .toBeTruthy();
 
+    const participantClassSelect =
+      createNewParticipant.getByLabel("Participant Class");
+    const participantTypeSelect =
+      createNewParticipant.getByLabel("Participant Type");
+    const genderSelect = createNewParticipant.getByLabel("Gender", {
+      exact: true,
+    });
+    const interpreterSelect = createNewParticipant.locator(
+      "#personentityLanguageCodeIntp",
+    );
+
+    // Select Participant Class - use value directly without click
+    await expect(participantClassSelect).toBeEnabled();
+    await participantClassSelect.selectOption(participantClass);
+
+    // Wait for form to re-render with Person's Details section
+    await this.page.waitForTimeout(500);
     await expect(
-      createNewParticipant.getByLabel("Participant Class"),
+      createNewParticipant.getByText("Person's Details"),
     ).toBeVisible();
-    await createNewParticipant.getByLabel("Participant Class").click();
-    await createNewParticipant
-      .getByLabel("Participant Class")
-      .selectOption(participantClass);
-    await expect(
-      createNewParticipant.getByLabel("Participant Type"),
-    ).toBeVisible();
-    await createNewParticipant.getByLabel("Participant Type").click();
-    await createNewParticipant
-      .getByLabel("Participant Type")
-      .selectOption(participantType);
-    await createNewParticipant
-      .getByRole("textbox", { name: "Given Names" })
-      .click();
+
+    // Select Participant Type
+    await expect(participantTypeSelect).toBeEnabled();
+    await participantTypeSelect.selectOption(participantType);
+
+    // Fill all text fields
     await createNewParticipant
       .getByRole("textbox", { name: "Given Names" })
       .fill(givenNames);
     await createNewParticipant
       .getByRole("textbox", { name: "Last Name" })
-      .click();
-    await createNewParticipant
-      .getByRole("textbox", { name: "Last Name" })
       .fill(lastName);
-    await createNewParticipant
-      .getByLabel("Gender", { exact: true })
-      .selectOption(gender);
-    await createNewParticipant.getByRole("textbox", { name: "DOB" }).click();
+
+    // Select Gender
+    await expect(genderSelect).toBeEnabled();
+    await genderSelect.selectOption(gender);
+
+    // Fill DOB
     await createNewParticipant
       .getByRole("textbox", { name: "DOB" })
       .fill(dateOfBirth);
-    await createNewParticipant.locator("#personentityLanguageCodeIntp").click();
-    await createNewParticipant
-      .locator("#personentityLanguageCodeIntp")
-      .selectOption(interpreter);
+
+    // Select Interpreter Language
+    await expect(interpreterSelect).toBeEnabled();
+    await interpreterSelect.selectOption(interpreter);
+
+    await expect(
+      createNewParticipant.getByRole("button", { name: "Save" }),
+    ).toBeEnabled();
     await createNewParticipant.getByRole("button", { name: "Save" }).click();
 
-    //wait for Participant Class to be visible
-    await expect
-      .poll(
-        async () => {
-          return await createNewParticipant.getByText("New Party").isVisible();
-        },
-        {
-          intervals: [2_000],
-          timeout: 10_000,
-        },
-      )
-      .toBeTruthy();
-
-    await expect(createNewParticipant.getByText("New Party")).toBeVisible();
+    // Wait for form to transition to "New Party" page
+    await expect(createNewParticipant.getByText("New Party")).toBeVisible({
+      timeout: 15000,
+    });
     await expect(createNewParticipant.getByLabel("Role")).toBeVisible();
     await createNewParticipant.getByLabel("Role").selectOption(role);
 
@@ -212,9 +222,14 @@ export class EditNewCasePage extends Base {
         .locator("#mpSuppressAltNameId")
         .fill(alternativePartyName);
     }
+    await expect(
+      createNewParticipant.getByRole("button", { name: "Save", exact: true }),
+    ).toBeEnabled();
+    const popupClosePromise = createNewParticipant.waitForEvent("close");
     await createNewParticipant
       .getByRole("button", { name: "Save", exact: true })
       .click();
+    await popupClosePromise;
   }
 
   async checkCaseParticipantTable(
