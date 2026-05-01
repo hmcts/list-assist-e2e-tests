@@ -406,73 +406,53 @@ export class SessionBookingPage extends Base {
     locality?: string,
     location?: string,
   ) {
-    try {
-      // Check if page is still valid before proceeding
-      if (this.page.isClosed()) {
-        return;
-      }
+    await this.advancedFiltersButton.click();
+    await expect(this.advancedFiltersHeader).toBeVisible();
+    //ensure the advanced filter is cleared
+    await this.clearAdvanceFilterButton.click();
 
-      await this.advancedFiltersButton.click();
-      await expect(this.advancedFiltersHeader).toBeVisible();
-      //ensure the advanced filter is cleared
-      await this.clearAdvanceFilterButton.click();
-
-      //region dropdown and region selection
-      if (region) {
-        await this.regionDropdown.click();
-        await this.page
-          .getByRole("option", { name: region })
-          .locator("span")
-          .nth(2)
-          .click();
-        await this.page.waitForTimeout(200);
-      }
-
-      //cluster dropdown and cluster selection
-      if (cluster) {
-        await this.clusterDropDown.click();
-        await this.page
-          .getByRole("option", { name: cluster })
-          .locator("span")
-          .nth(2)
-          .click();
-        await this.page.waitForTimeout(200);
-      }
-
-      //locality dropdown and locality selection
-      if (locality) {
-        await this.localityDropDown.click();
-        await this.page
-          .getByRole("option", { name: locality })
-          .locator("span")
-          .nth(2)
-          .click();
-        await this.page.waitForTimeout(200);
-      }
-
-      //location dropdown and location selection
-      if (location) {
-        await this.locationDropDown.click();
-        await this.page
-          .getByRole("option", { name: location })
-          .locator("span")
-          .nth(2)
-          .click();
-        await this.page.waitForTimeout(200);
-        await this.locationFilterToggleButton.click();
-      }
-
-      //apply filter
-      await this.applyButton.click();
-    } catch (error) {
-      // Silently catch errors if page/browser is closed during interaction
-      if (
-        error.message.includes("Target page") ||
-        error.message.includes("closed")
-      ) {
-        return;
-      }
-      throw error;
+    //region dropdown and region selection
+    if (region) {
+      await this.regionDropdown.click();
+      await this.page
+        .getByRole("option", { name: region })
+        .locator("span")
+        .nth(2)
+        .click();
     }
+
+    //cluster dropdown and cluster selection
+    if (cluster) {
+      await this.clusterDropDown.click();
+      await this.page
+        .getByRole("option", { name: cluster })
+        .locator("span")
+        .nth(2)
+        .click();
+    }
+
+    //locality dropdown and locality selection
+    if (locality) {
+      await this.localityDropDown.click();
+      await this.page
+        .getByRole("option", { name: locality })
+        .locator("span")
+        .nth(2)
+        .click();
+    }
+
+    //location dropdown and location selection
+    if (location) {
+      await this.locationDropDown.click();
+      await this.page
+        .getByRole("option", { name: location })
+        .locator("span")
+        .nth(2)
+        .click();
+      await this.locationFilterToggleButton.click();
+    }
+
+    //apply filter
+    await this.applyButton.click();
   }
 }
