@@ -672,14 +672,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:1.58.0":
-  version: 1.58.0
-  resolution: "@playwright/test@npm:1.58.0"
+"@playwright/test@npm:^1.58.0":
+  version: 1.59.1
+  resolution: "@playwright/test@npm:1.59.1"
   dependencies:
-    playwright: "npm:1.58.0"
+    playwright: "npm:1.59.1"
   bin:
     playwright: cli.js
-  checksum: 10/1ab8c4d408c919e1357bb43e5682d1ce66bb792516fd6269dd5cff9c9b7cc82e026b3fc864ba723714337dc610ac46110ed8307d610feb92f5002abbb03a6392
+  checksum: 10/27a894c4d4216b51cddc96e18fd0638a9e2e0a3f0b7ee32a56121fb61df395ec43529f5dcdca32578af8a34a04722ee3767f99f0ae4d39fa8edceda89a96014c
   languageName: node
   linkType: hard
 
@@ -2946,15 +2946,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.58.0":
-  version: 1.58.0
-  resolution: "playwright-core@npm:1.58.0"
-  bin:
-    playwright-core: cli.js
-  checksum: 10/718549cdcd22e55f42887e7b832276c9a50e112b278d22a2242bb00c401021623fedf9554c7090f132e389b5bbe11a987ce71e3c877e767eed4dd9bfe573019c
-  languageName: node
-  linkType: hard
-
 "playwright-core@npm:1.59.1, playwright-core@npm:^1.52.0":
   version: 1.59.1
   resolution: "playwright-core@npm:1.59.1"
@@ -2980,7 +2971,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:*":
+"playwright@npm:*, playwright@npm:1.59.1":
   version: 1.59.1
   resolution: "playwright@npm:1.59.1"
   dependencies:
@@ -2992,21 +2983,6 @@ __metadata:
   bin:
     playwright: cli.js
   checksum: 10/17b2df42effa362adc6aa3192b625bd80f26b91a0c253a2375ac89ace68407b746dd87b4081629c50c58c3cb031c5b837a32fef43a3c98c60ea504e0b001e5fa
-  languageName: node
-  linkType: hard
-
-"playwright@npm:1.58.0":
-  version: 1.58.0
-  resolution: "playwright@npm:1.58.0"
-  dependencies:
-    fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.58.0"
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  bin:
-    playwright: cli.js
-  checksum: 10/5ef5d0977906046400cee9a359f18c87eafb3e3193a33a22351cc84740c0dffb3cff7b9f2320d1e200817dbf24e63b747a0546b6c671a9fd95937e2402682ad9
   languageName: node
   linkType: hard
 
@@ -3423,7 +3399,7 @@ __metadata:
     "@axe-core/playwright": "npm:^4.10.0"
     "@eslint/js": "npm:^10.0.1"
     "@hmcts/playwright-common": "npm:1.1.2"
-    "@playwright/test": "npm:1.58.0"
+    "@playwright/test": "npm:^1.58.0"
     "@types/luxon": "npm:^3"
     "@types/node": "npm:^25.6.0"
     "@typescript-eslint/eslint-plugin": "npm:^8.8.0"
