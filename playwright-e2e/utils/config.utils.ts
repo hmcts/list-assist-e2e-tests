@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import * as fs from "fs";
 import path from "path";
-import { Cookie } from "playwright-core";
+import { Cookie } from "@playwright/test";
 import { fileURLToPath } from "url";
 
 dotenv.config();
