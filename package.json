@@ -6,26 +6,26 @@
   },
   "type": "module",
   "devDependencies": {
-    "@axe-core/playwright": "^4.10.0",
-    "@eslint/js": "^9.11.1",
+    "@axe-core/playwright": "^4.11.3",
+    "@eslint/js": "^10.0.1",
     "@hmcts/playwright-common": "1.1.2",
-    "@playwright/test": "^1.58.0",
-    "@types/luxon": "^3",
+    "@playwright/test": "^1.59.1",
+    "@types/luxon": "^3.7.1",
     "@types/node": "^25.6.0",
-    "@typescript-eslint/eslint-plugin": "^8.8.0",
-    "@typescript-eslint/parser": "^8.8.0",
-    "cross-env": "^7.0.3",
-    "dotenv": "^16.4.7",
-    "eslint": "^9.11.1",
-    "eslint-plugin-playwright": "^1.6.2",
-    "get-port": "^7.1.0",
-    "globals": "^15.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.2",
+    "@typescript-eslint/parser": "^8.59.2",
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.4.2",
+    "eslint": "^10.3.0",
+    "eslint-plugin-playwright": "^2.10.2",
+    "get-port": "^7.2.0",
+    "globals": "^17.6.0",
     "husky": "^9.1.7",
-    "lighthouse": "^12.2.1",
-    "playwright-core": "^1.52.0",
+    "lighthouse": "^13.2.0",
+    "playwright-core": "^1.59.1",
     "playwright-lighthouse": "^4.0.0",
-    "typescript": "^5.6.2",
-    "typescript-eslint": "^8.8.0"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.2"
   },
   "scripts": {
     "prepare": "husky",
@@ -44,7 +44,7 @@
   },
   "packageManager": "yarn@4.14.1",
   "dependencies": {
-    "luxon": "^3.7.1",
-    "prettier": "^3.5.3"
+    "luxon": "^3.7.2",
+    "prettier": "^3.8.3"
   }
 }
