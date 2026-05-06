@@ -2971,7 +2971,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:1.59.1":
+"playwright@npm:*, playwright@npm:1.59.1":
   version: 1.59.1
   resolution: "playwright@npm:1.59.1"
   dependencies:
