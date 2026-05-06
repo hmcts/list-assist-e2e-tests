@@ -30,8 +30,9 @@
   "scripts": {
     "prepare": "husky",
     "lint": "prettier --write . && yarn tsc -p tsconfig.json && yarn eslint .",
-    "setup": "yarn playwright install --with-deps",
-    "build": "yarn install && tsc",
+    "cache:clean": "yarn cache clean",
+    "setup": "yarn cache clean && yarn playwright install --with-deps",
+    "build": "yarn cache clean && yarn install && tsc",
     "load-secrets": "node $(node -p \"require.resolve('@hmcts/playwright-common/dist/scripts/get-secrets.js')\") snl-automation-bts-stg",
     "test:chrome": "yarn playwright test tests/ --project=chrome --grep-invert='(@a11y)|(@performance)'",
     "test:firefox": "yarn playwright test tests/ --project=firefox --grep-invert='(@a11y)|(@performance)'",

@@ -196,6 +196,7 @@ withNightlyPipeline(type, product, component, 600) {
         echo "Found ${blobDirs.size()} blob report directories"
         sh 'find blob-reports -type f | sort || echo "blob-reports is empty"'
         sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
+        sh 'yarn cache clean'
         sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
         publishHTML([
           allowMissing: false,
