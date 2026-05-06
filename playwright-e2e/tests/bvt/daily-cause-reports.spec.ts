@@ -39,15 +39,7 @@ test.beforeEach(
 );
 
 test.afterEach(
-  async ({
-    page,
-    sessionBookingPage,
-    hearingSchedulePage,
-    dataUtils,
-    homePage,
-  }) => {
-    await page.goto(config.urls.baseUrl);
-
+  async ({ sessionBookingPage, hearingSchedulePage, dataUtils, homePage }) => {
     await clearDownPontypriddSchedule(
       sessionBookingPage,
       hearingSchedulePage,
