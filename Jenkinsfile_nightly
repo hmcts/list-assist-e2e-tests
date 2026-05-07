@@ -119,6 +119,10 @@ withNightlyPipeline(type, product, component, 600) {
   enableSlackNotifications(channel)
 
   def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
+  
+  // Detect if triggered by cron job
+  def isTimerTriggered = currentBuild.getBuildCauses('hudson.triggers.TimerTrigger').size() > 0
+  def testSuiteToRun = isTimerTriggered ? 'bvt' : params.TEST_SUITE
 
   def browsers = ['chrome']
   def testConfigs = [
@@ -142,7 +146,9 @@ withNightlyPipeline(type, product, component, 600) {
         skipCreateCase: cfg.skipCreateCase
       ]
     }
-  } + [
+  }
+
+  def smokeTestStages = [
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=bvt-webkit --grep @smoke'],
     [name: 'Firefox - Smoke Tests', command: 'playwright test --project=bvt-firefox --grep @smoke']
   ]
@@ -168,46 +174,37 @@ withNightlyPipeline(type, product, component, 600) {
   def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
     stage(stageName) {
       def blobDir = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
-      try {
-        if (skipCreateCase != null) {
-          env.SKIP_CREATE_CASE = skipCreateCase
-        }
-        withEnv(["BLOB_REPORT_DIR=${blobDir}"]) {
-          yarnBuilder.yarn(command)
-        }
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      } finally {
-        if (skipCreateCase != null) {
-          env.SKIP_CREATE_CASE = null
-        }
+      if (skipCreateCase != null) {
+        env.SKIP_CREATE_CASE = skipCreateCase
+      }
+      withEnv(["BLOB_REPORT_DIR=${blobDir}"]) {
+        yarnBuilder.yarn(command)
+      }
+      if (skipCreateCase != null) {
+        env.SKIP_CREATE_CASE = null
       }
     }
   }
 
   def runMergeReportsStage = {
     stage('Merge Reports') {
-      try {
-        def blobDirs = sh(script: 'find blob-reports -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort', returnStdout: true).trim().split('\n').findAll { it }
-        if (!blobDirs || blobDirs.size() == 0 || blobDirs[0].isEmpty()) {
-          echo 'No blob reports found to merge, skipping.'
-          return
-        }
-        echo "Found ${blobDirs.size()} blob report directories"
-        sh 'find blob-reports -type f | sort || echo "blob-reports is empty"'
-        sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
-        sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
-        publishHTML([
-          allowMissing: false,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: 'playwright-report',
-          reportFiles: 'index.html',
-          reportName: 'Test Report'
-        ])
-      } catch (Error) {
-        unstable(message: "Merge Reports is unstable: " + Error.toString())
+      def blobDirs = sh(script: 'find blob-reports -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort', returnStdout: true).trim().split('\n').findAll { it }
+      if (!blobDirs || blobDirs.size() == 0 || blobDirs[0].isEmpty()) {
+        echo 'No blob reports found to merge, skipping.'
+        return
       }
+      echo "Found ${blobDirs.size()} blob report directories"
+      sh 'find blob-reports -type f | sort || echo "blob-reports is empty"'
+      sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
+      sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
+      publishHTML([
+        allowMissing: false,
+        alwaysLinkToLastBuild: true,
+        keepAll: true,
+        reportDir: 'playwright-report',
+        reportFiles: 'index.html',
+        reportName: 'Test Report'
+      ])
     }
   }
 
@@ -223,37 +220,37 @@ withNightlyPipeline(type, product, component, 600) {
     }
   }
 
+  def runSmokeTestStages = { stages ->
+    stages.each { s ->
+      runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null)
+    }
+  }
+
   afterAlways('DependencyCheckNightly') {
     stage('Set up playwright') {
-      try {
-        yarnBuilder.yarn('setup')
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      }
+      yarnBuilder.yarn('setup')
     }
 
     if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
-        try {
-          currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
-          withEnv(["BLOB_REPORT_DIR=blob-reports/Tags-${params.browser}"]) {
-            yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
-          }
-        } catch (Error) {
-          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
+        withEnv(["BLOB_REPORT_DIR=blob-reports/Tags-${params.browser}"]) {
+          yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
         }
       }
       runMergeReportsStage()
     } else {
-      if (params.TEST_SUITE == 'bvt') {
+      if (testSuiteToRun == 'bvt') {
         runBvtStages(bvtStages)
+        runSmokeTestStages(smokeTestStages)
       }
-      if (params.TEST_SUITE == 'regression') {
+      if (testSuiteToRun == 'regression') {
         runRegressionStages(regressionStages)
       }
-      if (params.TEST_SUITE == 'bvt_and_regression') {
+      if (testSuiteToRun == 'bvt_and_regression') {
         runBvtStages(bvtStages)
         runRegressionStages(regressionStages)
+        runSmokeTestStages(smokeTestStages)
       }
     }
     runMergeReportsStage()

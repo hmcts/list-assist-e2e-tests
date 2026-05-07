@@ -20,9 +20,9 @@ properties([
     ),
     choice(
       name: 'TEST_SUITE',
-      choices: ['bvt', 'regression', 'bvt_and_regression'],
+      choices: ['bvt_and_regression', 'bvt', 'regression'],
       description: 'Select which test suite(s) to run',
-      defaultValue: 'bvt'
+      defaultValue: 'bvt_and_regression'
     ),
     choice(
       name: 'ENVIRONMENT',
@@ -147,7 +147,9 @@ withNightlyPipeline(type, product, component, 600) {
         skipCreateCase: cfg.skipCreateCase
       ]
     }
-  } + [
+  }
+
+  def smokeStages = [
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=bvt-webkit --grep @smoke'],
     [name: 'Firefox - Smoke Tests', command: 'playwright test --project=bvt-firefox --grep @smoke']
   ]
@@ -197,6 +199,12 @@ withNightlyPipeline(type, product, component, 600) {
   }
 
   def runRegressionStages = { stages ->
+    stages.each { s ->
+      runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null)
+    }
+  }
+
+  def runSmokeStages = { stages ->
     stages.each { s ->
       runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null)
     }
@@ -378,11 +386,13 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
     } else if (regressionBlockChanged) {
-      runRegressionStages(regressionStages)
       runBvtStages(bvtStages)
+      runRegressionStages(regressionStages)
+      runSmokeStages(smokeStages)
     } else {
       if (params.TEST_SUITE == 'bvt') {
         runBvtStages(bvtStages)
+        runSmokeStages(smokeStages)
       }
       if (params.TEST_SUITE == 'regression') {
         runRegressionStages(regressionStages)
@@ -390,6 +400,7 @@ withNightlyPipeline(type, product, component, 600) {
       if (params.TEST_SUITE == 'bvt_and_regression') {
         runBvtStages(bvtStages)
         runRegressionStages(regressionStages)
+        runSmokeStages(smokeStages)
       }
     }
     runMergeReportsStage()
