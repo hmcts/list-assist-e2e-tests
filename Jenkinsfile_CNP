@@ -20,9 +20,8 @@ properties([
     ),
     choice(
       name: 'TEST_SUITE',
-      choices: ['bvt_and_regression', 'bvt', 'regression'],
-      description: 'Select which test suite(s) to run',
-      defaultValue: 'bvt_and_regression'
+      choices: ['auto', 'bvt', 'regression', 'bvt_and_regression'],
+      description: 'Select which test suite(s) to run. "auto" (default) runs changed files + @pr-build tagged tests on PRs, or bvt_and_regression on nightly builds'
     ),
     choice(
       name: 'ENVIRONMENT',
@@ -333,8 +332,19 @@ withNightlyPipeline(type, product, component, 600) {
             unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
           }
         }
+      } else if (params.TEST_SUITE == 'bvt') {
+        currentBuild.displayName = "PR: BVT Suite"
+        runBvtStages(bvtStages)
+      } else if (params.TEST_SUITE == 'regression') {
+        currentBuild.displayName = "PR: Regression Suite"
+        runRegressionStages(regressionStages)
+      } else if (params.TEST_SUITE == 'bvt_and_regression') {
+        currentBuild.displayName = "PR: BVT + Regression Suite"
+        runBvtStages(bvtStages)
+        runRegressionStages(regressionStages)
+        runSmokeStages(smokeStages)
       } else {
-        // Always run all @pr-build tagged tests
+        // auto: run @pr-build tagged tests + changed spec files
         stage("PR: @pr-build Tagged Tests") {
           try {
             currentBuild.displayName = "PR: @pr-build Tagged Tests"
@@ -397,7 +407,7 @@ withNightlyPipeline(type, product, component, 600) {
       if (params.TEST_SUITE == 'regression') {
         runRegressionStages(regressionStages)
       }
-      if (params.TEST_SUITE == 'bvt_and_regression') {
+      if (params.TEST_SUITE == 'bvt_and_regression' || params.TEST_SUITE == 'auto') {
         runBvtStages(bvtStages)
         runRegressionStages(regressionStages)
         runSmokeStages(smokeStages)
