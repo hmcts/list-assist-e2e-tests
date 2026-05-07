@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-  pipelineTriggers([cron('H 8 * * 1-5')]),
+  pipelineTriggers([cron("TZ=Europe/London\nH 8 * * 1-5")]),
   disableConcurrentBuilds(),
   parameters([
     string(
