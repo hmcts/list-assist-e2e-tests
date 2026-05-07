@@ -21,8 +21,8 @@ properties([
     choice(
       name: 'TEST_SUITE',
       choices: ['bvt', 'regression', 'bvt_and_regression'],
-      description: 'Select which test suite(s) to run',
-      defaultValue: 'bvt'
+      defaultValue: 'bvt_and_regression',
+      description: 'Select which test suite(s) to run'
     ),
     choice(
       name: 'ENVIRONMENT',
@@ -147,7 +147,9 @@ withNightlyPipeline(type, product, component, 600) {
         skipCreateCase: cfg.skipCreateCase
       ]
     }
-  } + [
+  }
+
+  def smokeStages = [
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=bvt-webkit --grep @smoke'],
     [name: 'Firefox - Smoke Tests', command: 'playwright test --project=bvt-firefox --grep @smoke']
   ]
@@ -202,6 +204,12 @@ withNightlyPipeline(type, product, component, 600) {
     }
   }
 
+  def runSmokeStages = { stages ->
+    stages.each { s ->
+      runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null)
+    }
+  }
+
   def runMergeReportsStage = {
     stage('Merge Reports') {
       try {
@@ -229,64 +237,7 @@ withNightlyPipeline(type, product, component, 600) {
   }
 
   afterAlways('DependencyCheckNightly') {
-  def regressionBlockChanged = false
-  def bvtFilesChanged = []
-  def isPrBuild = env.CHANGE_ID ? true : false
-  def prBuildTaggedFiles = []
-  def bvtSpecFilesChanged = []
-  def regressionSpecFilesChanged = []
-
   stage('Prepare Test Run') {
-    if (isPrBuild) {
-      // Detect Regression & BVT Folder Change
-      sh 'git remote set-url origin $(git config --get remote.origin.url)'
-      sh 'git fetch --prune --unshallow || git fetch --all'
-      sh 'git fetch origin +refs/heads/*:refs/remotes/origin/*'
-      sh "git fetch origin '${env.CHANGE_BRANCH}':'${env.CHANGE_BRANCH}'"
-      sh "git fetch origin '${env.CHANGE_TARGET}':'${env.CHANGE_TARGET}'"
-
-      def diffRegressionCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep -q 'tests/regression/'";
-      regressionBlockChanged = (sh(script: diffRegressionCmd, returnStatus: true) == 0)
-
-      def diffBvtCmd = "git diff --name-only origin/'${env.CHANGE_TARGET}'...origin/'${env.CHANGE_BRANCH}' | grep 'tests/bvt/' || true"
-      def bvtDiffOutput = sh(script: diffBvtCmd, returnStdout: true).trim()
-      if (bvtDiffOutput) {
-        bvtFilesChanged = bvtDiffOutput.split('\\n')
-      }
-
-      // Find changed spec.ts files in bvt and regression folders
-      def diffBvtSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep 'tests/bvt/.*\\.spec\\.ts\$' || true"
-      def bvtSpecDiffOutput = sh(script: diffBvtSpecCmd, returnStdout: true).trim()
-      if (bvtSpecDiffOutput) {
-        bvtSpecFilesChanged = bvtSpecDiffOutput.split('\n')
-        echo "Detected changed bvt spec files: ${bvtSpecFilesChanged}"
-      } else {
-        echo "No changed bvt spec files detected."
-      }
-
-      def diffRegressionSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep 'tests/regression/.*\\.spec\\.ts\$' || true"
-      def regressionSpecDiffOutput = sh(script: diffRegressionSpecCmd, returnStdout: true).trim()
-      if (regressionSpecDiffOutput) {
-        regressionSpecFilesChanged = regressionSpecDiffOutput.split('\n')
-        echo "Detected changed regression spec files: ${regressionSpecFilesChanged}"
-      } else {
-        echo "No changed regression spec files detected."
-      }
-
-      // Find @pr-build tagged files
-      def prBuildFilesOutput = sh(
-        script: "grep -rl '@pr-build' playwright-e2e/tests/bvt playwright-e2e/tests/regression || true",
-        returnStdout: true
-      ).trim()
-      if (prBuildFilesOutput) {
-        prBuildTaggedFiles = prBuildFilesOutput.split('\n')
-      }
-
-      // Remove pr-build tagged files from changed files lists
-      bvtSpecFilesChanged = bvtSpecFilesChanged.findAll { !prBuildTaggedFiles.contains(it) }
-      regressionSpecFilesChanged = regressionSpecFilesChanged.findAll { !prBuildTaggedFiles.contains(it) }
-    }
-
     // Set up playwright
     try {
       yarnBuilder.yarn('setup')
@@ -311,62 +262,8 @@ withNightlyPipeline(type, product, component, 600) {
 
     currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}<br>Suite: ${params.TEST_SUITE}"
 
-    // --- PR & BVT/Regression logic ---
-    if (isPrBuild) {
-      // If TAGS_TO_RUN is specified, run only those tags and skip normal PR logic
-      if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
-        stage("PR: ${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
-          try {
-            currentBuild.displayName = "PR: ${params.TAGS_TO_RUN} E2E Tests"
-            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-Tags-${params.browser}"]) {
-              yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
-            }
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          }
-        }
-      } else {
-        // Always run all @pr-build tagged tests
-        stage("PR: @pr-build Tagged Tests") {
-          try {
-            currentBuild.displayName = "PR: @pr-build Tagged Tests"
-            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-pr-build-tagged-tests"]) {
-              yarnBuilder.yarn("playwright test --grep @pr-build --project=bvt-${params.browser}")
-            }
-          } catch (Error) {
-            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-          }
-        }
-
-        // Run changed bvt spec.ts files
-        bvtSpecFilesChanged.each { file ->
-          stage("PR: BVT Changed File - ${file}") {
-            try {
-              currentBuild.displayName = "PR: BVT Changed File - ${file}"
-              withEnv(["BLOB_REPORT_DIR=blob-reports/PR-BVT-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"]) {
-                yarnBuilder.yarn("playwright test ${file} --project=bvt-${params.browser}")
-              }
-            } catch (Error) {
-              unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-            }
-          }
-        }
-
-        // Run changed regression spec.ts files
-        regressionSpecFilesChanged.each { file ->
-          stage("PR: Regression Changed File - ${file}") {
-            try {
-              currentBuild.displayName = "PR: Regression Changed File - ${file}"
-              withEnv(["BLOB_REPORT_DIR=blob-reports/PR-Regression-${file.replaceAll('[^a-zA-Z0-9_-]', '-')}"]) {
-                yarnBuilder.yarn("playwright test ${file} --project=${params.browser}")
-              }
-            } catch (Error) {
-              unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-            }
-          }
-        }
-      }
-    } else if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
+    // Run test suite based on parameter
+    if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
           currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
@@ -377,20 +274,19 @@ withNightlyPipeline(type, product, component, 600) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         }
       }
-    } else if (regressionBlockChanged) {
-      runRegressionStages(regressionStages)
+    } else if (params.TEST_SUITE == 'bvt') {
+      currentBuild.displayName = "BVT Suite"
       runBvtStages(bvtStages)
+      runSmokeStages(smokeStages)
+    } else if (params.TEST_SUITE == 'regression') {
+      currentBuild.displayName = "Regression Suite"
+      runRegressionStages(regressionStages)
     } else {
-      if (params.TEST_SUITE == 'bvt') {
-        runBvtStages(bvtStages)
-      }
-      if (params.TEST_SUITE == 'regression') {
-        runRegressionStages(regressionStages)
-      }
-      if (params.TEST_SUITE == 'bvt_and_regression') {
-        runBvtStages(bvtStages)
-        runRegressionStages(regressionStages)
-      }
+      // bvt_and_regression (default)
+      currentBuild.displayName = "BVT + Regression Suite"
+      runBvtStages(bvtStages)
+      runRegressionStages(regressionStages)
+      runSmokeStages(smokeStages)
     }
     runMergeReportsStage()
   }
