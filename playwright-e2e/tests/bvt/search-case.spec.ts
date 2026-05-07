@@ -27,6 +27,7 @@ test.describe("Case creation @add-new-case", () => {
     caseDetailsPage,
     caseSearchPage,
   }) => {
+    console.log("test");
     // Test data
     const caseData = {
       hmctsCaseNumberHeaderValue:
