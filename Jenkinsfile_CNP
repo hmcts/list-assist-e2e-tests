@@ -20,9 +20,8 @@ properties([
     ),
     choice(
       name: 'TEST_SUITE',
-      choices: ['bvt', 'regression', 'bvt_and_regression'],
-      defaultValue: 'bvt_and_regression',
-      description: 'Select which test suite(s) to run'
+      choices: ['@pr-build', 'bvt', 'regression', 'bvt_and_regression'],
+      description: 'Select which test suite(s) to run. On PR: "@pr-build" runs tagged tests. On master: defaults to bvt_and_regression'
     ),
     choice(
       name: 'ENVIRONMENT',
@@ -237,7 +236,39 @@ withNightlyPipeline(type, product, component, 600) {
   }
 
   afterAlways('DependencyCheckNightly') {
+  def isPrBuild = env.CHANGE_ID ? true : false
+  def bvtSpecFilesChanged = []
+  def regressionSpecFilesChanged = []
+
   stage('Prepare Test Run') {
+    if (isPrBuild) {
+      // Detect changed spec files in bvt and regression folders for PR builds
+      sh 'git remote set-url origin $(git config --get remote.origin.url)'
+      sh 'git fetch --prune --unshallow || git fetch --all'
+      sh 'git fetch origin +refs/heads/*:refs/remotes/origin/*'
+      sh "git fetch origin '${env.CHANGE_BRANCH}':'${env.CHANGE_BRANCH}'"
+      sh "git fetch origin '${env.CHANGE_TARGET}':'${env.CHANGE_TARGET}'"
+
+      // Find changed spec.ts files in bvt and regression folders
+      def diffBvtSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep 'tests/bvt/.*\\.spec\\.ts\$' || true"
+      def bvtSpecDiffOutput = sh(script: diffBvtSpecCmd, returnStdout: true).trim()
+      if (bvtSpecDiffOutput) {
+        bvtSpecFilesChanged = bvtSpecDiffOutput.split('\n')
+        echo "Detected changed bvt spec files: ${bvtSpecFilesChanged}"
+      } else {
+        echo "No changed bvt spec files detected."
+      }
+
+      def diffRegressionSpecCmd = "git diff --name-only origin/${env.CHANGE_TARGET}...origin/${env.CHANGE_BRANCH} | grep 'tests/regression/.*\\.spec\\.ts\$' || true"
+      def regressionSpecDiffOutput = sh(script: diffRegressionSpecCmd, returnStdout: true).trim()
+      if (regressionSpecDiffOutput) {
+        regressionSpecFilesChanged = regressionSpecDiffOutput.split('\n')
+        echo "Detected changed regression spec files: ${regressionSpecFilesChanged}"
+      } else {
+        echo "No changed regression spec files detected."
+      }
+    }
+
     // Set up playwright
     try {
       yarnBuilder.yarn('setup')
@@ -262,7 +293,7 @@ withNightlyPipeline(type, product, component, 600) {
 
     currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}<br>Suite: ${params.TEST_SUITE}"
 
-    // Run test suite based on parameter
+    // Run test suite based on build type and parameters
     if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         try {
@@ -274,6 +305,35 @@ withNightlyPipeline(type, product, component, 600) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         }
       }
+    } else if (isPrBuild) {
+      // PR builds
+      if (params.TEST_SUITE == '@pr-build') {
+        stage("PR: @pr-build Tagged Tests") {
+          try {
+            currentBuild.displayName = "PR: @pr-build Tagged Tests"
+            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-pr-build-tagged-tests"]) {
+              yarnBuilder.yarn("playwright test --grep @pr-build --project=bvt-${params.browser}")
+            }
+          } catch (Error) {
+            unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          }
+        }
+      } else if (params.TEST_SUITE == 'bvt') {
+        currentBuild.displayName = "PR: BVT Suite"
+        runBvtStages(bvtStages)
+      } else if (params.TEST_SUITE == 'regression') {
+        currentBuild.displayName = "PR: Regression Suite"
+        runRegressionStages(regressionStages)
+      } else if (params.TEST_SUITE == 'bvt_and_regression') {
+        currentBuild.displayName = "PR: BVT + Regression Suite"
+        runBvtStages(bvtStages)
+        runRegressionStages(regressionStages)
+      }
+      runSmokeStages(smokeStages)
+    } else if (false) {
+      // This block is never reached; kept for structure
+      currentBuild.displayName = "Changed Files"
+
     } else if (params.TEST_SUITE == 'bvt') {
       currentBuild.displayName = "BVT Suite"
       runBvtStages(bvtStages)
@@ -282,7 +342,7 @@ withNightlyPipeline(type, product, component, 600) {
       currentBuild.displayName = "Regression Suite"
       runRegressionStages(regressionStages)
     } else {
-      // bvt_and_regression (default)
+      // bvt_and_regression (default for master)
       currentBuild.displayName = "BVT + Regression Suite"
       runBvtStages(bvtStages)
       runRegressionStages(regressionStages)
