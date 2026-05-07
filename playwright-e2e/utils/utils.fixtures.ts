@@ -1,5 +1,5 @@
 import { AxeUtils } from "@hmcts/playwright-common";
-import { Page } from "playwright/test";
+import { Page } from "@playwright/test";
 import { BrowserUtils } from "./browser.utils";
 import { config, Config } from "./config.utils";
 import { DataUtils } from "./data.utils";

@@ -109,7 +109,7 @@ def buildPlaywrightCommand(tags) {
   def command = 'playwright test'
   tagList.each { tag ->
     if (!tag.isEmpty()) {
-      command += " --grep ${tag} --project ${params.browser}"
+      command += " --grep ${tag} --project bvt-${params.browser} --project ${params.browser}"
     }
   }
   return command
