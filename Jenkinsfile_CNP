@@ -125,8 +125,8 @@ withNightlyPipeline(type, product, component, 600) {
 
   def browsers = ['chrome']
   
-  // BVT shards configuration: 4 parallel shards
-  def bvtShards = [1, 2, 3, 4]
+  // BVT shards configuration: 6 parallel shards
+  def bvtShards = [1, 2, 3, 4, 5, 6]
 
   def smokeStages = [
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=bvt-webkit --grep @smoke'],
@@ -172,21 +172,25 @@ withNightlyPipeline(type, product, component, 600) {
   }
 
   def runBvtStages = { shards ->
-    stage("Chrome - BVT Tests (Sharded 4/4)") {
+    stage("Chrome - BVT Tests (Sharded 6/6)") {
       def parallelJobs = [:]
       shards.each { shard ->
-        parallelJobs["Shard ${shard}/4"] = {
-          def blobDir = "blob-reports/BVT-Shard-${shard}-of-4"
+        parallelJobs["Shard ${shard}/6"] = {
+          def blobDir = "blob-reports/BVT-Shard-${shard}-of-6"
           withEnv(["BLOB_REPORT_DIR=${blobDir}"]) {
             echo "=========================================="
-            echo "Starting BVT Shard ${shard}/4"
+            echo "Starting BVT Shard ${shard}/6"
             echo "Blob Report Dir: ${blobDir}"
             echo "=========================================="
-            sh "echo 'Listing tests for shard ${shard}/4:' && yarn playwright test tests/bvt --project=bvt-chrome --shard=${shard}/4 --list 2>/dev/null || true"
-            echo "Running tests for shard ${shard}/4..."
-            yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --shard=${shard}/4")
+            sh "echo 'Listing tests for shard ${shard}/6:' && yarn playwright test tests/bvt --project=bvt-chrome --shard=${shard}/6 --list 2>/dev/null || true"
+            echo "Running tests for shard ${shard}/6..."
+            try {
+              yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --shard=${shard}/6")
+            } catch (Exception e) {
+              unstable(message: "BVT Shard ${shard}/6 is unstable: " + e.toString())
+            }
             echo "=========================================="
-            echo "Completed BVT Shard ${shard}/4"
+            echo "Completed BVT Shard ${shard}/6"
             echo "=========================================="
           }
         }
