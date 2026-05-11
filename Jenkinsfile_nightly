@@ -175,8 +175,8 @@ withNightlyPipeline(type, product, component, 600) {
         withEnv(["BLOB_REPORT_DIR=${blobDir}"]) {
           yarnBuilder.yarn(command)
         }
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      } catch (Exception e) {
+        unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
       } finally {
         if (skipCreateCase != null) {
           env.SKIP_CREATE_CASE = null
