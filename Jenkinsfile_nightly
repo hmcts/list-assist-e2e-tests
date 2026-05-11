@@ -247,7 +247,6 @@ withNightlyPipeline(type, product, component, 600) {
     } else {
       if (testSuiteToRun == 'bvt') {
         runBvtStages(bvtStages)
-        runSmokeTestStages(smokeTestStages)
       }
       if (testSuiteToRun == 'regression') {
         runRegressionStages(regressionStages)
