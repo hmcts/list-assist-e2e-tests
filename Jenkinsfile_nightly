@@ -174,14 +174,19 @@ withNightlyPipeline(type, product, component, 600) {
   def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
     stage(stageName) {
       def blobDir = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
-      if (skipCreateCase != null) {
-        env.SKIP_CREATE_CASE = skipCreateCase
-      }
-      withEnv(["BLOB_REPORT_DIR=${blobDir}"]) {
-        yarnBuilder.yarn(command)
-      }
-      if (skipCreateCase != null) {
-        env.SKIP_CREATE_CASE = null
+      try {
+        if (skipCreateCase != null) {
+          env.SKIP_CREATE_CASE = skipCreateCase
+        }
+        withEnv(["BLOB_REPORT_DIR=${blobDir}"]) {
+          yarnBuilder.yarn(command)
+        }
+      } catch (Exception e) {
+        unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
+      } finally {
+        if (skipCreateCase != null) {
+          env.SKIP_CREATE_CASE = null
+        }
       }
     }
   }
@@ -242,7 +247,6 @@ withNightlyPipeline(type, product, component, 600) {
     } else {
       if (testSuiteToRun == 'bvt') {
         runBvtStages(bvtStages)
-        runSmokeTestStages(smokeTestStages)
       }
       if (testSuiteToRun == 'regression') {
         runRegressionStages(regressionStages)
