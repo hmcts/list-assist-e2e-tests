@@ -95,6 +95,7 @@ test.describe("Case creation @add-new-case", () => {
     dataUtils,
     homePage,
   }) => {
+    console.log("test");
     //create related case
     // Navigate to Add New Case page
     await homePage.sidebarComponent.openAddNewCasePage();
