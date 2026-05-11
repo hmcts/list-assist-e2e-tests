@@ -209,6 +209,23 @@ withNightlyPipeline(type, product, component, 600) {
     }
   }
 
+  def runChangedSpecFilesStages = { bvtFiles, regressionFiles ->
+    if (bvtFiles && bvtFiles.size() > 0) {
+      bvtFiles.each { file ->
+        def stageName = "PR: Changed BVT - ${file.replaceAll('.*/', '').replaceAll('\\.spec\\.ts', '')}"
+        def command = "playwright test ${file} --project=bvt-${params.browser}"
+        runPlaywrightStage(stageName, command, stageName)
+      }
+    }
+    if (regressionFiles && regressionFiles.size() > 0) {
+      regressionFiles.each { file ->
+        def stageName = "PR: Changed Regression - ${file.replaceAll('.*/', '').replaceAll('\\.spec\\.ts', '')}"
+        def command = "playwright test ${file} --project=${params.browser}"
+        runPlaywrightStage(stageName, command, stageName)
+      }
+    }
+  }
+
   def runMergeReportsStage = {
     stage('Merge Reports') {
       try {
@@ -310,7 +327,7 @@ withNightlyPipeline(type, product, component, 600) {
       if (params.TEST_SUITE == '@pr-build') {
         stage("PR: @pr-build Tagged Tests") {
           try {
-            currentBuild.displayName = "PR: @pr-build Tagged Tests"
+            currentBuild.displayName = "PR: @pr-build Tagged Tests + Changed Files"
             withEnv(["BLOB_REPORT_DIR=blob-reports/PR-pr-build-tagged-tests"]) {
               yarnBuilder.yarn("playwright test --grep @pr-build --project=bvt-${params.browser}")
             }
@@ -318,6 +335,8 @@ withNightlyPipeline(type, product, component, 600) {
             unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
           }
         }
+        // Run any changed spec files in addition to @pr-build tests
+        runChangedSpecFilesStages(bvtSpecFilesChanged, regressionSpecFilesChanged)
       } else if (params.TEST_SUITE == 'bvt') {
         currentBuild.displayName = "PR: BVT Suite"
         runBvtStages(bvtStages)
@@ -330,10 +349,6 @@ withNightlyPipeline(type, product, component, 600) {
         runRegressionStages(regressionStages)
       }
       runSmokeStages(smokeStages)
-    } else if (false) {
-      // This block is never reached; kept for structure
-      currentBuild.displayName = "Changed Files"
-
     } else if (params.TEST_SUITE == 'bvt') {
       currentBuild.displayName = "BVT Suite"
       runBvtStages(bvtStages)
