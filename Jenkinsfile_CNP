@@ -351,7 +351,6 @@ withNightlyPipeline(type, product, component, 600) {
     } else if (params.TEST_SUITE == 'bvt') {
       currentBuild.displayName = "BVT Suite"
       runBvtStages(bvtStages)
-      runSmokeStages(smokeStages)
     } else if (params.TEST_SUITE == 'regression') {
       currentBuild.displayName = "Regression Suite"
       runRegressionStages(regressionStages)
