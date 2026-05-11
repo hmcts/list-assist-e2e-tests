@@ -347,6 +347,7 @@ withNightlyPipeline(type, product, component, 600) {
         currentBuild.displayName = "PR: BVT + Regression Suite"
         runBvtStages(bvtStages)
         runRegressionStages(regressionStages)
+        runSmokeStages(smokeStages)
       }
     } else if (params.TEST_SUITE == 'bvt') {
       currentBuild.displayName = "BVT Suite"
