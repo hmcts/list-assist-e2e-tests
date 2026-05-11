@@ -29,7 +29,6 @@ test.describe("Add participant @add-participant", () => {
     dataUtils,
     homePage,
   }) => {
-    console.log("test");
     await addNewCasePage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(process.env.HMCTS_CASE_NUMBER as string);
 
