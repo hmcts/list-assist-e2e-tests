@@ -124,29 +124,9 @@ withNightlyPipeline(type, product, component, 600) {
   def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
   def browsers = ['chrome']
-  def testConfigs = [
-    [name: 'BVT UI Tests', grep: '@homepage-ui-test', path: 'tests/bvt'],
-    [name: 'Add Participant Tests', grep: '@add-participant', path: 'tests/bvt'],
-    [name: 'Case Creation Tests', grep: '@add-new-case', path: 'tests/bvt'],
-    [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting', path: 'tests/bvt'],
-    [name: 'Hearing Channel Tests', grep: '@hearing-channel', path: 'tests/bvt'],
-    [name: 'Add new user test', grep: '@add-user', skipCreateCase: true, path: 'tests/bvt'],
-    [name: 'Daily cause reports test', grep: '@daily-cause-list-tests', path: 'tests/bvt'],
-    // Only run Amend Api Tests before listing in Chrome
-    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true, path: 'tests/bvt'],
-    // Only run Amend Api test after listing in Chrome
-    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: true, path: 'tests/bvt']
-  ]
-
-  def bvtStages = browsers.collectMany { browser ->
-    testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
-      [
-        name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test ${cfg.path} --project=bvt-${browser} --grep ${cfg.grep}",
-        skipCreateCase: cfg.skipCreateCase
-      ]
-    }
-  }
+  
+  // BVT shards configuration: 4 parallel shards
+  def bvtShards = [1, 2, 3, 4]
 
   def smokeStages = [
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=bvt-webkit --grep @smoke'],
@@ -191,9 +171,18 @@ withNightlyPipeline(type, product, component, 600) {
     }
   }
 
-  def runBvtStages = { stages ->
-    stages.each { s ->
-      runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null)
+  def runBvtStages = { shards ->
+    stage("Chrome - BVT Tests (Sharded 4/4)") {
+      def parallelJobs = [:]
+      shards.each { shard ->
+        parallelJobs["Shard ${shard}/4"] = {
+          def blobDir = "blob-reports/BVT-Shard-${shard}-of-4"
+          withEnv(["BLOB_REPORT_DIR=${blobDir}"]) {
+            yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --shard=${shard}/4")
+          }
+        }
+      }
+      parallel(parallelJobs)
     }
   }
 
@@ -339,26 +328,26 @@ withNightlyPipeline(type, product, component, 600) {
         runChangedSpecFilesStages(bvtSpecFilesChanged, regressionSpecFilesChanged)
       } else if (params.TEST_SUITE == 'bvt') {
         currentBuild.displayName = "PR: BVT Suite"
-        runBvtStages(bvtStages)
+        runBvtStages(bvtShards)
       } else if (params.TEST_SUITE == 'regression') {
         currentBuild.displayName = "PR: Regression Suite"
         runRegressionStages(regressionStages)
       } else if (params.TEST_SUITE == 'bvt_and_regression') {
         currentBuild.displayName = "PR: BVT + Regression Suite"
-        runBvtStages(bvtStages)
+        runBvtStages(bvtShards)
         runRegressionStages(regressionStages)
         runSmokeStages(smokeStages)
       }
     } else if (params.TEST_SUITE == 'bvt') {
       currentBuild.displayName = "BVT Suite"
-      runBvtStages(bvtStages)
+      runBvtStages(bvtShards)
     } else if (params.TEST_SUITE == 'regression') {
       currentBuild.displayName = "Regression Suite"
       runRegressionStages(regressionStages)
     } else {
       // bvt_and_regression (default for master)
       currentBuild.displayName = "BVT + Regression Suite"
-      runBvtStages(bvtStages)
+      runBvtStages(bvtShards)
       runRegressionStages(regressionStages)
       runSmokeStages(smokeStages)
     }
