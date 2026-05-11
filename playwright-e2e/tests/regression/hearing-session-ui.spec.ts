@@ -18,7 +18,6 @@ test("Check all expected values are present in advanced filters @hearing-session
   hearingSchedulePage,
   sessionBookingPage,
 }) => {
-  console.log("test");
   await page.goto(config.urls.baseUrl);
   await loginPage.login(config.users.testUser);
 
