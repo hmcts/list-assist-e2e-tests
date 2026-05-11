@@ -20,13 +20,8 @@ properties([
     ),
     choice(
       name: 'TEST_SUITE',
-<<<<<<< ensure_entire_test_pack_runs_in_master
       choices: ['@pr-build', 'bvt', 'regression', 'bvt_and_regression'],
-      description: 'Select which test suite(s) to run. On PR: "@pr-build" runs tagged tests. On master: defaults to bvt_and_regression'
-=======
-      choices: ['auto', 'bvt', 'regression', 'bvt_and_regression'],
-      description: 'Select which test suite(s) to run. "auto" (default) runs changed files + @pr-build tagged tests on PRs, or bvt_and_regression on nightly builds'
->>>>>>> master
+      description: 'Select which test suite(s) to run. On PR: "@pr-build" runs tagged tests + changed files. On master: defaults to bvt_and_regression'
     ),
     choice(
       name: 'ENVIRONMENT',
@@ -214,7 +209,6 @@ withNightlyPipeline(type, product, component, 600) {
     }
   }
 
-<<<<<<< ensure_entire_test_pack_runs_in_master
   def runChangedSpecFilesStages = { bvtFiles, regressionFiles ->
     if (bvtFiles && bvtFiles.size() > 0) {
       bvtFiles.each { file ->
@@ -232,8 +226,6 @@ withNightlyPipeline(type, product, component, 600) {
     }
   }
 
-=======
->>>>>>> master
   def runMergeReportsStage = {
     stage('Merge Reports') {
       try {
@@ -329,26 +321,10 @@ withNightlyPipeline(type, product, component, 600) {
         } catch (Exception e) {
           unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
         }
-<<<<<<< ensure_entire_test_pack_runs_in_master
       }
     } else if (isPrBuild) {
       // PR builds
       if (params.TEST_SUITE == '@pr-build') {
-=======
-      } else if (params.TEST_SUITE == 'bvt') {
-        currentBuild.displayName = "PR: BVT Suite"
-        runBvtStages(bvtStages)
-      } else if (params.TEST_SUITE == 'regression') {
-        currentBuild.displayName = "PR: Regression Suite"
-        runRegressionStages(regressionStages)
-      } else if (params.TEST_SUITE == 'bvt_and_regression') {
-        currentBuild.displayName = "PR: BVT + Regression Suite"
-        runBvtStages(bvtStages)
-        runRegressionStages(regressionStages)
-        runSmokeStages(smokeStages)
-      } else {
-        // auto: run @pr-build tagged tests + changed spec files
->>>>>>> master
         stage("PR: @pr-build Tagged Tests") {
           try {
             currentBuild.displayName = "PR: @pr-build Tagged Tests + Changed Files"
@@ -359,7 +335,6 @@ withNightlyPipeline(type, product, component, 600) {
             unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
           }
         }
-<<<<<<< ensure_entire_test_pack_runs_in_master
         // Run any changed spec files in addition to @pr-build tests
         runChangedSpecFilesStages(bvtSpecFilesChanged, regressionSpecFilesChanged)
       } else if (params.TEST_SUITE == 'bvt') {
@@ -370,25 +345,8 @@ withNightlyPipeline(type, product, component, 600) {
         runRegressionStages(regressionStages)
       } else if (params.TEST_SUITE == 'bvt_and_regression') {
         currentBuild.displayName = "PR: BVT + Regression Suite"
-=======
-      }
-    } else if (regressionBlockChanged) {
-      runBvtStages(bvtStages)
-      runRegressionStages(regressionStages)
-      runSmokeStages(smokeStages)
-    } else {
-      if (params.TEST_SUITE == 'bvt') {
-        runBvtStages(bvtStages)
-        runSmokeStages(smokeStages)
-      }
-      if (params.TEST_SUITE == 'regression') {
-        runRegressionStages(regressionStages)
-      }
-      if (params.TEST_SUITE == 'bvt_and_regression' || params.TEST_SUITE == 'auto') {
->>>>>>> master
         runBvtStages(bvtStages)
         runRegressionStages(regressionStages)
-        runSmokeStages(smokeStages)
       }
       runSmokeStages(smokeStages)
     } else if (params.TEST_SUITE == 'bvt') {
