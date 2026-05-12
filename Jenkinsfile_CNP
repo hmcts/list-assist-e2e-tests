@@ -142,7 +142,7 @@ withNightlyPipeline(type, product, component, 600) {
     testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
       [
         name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test ${cfg.path} --project=bvt-${browser} --grep ${cfg.grep}",
+        command: "playwright test ${cfg.path} --project=bvt-${browser} --grep ${cfg.grep} --workers=${params.FUNCTIONAL_TESTS_WORKERS}",
         skipCreateCase: cfg.skipCreateCase
       ]
     }
@@ -174,27 +174,34 @@ withNightlyPipeline(type, product, component, 600) {
   def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
     stage(stageName) {
       def blobDir = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
-      try {
-        if (skipCreateCase != null) {
-          env.SKIP_CREATE_CASE = skipCreateCase
-        }
-        withEnv(["BLOB_REPORT_DIR=${blobDir}"]) {
-          yarnBuilder.yarn(command)
-        }
-      } catch (Exception e) {
-        unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
-      } finally {
-        if (skipCreateCase != null) {
-          env.SKIP_CREATE_CASE = null
-        }
+      def envVars = ["BLOB_REPORT_DIR=${blobDir}"]
+      if (skipCreateCase != null) {
+        envVars.add("SKIP_CREATE_CASE=${skipCreateCase}")
+      }
+      withEnv(envVars) {
+        yarnBuilder.yarn(command)
       }
     }
   }
 
   def runBvtStages = { stages ->
+    def parallelMap = [:]
     stages.each { s ->
-      runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null)
+      def stageCopy = s
+      parallelMap[stageCopy.name] = {
+        stage(stageCopy.name) {
+          def blobDir = "blob-reports/${stageCopy.name.replaceAll('[^a-zA-Z0-9_-]', '-')}"
+          def envVars = ["BLOB_REPORT_DIR=${blobDir}"]
+          if (stageCopy.skipCreateCase != null) {
+            envVars.add("SKIP_CREATE_CASE=${stageCopy.skipCreateCase}")
+          }
+          withEnv(envVars) {
+            yarnBuilder.yarn(stageCopy.command)
+          }
+        }
+      }
     }
+    parallel parallelMap
   }
 
   def runRegressionStages = { stages ->
@@ -228,27 +235,23 @@ withNightlyPipeline(type, product, component, 600) {
 
   def runMergeReportsStage = {
     stage('Merge Reports') {
-      try {
-        def blobDirs = sh(script: 'find blob-reports -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort', returnStdout: true).trim().split('\n').findAll { it }
-        if (!blobDirs || blobDirs.size() == 0 || blobDirs[0].isEmpty()) {
-          echo 'No blob reports found to merge, skipping.'
-          return
-        }
-        echo "Found ${blobDirs.size()} blob report directories"
-        sh 'find blob-reports -type f | sort || echo "blob-reports is empty"'
-        sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
-        sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
-        publishHTML([
-          allowMissing: false,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: 'playwright-report',
-          reportFiles: 'index.html',
-          reportName: 'Test Report'
-        ])
-      } catch (Exception e) {
-        unstable(message: "Merge Reports is unstable: " + e.toString())
+      def blobDirs = sh(script: 'find blob-reports -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort', returnStdout: true).trim().split('\n').findAll { it }
+      if (!blobDirs || blobDirs.size() == 0 || blobDirs[0].isEmpty()) {
+        echo 'No blob reports found to merge, skipping.'
+        return
       }
+      echo "Found ${blobDirs.size()} blob report directories"
+      sh 'find blob-reports -type f | sort || echo "blob-reports is empty"'
+      sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
+      sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
+      publishHTML([
+        allowMissing: false,
+        alwaysLinkToLastBuild: true,
+        keepAll: true,
+        reportDir: 'playwright-report',
+        reportFiles: 'index.html',
+        reportName: 'Test Report'
+      ])
     }
   }
 
@@ -287,11 +290,7 @@ withNightlyPipeline(type, product, component, 600) {
     }
 
     // Set up playwright
-    try {
-      yarnBuilder.yarn('setup')
-    } catch (Exception e) {
-      unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
-    }
+    yarnBuilder.yarn('setup')
   }
 
     // Before running tests, set environment variables based on ENVIRONMENT
@@ -313,26 +312,18 @@ withNightlyPipeline(type, product, component, 600) {
     // Run test suite based on build type and parameters
     if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
-        try {
-          currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
-          withEnv(["BLOB_REPORT_DIR=blob-reports/Tags-${params.browser}"]) {
-            yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
-          }
-        } catch (Exception e) {
-          unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
+        currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
+        withEnv(["BLOB_REPORT_DIR=blob-reports/Tags-${params.browser}"]) {
+          yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
         }
       }
     } else if (isPrBuild) {
       // PR builds
       if (params.TEST_SUITE == '@pr-build') {
         stage("PR: @pr-build Tagged Tests") {
-          try {
-            currentBuild.displayName = "PR: @pr-build Tagged Tests + Changed Files"
-            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-pr-build-tagged-tests"]) {
-              yarnBuilder.yarn("playwright test --grep @pr-build --project=bvt-${params.browser}")
-            }
-          } catch (Exception e) {
-            unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
+          currentBuild.displayName = "PR: @pr-build Tagged Tests + Changed Files"
+          withEnv(["BLOB_REPORT_DIR=blob-reports/PR-pr-build-tagged-tests"]) {
+            yarnBuilder.yarn("playwright test --grep @pr-build --project=bvt-${params.browser}")
           }
         }
         // Run any changed spec files in addition to @pr-build tests
