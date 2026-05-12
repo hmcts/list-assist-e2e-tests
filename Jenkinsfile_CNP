@@ -123,31 +123,6 @@ withNightlyPipeline(type, product, component, 600) {
 
   def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
-  def browsers = ['chrome']
-  def testConfigs = [
-    [name: 'BVT UI Tests', grep: '@homepage-ui-test', path: 'tests/bvt'],
-    [name: 'Add Participant Tests', grep: '@add-participant', path: 'tests/bvt'],
-    [name: 'Case Creation Tests', grep: '@add-new-case', path: 'tests/bvt'],
-    [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting', path: 'tests/bvt'],
-    [name: 'Hearing Channel Tests', grep: '@hearing-channel', path: 'tests/bvt'],
-    [name: 'Add new user test', grep: '@add-user', skipCreateCase: true, path: 'tests/bvt'],
-    [name: 'Daily cause reports test', grep: '@daily-cause-list-tests', path: 'tests/bvt'],
-    // Only run Amend Api Tests before listing in Chrome
-    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true, path: 'tests/bvt'],
-    // Only run Amend Api test after listing in Chrome
-    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: true, path: 'tests/bvt']
-  ]
-
-  def bvtStages = browsers.collectMany { browser ->
-    testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
-      [
-        name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test ${cfg.path} --project=bvt-${browser} --grep ${cfg.grep} --workers=${params.FUNCTIONAL_TESTS_WORKERS}",
-        skipCreateCase: cfg.skipCreateCase
-      ]
-    }
-  }
-
   def smokeStages = [
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=bvt-webkit --grep @smoke'],
     [name: 'Firefox - Smoke Tests', command: 'playwright test --project=bvt-firefox --grep @smoke']
@@ -171,6 +146,14 @@ withNightlyPipeline(type, product, component, 600) {
     }
   }
 
+  def runBvtStage = {
+    stage('BVT Tests') {
+      withEnv(["BLOB_REPORT_DIR=blob-reports/bvt"]) {
+        yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --workers=${params.FUNCTIONAL_TESTS_WORKERS}")
+      }
+    }
+  }
+
   def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
     stage(stageName) {
       def blobDir = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
@@ -182,26 +165,6 @@ withNightlyPipeline(type, product, component, 600) {
         yarnBuilder.yarn(command)
       }
     }
-  }
-
-  def runBvtStages = { stages ->
-    def parallelMap = [:]
-    stages.each { s ->
-      def stageCopy = s
-      parallelMap[stageCopy.name] = {
-        stage(stageCopy.name) {
-          def blobDir = "blob-reports/${stageCopy.name.replaceAll('[^a-zA-Z0-9_-]', '-')}"
-          def envVars = ["BLOB_REPORT_DIR=${blobDir}"]
-          if (stageCopy.skipCreateCase != null) {
-            envVars.add("SKIP_CREATE_CASE=${stageCopy.skipCreateCase}")
-          }
-          withEnv(envVars) {
-            yarnBuilder.yarn(stageCopy.command)
-          }
-        }
-      }
-    }
-    parallel parallelMap
   }
 
   def runRegressionStages = { stages ->
@@ -235,23 +198,27 @@ withNightlyPipeline(type, product, component, 600) {
 
   def runMergeReportsStage = {
     stage('Merge Reports') {
-      def blobDirs = sh(script: 'find blob-reports -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort', returnStdout: true).trim().split('\n').findAll { it }
-      if (!blobDirs || blobDirs.size() == 0 || blobDirs[0].isEmpty()) {
-        echo 'No blob reports found to merge, skipping.'
-        return
+      try {
+        def blobDirs = sh(script: 'find blob-reports -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort', returnStdout: true).trim().split('\n').findAll { it }
+        if (!blobDirs || blobDirs.size() == 0 || blobDirs[0].isEmpty()) {
+          echo 'No blob reports found to merge, skipping.'
+          return
+        }
+        echo "Found ${blobDirs.size()} blob report directories"
+        sh 'find blob-reports -type f | sort || echo "blob-reports is empty"'
+        sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
+        sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
+        publishHTML([
+          allowMissing: false,
+          alwaysLinkToLastBuild: true,
+          keepAll: true,
+          reportDir: 'playwright-report',
+          reportFiles: 'index.html',
+          reportName: 'Test Report'
+        ])
+      } catch (Exception e) {
+        unstable(message: "Merge Reports is unstable: " + e.toString())
       }
-      echo "Found ${blobDirs.size()} blob report directories"
-      sh 'find blob-reports -type f | sort || echo "blob-reports is empty"'
-      sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
-      sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
-      publishHTML([
-        allowMissing: false,
-        alwaysLinkToLastBuild: true,
-        keepAll: true,
-        reportDir: 'playwright-report',
-        reportFiles: 'index.html',
-        reportName: 'Test Report'
-      ])
     }
   }
 
@@ -330,26 +297,26 @@ withNightlyPipeline(type, product, component, 600) {
         runChangedSpecFilesStages(bvtSpecFilesChanged, regressionSpecFilesChanged)
       } else if (params.TEST_SUITE == 'bvt') {
         currentBuild.displayName = "PR: BVT Suite"
-        runBvtStages(bvtStages)
+        runBvtStage()
       } else if (params.TEST_SUITE == 'regression') {
         currentBuild.displayName = "PR: Regression Suite"
         runRegressionStages(regressionStages)
       } else if (params.TEST_SUITE == 'bvt_and_regression') {
         currentBuild.displayName = "PR: BVT + Regression Suite"
-        runBvtStages(bvtStages)
+        runBvtStage()
         runRegressionStages(regressionStages)
         runSmokeStages(smokeStages)
       }
     } else if (params.TEST_SUITE == 'bvt') {
       currentBuild.displayName = "BVT Suite"
-      runBvtStages(bvtStages)
+      runBvtStage()
     } else if (params.TEST_SUITE == 'regression') {
       currentBuild.displayName = "Regression Suite"
       runRegressionStages(regressionStages)
     } else {
       // bvt_and_regression (default for master)
       currentBuild.displayName = "BVT + Regression Suite"
-      runBvtStages(bvtStages)
+      runBvtStage()
       runRegressionStages(regressionStages)
       runSmokeStages(smokeStages)
     }
