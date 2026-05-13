@@ -140,7 +140,7 @@ withNightlyPipeline(type, product, component, 600) {
   def regressionStages = regressionBrowsers.collectMany { browser ->
     regressionConfigs.collect { cfg ->
       [
-        name: "${browser.capitalize()} - ${cfg.name}",
+        name: "${cfg.name}",
         command: "playwright test ${cfg.path} --project=${browser} --grep ${cfg.grep}"
       ]
     }
@@ -158,13 +158,15 @@ withNightlyPipeline(type, product, component, 600) {
 
   def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
     stage(stageName) {
-      def blobDir = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
-      def envVars = ["BLOB_REPORT_DIR=${blobDir}"]
-      if (skipCreateCase != null) {
-        envVars.add("SKIP_CREATE_CASE=${skipCreateCase}")
-      }
-      withEnv(envVars) {
-        yarnBuilder.yarn(command)
+      catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+        def blobDir = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
+        def envVars = ["BLOB_REPORT_DIR=${blobDir}"]
+        if (skipCreateCase != null) {
+          envVars.add("SKIP_CREATE_CASE=${skipCreateCase}")
+        }
+        withEnv(envVars) {
+          yarnBuilder.yarn(command)
+        }
       }
     }
   }
