@@ -359,16 +359,18 @@ export class HearingSchedulePage extends Base {
 
       //delete session from inside of session details page, if available
 
-      await this.deleteSessionInSessionDetailsButton.waitFor({
-        state: "visible",
-        timeout: 10_000,
-      });
-      await this.deleteSessionInSessionDetailsButton.click();
-      await this.page.locator("#cancellationCode").click();
-      await this.page
-        .locator("#cancellationCode")
-        .selectOption(cancellationCode);
-      await this.page.getByRole("button", { name: "Yes" }).click();
+      const isDeleteVisible = await this.deleteSessionInSessionDetailsButton
+        .isVisible()
+        .catch(() => false);
+
+      if (isDeleteVisible) {
+        await this.deleteSessionInSessionDetailsButton.click();
+        await this.page.locator("#cancellationCode").click();
+        await this.page
+          .locator("#cancellationCode")
+          .selectOption(cancellationCode);
+        await this.page.getByRole("button", { name: "Yes" }).click();
+      }
 
       //delete session from schedule page
       await expect(this.deleteSessionButton).toBeVisible();

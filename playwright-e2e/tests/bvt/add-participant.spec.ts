@@ -111,6 +111,7 @@ test.describe("Add participant @add-participant", () => {
     await homePage.waitForHomePageLoad();
   });
 
+  //will need to be un-skipped when -95346 is resolved
   test.skip("Case history should display correct event codes", async ({
     homePage,
     dataUtils,
