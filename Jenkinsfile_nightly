@@ -221,6 +221,7 @@ withNightlyPipeline(type, product, component, 600) {
     }
 
     if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
+      currentBuild.description = "Suite: ${params.TAGS_TO_RUN}"
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
         currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
         withEnv(["BLOB_REPORT_DIR=blob-reports/Tags-${params.browser}"]) {
@@ -229,6 +230,7 @@ withNightlyPipeline(type, product, component, 600) {
       }
       runMergeReportsStage()
     } else {
+      currentBuild.description = "Suite: ${testSuiteToRun}"
       if (testSuiteToRun == 'bvt') {
         runBvtStage()
       }
