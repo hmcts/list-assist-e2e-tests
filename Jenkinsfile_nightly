@@ -6,7 +6,7 @@ properties([
   parameters([
     string(
       name: 'FUNCTIONAL_TESTS_WORKERS',
-      defaultValue: '4',
+      defaultValue: '6',
       description: 'Number of workers running functional tests'
     ),
     string(
@@ -124,27 +124,13 @@ withNightlyPipeline(type, product, component, 600) {
   def isTimerTriggered = currentBuild.getBuildCauses('hudson.triggers.TimerTrigger').size() > 0
   def testSuiteToRun = isTimerTriggered ? 'bvt' : params.TEST_SUITE
 
-  def browsers = ['chrome']
-  def testConfigs = [
-    [name: 'BVT UI Tests', grep: '@homepage-ui-test', path: 'tests/bvt'],
-    [name: 'Add Participant Tests', grep: '@add-participant', path: 'tests/bvt'],
-    [name: 'Case Creation Tests', grep: '@add-new-case', path: 'tests/bvt'],
-    [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting', path: 'tests/bvt'],
-    [name: 'Hearing Channel Tests', grep: '@hearing-channel', path: 'tests/bvt'],
-    [name: 'Daily cause reports test', grep: '@daily-cause-list-tests', path: 'tests/bvt'],
-    // Only run Amend Api Tests before listing in Chrome
-    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true, path: 'tests/bvt'],
-    // Only run Amend Api test after listing in Chrome
-    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: true, path: 'tests/bvt']
-  ]
-
-  def bvtStages = browsers.collectMany { browser ->
-    testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
-      [
-        name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test ${cfg.path} --project=bvt-${browser} --grep ${cfg.grep}",
-        skipCreateCase: cfg.skipCreateCase
-      ]
+  def runBvtStage = {
+    stage('BVT Tests') {
+      catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+        withEnv(["BLOB_REPORT_DIR=blob-reports/bvt"]) {
+          yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --workers=${params.FUNCTIONAL_TESTS_WORKERS}")
+        }
+      }
     }
   }
 
@@ -165,7 +151,7 @@ withNightlyPipeline(type, product, component, 600) {
   def regressionStages = regressionBrowsers.collectMany { browser ->
     regressionConfigs.collect { cfg ->
       [
-        name: "${browser.capitalize()} - ${cfg.name}",
+        name: "${cfg.name}",
         command: "playwright test ${cfg.path} --project=${browser} --grep ${cfg.grep}"
       ]
     }
@@ -193,29 +179,27 @@ withNightlyPipeline(type, product, component, 600) {
 
   def runMergeReportsStage = {
     stage('Merge Reports') {
-      def blobDirs = sh(script: 'find blob-reports -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort', returnStdout: true).trim().split('\n').findAll { it }
-      if (!blobDirs || blobDirs.size() == 0 || blobDirs[0].isEmpty()) {
-        echo 'No blob reports found to merge, skipping.'
-        return
+      try {
+        def blobDirs = sh(script: 'find blob-reports -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort', returnStdout: true).trim().split('\n').findAll { it }
+        if (!blobDirs || blobDirs.size() == 0 || blobDirs[0].isEmpty()) {
+          echo 'No blob reports found to merge, skipping.'
+          return
+        }
+        echo "Found ${blobDirs.size()} blob report directories"
+        sh 'find blob-reports -type f | sort || echo "blob-reports is empty"'
+        sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
+        sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
+        publishHTML([
+          allowMissing: false,
+          alwaysLinkToLastBuild: true,
+          keepAll: true,
+          reportDir: 'playwright-report',
+          reportFiles: 'index.html',
+          reportName: 'Test Report'
+        ])
+      } catch (Exception e) {
+        unstable(message: "Merge Reports is unstable: " + e.toString())
       }
-      echo "Found ${blobDirs.size()} blob report directories"
-      sh 'find blob-reports -type f | sort || echo "blob-reports is empty"'
-      sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
-      sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
-      publishHTML([
-        allowMissing: false,
-        alwaysLinkToLastBuild: true,
-        keepAll: true,
-        reportDir: 'playwright-report',
-        reportFiles: 'index.html',
-        reportName: 'Test Report'
-      ])
-    }
-  }
-
-  def runBvtStages = { stages ->
-    stages.each { s ->
-      runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null)
     }
   }
 
@@ -246,13 +230,13 @@ withNightlyPipeline(type, product, component, 600) {
       runMergeReportsStage()
     } else {
       if (testSuiteToRun == 'bvt') {
-        runBvtStages(bvtStages)
+        runBvtStage()
       }
       if (testSuiteToRun == 'regression') {
         runRegressionStages(regressionStages)
       }
       if (testSuiteToRun == 'bvt_and_regression') {
-        runBvtStages(bvtStages)
+        runBvtStage()
         runRegressionStages(regressionStages)
         runSmokeTestStages(smokeTestStages)
       }

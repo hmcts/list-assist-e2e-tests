@@ -5,7 +5,7 @@ properties([
   parameters([
     string(
       name: 'FUNCTIONAL_TESTS_WORKERS',
-      defaultValue: '4',
+      defaultValue: '6',
       description: 'Number of workers running functional tests'
     ),
     string(
@@ -123,31 +123,6 @@ withNightlyPipeline(type, product, component, 600) {
 
   def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
-  def browsers = ['chrome']
-  def testConfigs = [
-    [name: 'BVT UI Tests', grep: '@homepage-ui-test', path: 'tests/bvt'],
-    [name: 'Add Participant Tests', grep: '@add-participant', path: 'tests/bvt'],
-    [name: 'Case Creation Tests', grep: '@add-new-case', path: 'tests/bvt'],
-    [name: 'Case Listing and Reporting Tests', grep: '@case-listing-and-reporting', path: 'tests/bvt'],
-    [name: 'Hearing Channel Tests', grep: '@hearing-channel', path: 'tests/bvt'],
-    [name: 'Add new user test', grep: '@add-user', skipCreateCase: true, path: 'tests/bvt'],
-    [name: 'Daily cause reports test', grep: '@daily-cause-list-tests', path: 'tests/bvt'],
-    // Only run Amend Api Tests before listing in Chrome
-    [name: 'Amend Api Tests before listing', grep: '@amend-api-test', skipCreateCase: true, path: 'tests/bvt'],
-    // Only run Amend Api test after listing in Chrome
-    [name: 'Amend Api test after listing', grep: '@amend-api-test-after-listing', skipCreateCase: true, path: 'tests/bvt']
-  ]
-
-  def bvtStages = browsers.collectMany { browser ->
-    testConfigs.findAll { !it.browsers || it.browsers.contains(browser) }.collect { cfg ->
-      [
-        name: "${browser.capitalize()} - ${cfg.name}",
-        command: "playwright test ${cfg.path} --project=bvt-${browser} --grep ${cfg.grep}",
-        skipCreateCase: cfg.skipCreateCase
-      ]
-    }
-  }
-
   def smokeStages = [
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=bvt-webkit --grep @smoke'],
     [name: 'Firefox - Smoke Tests', command: 'playwright test --project=bvt-firefox --grep @smoke']
@@ -165,35 +140,34 @@ withNightlyPipeline(type, product, component, 600) {
   def regressionStages = regressionBrowsers.collectMany { browser ->
     regressionConfigs.collect { cfg ->
       [
-        name: "${browser.capitalize()} - ${cfg.name}",
+        name: "${cfg.name}",
         command: "playwright test ${cfg.path} --project=${browser} --grep ${cfg.grep}"
       ]
     }
   }
 
-  def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
-    stage(stageName) {
-      def blobDir = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
-      try {
-        if (skipCreateCase != null) {
-          env.SKIP_CREATE_CASE = skipCreateCase
-        }
-        withEnv(["BLOB_REPORT_DIR=${blobDir}"]) {
-          yarnBuilder.yarn(command)
-        }
-      } catch (Exception e) {
-        unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
-      } finally {
-        if (skipCreateCase != null) {
-          env.SKIP_CREATE_CASE = null
+  def runBvtStage = {
+    stage('BVT Tests') {
+      catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+        withEnv(["BLOB_REPORT_DIR=blob-reports/bvt"]) {
+          yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --workers=${params.FUNCTIONAL_TESTS_WORKERS}")
         }
       }
     }
   }
 
-  def runBvtStages = { stages ->
-    stages.each { s ->
-      runPlaywrightStage(s.name, s.command, s.name, s.skipCreateCase ?: null)
+  def runPlaywrightStage = { stageName, command, reportName, skipCreateCase = null ->
+    stage(stageName) {
+      catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+        def blobDir = "blob-reports/${reportName.replaceAll('[^a-zA-Z0-9_-]', '-')}"
+        def envVars = ["BLOB_REPORT_DIR=${blobDir}"]
+        if (skipCreateCase != null) {
+          envVars.add("SKIP_CREATE_CASE=${skipCreateCase}")
+        }
+        withEnv(envVars) {
+          yarnBuilder.yarn(command)
+        }
+      }
     }
   }
 
@@ -287,11 +261,7 @@ withNightlyPipeline(type, product, component, 600) {
     }
 
     // Set up playwright
-    try {
-      yarnBuilder.yarn('setup')
-    } catch (Exception e) {
-      unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
-    }
+    yarnBuilder.yarn('setup')
   }
 
     // Before running tests, set environment variables based on ENVIRONMENT
@@ -313,52 +283,44 @@ withNightlyPipeline(type, product, component, 600) {
     // Run test suite based on build type and parameters
     if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
       stage("${params.TAGS_TO_RUN} E2E Tests ${params.browser}") {
-        try {
-          currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
-          withEnv(["BLOB_REPORT_DIR=blob-reports/Tags-${params.browser}"]) {
-            yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
-          }
-        } catch (Exception e) {
-          unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
+        currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests"
+        withEnv(["BLOB_REPORT_DIR=blob-reports/Tags-${params.browser}"]) {
+          yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN))
         }
       }
     } else if (isPrBuild) {
       // PR builds
       if (params.TEST_SUITE == '@pr-build') {
         stage("PR: @pr-build Tagged Tests") {
-          try {
-            currentBuild.displayName = "PR: @pr-build Tagged Tests + Changed Files"
-            withEnv(["BLOB_REPORT_DIR=blob-reports/PR-pr-build-tagged-tests"]) {
-              yarnBuilder.yarn("playwright test --grep @pr-build --project=bvt-${params.browser}")
-            }
-          } catch (Exception e) {
-            unstable(message: "${STAGE_NAME} is unstable: " + e.toString())
+          currentBuild.displayName = "PR: @pr-build Tagged Tests + Changed Files"
+          withEnv(["BLOB_REPORT_DIR=blob-reports/PR-pr-build-tagged-tests"]) {
+            yarnBuilder.yarn("playwright test --grep @pr-build --project=bvt-${params.browser}")
           }
         }
         // Run any changed spec files in addition to @pr-build tests
         runChangedSpecFilesStages(bvtSpecFilesChanged, regressionSpecFilesChanged)
       } else if (params.TEST_SUITE == 'bvt') {
         currentBuild.displayName = "PR: BVT Suite"
-        runBvtStages(bvtStages)
+        runBvtStage()
       } else if (params.TEST_SUITE == 'regression') {
         currentBuild.displayName = "PR: Regression Suite"
         runRegressionStages(regressionStages)
       } else if (params.TEST_SUITE == 'bvt_and_regression') {
         currentBuild.displayName = "PR: BVT + Regression Suite"
-        runBvtStages(bvtStages)
+        runBvtStage()
         runRegressionStages(regressionStages)
         runSmokeStages(smokeStages)
       }
     } else if (params.TEST_SUITE == 'bvt') {
       currentBuild.displayName = "BVT Suite"
-      runBvtStages(bvtStages)
+      runBvtStage()
     } else if (params.TEST_SUITE == 'regression') {
       currentBuild.displayName = "Regression Suite"
       runRegressionStages(regressionStages)
     } else {
       // bvt_and_regression (default for master)
       currentBuild.displayName = "BVT + Regression Suite"
-      runBvtStages(bvtStages)
+      runBvtStage()
       runRegressionStages(regressionStages)
       runSmokeStages(smokeStages)
     }
