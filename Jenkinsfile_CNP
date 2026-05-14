@@ -150,7 +150,7 @@ withNightlyPipeline(type, product, component, 600) {
     stage('BVT Tests') {
       catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
         withEnv(["BLOB_REPORT_DIR=blob-reports/bvt"]) {
-          yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --workers=${params.FUNCTIONAL_TESTS_WORKERS}")
+          yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --workers=${params.FUNCTIONAL_TESTS_WORKERS ?: '6'}")
         }
       }
     }
