@@ -51,16 +51,5 @@
   "dependencies": {
     "luxon": "^3.7.1",
     "prettier": "^3.5.3"
-  },
-  "dependenciesMeta": {
-    "@playwright/test": {
-      "unplugged": true
-    },
-    "playwright": {
-      "unplugged": true
-    },
-    "playwright-core": {
-      "unplugged": true
-    }
   }
 }
