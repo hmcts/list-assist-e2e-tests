@@ -2987,7 +2987,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:*, playwright@npm:1.60.0, playwright@npm:^1.59.1":
+"playwright@npm:1.60.0":
   version: 1.60.0
   resolution: "playwright@npm:1.60.0"
   dependencies:
@@ -3429,14 +3429,18 @@ __metadata:
     husky: "npm:^9.1.7"
     lighthouse: "npm:^12.2.1"
     luxon: "npm:^3.7.1"
-    playwright: "npm:^1.59.1"
+    playwright: "npm:1.60.0"
     playwright-core: "npm:1.60.0"
     playwright-lighthouse: "npm:^4.0.0"
     prettier: "npm:^3.5.3"
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:^8.8.0"
   dependenciesMeta:
-    playwright@1.59.1:
+    "@playwright/test":
+      unplugged: true
+    playwright:
+      unplugged: true
+    playwright-core:
       unplugged: true
   languageName: unknown
   linkType: soft
