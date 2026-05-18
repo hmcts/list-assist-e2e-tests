@@ -211,7 +211,6 @@ withNightlyPipeline(type, product, component, 600) {
         echo "Found ${blobDirs.size()} blob report directories"
         sh 'find blob-reports -type f | sort || echo "blob-reports is empty"'
         sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
-        sh 'yarn node -e "const p=require.resolve(\'playwright/package.json\');const pkg=require(p);console.log(\`playwright version=${pkg.version}\`);console.log(\`playwright package=${p}\`)"'
         sh '''
           PW_CLI_PATH=$(yarn node -e "const p=require.resolve('playwright/package.json');process.stdout.write(require('path').dirname(p)+'/cli.js')")
           env -u NODE_OPTIONS yarn node "$PW_CLI_PATH" merge-reports --reporter html,junit blob-reports/

@@ -3435,6 +3435,13 @@ __metadata:
     prettier: "npm:^3.5.3"
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:^8.8.0"
+  dependenciesMeta:
+    "@playwright/test":
+      unplugged: true
+    playwright:
+      unplugged: true
+    playwright-core:
+      unplugged: true
   languageName: unknown
   linkType: soft
 
