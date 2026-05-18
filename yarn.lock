@@ -3436,7 +3436,11 @@ __metadata:
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:^8.8.0"
   dependenciesMeta:
-    playwright@1.59.1:
+    "@playwright/test":
+      unplugged: true
+    playwright:
+      unplugged: true
+    playwright-core:
       unplugged: true
   languageName: unknown
   linkType: soft

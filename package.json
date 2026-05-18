@@ -48,7 +48,13 @@
     "prettier": "^3.5.3"
   },
   "dependenciesMeta": {
-    "playwright@1.59.1": {
+    "@playwright/test": {
+      "unplugged": true
+    },
+    "playwright": {
+      "unplugged": true
+    },
+    "playwright-core": {
       "unplugged": true
     }
   }
