@@ -357,8 +357,9 @@ export class HearingSchedulePage extends Base {
         )
         .toBeTruthy();
 
-      //delete session from inside of session details page, if available
+      await this.sessionBookingPage.waitForLoad();
 
+      //delete session from inside of session details page, if available
       const isDeleteVisible = await this.deleteSessionInSessionDetailsButton
         .isVisible()
         .catch(() => false);
@@ -589,6 +590,21 @@ export class HearingSchedulePage extends Base {
 
   async applyPrimaryDateFilter(dateTo: string, dateFrom: string) {
     await this.primaryFilterToggleButton.click();
+    await expect
+      .poll(
+        async () => {
+          if (!(await this.primaryFilterFromDateInput.isVisible())) {
+            await this.primaryFilterToggleButton.click();
+            return false;
+          }
+          return true;
+        },
+        {
+          intervals: [500],
+          timeout: 5_000,
+        },
+      )
+      .toBeTruthy();
     await this.primaryFilterFromDateInput.click();
     await this.waitForLoad();
     await this.primaryFilterDateInput(dateFrom).click();

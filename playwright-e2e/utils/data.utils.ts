@@ -108,4 +108,31 @@ export class DataUtils {
     const now = DateTime.now();
     return now.toFormat("HH:mm");
   }
+
+  async getAdjustedOffset(offset: number): Promise<number> {
+    const today = new Date();
+
+    if (offset === 0) {
+      return 0;
+    }
+    if (today.getDay() === 5) {
+      // Friday
+      if (offset === 1) {
+        return 3;
+      }
+      if (offset > 1) {
+        return offset + 3;
+      }
+    }
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + offset);
+    const day = targetDate.getDay();
+    if (day === 6) {
+      return offset + 2; // Saturday → Monday
+    }
+    if (day === 0) {
+      return offset + 1; // Sunday → Monday
+    }
+    return offset;
+  }
 }
