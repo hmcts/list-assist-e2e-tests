@@ -2,7 +2,7 @@ import { test, expect } from "../../fixtures";
 import { config } from "../../utils";
 import { clearDownSchedule } from "../../utils/reporting.utils";
 
-test.describe("Hearing Schedule - drag and drop @drag-and-drop", () => {
+test.describe.only("Hearing Schedule - drag and drop @drag-and-drop", () => {
   test("Basic drag and drop", async ({
     page,
     loginPage,
@@ -13,6 +13,7 @@ test.describe("Hearing Schedule - drag and drop @drag-and-drop", () => {
     caseSearchPage,
     caseDetailsPage,
     dataUtils,
+      dragAndDropPo,
   }) => {
     let adjustedOffset = 0;
 
@@ -133,7 +134,7 @@ test.describe("Hearing Schedule - drag and drop @drag-and-drop", () => {
     await test.step(
       "Filter for two days and verify released sessions in both columns",
       async () => {
-        await hearingSchedulePage.primaryFilterToggleButton.click();
+          await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
         await hearingSchedulePage.applyPrimaryDateFilter(
           dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
           dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
@@ -172,42 +173,38 @@ test.describe("Hearing Schedule - drag and drop @drag-and-drop", () => {
       },
     );
 
-    await test.step(
-      "Drag and drop listing from next day to today slot and verify move",
-      async () => {
-        const caseName = process.env.CASE_NAME as string;
-        const sourceListing = page
-          .locator("#childDetailsList div.draggable")
-          .filter({ hasText: caseName })
-          .first();
+      await test.step(
+          "Drag and drop listing from next day 10:00-11:00 to today slot 13:00-14:00 and verify move",
+          async () => {
+              const caseName = process.env.CASE_NAME as string;
+              console.log("caseName1: ", caseName);
 
-        const sourceCell = page.locator("#childDetailsList td:nth-child(3)");
-        const targetCell = page.locator("#childDetailsList td:nth-child(2)");
-        const targetSlot = page
-          .locator("#childDetailsList td:nth-child(2) div.droparea")
-          .filter({ hasText: /^13:00-14:00$/ })
-          .first();
+              await dragAndDropPo.dragListingToSlot(
+                  caseName,
+                  3, // source column
+                  2, // target column
+                  "13:00-14:00",
+              );
+          },
+      );
 
-        await expect(sourceListing).toBeVisible();
-        await expect(targetSlot).toBeVisible();
-        await expect(sourceCell).toContainText(caseName);
-        await expect(targetCell).not.toContainText(caseName);
+      await test.step(
+          "Drag and drop listing from today 13:00-14:00 to next day slot 10:00-11:00 and verify move",
+          async () => {
+              const caseName = process.env.CASE_NAME as string;
+              console.log("caseName2: ", caseName);
 
-        await sourceListing.dragTo(targetSlot, {
-          targetPosition: { x: 20, y: 10 },
-          force: true,
-        });
+              await page.waitForTimeout(4000); // Add a short wait to ensure the UI is ready for the next drag and drop action
 
-        await expect(page.locator("#saveConfirmDragNDropModal")).toBeVisible();
-        await page.locator("#saveConfirmDragNDropModal").click();
-        await expect(page.locator("#moveAssistResultModal-modal-1")).toBeVisible();
-        await page.locator("#moveAssistResultModal-modal-1").click();
-        await hearingSchedulePage.waitForLoad();
 
-        await expect(targetCell).toContainText(caseName);
-        await expect(sourceCell).not.toContainText(caseName);
-      },
-    );
+              await dragAndDropPo.dragListingToSlot(
+                  caseName,
+                  2, // source column
+                  3, // target column
+                  "10:00-11:00",
+              );
+          },
+      );
 
   });
 
