@@ -1,9 +1,9 @@
-import { test, expect } from "../../fixtures";
+import { test, expect } from "../../fixtures.ts";
 import { config } from "../../utils";
-import { clearDownSchedule } from "../../utils/reporting.utils";
+import { clearDownSchedule } from "../../utils/reporting.utils.ts";
 
-test.describe.only("Hearing Schedule - drag and drop @drag-and-drop", () => {
-  test("Basic drag and drop", async ({
+test.describe("Hearing Schedule - drag and drop @drag-and-drop", () => {
+  test("Should move listing between sessions using drag and drop", async ({
     page,
     loginPage,
     hearingSchedulePage,
@@ -13,13 +13,12 @@ test.describe.only("Hearing Schedule - drag and drop @drag-and-drop", () => {
     caseSearchPage,
     caseDetailsPage,
     dataUtils,
-      dragAndDropPo,
   }) => {
     let adjustedOffset = 0;
 
     await test.step("Open app and sign in", async () => {
       await page.goto(config.urls.baseUrl);
-      await loginPage.login();
+      await loginPage.login("JENNIFER_HARRISON");
       adjustedOffset = await dataUtils.getAdjustedOffset(1);
     });
 
@@ -177,9 +176,8 @@ test.describe.only("Hearing Schedule - drag and drop @drag-and-drop", () => {
           "Drag and drop listing from next day 10:00-11:00 to today slot 13:00-14:00 and verify move",
           async () => {
               const caseName = process.env.CASE_NAME as string;
-              console.log("caseName1: ", caseName);
 
-              await dragAndDropPo.dragListingToSlot(
+              await hearingSchedulePage.dragListingToSlot(
                   caseName,
                   3, // source column
                   2, // target column
@@ -192,12 +190,10 @@ test.describe.only("Hearing Schedule - drag and drop @drag-and-drop", () => {
           "Drag and drop listing from today 13:00-14:00 to next day slot 10:00-11:00 and verify move",
           async () => {
               const caseName = process.env.CASE_NAME as string;
-              console.log("caseName2: ", caseName);
 
               await page.waitForTimeout(4000); // Add a short wait to ensure the UI is ready for the next drag and drop action
 
-
-              await dragAndDropPo.dragListingToSlot(
+              await hearingSchedulePage.dragListingToSlot(
                   caseName,
                   2, // source column
                   3, // target column

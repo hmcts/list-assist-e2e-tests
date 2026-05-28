@@ -15,7 +15,6 @@ import { MultiDayCartPage } from "../carts/multi-day-cart.po.ts";
 import { CreateUserPage } from "./administration/add-user.po.ts";
 import { CaseHistoryPage } from "./cases/case-history.po.ts";
 import { Cath } from "../cath/check-report-in-cath.ts";
-import { DragAndDropPo } from "../DND/drag-and-drop.po.ts";
 
 export interface PageFixtures {
   loginPage: LoginPage;
@@ -35,7 +34,6 @@ export interface PageFixtures {
   createUserPage: CreateUserPage;
   caseHistoryPage: CaseHistoryPage;
   cath: Cath;
-  dragAndDropPo: DragAndDropPo;
 }
 
 export const pageFixtures = {
@@ -89,8 +87,5 @@ export const pageFixtures = {
   },
   cath: async ({ page }, use) => {
     await use(new Cath(page));
-  },
-  dragAndDropPo: async ({ page }, use) => {
-    await use(new DragAndDropPo(page));
   },
 };
