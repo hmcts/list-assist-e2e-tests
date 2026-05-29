@@ -2,7 +2,7 @@ import { test as setup } from "./fixtures";
 import { isSessionValid } from "./utils";
 
 setup.describe("Global Setup", () => {
-  setup.skip("Setup test user", async ({ loginPage, page, config }) => {
+  setup("Setup test user", async ({ loginPage, page, config }) => {
     // Test user setup
     const user = config.users.testUser;
     if (!isSessionValid(user.sessionFile, user.cookieName!)) {
@@ -11,7 +11,7 @@ setup.describe("Global Setup", () => {
     }
   });
 
-  setup.skip(
+  setup(
     "Create new case",
     async ({
       loginPage,
@@ -61,7 +61,7 @@ setup.describe("Global Setup", () => {
     },
   );
 
-  setup.skip(
+  setup(
     "Clean down JOH users in sessions",
     async ({ loginPage, page, config, hearingSchedulePage, dataUtils }) => {
       await page.goto(config.urls.baseUrl);
