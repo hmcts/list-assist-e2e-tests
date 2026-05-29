@@ -692,19 +692,23 @@ export class HearingSchedulePage extends Base {
     await expect(sourceCell).toContainText(caseName);
     await expect(targetCell).not.toContainText(caseName);
 
-    await sourceListing.dragTo(targetSlot, {
-      targetPosition: { x: 20, y: 10 },
-      force: true,
-    });
+    await sourceListing.dragTo(targetSlot);
 
-    await expect(this.page.locator("#saveConfirmDragNDropModal")).toBeVisible();
-    await this.page.locator("#saveConfirmDragNDropModal").click();
-
-    await expect(this.page.locator("#moveAssistResultModal-modal-1")).toBeVisible();
-    await this.page.locator("#moveAssistResultModal-modal-1").click();
+    await this.confirmDragAndDrop();
 
     await expect(targetCell).toContainText(caseName);
     await expect(sourceCell).not.toContainText(caseName);
+
+  }
+
+  private async confirmDragAndDrop(): Promise<void> {
+    await expect(this.page.locator("#saveConfirmDragNDropModal")).toBeVisible();
+    await this.page.locator("#saveConfirmDragNDropModal").click();
+
+    await expect(
+        this.page.locator("#moveAssistResultModal-modal-1"),
+    ).toBeVisible();
+    await this.page.locator("#moveAssistResultModal-modal-1").click();
   }
 
 }
