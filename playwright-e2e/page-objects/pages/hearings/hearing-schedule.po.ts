@@ -244,16 +244,16 @@ export class HearingSchedulePage extends Base {
 
   getListingByCaseName(caseName: string) {
     return this.page
-        .locator("#childDetailsList div.draggable")
-        .filter({ hasText: caseName })
-        .first();
+      .locator("#childDetailsList div.draggable")
+      .filter({ hasText: caseName })
+      .first();
   }
 
   getTargetSlot(columnIndex: number, timeSlot: string) {
     return this.page
-        .locator(`#childDetailsList td:nth-child(${columnIndex}) div.droparea`)
-        .filter({ hasText: new RegExp(`^${timeSlot}$`) })
-        .first();
+      .locator(`#childDetailsList td:nth-child(${columnIndex}) div.droparea`)
+      .filter({ hasText: new RegExp(`^${timeSlot}$`) })
+      .first();
   }
 
   constructor(page: Page) {
@@ -676,11 +676,11 @@ export class HearingSchedulePage extends Base {
   }
   // drag listing from source session to target session
   async dragListingToSlot(
-      caseName: string,
-      sourceColumnIndex: number,
-      targetColumnIndex: number,
-      targetTimeSlot: string,
-  ) {
+    caseName: string,
+    sourceColumnIndex: number,
+    targetColumnIndex: number,
+    targetTimeSlot: string,
+  ): Promise<void> {
     const sourceListing = this.getListingByCaseName(caseName);
     const sourceCell = this.getChildDetailsCell(sourceColumnIndex);
     const targetCell = this.getChildDetailsCell(targetColumnIndex);
@@ -692,19 +692,21 @@ export class HearingSchedulePage extends Base {
     await expect(sourceCell).toContainText(caseName);
     await expect(targetCell).not.toContainText(caseName);
 
-    await sourceListing.dragTo(targetSlot, {
-      targetPosition: { x: 20, y: 10 },
-      force: true,
-    });
+    await sourceListing.dragTo(targetSlot);
 
-    await expect(this.page.locator("#saveConfirmDragNDropModal")).toBeVisible();
-    await this.page.locator("#saveConfirmDragNDropModal").click();
-
-    await expect(this.page.locator("#moveAssistResultModal-modal-1")).toBeVisible();
-    await this.page.locator("#moveAssistResultModal-modal-1").click();
+    await this.confirmDragAndDrop();
 
     await expect(targetCell).toContainText(caseName);
     await expect(sourceCell).not.toContainText(caseName);
   }
 
+  private async confirmDragAndDrop(): Promise<void> {
+    await expect(this.page.locator("#saveConfirmDragNDropModal")).toBeVisible();
+    await this.page.locator("#saveConfirmDragNDropModal").click();
+
+    await expect(
+      this.page.locator("#moveAssistResultModal-modal-1"),
+    ).toBeVisible();
+    await this.page.locator("#moveAssistResultModal-modal-1").click();
+  }
 }
