@@ -93,6 +93,8 @@ def secrets = [
     secret('password-ahmed-alrashid', 'PASSWORD_AHMED_ALRASHID'),
     secret('user-yuki-tanaka', 'USER_YUKI_TANAKA'),
     secret('password-yuki-tanaka', 'PASSWORD_YUKI_TANAKA'),
+    secret('user-jennifer-harrison', 'USER_JENNIFER_HARRISON'),
+    secret('password-jennifer-harrison', 'PASSWORD_JENNIFER_HARRISON'),
 
   ]
 ]
@@ -188,7 +190,10 @@ withNightlyPipeline(type, product, component, 600) {
         echo "Found ${blobDirs.size()} blob report directories"
         sh 'find blob-reports -type f | sort || echo "blob-reports is empty"'
         sh 'find blob-reports -mindepth 2 -name "*.zip" -exec mv {} blob-reports/ \\;'
-        sh "yarn playwright merge-reports --reporter html,junit blob-reports/"
+        sh '''
+          PW_TEST_CLI=$(yarn node -e "process.stdout.write(require.resolve('@playwright/test/cli'))")
+          env -u NODE_OPTIONS yarn node "$PW_TEST_CLI" merge-reports --reporter html,junit blob-reports/
+        '''
         publishHTML([
           allowMissing: false,
           alwaysLinkToLastBuild: true,
