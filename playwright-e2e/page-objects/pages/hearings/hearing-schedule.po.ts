@@ -236,6 +236,26 @@ export class HearingSchedulePage extends Base {
     'ul#advancedFilter_memTypeEx_listbox li[role="option"] .multiselect__options-item',
   );
 
+  // Drag and Drop
+
+  getChildDetailsCell(columnIndex: number) {
+    return this.page.locator(`#childDetailsList td:nth-child(${columnIndex})`);
+  }
+
+  getListingByCaseName(caseName: string) {
+    return this.page
+        .locator("#childDetailsList div.draggable")
+        .filter({ hasText: caseName })
+        .first();
+  }
+
+  getTargetSlot(columnIndex: number, timeSlot: string) {
+    return this.page
+        .locator(`#childDetailsList td:nth-child(${columnIndex}) div.droparea`)
+        .filter({ hasText: new RegExp(`^${timeSlot}$`) })
+        .first();
+  }
+
   constructor(page: Page) {
     super(page);
     this.sessionBookingPage = new SessionBookingPage(page);
@@ -357,8 +377,9 @@ export class HearingSchedulePage extends Base {
         )
         .toBeTruthy();
 
-      //delete session from inside of session details page, if available
+      await this.sessionBookingPage.waitForLoad();
 
+      //delete session from inside of session details page, if available
       const isDeleteVisible = await this.deleteSessionInSessionDetailsButton
         .isVisible()
         .catch(() => false);
@@ -589,6 +610,21 @@ export class HearingSchedulePage extends Base {
 
   async applyPrimaryDateFilter(dateTo: string, dateFrom: string) {
     await this.primaryFilterToggleButton.click();
+    await expect
+      .poll(
+        async () => {
+          if (!(await this.primaryFilterFromDateInput.isVisible())) {
+            await this.primaryFilterToggleButton.click();
+            return false;
+          }
+          return true;
+        },
+        {
+          intervals: [500],
+          timeout: 5_000,
+        },
+      )
+      .toBeTruthy();
     await this.primaryFilterFromDateInput.click();
     await this.waitForLoad();
     await this.primaryFilterDateInput(dateFrom).click();
@@ -638,4 +674,41 @@ export class HearingSchedulePage extends Base {
     }
     return false;
   }
+  // drag listing from source session to target session
+  async dragListingToSlot(
+      caseName: string,
+      sourceColumnIndex: number,
+      targetColumnIndex: number,
+      targetTimeSlot: string,
+  ) {
+    const sourceListing = this.getListingByCaseName(caseName);
+    const sourceCell = this.getChildDetailsCell(sourceColumnIndex);
+    const targetCell = this.getChildDetailsCell(targetColumnIndex);
+    const targetSlot = this.getTargetSlot(targetColumnIndex, targetTimeSlot);
+
+    await expect(sourceListing).toBeVisible();
+    await expect(targetSlot).toBeVisible();
+
+    await expect(sourceCell).toContainText(caseName);
+    await expect(targetCell).not.toContainText(caseName);
+
+    await sourceListing.dragTo(targetSlot);
+
+    await this.confirmDragAndDrop();
+
+    await expect(targetCell).toContainText(caseName);
+    await expect(sourceCell).not.toContainText(caseName);
+
+  }
+
+  private async confirmDragAndDrop(): Promise<void> {
+    await expect(this.page.locator("#saveConfirmDragNDropModal")).toBeVisible();
+    await this.page.locator("#saveConfirmDragNDropModal").click();
+
+    await expect(
+        this.page.locator("#moveAssistResultModal-modal-1"),
+    ).toBeVisible();
+    await this.page.locator("#moveAssistResultModal-modal-1").click();
+  }
+
 }

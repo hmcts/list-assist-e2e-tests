@@ -517,7 +517,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
     dataUtils,
     offset: number,
   ) {
-    const adjustedOffset = await getAdjustedOffset(offset);
+    const adjustedOffset = await dataUtils.getAdjustedOffset(offset);
 
     return hearingSchedulePage.applyPrimaryDateFilter(
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
@@ -531,8 +531,8 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
     fromOffset: number,
     toOffset: number,
   ) {
-    const adjustedFrom = await getAdjustedOffset(fromOffset);
-    const adjustedTo = await getAdjustedOffset(toOffset);
+    const adjustedFrom = await dataUtils.getAdjustedOffset(fromOffset);
+    const adjustedTo = await dataUtils.getAdjustedOffset(toOffset);
 
     return hearingSchedulePage.applyPrimaryDateFilter(
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedFrom),
@@ -564,7 +564,7 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
     await hearingSchedulePage.waitForLoad();
 
-    const adjustedOffset = await getAdjustedOffset(baseOffset);
+    const adjustedOffset = await dataUtils.getAdjustedOffset(baseOffset);
     await hearingSchedulePage.applyPrimaryDateFilter(
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(adjustedOffset),
@@ -585,31 +585,5 @@ test.describe("JOH filtering in hearing sessions with Rooms View @joh-filtering"
       johConstant,
       jurisdictionConstant,
     );
-  }
-  async function getAdjustedOffset(offset: number): Promise<number> {
-    const today = new Date();
-
-    if (offset === 0) {
-      return 0;
-    }
-    if (today.getDay() === 5) {
-      // Friday
-      if (offset === 1) {
-        return 3;
-      }
-      if (offset > 1) {
-        return offset + 3;
-      }
-    }
-    const targetDate = new Date(today);
-    targetDate.setDate(today.getDate() + offset);
-    const day = targetDate.getDay();
-    if (day === 6) {
-      return offset + 2; // Saturday → Monday
-    }
-    if (day === 0) {
-      return offset + 1; // Sunday → Monday
-    }
-    return offset;
   }
 });
