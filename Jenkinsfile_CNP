@@ -99,8 +99,8 @@ def secrets = [
     secret('password-yuki-tanaka', 'PASSWORD_YUKI_TANAKA'),
     secret('user-jennifer-harrison', 'USER_JENNIFER_HARRISON'),
     secret('password-jennifer-harrison', 'PASSWORD_JENNIFER_HARRISON'),
-    secret('user-robert-harrison', 'USER_ROBERT_HARRISON'),
-    secret('password-robert-harrison', 'PASSWORD_ROBERT_HARRISON'),
+    secret('user-robert-harrison', 'USER_ROBERT_SULLIVAN'),
+    secret('password-robert-harrison', 'PASSWORD_ROBERT_SULLVAN'),
     secret('user-amanda-foster', 'USER_AMANDA_FOSTER'),
     secret('password-amanda-foster', 'PASSWORD_AMANDA_FOSTER')
   ]
