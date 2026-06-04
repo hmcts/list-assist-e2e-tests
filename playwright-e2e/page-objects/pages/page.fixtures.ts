@@ -1,5 +1,6 @@
 import { CaseDetailsPage } from "./cases/case-details.po";
 import { CaseSearchPage } from "./cases/case-search.po";
+import { NewUiSessionBookingPage } from "./hearings/new-ui-session-booking.po.ts";
 import { SessionBookingPage } from "./hearings/session-booking.po.ts";
 import { HearingSchedulePage } from "./hearings/hearing-schedule.po";
 import { HomePage } from "./home.po";
@@ -22,6 +23,7 @@ export interface PageFixtures {
   hearingSchedulePage: HearingSchedulePage;
   caseSearchPage: CaseSearchPage;
   caseDetailsPage: CaseDetailsPage;
+  newUiSessionBookingPage: NewUiSessionBookingPage;
   sessionBookingPage: SessionBookingPage;
   addNewCasePage: AddNewCasePage;
   editNewCasePage: EditNewCasePage;
@@ -54,6 +56,9 @@ export const pageFixtures = {
   },
   caseDetailsPage: async ({ page }, use) => {
     await use(new CaseDetailsPage(page));
+  },
+  newUiSessionBookingPage: async ({ page }, use) => {
+    await use(new NewUiSessionBookingPage(page));
   },
   sessionBookingPage: async ({ page }, use) => {
     await use(new SessionBookingPage(page));
