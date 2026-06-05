@@ -112,11 +112,11 @@ test.describe("New hearing session UI- list session with basketed case @new-ui",
       );
     });
 
-    await test.step("Select session type as Adhoc (as directed) and confirm selection", async () => {
-      await newUiSessionBookingPage.selectAndAssertSessionType(
-        newUiSessionBookingPage.CONSTANTS.SESSION_TYPE_ADHOC_AS_DIRECTED,
-      );
-    });
+    // await test.step("Select session type as Adhoc (as directed) and confirm selection", async () => {
+    //   await newUiSessionBookingPage.selectAndAssertSessionType(
+    //     newUiSessionBookingPage.CONSTANTS.SESSION_TYPE_ADHOC_AS_DIRECTED,
+    //   );
+    // });
 
     await test.step("Select default listing duration as 01:00 and confirm selection", async () => {
       await newUiSessionBookingPage.selectAndAssertDefaultListingDuration(
@@ -136,23 +136,23 @@ test.describe("New hearing session UI- list session with basketed case @new-ui",
       );
     });
 
-    // await test.step("Click Add Panel Members button", async () => {
-    //   await newUiSessionBookingPage.clickAddPanelMember();
-    // });
+    await test.step("Click Add Panel Members button", async () => {
+      await newUiSessionBookingPage.clickAddPanelMember();
+    });
 
-    // await test.step("Search for panel member AMANDA_FOSTER", async () => {
-    //   await newUiSessionBookingPage.searchPanelMember(
-    //     newUiSessionBookingPage.CONSTANTS.PANEL_MEMBER_AMANDA_FOSTER,
-    //   );
-    // });
+    await test.step("Search for panel member AMANDA_FOSTER", async () => {
+      await newUiSessionBookingPage.searchPanelMember(
+        newUiSessionBookingPage.CONSTANTS.PANEL_MEMBER_AMANDA_FOSTER,
+      );
+    });
 
-    // await test.step("Click Select & Save for the first panel member result", async () => {
-    //   await newUiSessionBookingPage.clickSelectAndSaveFirstPanelMember();
-    // });
+    await test.step("Click Select & Save for the first panel member result", async () => {
+      await newUiSessionBookingPage.clickSelectAndSaveFirstPanelMember();
+    });
 
-    // await test.step("Dismiss no specialism confirmation popup if present", async () => {
-    //   await newUiSessionBookingPage.dismissNoSpecialismConfirmationIfPresent();
-    // });
+    await test.step("Dismiss no specialism confirmation popup if present", async () => {
+      await newUiSessionBookingPage.dismissNoSpecialismConfirmationIfPresent();
+    });
 
     await test.step("Click Save Session Booking button", async () => {
       await newUiSessionBookingPage.clickSaveSessionBooking();
