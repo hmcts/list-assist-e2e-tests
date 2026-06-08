@@ -112,11 +112,11 @@ test.describe("New hearing session UI- list session with basketed case @new-ui",
       );
     });
 
-    // await test.step("Select session type as Adhoc (as directed) and confirm selection", async () => {
-    //   await newUiSessionBookingPage.selectAndAssertSessionType(
-    //     newUiSessionBookingPage.CONSTANTS.SESSION_TYPE_ADHOC_AS_DIRECTED,
-    //   );
-    // });
+    await test.step("Select session type as Adhoc (as directed) and confirm selection", async () => {
+      await newUiSessionBookingPage.selectAndAssertSessionType(
+        newUiSessionBookingPage.CONSTANTS.SESSION_TYPE_ADHOC_AS_DIRECTED,
+      );
+    });
 
     await test.step("Select default listing duration as 01:00 and confirm selection", async () => {
       await newUiSessionBookingPage.selectAndAssertDefaultListingDuration(

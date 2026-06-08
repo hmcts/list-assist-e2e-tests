@@ -217,7 +217,10 @@ export class NewUiSessionBookingPage extends Base {
   );
 
   async searchPanelMember(name: string) {
-    // await this.clickIgnoreFiltersAndReturnAll();
+    //this is a work around for a problem in the List Assist base product
+    //MCGIRRSD-98001
+    await this.clickIgnoreFiltersAndReturnAll();
+
     await this.panelMembersPopupContent.waitFor({ state: "visible" });
     await this.panelMembersSearchField.click();
     await this.panelMembersSearchField.pressSequentially(name);
