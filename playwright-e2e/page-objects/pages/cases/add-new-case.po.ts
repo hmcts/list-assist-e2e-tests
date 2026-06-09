@@ -44,17 +44,17 @@ export class AddNewCasePage extends Base {
     .getByLabel("Jurisdiction")
     .getByText("Select One");
 
-  readonly serviceCombo = this.page
-    .locator("#matter-detail-matterDetailsCard")
-    .getByRole("combobox", { name: "Service list" });
+  readonly serviceCombo = this.page.getByRole("combobox", {
+    name: "Matter Detail - Service_listbox",
+  });
 
   readonly serviceListbox = this.page.locator(
     "#matter-detail-matterDetailsCard #mtrCategoryId_listbox",
   );
 
-  readonly caseTypeSelector = this.page
-    .locator("#matter-detail-matterDetailsCard")
-    .getByRole("combobox", { name: "Case Type list" });
+  readonly caseTypeCombo = this.page.getByRole("combobox", {
+    name: "Matter Detail - Case Type_listbox",
+  });
 
   readonly caseTypeListbox = this.page.locator(
     "#matter-detail-matterDetailsCard #mtrMatterCdId_listbox",
@@ -98,15 +98,17 @@ export class AddNewCasePage extends Base {
 
   async selectService(service: string) {
     await this.serviceCombo.click();
-    await this.serviceListbox
-      .getByRole("option", { name: service, exact: true })
+    await this.page
+      .locator("#mtrCategoryId_listbox li[role='option']")
+      .filter({ hasText: service })
       .click();
   }
 
   async selectCaseType(caseType: string) {
-    await this.caseTypeSelector.click();
-    await this.caseTypeListbox
-      .getByRole("option", { name: caseType, exact: true })
+    await this.caseTypeCombo.click();
+    await this.page
+      .locator("#mtrMatterCdId_listbox li[role='option']")
+      .filter({ hasText: caseType })
       .click();
   }
 

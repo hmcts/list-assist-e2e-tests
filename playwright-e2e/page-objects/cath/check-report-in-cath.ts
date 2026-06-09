@@ -4,7 +4,7 @@ import { Base } from "../base";
 export class Cath extends Base {
   readonly CONSTANTS = {
     CATH_TEST_URL:
-      "https://pip-frontend.test.platform.hmcts.net/summary-of-publications?locationId=",
+      "https://pip-frontend.staging.platform.hmcts.net/summary-of-publications?locationId=",
     LOCATION_ID_NEWPORT_SOUTH_WALES_CC_FC: "2000",
     LIST_JURISDICTION_CIVIL_AND_FAMILY: "Civil and Family",
     LIST_TYPE_DAILY_CAUSE_LIST: "Daily Cause List",

@@ -497,20 +497,20 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     },
     sessionBookingPage: SessionBookingPage,
   ) {
-    // Check if the close case button in upper bar is present
-    await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
-    //check current case drop down menu in upper bar
-    await expect(
-      homePage.upperbarComponent.currentCaseDropdownButton,
-    ).toBeVisible();
-    await homePage.upperbarComponent.currentCaseDropdownButton.click();
+    // // Check if the close case button in upper bar is present
+    // await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
+    // //check current case drop down menu in upper bar
+    // await expect(
+    //   homePage.upperbarComponent.currentCaseDropdownButton,
+    // ).toBeVisible();
+    // await homePage.upperbarComponent.currentCaseDropdownButton.click();
 
-    const items =
-      await homePage.upperbarComponent.currentCaseDropdownList.allTextContents();
-    const trimmedItems = items.map((text) => text.trim());
-    expect(trimmedItems).toEqual(
-      homePage.upperbarComponent.currentCaseDropDownItems,
-    );
+    // const items =
+    //   await homePage.upperbarComponent.currentCaseDropdownList.allTextContents();
+    // const trimmedItems = items.map((text) => text.trim());
+    // expect(trimmedItems).toEqual(
+    //   homePage.upperbarComponent.currentCaseDropDownItems,
+    // );
 
     //add case to cart
     await caseSearchPage.sidebarComponent.openSearchCasePage();

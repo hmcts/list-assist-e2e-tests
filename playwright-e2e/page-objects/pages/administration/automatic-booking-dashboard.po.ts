@@ -110,7 +110,7 @@ export class AutomaticBookingDashboardPage extends Base {
 
   //list name
   readonly listNameDropDown = this.page.locator(
-    'div.multiselect-wrapper[aria-owns="publishExternalLists_Creation_List_listbox"]',
+    'div.multiselect[aria-owns="publishExternalLists_Creation_List_listbox"]',
   );
 
   //version type
@@ -179,7 +179,9 @@ export class AutomaticBookingDashboardPage extends Base {
   );
 
   readonly publishExternalListLocalityFilter = this.page
-    .getByRole("group", { name: "Localities filter list with 0" })
+    .locator(
+      'div.multiselect[aria-owns="publishExternalLists_PreviousRun_Locality_listbox"]',
+    )
     .getByRole("button", { name: "Open listbox" });
 
   readonly retryStatusInRow = this.page
@@ -404,9 +406,11 @@ export class AutomaticBookingDashboardPage extends Base {
     await this.publishExternalListLocalityFilter.isVisible();
     await this.publishExternalListLocalityFilter.click();
     await this.page
-      .getByRole("option", { name: locality })
-      .locator("span")
-      .nth(2)
+      .locator(
+        "#publishExternalLists_PreviousRun_Locality_listbox .multiselect__options-item",
+        { hasText: locality.trim() },
+      )
+      .first()
       .click();
 
     //input dates
