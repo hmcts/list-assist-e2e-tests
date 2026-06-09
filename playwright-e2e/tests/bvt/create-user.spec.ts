@@ -50,12 +50,16 @@ test.describe("Add user @add-user", () => {
     await editUserButton.click();
 
     //System Detail tab
-
     await createUserPage.systemDetailTab.click();
-    await createUserPage.userActiveFromDate.fill(
+    await createUserPage.userActiveFromDate.waitFor({ state: "visible" });
+
+    await createUserPage.userActiveFromDate.click({ clickCount: 3 });
+    await createUserPage.userActiveFromDate.pressSequentially(
       dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
     );
-    await createUserPage.userActiveToDate.fill(
+
+    await createUserPage.userActiveToDate.click({ clickCount: 3 });
+    await createUserPage.userActiveToDate.pressSequentially(
       dataUtils.generateDateInDdMmYyyyWithHypenSeparators(5),
     );
 
