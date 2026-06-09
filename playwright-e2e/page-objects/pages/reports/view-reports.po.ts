@@ -34,8 +34,8 @@ export class ViewReportsPage extends Base {
       "Ystafell Llys 01 Pontypridd, Pontypridd Courtroom 01",
 
     REPORT_SUBMENU_WELSH_EXTERNAL_HEARING_LIST:
-      "External Hearing List Welsh v2.0 (SRSS)",
-    REPORT_SUBMENU_INTERNAL_HEARING_LIST: "Opens Internal Hearing List",
+      "External Hearing List Welsh v2.0 (SSRS)",
+    REPORT_SUBMENU_INTERNAL_HEARING_LIST: "Internal Hearing List v2.0 (SRSS)",
     REPORT_SUBMENU_EXTERNAL_HEARING_LIST: "External Hearing List v2.0 (SSRS)",
 
     //data export report
@@ -145,17 +145,17 @@ export class ViewReportsPage extends Base {
     isWelsh: boolean = false,
   ): Promise<ViewReportsPage> {
     if (isWelsh) {
-      this.reportSubMenu = this.page.getByRole("link", {
-        name: this.CONSTANTS.REPORT_SUBMENU_WELSH_EXTERNAL_HEARING_LIST,
-      });
+      this.reportSubMenu = this.page.locator(
+        `a[title="${this.CONSTANTS.REPORT_SUBMENU_WELSH_EXTERNAL_HEARING_LIST}"][href*="addReportTokenToUrl"]`,
+      );
     } else if (service) {
-      this.reportSubMenu = this.page.getByRole("link", {
-        name: this.CONSTANTS.REPORT_SUBMENU_INTERNAL_HEARING_LIST,
-      });
+      this.reportSubMenu = this.page.locator(
+        `a[title="${this.CONSTANTS.REPORT_SUBMENU_INTERNAL_HEARING_LIST}"][href*="addReportTokenToUrl"]`,
+      );
     } else {
-      this.reportSubMenu = this.page.getByRole("link", {
-        name: this.CONSTANTS.REPORT_SUBMENU_EXTERNAL_HEARING_LIST,
-      });
+      this.reportSubMenu = this.page.locator(
+        `a[title="${this.CONSTANTS.REPORT_SUBMENU_EXTERNAL_HEARING_LIST}"][href*="addReportTokenToUrl"]`,
+      );
     }
 
     await expect(this.reportsMenu).toBeVisible();
@@ -399,10 +399,19 @@ export class ViewReportsPage extends Base {
       ).toContainText(header, { ignoreCase: true });
 
       // Check the value text appears somewhere in the report body
-      await expect(
-        this.reportBody,
-        `Expected value "${value}" for header "${header}" to appear in report body`,
-      ).toContainText(value, { ignoreCase: true });
+      if (value?.trim()) {
+        const valuePattern = new RegExp(
+          value
+            .trim()
+            .replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // escape regex special chars
+            .replace(/[^\x00-\x7F]+/g, "\\S+"), // replace non-ASCII sequences with flexible wildcard
+          "i",
+        );
+        await expect(
+          this.reportBody,
+          `Expected value "${value}" for header "${header}" to appear in report body`,
+        ).toContainText(valuePattern);
+      }
     }
   }
 

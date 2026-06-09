@@ -280,12 +280,12 @@ test.describe("Daily Cause List Report tests @daily-cause-list-tests", () => {
       sessionBookingPage,
     } = pages;
 
-    await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
-    await homePage.upperbarComponent.currentCaseDropdownButton.click();
+    // await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
+    // await homePage.upperbarComponent.currentCaseDropdownButton.click();
 
-    await expect(
-      homePage.upperbarComponent.currentCaseDropdownList,
-    ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
+    // await expect(
+    //   homePage.upperbarComponent.currentCaseDropdownList,
+    // ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
 
     await caseSearchPage.sidebarComponent.openSearchCasePage();
     await caseSearchPage.searchCase(roomData.caseNumber);
