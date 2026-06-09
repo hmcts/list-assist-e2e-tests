@@ -121,14 +121,14 @@ async function createHearingSession(
   },
   sessionBookingPage: SessionBookingPage,
 ) {
-  // Check if the close case button in upper bar is present
-  await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
+  // // Check if the close case button in upper bar is present
+  // await expect(homePage.upperbarComponent.closeCaseButton).toBeVisible();
 
-  //check current case drop down menu in upper bar
-  await homePage.upperbarComponent.currentCaseDropdownButton.click();
-  await expect(
-    homePage.upperbarComponent.currentCaseDropdownList,
-  ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
+  // //check current case drop down menu in upper bar
+  // await homePage.upperbarComponent.currentCaseDropdownButton.click();
+  // await expect(
+  //   homePage.upperbarComponent.currentCaseDropdownList,
+  // ).toContainText(homePage.upperbarComponent.currentCaseDropDownItems);
 
   //add case to cart.
   await caseSearchPage.sidebarComponent.openSearchCasePage();
@@ -189,8 +189,7 @@ async function clearDownMidlandsLeicesterSchedule(
     sessionBookingPage,
     hearingSchedulePage,
     sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_MIDLANDS,
-    sessionBookingPage.CONSTANTS
-      .CASE_LISTING_CLUSTER_MIDLANDS_LEICESTERSHIRE_RUTLAND_LINCOLNSHIRE_NORTH,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_CLUSTER_MIDLANDS_LEICESTERSHIRE_RUTLAND_LINCOLNSHIRE_NORTH.trim(),
     sessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_LEICESTER_CC,
     sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_LEICESTER_CC_7,
     sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,

@@ -9,7 +9,7 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS:
       "Wales Civil, Family and Tribunals",
     CASE_LISTING_CLUSTER_MIDLANDS_LEICESTERSHIRE_RUTLAND_LINCOLNSHIRE_NORTH:
-      "Leicestershire, Rutland, Lincolnshire and North",
+      "Leicestershire, Rutland, Lincs and Northants",
     CASE_LISTING_LOCATION_LEICESTER_CC_7: "Leicester County Courtroom 07",
     CASE_LISTING_LOCATION_PONTYPRIDD_CRTRM_1: "Pontypridd Courtroom 01",
     CASE_LISTING_LOCALITY_PONTYPRIDD_COUNTY_COURT:
