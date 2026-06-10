@@ -302,7 +302,7 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
     );
   });
 
-  test("Multi-day case listing and reporting", async ({
+  test("Multi-day case listing and reporting @multi-day", async ({
     addNewCasePage,
     caseSearchPage,
     editNewCasePage,
