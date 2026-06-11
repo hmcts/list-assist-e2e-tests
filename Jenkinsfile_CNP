@@ -4,6 +4,11 @@ properties([
   disableConcurrentBuilds(),
   parameters([
     string(
+      name: 'GITHUB_RELEASE',
+      defaultValue: 'master',
+      description: 'GitHub release tag to run (or master). Leave as master for default behaviour.'
+    ),
+    string(
       name: 'FUNCTIONAL_TESTS_WORKERS',
       defaultValue: '6',
       description: 'Number of workers running functional tests'
@@ -233,8 +238,35 @@ withNightlyPipeline(type, product, component, 600) {
 
   afterAlways('DependencyCheckNightly') {
   def isPrBuild = env.CHANGE_ID ? true : false
+  def selectedGitRef = (params.GITHUB_RELEASE ?: 'master').trim()
   def bvtSpecFilesChanged = []
   def regressionSpecFilesChanged = []
+
+  stage('Checkout Selected Ref') {
+    if (isPrBuild) {
+      echo 'PR build detected, using PR branch checkout.'
+    } else {
+      echo "Checking out selected ref: ${selectedGitRef}"
+      sh 'git remote set-url origin $(git config --get remote.origin.url)'
+      sh 'git fetch --prune --unshallow || true'
+      sh 'git fetch --all --tags --prune'
+
+      if (selectedGitRef == 'master' || selectedGitRef == 'origin/master') {
+        sh 'git checkout -B master origin/master'
+      } else {
+        def releaseExists = sh(
+          script: "git show-ref --verify --quiet \"refs/tags/${selectedGitRef}\"",
+          returnStatus: true
+        ) == 0
+
+        if (!releaseExists) {
+          error("The GitHub release '${selectedGitRef}' does not exist in this repository. Please enter a valid release tag, or use 'master' to run against the default branch.")
+        }
+
+        sh "git checkout \"refs/tags/${selectedGitRef}\""
+      }
+    }
+  }
 
   stage('Prepare Test Run') {
     if (isPrBuild) {
@@ -283,7 +315,7 @@ withNightlyPipeline(type, product, component, 600) {
       env.HMI_TRG_API_URL = env.HMI_SIT_API_URL
     }
 
-    currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}<br>Suite: ${params.TEST_SUITE}"
+    currentBuild.description = "Running tests in environment: ${params.ENVIRONMENT}<br>Suite: ${params.TEST_SUITE}<br>Git ref: ${selectedGitRef}"
 
     // Run test suite based on build type and parameters
     if (params.TAGS_TO_RUN && !params.TAGS_TO_RUN.isEmpty()) {
