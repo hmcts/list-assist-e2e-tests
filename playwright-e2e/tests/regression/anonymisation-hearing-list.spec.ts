@@ -34,7 +34,7 @@ test.beforeEach(
 test.describe("Hearing List anonymisation @anonymisation @regression", () => {
   test.slow();
   test.describe.configure({ mode: "serial" });
-  test("Civil - case name suppression @this", async ({
+  test("Civil - case name suppression", async ({
     page,
     sessionBookingPage,
     caseSearchPage,
@@ -224,7 +224,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
     });
   });
 
-  test("Civil case with parties & Alternative/Suppression applied to individual parties.", async ({
+  test("Civil case with parties & Alternative/Suppression applied to individual parties. @this", async ({
     page,
     sessionBookingPage,
     caseSearchPage,
