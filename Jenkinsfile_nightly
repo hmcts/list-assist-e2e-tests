@@ -136,6 +136,26 @@ withNightlyPipeline(type, product, component, 600) {
     }
   }
 
+  def getRegressionNightlyStages = {
+    def taggedFilesOutput = sh(
+      script: "grep -rl --include='*.spec.ts' '@regression-nightly' playwright-e2e/tests/regression || true",
+      returnStdout: true
+    ).trim()
+
+    if (!taggedFilesOutput) {
+      return []
+    }
+
+    return taggedFilesOutput.split('\n').findAll { it?.trim() }.collect { filePath ->
+      def relativeFilePath = filePath.replaceFirst('^playwright-e2e/', '')
+      def stageLabel = filePath.tokenize('/').last()
+      [
+        name: "Regression Nightly - ${stageLabel}",
+        command: "playwright test ${relativeFilePath} --project=chrome --grep @regression-nightly"
+      ]
+    }
+  }
+
   def smokeTestStages = [
     [name: 'Webkit - Smoke Tests', command: 'playwright test --project=bvt-webkit --grep @smoke'],
     [name: 'Firefox - Smoke Tests', command: 'playwright test --project=bvt-firefox --grep @smoke']
@@ -220,6 +240,15 @@ withNightlyPipeline(type, product, component, 600) {
     }
   }
 
+  def runRegressionNightlyStages = {
+    def nightlyStages = getRegressionNightlyStages()
+    if (!nightlyStages || nightlyStages.isEmpty()) {
+      echo 'No @regression-nightly tagged specs found, skipping.'
+      return
+    }
+    runRegressionStages(nightlyStages)
+  }
+
   afterAlways('DependencyCheckNightly') {
     stage('Set up playwright') {
       yarnBuilder.yarn('setup')
@@ -238,12 +267,14 @@ withNightlyPipeline(type, product, component, 600) {
       currentBuild.description = "Suite: ${testSuiteToRun}"
       if (testSuiteToRun == 'bvt') {
         runBvtStage()
+        runRegressionNightlyStages()
       }
       if (testSuiteToRun == 'regression') {
         runRegressionStages(regressionStages)
       }
       if (testSuiteToRun == 'bvt_and_regression') {
         runBvtStage()
+        runRegressionNightlyStages()
         runRegressionStages(regressionStages)
         runSmokeTestStages(smokeTestStages)
       }

@@ -23,7 +23,7 @@ test.beforeEach(
     loginPage,
   }) => {
     await page.goto(config.urls.baseUrl);
-    await loginPage.login(config.users.testUser);
+    await loginPage.login("OLIVIA_CLARK");
 
     await clearDownPontypriddSchedule(
       sessionBookingPage,
@@ -354,7 +354,7 @@ test.describe("Hearing List anonymisation @anonymisation @regression", () => {
 
   //Family Cases --- -- case type suppression (default)
 
-  test("Family Case (Private Law) with parties; case type suppression (default) @anon-nightly", async ({
+  test("Family Case (Private Law) with parties; case type suppression (default) @regression-nightly", async ({
     page,
     sessionBookingPage,
     caseSearchPage,
