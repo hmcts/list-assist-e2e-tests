@@ -101,6 +101,7 @@ export class AddNewCasePage extends Base {
     await this.page
       .locator("#mtrCategoryId_listbox li[role='option']")
       .filter({ hasText: service })
+      .first()
       .click();
   }
 
@@ -109,6 +110,7 @@ export class AddNewCasePage extends Base {
     await this.page
       .locator("#mtrMatterCdId_listbox li[role='option']")
       .filter({ hasText: caseType })
+      .first()
       .click();
   }
 
