@@ -33,6 +33,10 @@ test.beforeEach(
   },
 );
 
+test.afterEach(async ({ homePage }) => {
+  await homePage.upperbarComponent.logoutButton.click();
+});
+
 test.describe("Hearing List anonymisation @anonymisation @regression", () => {
   test.slow();
   test.describe.configure({ mode: "serial" });
