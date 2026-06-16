@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { SidebarComponent } from "./components";
 import { UpperbarComponent } from "./components/upperbar.component.ts";
 
@@ -17,4 +17,9 @@ export abstract class Base {
   );
 
   constructor(public readonly page: Page) {}
+
+  bookingSessionId(roomName: string, date: string): Locator {
+    const id = `[id*="addBookingColor"][id*="${roomName}"][id*="${date}"]`;
+    return this.page.locator(id);
+  }
 }

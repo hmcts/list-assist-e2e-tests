@@ -115,9 +115,20 @@ export class HearingSchedulePage extends Base {
     "#cancelListingSelectAll_checkmark",
   );
 
+  readonly selectListingCheckbox = this.page.locator(
+    'input[type="checkbox"][aria-label="Select Listing on Session Popup"]',
+  );
+
+  readonly selectListingOnSessionCheckbox = this.page.getByRole("checkbox", {
+    name: "Select Listing on Session",
+  });
+
   readonly cancelListingButton = this.page.locator(
     'button:has(span.mcms-btn-label:text("Cancel Listings"))',
   );
+  readonly cancelListingsForSelectedButton = this.page.getByRole("button", {
+    name: /Cancel Listings for Selected/i,
+  });
   readonly confirmationCanxAdv = this.page.locator(
     'div.modal-content#\\__BVID__53___BV_modal_content_:has(.header-title:has-text("Confirmation"))',
   );
@@ -140,6 +151,9 @@ export class HearingSchedulePage extends Base {
 
   readonly cancelReasonDropDown =
     this.cancelRescheduleReasonModel.locator("#cancelReason");
+  readonly cancelRescheduleReasonDropdown = this.page
+    .getByRole("dialog", { name: "Cancel/Reschedule Reason" })
+    .getByLabel("Cancel/Reschedule Reason");
 
   readonly multiDayEditTable = this.page.locator("table#vuetable");
 
@@ -237,23 +251,22 @@ export class HearingSchedulePage extends Base {
   );
 
   // Drag and Drop
-
   getChildDetailsCell(columnIndex: number) {
     return this.page.locator(`#childDetailsList td:nth-child(${columnIndex})`);
   }
 
   getListingByCaseName(caseName: string) {
     return this.page
-        .locator("#childDetailsList div.draggable")
-        .filter({ hasText: caseName })
-        .first();
+      .locator("#childDetailsList div.draggable")
+      .filter({ hasText: caseName })
+      .first();
   }
 
   getTargetSlot(columnIndex: number, timeSlot: string) {
     return this.page
-        .locator(`#childDetailsList td:nth-child(${columnIndex}) div.droparea`)
-        .filter({ hasText: new RegExp(`^${timeSlot}$`) })
-        .first();
+      .locator(`#childDetailsList td:nth-child(${columnIndex}) div.droparea`)
+      .filter({ hasText: new RegExp(`^${timeSlot}$`) })
+      .first();
   }
 
   constructor(page: Page) {
@@ -334,7 +347,7 @@ export class HearingSchedulePage extends Base {
     room: string,
     date: string,
   ): Promise<void> {
-    const scheduleButton = await this.bookingSessionId(room, date, this.page);
+    const scheduleButton = this.bookingSessionId(room, date);
 
     //go to hearing schedule page
     await expect(this.sidebarComponent.sidebar).toBeVisible();
@@ -603,11 +616,6 @@ export class HearingSchedulePage extends Base {
     }
   }
 
-  async bookingSessionId(roomName: string, date, page) {
-    const id = `[id*="addBookingColor"][id*="${roomName}"][id*="${date}"]`;
-    return page.locator(id);
-  }
-
   async applyPrimaryDateFilter(dateTo: string, dateFrom: string) {
     await this.primaryFilterToggleButton.click();
     await expect
@@ -676,10 +684,10 @@ export class HearingSchedulePage extends Base {
   }
   // drag listing from source session to target session
   async dragListingToSlot(
-      caseName: string,
-      sourceColumnIndex: number,
-      targetColumnIndex: number,
-      targetTimeSlot: string,
+    caseName: string,
+    sourceColumnIndex: number,
+    targetColumnIndex: number,
+    targetTimeSlot: string,
   ) {
     const sourceListing = this.getListingByCaseName(caseName);
     const sourceCell = this.getChildDetailsCell(sourceColumnIndex);
@@ -698,7 +706,6 @@ export class HearingSchedulePage extends Base {
 
     await expect(targetCell).toContainText(caseName);
     await expect(sourceCell).not.toContainText(caseName);
-
   }
 
   private async confirmDragAndDrop(): Promise<void> {
@@ -706,9 +713,49 @@ export class HearingSchedulePage extends Base {
     await this.page.locator("#saveConfirmDragNDropModal").click();
 
     await expect(
-        this.page.locator("#moveAssistResultModal-modal-1"),
+      this.page.locator("#moveAssistResultModal-modal-1"),
     ).toBeVisible();
     await this.page.locator("#moveAssistResultModal-modal-1").click();
   }
 
+  async clearDownScheduleFromSessionSummary(
+    cancellationCode: string,
+    room: string,
+    date: string,
+  ): Promise<void> {
+    const caseNumberAndScheduleLink = this.bookingSessionId(room, date);
+
+    //go to hearing schedule page
+    await expect(this.sidebarComponent.sidebar).toBeVisible();
+    await this.sidebarComponent.openHearingSchedulePage();
+
+    //schedule hearing
+    await this.waitForLoad();
+
+    if (await this.releasedStatusCheck.first().isVisible()) {
+      await this.releasedStatusCheck.first().click();
+
+      await this.waitForLoad();
+
+      await expect
+        .poll(async () => await caseNumberAndScheduleLink.isVisible(), {
+          intervals: [2_000],
+          timeout: 10_000,
+        })
+        .toBeTruthy();
+
+      await caseNumberAndScheduleLink.click();
+
+      await this.selectListingOnSessionCheckbox.check();
+      await this.cancelListingsForSelectedButton.click();
+      await this.cancelRescheduleReasonDropdown.selectOption(cancellationCode);
+
+      //confirm cancellation
+      await this.page.getByRole("button", { name: "Yes" }).click();
+      //confirm deletion of all data within session
+      await this.page.getByRole("button", { name: "Yes" }).click();
+
+      await expect(this.header).toBeVisible();
+    }
+  }
 }
