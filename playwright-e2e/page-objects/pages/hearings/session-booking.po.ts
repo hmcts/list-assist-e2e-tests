@@ -96,7 +96,21 @@ export class SessionBookingPage extends Base {
   readonly listingDuration = this.page.locator("#defListingDuration");
   readonly durationDropdownButton = this.page.locator("#defListingDuration");
   readonly sessionJohDropdown = this.page.locator(
-    'div.bootstrap-select > button[data-id="membersList"]',
+    'button[data-id="membersList"][aria-label*="Judicial Office Holder Name"]',
+  );
+  readonly sessionJohContainer = this.page.locator("#memberLovDiv");
+  readonly sessionJohSearchInput = this.sessionJohContainer.locator(
+    '.bs-searchbox input[aria-label="Search"]',
+  );
+  readonly sessionJohOptions = this.sessionJohContainer.locator(
+    "div.dropdown-menu.show .inner.show li a span.text",
+  );
+  readonly sessionJohNativeOptions = this.sessionJohContainer.locator(
+    "select#membersList option",
+  );
+  readonly showAllJohCheckbox = this.page.locator("#showAllCheckbox");
+  readonly sessionJohSelectedLabel = this.sessionJohContainer.locator(
+    ".filter-option-inner-inner",
   );
 
   readonly sessionStatusDropdown = this.page.getByLabel(
@@ -266,28 +280,47 @@ export class SessionBookingPage extends Base {
 
     //conditional
     if (johName) {
-      await this.sessionJohDropdown.waitFor({ state: "attached" });
-      await this.page.waitForTimeout(1000);
+      await expect(this.sessionJohContainer).toBeVisible();
+      await expect(this.sessionJohDropdown).toBeVisible();
+      const johSearchTerm = johName.split(",")[0]?.trim() || johName;
+      const johSearchTermUpper = johSearchTerm.toUpperCase();
+
+      if (!(await this.showAllJohCheckbox.isChecked())) {
+        await this.showAllJohCheckbox.check();
+      }
+
+      const getJohOptionValue = async (): Promise<string> => {
+        return await this.sessionJohNativeOptions.evaluateAll((nodes, term) => {
+          const upper = String(term).toUpperCase();
+          const match = nodes
+            .map((node) => {
+              const option = node as HTMLOptionElement;
+              const text = (option.textContent || "").trim();
+              const title = option.title || "";
+              const value = option.value || "";
+              return { text, title, value };
+            })
+            .find(
+              (option) =>
+                Boolean(option.value) &&
+                `${option.title} ${option.text}`.toUpperCase().includes(upper),
+            );
+
+          return match?.value ?? "";
+        }, johSearchTermUpper);
+      };
 
       await expect
-        .poll(
-          async () => {
-            await this.sessionJohDropdown.click();
-            await this.page.waitForTimeout(500);
+        .poll(getJohOptionValue, {
+          intervals: [1_500],
+          timeout: 30_000,
+        })
+        .not.toBe("");
 
-            const johOption = this.page
-              .locator("a")
-              .filter({ hasText: johName });
-            await johOption.waitFor({ state: "visible", timeout: 5000 });
-            await johOption.click();
-            return true;
-          },
-          {
-            intervals: [1500],
-            timeout: 20_000,
-          },
-        )
-        .toBeTruthy();
+      const johOptionValue = await getJohOptionValue();
+      await this.sessionJohContainer
+        .locator("select#membersList")
+        .selectOption({ value: johOptionValue });
     }
 
     let validationPopup;
