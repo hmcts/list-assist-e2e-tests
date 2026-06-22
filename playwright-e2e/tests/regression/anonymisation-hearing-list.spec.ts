@@ -22,7 +22,7 @@ test.beforeEach(
     dataUtils,
     loginPage,
   }) => {
-    await page.goto(config.urls.baseUrl);
+    await page.goto("ISABELLA_WALKER");
     await loginPage.login(config.users.testUser);
 
     await clearDownPontypriddSchedule(
