@@ -185,9 +185,9 @@ withNightlyPipeline(type, product, component, 600) {
 
   def runAnonNightlyRegressionStage = {
     runPlaywrightStage(
-      'Regression - Anon nightly tests',
+      'Regression - Anonymisation (Nightly) test',
       'playwright test tests/regression --project=chrome --grep @anon-nightly',
-      'Regression - Anon nightly tests'
+      'Regression - Anonymisation (Nightly) test'
     )
   }
 
