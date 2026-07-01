@@ -403,10 +403,9 @@ export class AutomaticBookingDashboardPage extends Base {
 
     await expect(this.publishExternalListLocalityFilter).toBeVisible();
     await this.publishExternalListLocalityFilter.click();
+    await this.page.getByRole("textbox", { name: "Localities" }).fill(locality);
     await this.page
-      .getByRole("option", { name: locality })
-      .locator("span")
-      .nth(2)
+      .getByRole("option", { name: locality, exact: true })
       .click();
 
     //input dates
