@@ -42,6 +42,10 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC:
       "Haverfordwest County and Family Court",
     CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01: "Haverfordwest Courtroom 01",
+    CASE_LISTING_LOCALITY_MERTHYR_TYDFIL_CC:
+      "Merthyr Tydfil Combined Court Centre",
+    CASE_LISTING_LOCATION_MERTHYR_TYDFIL_CRTRM_01_MAGS:
+      "Merthyr Tydfil Courtroom 01 (Mags)",
     CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
     CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: "4",
     CASE_LISTING_SESSION_DURATION_1_00: "60",

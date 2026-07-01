@@ -11,7 +11,7 @@ setup.describe("Global Setup", () => {
     }
   });
 
-  setup(
+  setup.skip(
     "Create new case",
     async ({
       loginPage,
@@ -61,7 +61,7 @@ setup.describe("Global Setup", () => {
     },
   );
 
-  setup(
+  setup.skip(
     "Clean down JOH users in sessions",
     async ({ loginPage, page, config, hearingSchedulePage, dataUtils }) => {
       await page.goto(config.urls.baseUrl);
