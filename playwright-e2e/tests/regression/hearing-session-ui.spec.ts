@@ -99,7 +99,7 @@ test("Filter and display JOH exclusion filter correctly using tier exclusion @he
   await expect(trimmedOptions).not.toContain("JOH-Two AutomationTest");
 });
 
-test("Advanced filters show expected Wales locality and Cardiff location values @hearing-session-ui-test @regression", async ({
+test("Advanced filters show expected Wales/Cardiff only, then Wales/Cardiff+Newport after clearing filters @wales @hearing-session-ui-test @regression", async ({
   page,
   loginPage,
   hearingSchedulePage,
@@ -165,23 +165,8 @@ test("Advanced filters show expected Wales locality and Cardiff location values 
     expect.arrayContaining(CardiffLocations),
   );
   await page.keyboard.press("Escape");
-});
 
-test("Advanced filters show Cardiff and Newport location values when both localities are selected @hearing-session-ui-test @regression", async ({
-  page,
-  loginPage,
-  hearingSchedulePage,
-  sessionBookingPage,
-  addNewCasePage,
-}) => {
-  await page.goto(config.urls.baseUrl);
-  await loginPage.login(config.users.testUser);
-
-  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-  await hearingSchedulePage.waitForLoad();
-
-  await sessionBookingPage.advancedFiltersButton.click();
-  await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
+  // Reset then validate combined Cardiff + Newport locality selection.
   await sessionBookingPage.clearAdvanceFilterButton.click();
 
   await sessionBookingPage.regionDropdown.click();
