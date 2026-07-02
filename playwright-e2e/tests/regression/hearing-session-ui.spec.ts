@@ -160,8 +160,7 @@ test("Advanced filters show expected Wales locality and Cardiff location values 
       .locator(".multiselect__content-wrapper:visible")
       .getByRole("option")
       .allTextContents()
-  )
-    .map((opt) => opt.trim());
+  ).map((opt) => opt.trim());
   await expect(locationOptions).toEqual(
     expect.arrayContaining(CardiffLocations),
   );
@@ -227,23 +226,6 @@ async function assertAdvFilterDropdownOptions(
       page.getByRole("option", { name: option, exact: true }),
     ).toBeVisible();
   }
-}
-
-async function assertAdvFilterDropdownExactOptions(
-  dropdown: Locator,
-  expectedOptions: string[],
-  page: Page,
-  excludedOptions: string[] = [],
-) {
-  await dropdown.click();
-  const optionLocator = page
-    .locator(".multiselect__content-wrapper:visible")
-    .getByRole("option");
-  const actualOptions = (await optionLocator.allTextContents())
-    .map((option) => option.trim())
-    .filter((option) => !excludedOptions.includes(option));
-
-  await expect(actualOptions).toEqual(expectedOptions);
 }
 
 async function assertAdvFilterDropdownContainsOptions(
