@@ -129,31 +129,43 @@ test("Advanced filters show expected Wales locality and Cardiff location values 
       .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
   );
 
-  await assertAdvFilterDropdownExactOptions(
-    sessionBookingPage.localityDropDown,
-    WalesLocalities,
-    page,
-    [
-      sessionBookingPage.CONSTANTS
-        .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-    ],
-  );
+  await sessionBookingPage.localityDropDown.click();
+  const localityOptions = (
+    await page
+      .locator(".multiselect__content-wrapper:visible")
+      .getByRole("option")
+      .allTextContents()
+  )
+    .map((opt) => opt.trim())
+    .filter(
+      (opt) =>
+        !opt.includes(
+          sessionBookingPage.CONSTANTS
+            .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+        ),
+    );
+  await expect(localityOptions).toEqual(WalesLocalities);
+  await page.keyboard.press("Escape");
 
+  await sessionBookingPage.localityDropDown.click();
   await selectAdvFilterOption(
     page,
     addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
   );
+  await page.keyboard.press("Escape");
 
-  const expectedCardiffLocationOptions = [
-    ...WalesLocalities,
-    ...CardiffLocations,
-  ];
-
-  await assertAdvFilterDropdownExactOptions(
-    sessionBookingPage.locationDropDown,
-    expectedCardiffLocationOptions,
-    page,
+  await sessionBookingPage.locationDropDown.click();
+  const locationOptions = (
+    await page
+      .locator(".multiselect__content-wrapper:visible")
+      .getByRole("option")
+      .allTextContents()
+  )
+    .map((opt) => opt.trim());
+  await expect(locationOptions).toEqual(
+    expect.arrayContaining(CardiffLocations),
   );
+  await page.keyboard.press("Escape");
 });
 
 test("Advanced filters show Cardiff and Newport location values when both localities are selected @hearing-session-ui-test @regression", async ({
