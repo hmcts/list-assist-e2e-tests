@@ -4,6 +4,9 @@ import {
   clusters,
   localities,
   locations,
+  WalesLocalities,
+  CardiffLocations,
+  NewportLocations,
 } from "../../data/drop-down-data";
 import { test, expect } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
@@ -12,7 +15,7 @@ test.describe("Hearing session UI test @hearing-session-ui-test", () => {
   test.describe.configure({ mode: "serial" });
 });
 
-test("Check all expected values are present in advanced filters @hearing-session-ui-test @regression", async ({
+test("Check all expected values are present in advanced filters @test @hearing-session-ui-test @regression", async ({
   page,
   loginPage,
   hearingSchedulePage,
@@ -96,6 +99,111 @@ test("Filter and display JOH exclusion filter correctly using tier exclusion @he
   await expect(trimmedOptions).not.toContain("JOH-Two AutomationTest");
 });
 
+test("Advanced filters show expected Wales locality and Cardiff location values @wales @hearing-session-ui-test @regression", async ({
+  page,
+  loginPage,
+  hearingSchedulePage,
+  sessionBookingPage,
+  addNewCasePage,
+}) => {
+  await page.goto(config.urls.baseUrl);
+  await loginPage.login(config.users.testUser);
+
+  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+  await hearingSchedulePage.waitForLoad();
+
+  await sessionBookingPage.advancedFiltersButton.click();
+  await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
+  await sessionBookingPage.clearAdvanceFilterButton.click();
+
+  await sessionBookingPage.regionDropdown.click();
+  await selectAdvFilterOption(
+    page,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+  );
+
+  await sessionBookingPage.clusterDropDown.click();
+  await selectAdvFilterOption(
+    page,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+  );
+
+  await assertAdvFilterDropdownExactOptions(
+    sessionBookingPage.localityDropDown,
+    WalesLocalities,
+    page,
+    [
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+    ],
+  );
+
+  await selectAdvFilterOption(
+    page,
+    addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+  );
+
+  const expectedCardiffLocationOptions = [
+    ...WalesLocalities,
+    ...CardiffLocations,
+  ];
+
+  await assertAdvFilterDropdownExactOptions(
+    sessionBookingPage.locationDropDown,
+    expectedCardiffLocationOptions,
+    page,
+  );
+});
+
+test("Advanced filters show Cardiff and Newport location values when both localities are selected @wales @hearing-session-ui-test @regression", async ({
+  page,
+  loginPage,
+  hearingSchedulePage,
+  sessionBookingPage,
+  addNewCasePage,
+}) => {
+  await page.goto(config.urls.baseUrl);
+  await loginPage.login(config.users.testUser);
+
+  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+  await hearingSchedulePage.waitForLoad();
+
+  await sessionBookingPage.advancedFiltersButton.click();
+  await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
+  await sessionBookingPage.clearAdvanceFilterButton.click();
+
+  await sessionBookingPage.regionDropdown.click();
+  await selectAdvFilterOption(
+    page,
+    sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+  );
+
+  await sessionBookingPage.clusterDropDown.click();
+  await selectAdvFilterOption(
+    page,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+  );
+
+  await sessionBookingPage.localityDropDown.click();
+  await selectAdvFilterOption(
+    page,
+    addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+  );
+  await selectAdvFilterOption(
+    page,
+    sessionBookingPage.CONSTANTS
+      .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+  );
+
+  await assertAdvFilterDropdownContainsOptions(
+    sessionBookingPage.locationDropDown,
+    [...CardiffLocations, ...NewportLocations],
+    page,
+  );
+});
+
 async function assertAdvFilterDropdownOptions(
   dropdown: Locator,
   options: string[],
@@ -107,4 +215,46 @@ async function assertAdvFilterDropdownOptions(
       page.getByRole("option", { name: option, exact: true }),
     ).toBeVisible();
   }
+}
+
+async function assertAdvFilterDropdownExactOptions(
+  dropdown: Locator,
+  expectedOptions: string[],
+  page: Page,
+  excludedOptions: string[] = [],
+) {
+  await dropdown.click();
+  const optionLocator = page
+    .locator(".multiselect__content-wrapper:visible")
+    .getByRole("option");
+  const actualOptions = (await optionLocator.allTextContents())
+    .map((option) => option.trim())
+    .filter((option) => !excludedOptions.includes(option));
+
+  await expect(actualOptions).toEqual(expectedOptions);
+}
+
+async function assertAdvFilterDropdownContainsOptions(
+  dropdown: Locator,
+  expectedOptions: string[],
+  page: Page,
+  excludedOptions: string[] = [],
+) {
+  await dropdown.click();
+  const optionLocator = page
+    .locator(".multiselect__content-wrapper:visible")
+    .getByRole("option");
+  const actualOptions = (await optionLocator.allTextContents())
+    .map((option) => option.trim())
+    .filter((option) => !excludedOptions.includes(option));
+
+  await expect(actualOptions).toEqual(expect.arrayContaining(expectedOptions));
+}
+
+async function selectAdvFilterOption(page: Page, option: string) {
+  await page
+    .getByRole("option", { name: option, exact: true })
+    .locator("span")
+    .nth(2)
+    .click();
 }
