@@ -351,7 +351,6 @@ export const locations = [
   "Glasgow Tribunals Hearing Room 109",
   "Glasgow Tribunals Hearing Room 110",
   "Glasgow Tribunals Hearing Room 111",
-  "Glasgow Tribunals Hearing Room IAC FLOAT",
   "Glasgow Tribunals IAC Remote 01",
   "Glasgow Tribunals IAC Remote 02",
   "Glasgow Tribunals IAC Remote 03",
