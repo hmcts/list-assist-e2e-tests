@@ -15,7 +15,7 @@ test.describe("Hearing session UI test @hearing-session-ui-test", () => {
   test.describe.configure({ mode: "serial" });
 });
 
-test("Check all expected values are present in advanced filters @test @hearing-session-ui-test @regression", async ({
+test("Check all expected values are present in advanced filters @hearing-session-ui-test @regression", async ({
   page,
   loginPage,
   hearingSchedulePage,
@@ -99,7 +99,7 @@ test("Filter and display JOH exclusion filter correctly using tier exclusion @he
   await expect(trimmedOptions).not.toContain("JOH-Two AutomationTest");
 });
 
-test("Advanced filters show expected Wales locality and Cardiff location values @wales @hearing-session-ui-test @regression", async ({
+test("Advanced filters show expected Wales locality and Cardiff location values @hearing-session-ui-test @regression", async ({
   page,
   loginPage,
   hearingSchedulePage,
@@ -156,7 +156,7 @@ test("Advanced filters show expected Wales locality and Cardiff location values 
   );
 });
 
-test("Advanced filters show Cardiff and Newport location values when both localities are selected @wales @hearing-session-ui-test @regression", async ({
+test("Advanced filters show Cardiff and Newport location values when both localities are selected @hearing-session-ui-test @regression", async ({
   page,
   loginPage,
   hearingSchedulePage,
