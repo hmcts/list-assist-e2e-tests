@@ -1,4 +1,4 @@
-export const regions = [
+export const allRegions = [
   "London",
   "Midlands",
   "National (non-Regional)",
@@ -10,7 +10,7 @@ export const regions = [
   "Wales",
 ];
 
-export const clusters = [
+export const allClusters = [
   "Avon, Somerset and Gloucestershire",
   "Bedfordshire, Cambridgeshire and Hertfordshire",
   "Central London Tribunals",
@@ -37,7 +37,7 @@ export const clusters = [
   "West Midlands and Warwickshire - Civil, Family and Tribunals",
 ];
 
-export const localities = [
+export const allLocalities = [
   "Aberdeen Tribunal Hearing Centre",
   "Aberystwyth Justice Centre",
   "Aldershot Justice Centre",
@@ -334,7 +334,7 @@ export const localities = [
   "York Magistrates' Court",
 ];
 
-export const locations = [
+export const allLocations = [
   "Cardiff SSCS - Hearing Room 01",
   "Chambers 1",
   "Court 1",
