@@ -15,52 +15,6 @@ test.describe("Hearing session UI test @hearing-session-ui-test", () => {
   test.describe.configure({ mode: "serial" });
 });
 
-test("Check all expected values are present in advanced filters @hearing-session-ui-test @regression", async ({
-  page,
-  loginPage,
-  hearingSchedulePage,
-  sessionBookingPage,
-}) => {
-  await page.goto(config.urls.baseUrl);
-  await loginPage.login(config.users.testUser);
-
-  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-  await hearingSchedulePage.waitForLoad();
-
-  await sessionBookingPage.advancedFiltersButton.click();
-  await expect(sessionBookingPage.advancedFiltersHeader).toBeVisible();
-  //ensure the advanced filter is cleared
-  await sessionBookingPage.clearAdvanceFilterButton.click();
-
-  //region dropdown
-  await assertAdvFilterDropdownOptions(
-    sessionBookingPage.regionDropdown,
-    regions,
-    page,
-  );
-
-  //cluster dropdown
-  await assertAdvFilterDropdownOptions(
-    sessionBookingPage.clusterDropDown,
-    clusters,
-    page,
-  );
-
-  //locality dropdown
-  await assertAdvFilterDropdownOptions(
-    sessionBookingPage.localityDropDown,
-    localities,
-    page,
-  );
-
-  //location dropdown
-  await assertAdvFilterDropdownOptions(
-    sessionBookingPage.locationDropDown,
-    locations,
-    page,
-  );
-});
-
 test("Filter and display JOH exclusion filter correctly using tier exclusion @hearing-session-ui-test @regression", async ({
   page,
   loginPage,
@@ -99,7 +53,7 @@ test("Filter and display JOH exclusion filter correctly using tier exclusion @he
   await expect(trimmedOptions).not.toContain("JOH-Two AutomationTest");
 });
 
-test("Advanced filters show expected Wales/Cardiff only, then Wales/Cardiff+Newport after clearing filters @hearing-session-ui-test @regression", async ({
+test("Advanced filters show expected Wales/Cardiff only, then Wales/Cardiff+Newport, then no filters applied @hearing-session-ui-test @regression", async ({
   page,
   loginPage,
   hearingSchedulePage,
@@ -219,6 +173,34 @@ test("Advanced filters show expected Wales/Cardiff only, then Wales/Cardiff+Newp
       "Glasgow",
     );
   });
+
+  await test.step("Clear filters and assert all default advanced filter values", async () => {
+    await sessionBookingPage.clearAdvanceFilterButton.click();
+
+    await assertAdvFilterDropdownOptions(
+      sessionBookingPage.regionDropdown,
+      regions,
+      page,
+    );
+
+    await assertAdvFilterDropdownOptions(
+      sessionBookingPage.clusterDropDown,
+      clusters,
+      page,
+    );
+
+    await assertAdvFilterDropdownOptions(
+      sessionBookingPage.localityDropDown,
+      localities,
+      page,
+    );
+
+    await assertAdvFilterDropdownOptions(
+      sessionBookingPage.locationDropDown,
+      locations,
+      page,
+    );
+  });
 });
 
 async function assertAdvFilterDropdownOptions(
@@ -232,6 +214,7 @@ async function assertAdvFilterDropdownOptions(
       page.getByRole("option", { name: option, exact: true }),
     ).toBeVisible();
   }
+  await page.keyboard.press("Escape");
 }
 
 async function assertAdvFilterDropdownContainsOptions(
@@ -255,6 +238,7 @@ async function assertAdvFilterDropdownContainsOptions(
       actualOptions.some((option) => option.includes(forbiddenSubstring)),
     ).toBe(false);
   }
+  await page.keyboard.press("Escape");
 }
 
 async function selectAdvFilterOption(page: Page, option: string) {
