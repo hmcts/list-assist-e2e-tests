@@ -152,31 +152,45 @@ test("Advanced filters show expected Wales/Cardiff+Newport, then Wales/Cardiff o
   await test.step("Clear filters and assert all default advanced filter values", async () => {
     await sessionBookingPage.clearAdvanceFilterButton.click();
 
-    await assertAdvFilterDropdownContainsOptions(
+    await assertAdvFilterDropdownOptions(
       sessionBookingPage.regionDropdown,
       allRegions,
       page,
     );
 
-    await assertAdvFilterDropdownContainsOptions(
+    await assertAdvFilterDropdownOptions(
       sessionBookingPage.clusterDropDown,
       allClusters,
       page,
     );
 
-    await assertAdvFilterDropdownContainsOptions(
+    await assertAdvFilterDropdownOptions(
       sessionBookingPage.localityDropDown,
       allLocalities,
       page,
     );
 
-    await assertAdvFilterDropdownContainsOptions(
+    await assertAdvFilterDropdownOptions(
       sessionBookingPage.locationDropDown,
       allLocations,
       page,
     );
   });
 });
+
+async function assertAdvFilterDropdownOptions(
+  dropdown: Locator,
+  options: string[],
+  page: Page,
+) {
+  await dropdown.click();
+  for (const option of options) {
+    await expect(
+      page.getByRole("option", { name: option, exact: true }),
+    ).toBeVisible();
+  }
+  await page.keyboard.press("Escape");
+}
 
 async function assertAdvFilterDropdownContainsOptions(
   dropdown: Locator,
