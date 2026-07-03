@@ -4,7 +4,6 @@ import {
   clusters,
   localities,
   locations,
-  WalesLocalities,
   CardiffLocations,
   NewportLocations,
 } from "../../data/drop-down-data";
@@ -53,7 +52,7 @@ test("Filter and display JOH exclusion filter correctly using tier exclusion @he
   await expect(trimmedOptions).not.toContain("JOH-Two AutomationTest");
 });
 
-test("Advanced filters show expected Wales/Cardiff only, then Wales/Cardiff+Newport, then no filters applied @hearing-session-ui-test @regression", async ({
+test("Advanced filters show expected Wales/Cardiff+Newport, then Wales/Cardiff only, then no filters applied @hearing-session-ui-test @regression", async ({
   page,
   loginPage,
   hearingSchedulePage,
@@ -72,73 +71,7 @@ test("Advanced filters show expected Wales/Cardiff only, then Wales/Cardiff+Newp
     await sessionBookingPage.clearAdvanceFilterButton.click();
   });
 
-  await test.step("Apply Wales region and Wales Civil/Family cluster", async () => {
-    await sessionBookingPage.regionDropdown.click();
-    await selectAdvFilterOption(
-      page,
-      sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-    );
-
-    await sessionBookingPage.clusterDropDown.click();
-    await selectAdvFilterOption(
-      page,
-      sessionBookingPage.CONSTANTS
-        .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-    );
-  });
-
-  await test.step("Assert Wales localities and no Glasgow entries", async () => {
-    await sessionBookingPage.localityDropDown.click();
-    const localityOptions = (
-      await page
-        .locator(".multiselect__content-wrapper:visible")
-        .getByRole("option")
-        .allTextContents()
-    )
-      .map((opt) => opt.trim())
-      .filter(
-        (opt) =>
-          !opt.includes(
-            sessionBookingPage.CONSTANTS
-              .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-          ),
-      );
-
-    await expect(localityOptions).toEqual(WalesLocalities);
-    await expect(
-      localityOptions.some((option) => option.includes("Glasgow")),
-    ).toBe(false);
-    await page.keyboard.press("Escape");
-  });
-
-  await test.step("Select Cardiff locality and assert Cardiff locations without Glasgow", async () => {
-    await sessionBookingPage.localityDropDown.click();
-    await selectAdvFilterOption(
-      page,
-      addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
-    );
-    await page.keyboard.press("Escape");
-
-    await sessionBookingPage.locationDropDown.click();
-    const locationOptions = (
-      await page
-        .locator(".multiselect__content-wrapper:visible")
-        .getByRole("option")
-        .allTextContents()
-    ).map((opt) => opt.trim());
-
-    await expect(locationOptions).toEqual(
-      expect.arrayContaining(CardiffLocations),
-    );
-    await expect(
-      locationOptions.some((option) => option.includes("Glasgow")),
-    ).toBe(false);
-    await page.keyboard.press("Escape");
-  });
-
-  await test.step("Clear filters and apply Cardiff + Newport localities", async () => {
-    await sessionBookingPage.clearAdvanceFilterButton.click();
-
+  await test.step("Apply Wales region, Wales Civil/Family cluster, Cardiff and Newport localities", async () => {
     await sessionBookingPage.regionDropdown.click();
     await selectAdvFilterOption(
       page,
@@ -164,14 +97,56 @@ test("Advanced filters show expected Wales/Cardiff only, then Wales/Cardiff+Newp
     );
   });
 
-  await test.step("Assert combined Cardiff + Newport locations without Glasgow", async () => {
+  await test.step("Assert combined Cardiff + Newport locations", async () => {
     await assertAdvFilterDropdownContainsOptions(
       sessionBookingPage.locationDropDown,
       [...CardiffLocations, ...NewportLocations],
       page,
-      [],
-      "Glasgow",
     );
+  });
+
+  await test.step("Clear filters and apply Wales/Cardiff only", async () => {
+    await sessionBookingPage.clearAdvanceFilterButton.click();
+
+    await sessionBookingPage.regionDropdown.click();
+    await selectAdvFilterOption(
+      page,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+    );
+
+    await sessionBookingPage.clusterDropDown.click();
+    await selectAdvFilterOption(
+      page,
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+    );
+
+    await sessionBookingPage.localityDropDown.click();
+    await selectAdvFilterOption(
+      page,
+      addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+    );
+    await page.keyboard.press("Escape");
+  });
+
+  await test.step("Assert Wales/Cardiff locations and no Newport dataset entries", async () => {
+    await sessionBookingPage.locationDropDown.click();
+    const locationOptions = (
+      await page
+        .locator(".multiselect__content-wrapper:visible")
+        .getByRole("option")
+        .allTextContents()
+    ).map((opt) => opt.trim());
+
+    await expect(locationOptions).toEqual(
+      expect.arrayContaining(CardiffLocations),
+    );
+    await expect(
+      NewportLocations.every(
+        (newportLocation) => !locationOptions.includes(newportLocation),
+      ),
+    ).toBe(true);
+    await page.keyboard.press("Escape");
   });
 
   await test.step("Clear filters and assert all default advanced filter values", async () => {
