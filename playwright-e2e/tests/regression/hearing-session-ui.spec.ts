@@ -1,9 +1,9 @@
 import type { Locator, Page } from "@playwright/test";
 import {
-  regions,
-  clusters,
-  localities,
-  locations,
+  allRegions,
+  allClusters,
+  allLocalities,
+  allLocations,
   CardiffLocations,
   NewportLocations,
 } from "../../data/drop-down-data";
@@ -152,45 +152,31 @@ test("Advanced filters show expected Wales/Cardiff+Newport, then Wales/Cardiff o
   await test.step("Clear filters and assert all default advanced filter values", async () => {
     await sessionBookingPage.clearAdvanceFilterButton.click();
 
-    await assertAdvFilterDropdownOptions(
+    await assertAdvFilterDropdownContainsOptions(
       sessionBookingPage.regionDropdown,
-      regions,
+      allRegions,
       page,
     );
 
-    await assertAdvFilterDropdownOptions(
+    await assertAdvFilterDropdownContainsOptions(
       sessionBookingPage.clusterDropDown,
-      clusters,
+      allClusters,
       page,
     );
 
-    await assertAdvFilterDropdownOptions(
+    await assertAdvFilterDropdownContainsOptions(
       sessionBookingPage.localityDropDown,
-      localities,
+      allLocalities,
       page,
     );
 
-    await assertAdvFilterDropdownOptions(
+    await assertAdvFilterDropdownContainsOptions(
       sessionBookingPage.locationDropDown,
-      locations,
+      allLocations,
       page,
     );
   });
 });
-
-async function assertAdvFilterDropdownOptions(
-  dropdown: Locator,
-  options: string[],
-  page: Page,
-) {
-  await dropdown.click();
-  for (const option of options) {
-    await expect(
-      page.getByRole("option", { name: option, exact: true }),
-    ).toBeVisible();
-  }
-  await page.keyboard.press("Escape");
-}
 
 async function assertAdvFilterDropdownContainsOptions(
   dropdown: Locator,
