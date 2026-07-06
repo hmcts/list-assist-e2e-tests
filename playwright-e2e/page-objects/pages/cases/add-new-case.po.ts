@@ -227,6 +227,18 @@ export class AddNewCasePage extends Base {
     // Navigate to Add New Case page
     await homePage.sidebarComponent.openAddNewCasePage();
 
+    // Ensure Add New Case page is loaded before checking for unexpected fields.
+    await expect(this.newCaseHeader).toHaveText("New Case");
+
+    const caseNewFieldLocator = this.page.getByText("Case New Field", {
+      exact: true,
+    });
+    if ((await caseNewFieldLocator.count()) > 0) {
+      throw new Error(
+        "Unexpected element present on Add New Case page: 'Case New Field'.",
+      );
+    }
+
     // Generate case details (use overrides from caseData if provided)
     const caseNumber =
       caseData?.hmctsCaseNumber ?? "HMCTS_CN_" + randomUUID().toUpperCase();
