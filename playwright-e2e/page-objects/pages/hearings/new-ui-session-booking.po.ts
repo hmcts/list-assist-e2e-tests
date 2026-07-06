@@ -64,10 +64,93 @@ export class NewUiSessionBookingPage extends Base {
   readonly defaultListingDurationCombobox = this.page.getByRole("combobox", {
     name: "Default Listing Duration (hours) list",
   });
+  readonly jurisdictionCombobox = this.page.getByRole("combobox", {
+    name: "Jurisdiction list",
+  });
+  readonly serviceCombobox = this.page.getByRole("combobox", {
+    name: "Service list",
+  });
   readonly defaultListingDurationComboboxToggle =
     this.defaultListingDurationCombobox.locator(".multiselect__select");
   readonly defaultListingDurationSelectedValue =
     this.defaultListingDurationCombobox.locator(".multiselect__single");
+  readonly sessionBookingDetailsHeading = this.page.getByRole("heading", {
+    name: "Session Booking Details",
+  });
+  readonly sessionBookingDetailsSection = this.page
+    .locator("div")
+    .filter({ has: this.sessionBookingDetailsHeading })
+    .filter({ has: this.localityCombobox })
+    .first();
+  readonly dateLabel = this.sessionBookingDetailsSection.getByText(/^Date\b/);
+  readonly recurrenceLabel = this.sessionBookingDetailsSection.getByText(
+    "Recurrence",
+    { exact: true },
+  );
+  readonly startTimeLabel =
+    this.sessionBookingDetailsSection.getByText(/^Start Time\b/);
+  readonly endTimeLabel =
+    this.sessionBookingDetailsSection.getByText(/^End Time\b/);
+  readonly localityLabel =
+    this.sessionBookingDetailsSection.getByText(/^Locality\b/);
+  readonly locationLabel =
+    this.sessionBookingDetailsSection.getByText(/^Location\b/);
+  readonly jurisdictionLabel =
+    this.sessionBookingDetailsSection.getByText(/^Jurisdiction\b/);
+  readonly sessionStatusLabel =
+    this.sessionBookingDetailsSection.getByText(/^Session Status\b/);
+  readonly sessionTypeLabel =
+    this.sessionBookingDetailsSection.getByText(/^Session Type\b/);
+  readonly serviceLabel =
+    this.sessionBookingDetailsSection.getByText(/^Service\b/);
+  readonly overbookingAllowedLabel =
+    this.sessionBookingDetailsSection.getByText(/^Overbooking Allowed\b/);
+  readonly listingLimitMaxCasesLabel =
+    this.sessionBookingDetailsSection.getByText("Listing Limit (Max. Cases)", {
+      exact: true,
+    });
+  readonly percentageLimitLabel = this.sessionBookingDetailsSection.getByText(
+    "Percentage Limit",
+    { exact: true },
+  );
+  readonly groupBookingLabel =
+    this.sessionBookingDetailsSection.getByText(/^Group Booking\b/);
+  readonly defaultListingDurationHoursLabel =
+    this.sessionBookingDetailsSection.getByText(
+      /^Default Listing Duration \(hours\)\b/,
+    );
+  readonly breaksLabel = this.sessionBookingDetailsSection.getByText("Breaks", {
+    exact: true,
+  });
+  readonly addBreakButton = this.sessionBookingDetailsSection.getByRole(
+    "button",
+    { name: "Add Break" },
+  );
+  readonly breaksStartTimeHeader = this.sessionBookingDetailsSection.getByRole(
+    "columnheader",
+    {
+      name: "Start Time",
+    },
+  );
+  readonly breaksEndTimeHeader = this.sessionBookingDetailsSection.getByRole(
+    "columnheader",
+    {
+      name: "End Time",
+    },
+  );
+  readonly breaksActionsHeader = this.sessionBookingDetailsSection.getByRole(
+    "columnheader",
+    {
+      name: "Actions",
+    },
+  );
+  readonly yesToggleOptions = this.sessionBookingDetailsSection.getByText(
+    "Yes",
+    { exact: true },
+  );
+  readonly noToggleOptions = this.sessionBookingDetailsSection.getByText("No", {
+    exact: true,
+  });
   readonly internalCommentsTextBox = this.page.locator(
     "#venueBooking\\.venueBookingDesc",
   );
@@ -171,6 +254,29 @@ export class NewUiSessionBookingPage extends Base {
     await expect(this.externalCommentsTextBox).toBeVisible();
     await this.externalCommentsTextBox.click();
     await this.externalCommentsTextBox.fill(comment);
+  }
+
+  async assertSessionBookingDetailsUiElementsVisible() {
+    await expect(this.sessionBookingDetailsHeading).toBeVisible();
+
+    await expect(this.editableStartTimeInput).toBeVisible();
+    await expect(this.yesToggleOptions.first()).toBeVisible();
+    await expect(this.noToggleOptions.first()).toBeVisible();
+
+    await expect(this.startTimeCombobox).toBeVisible();
+    await expect(this.endTimeCombobox).toBeVisible();
+    await expect(this.localityCombobox).toBeVisible();
+    await expect(this.locationCombobox).toBeVisible();
+    await expect(this.jurisdictionCombobox).toBeVisible();
+    await expect(this.sessionStatusCombobox).toBeVisible();
+    await expect(this.sessionTypeCombobox).toBeVisible();
+    await expect(this.serviceCombobox).toBeVisible();
+    await expect(this.defaultListingDurationCombobox).toBeVisible();
+
+    await expect(this.addBreakButton).toBeVisible();
+    await expect(this.breaksStartTimeHeader.first()).toBeVisible();
+    await expect(this.breaksEndTimeHeader.first()).toBeVisible();
+    await expect(this.breaksActionsHeader.first()).toBeVisible();
   }
 
   // listing popup
