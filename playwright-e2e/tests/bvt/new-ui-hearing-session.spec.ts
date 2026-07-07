@@ -1,9 +1,36 @@
 import { test, expect } from "../../fixtures.ts";
-import { config } from "../../utils";
+import { config } from "../../utils/index.ts";
 import { clearDownScheduleFromSessionSummary } from "../../utils/reporting.utils.ts";
 
-test.describe("New hearing session UI- list session with basketed case @new-ui", () => {
-  test("Login, clear down Haverfordwest schedule, and add a case with defaults", async ({
+test.describe("New hearing session UI - check create session @new-ui @regression", () => {
+  test.describe.configure({ mode: "serial" });
+
+  test("Create session - ensure all UI elements are visible", async ({
+    loginPage,
+    sessionBookingPage,
+    hearingSchedulePage,
+    dataUtils,
+    newUiSessionBookingPage,
+  }) => {
+    await test.step("Open app, filter schedule, and open Create Session. UI Validation", async () => {
+      await newUiSessionBookingPage.createSessionWithoutBasketedCase(
+        loginPage,
+        hearingSchedulePage,
+        sessionBookingPage,
+        dataUtils,
+        "ROBERT_SULLIVAN",
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01,
+        0,
+        0,
+      );
+      await newUiSessionBookingPage.assertSessionBookingDetailsUiElementsVisible();
+    });
+  });
+
+  test("List session with basketed case using new UI", async ({
     page,
     loginPage,
     sessionBookingPage,

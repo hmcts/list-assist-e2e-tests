@@ -1,5 +1,6 @@
 import { expect, Page } from "@playwright/test";
 import { Base } from "../../base";
+import { config } from "../../../utils/index.ts";
 
 export class NewUiSessionBookingPage extends Base {
   readonly CONSTANTS = {
@@ -64,10 +65,93 @@ export class NewUiSessionBookingPage extends Base {
   readonly defaultListingDurationCombobox = this.page.getByRole("combobox", {
     name: "Default Listing Duration (hours) list",
   });
+  readonly jurisdictionCombobox = this.page.getByRole("combobox", {
+    name: "Jurisdiction list",
+  });
+  readonly serviceCombobox = this.page.getByRole("combobox", {
+    name: "Service list",
+  });
   readonly defaultListingDurationComboboxToggle =
     this.defaultListingDurationCombobox.locator(".multiselect__select");
   readonly defaultListingDurationSelectedValue =
     this.defaultListingDurationCombobox.locator(".multiselect__single");
+  readonly sessionBookingDetailsHeading = this.page.getByRole("heading", {
+    name: "Session Booking Details",
+  });
+  readonly sessionBookingDetailsSection = this.page
+    .locator("div")
+    .filter({ has: this.sessionBookingDetailsHeading })
+    .filter({ has: this.localityCombobox })
+    .first();
+  readonly dateLabel = this.sessionBookingDetailsSection.getByText(/^Date\b/);
+  readonly recurrenceLabel = this.sessionBookingDetailsSection.getByText(
+    "Recurrence",
+    { exact: true },
+  );
+  readonly startTimeLabel =
+    this.sessionBookingDetailsSection.getByText(/^Start Time\b/);
+  readonly endTimeLabel =
+    this.sessionBookingDetailsSection.getByText(/^End Time\b/);
+  readonly localityLabel =
+    this.sessionBookingDetailsSection.getByText(/^Locality\b/);
+  readonly locationLabel =
+    this.sessionBookingDetailsSection.getByText(/^Location\b/);
+  readonly jurisdictionLabel =
+    this.sessionBookingDetailsSection.getByText(/^Jurisdiction\b/);
+  readonly sessionStatusLabel =
+    this.sessionBookingDetailsSection.getByText(/^Session Status\b/);
+  readonly sessionTypeLabel =
+    this.sessionBookingDetailsSection.getByText(/^Session Type\b/);
+  readonly serviceLabel =
+    this.sessionBookingDetailsSection.getByText(/^Service\b/);
+  readonly overbookingAllowedLabel =
+    this.sessionBookingDetailsSection.getByText(/^Overbooking Allowed\b/);
+  readonly listingLimitMaxCasesLabel =
+    this.sessionBookingDetailsSection.getByText("Listing Limit (Max. Cases)", {
+      exact: true,
+    });
+  readonly percentageLimitLabel = this.sessionBookingDetailsSection.getByText(
+    "Percentage Limit",
+    { exact: true },
+  );
+  readonly groupBookingLabel =
+    this.sessionBookingDetailsSection.getByText(/^Group Booking\b/);
+  readonly defaultListingDurationHoursLabel =
+    this.sessionBookingDetailsSection.getByText(
+      /^Default Listing Duration \(hours\)\b/,
+    );
+  readonly breaksLabel = this.sessionBookingDetailsSection.getByText("Breaks", {
+    exact: true,
+  });
+  readonly addBreakButton = this.sessionBookingDetailsSection.getByRole(
+    "button",
+    { name: "Add Break" },
+  );
+  readonly breaksStartTimeHeader = this.sessionBookingDetailsSection.getByRole(
+    "columnheader",
+    {
+      name: "Start Time",
+    },
+  );
+  readonly breaksEndTimeHeader = this.sessionBookingDetailsSection.getByRole(
+    "columnheader",
+    {
+      name: "End Time",
+    },
+  );
+  readonly breaksActionsHeader = this.sessionBookingDetailsSection.getByRole(
+    "columnheader",
+    {
+      name: "Actions",
+    },
+  );
+  readonly yesToggleOptions = this.sessionBookingDetailsSection.getByText(
+    "Yes",
+    { exact: true },
+  );
+  readonly noToggleOptions = this.sessionBookingDetailsSection.getByText("No", {
+    exact: true,
+  });
   readonly internalCommentsTextBox = this.page.locator(
     "#venueBooking\\.venueBookingDesc",
   );
@@ -173,6 +257,29 @@ export class NewUiSessionBookingPage extends Base {
     await this.externalCommentsTextBox.fill(comment);
   }
 
+  async assertSessionBookingDetailsUiElementsVisible() {
+    await expect(this.sessionBookingDetailsHeading).toBeVisible();
+
+    await expect(this.editableStartTimeInput).toBeVisible();
+    await expect(this.yesToggleOptions.first()).toBeVisible();
+    await expect(this.noToggleOptions.first()).toBeVisible();
+
+    await expect(this.startTimeCombobox).toBeVisible();
+    await expect(this.endTimeCombobox).toBeVisible();
+    await expect(this.localityCombobox).toBeVisible();
+    await expect(this.locationCombobox).toBeVisible();
+    await expect(this.jurisdictionCombobox).toBeVisible();
+    await expect(this.sessionStatusCombobox).toBeVisible();
+    await expect(this.sessionTypeCombobox).toBeVisible();
+    await expect(this.serviceCombobox).toBeVisible();
+    await expect(this.defaultListingDurationCombobox).toBeVisible();
+
+    await expect(this.addBreakButton).toBeVisible();
+    await expect(this.breaksStartTimeHeader.first()).toBeVisible();
+    await expect(this.breaksEndTimeHeader.first()).toBeVisible();
+    await expect(this.breaksActionsHeader.first()).toBeVisible();
+  }
+
   // listing popup
   readonly listingPopup = this.page.locator("#listingPopup");
   readonly listingPopupHearingTypeCombobox = this.listingPopup.getByRole(
@@ -260,6 +367,46 @@ export class NewUiSessionBookingPage extends Base {
   async clickSaveSessionBooking() {
     await expect(this.saveSessionBookingButton).toBeVisible();
     await this.saveSessionBookingButton.click();
+  }
+
+  async createSessionWithoutBasketedCase(
+    loginPage,
+    hearingSchedulePage,
+    sessionBookingPage,
+    dataUtils,
+    user,
+    locality,
+    location,
+    dateFrom,
+    dateTo,
+  ) {
+    await this.page.goto(config.urls.baseUrl);
+    await loginPage.login(user);
+
+    await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+    await expect(hearingSchedulePage.header).toBeVisible();
+    await sessionBookingPage.updateAdvancedFilterConfig(
+      undefined,
+      undefined,
+      locality,
+      location,
+    );
+
+    await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+    await expect(hearingSchedulePage.header).toBeVisible();
+    await hearingSchedulePage.applyPrimaryDateFilter(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(dateFrom),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(dateTo),
+    );
+
+    await expect(hearingSchedulePage.addBookingButton).toBeVisible();
+    await hearingSchedulePage.addBookingButton.click();
+
+    await expect(hearingSchedulePage.createSessionButton).toBeVisible();
+    await hearingSchedulePage.createSessionButton.click();
+
+    await expect(sessionBookingPage.heading).toBeVisible();
+    await expect(sessionBookingPage.heading).toHaveText("Session Booking");
   }
 
   constructor(page: Page) {
