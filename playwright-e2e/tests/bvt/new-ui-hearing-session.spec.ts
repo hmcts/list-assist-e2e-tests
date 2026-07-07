@@ -6,7 +6,6 @@ test.describe("New hearing session UI - check create session @new-ui @regression
   test.describe.configure({ mode: "serial" });
 
   test("Create session - ensure all UI elements are visible", async ({
-    page,
     loginPage,
     sessionBookingPage,
     hearingSchedulePage,
