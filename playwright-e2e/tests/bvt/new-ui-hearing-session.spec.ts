@@ -96,6 +96,7 @@ test.describe("New hearing session UI - check create session @new-ui @regression
     await test.step("Schedule hearing with basketed case", async () => {
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
       await expect(hearingSchedulePage.header).toBeVisible();
+      await newUiSessionBookingPage.assertSessionBookingDetailsUiElementsVisible();
       await hearingSchedulePage.scheduleHearingWithBasket(
         newUiSessionBookingPage.CONSTANTS
           .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01,
