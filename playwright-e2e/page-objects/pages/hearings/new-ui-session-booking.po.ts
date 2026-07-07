@@ -1,5 +1,6 @@
 import { expect, Page } from "@playwright/test";
 import { Base } from "../../base";
+import { config } from "../../../utils/index.ts";
 
 export class NewUiSessionBookingPage extends Base {
   readonly CONSTANTS = {
@@ -366,6 +367,46 @@ export class NewUiSessionBookingPage extends Base {
   async clickSaveSessionBooking() {
     await expect(this.saveSessionBookingButton).toBeVisible();
     await this.saveSessionBookingButton.click();
+  }
+
+  async createSessionWithoutBasketedCase(
+    loginPage,
+    hearingSchedulePage,
+    sessionBookingPage,
+    dataUtils,
+    user,
+    locality,
+    location,
+    dateFrom,
+    dateTo,
+  ) {
+    await this.page.goto(config.urls.baseUrl);
+    await loginPage.login(user);
+
+    await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+    await expect(hearingSchedulePage.header).toBeVisible();
+    await sessionBookingPage.updateAdvancedFilterConfig(
+      undefined,
+      undefined,
+      locality,
+      location,
+    );
+
+    await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+    await expect(hearingSchedulePage.header).toBeVisible();
+    await hearingSchedulePage.applyPrimaryDateFilter(
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(dateFrom),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(dateTo),
+    );
+
+    await expect(hearingSchedulePage.addBookingButton).toBeVisible();
+    await hearingSchedulePage.addBookingButton.click();
+
+    await expect(hearingSchedulePage.createSessionButton).toBeVisible();
+    await hearingSchedulePage.createSessionButton.click();
+
+    await expect(sessionBookingPage.heading).toBeVisible();
+    await expect(sessionBookingPage.heading).toHaveText("Session Booking");
   }
 
   constructor(page: Page) {

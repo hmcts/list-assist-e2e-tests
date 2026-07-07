@@ -14,14 +14,18 @@ test.describe("New hearing session UI - check create session @new-ui @regression
     newUiSessionBookingPage,
   }) => {
     await test.step("Open app, filter schedule, and open Create Session. UI Validation", async () => {
-      await openCreateSessionFromRoomsWithTodayFilter(
-        page,
+      await newUiSessionBookingPage.createSessionWithoutBasketedCase(
         loginPage,
         hearingSchedulePage,
         sessionBookingPage,
         dataUtils,
-        newUiSessionBookingPage,
-        config.urls.baseUrl,
+        "ROBERT_SULLIVAN",
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01,
+        0,
+        0,
       );
       await newUiSessionBookingPage.assertSessionBookingDetailsUiElementsVisible();
     });
@@ -195,42 +199,3 @@ test.describe("New hearing session UI - check create session @new-ui @regression
     });
   });
 });
-
-async function openCreateSessionFromRoomsWithTodayFilter(
-  page,
-  loginPage,
-  hearingSchedulePage,
-  sessionBookingPage,
-  dataUtils,
-  newUiSessionBookingPage,
-  baseUrl,
-) {
-  await page.goto(baseUrl);
-  await loginPage.login("ROBERT_SULLIVAN");
-
-  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-  await expect(hearingSchedulePage.header).toBeVisible();
-  await sessionBookingPage.updateAdvancedFilterConfig(
-    undefined,
-    undefined,
-    newUiSessionBookingPage.CONSTANTS.CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
-    newUiSessionBookingPage.CONSTANTS
-      .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01,
-  );
-
-  await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-  await expect(hearingSchedulePage.header).toBeVisible();
-  await hearingSchedulePage.applyPrimaryDateFilter(
-    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-    dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-  );
-
-  await expect(hearingSchedulePage.addBookingButton).toBeVisible();
-  await hearingSchedulePage.addBookingButton.click();
-
-  await expect(hearingSchedulePage.createSessionButton).toBeVisible();
-  await hearingSchedulePage.createSessionButton.click();
-
-  await expect(sessionBookingPage.heading).toBeVisible();
-  await expect(sessionBookingPage.heading).toHaveText("Session Booking");
-}
