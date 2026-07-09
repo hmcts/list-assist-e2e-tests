@@ -245,6 +245,34 @@ export class NewUiSessionBookingPage extends Base {
     await expect(this.defaultListingDurationSelectedValue).toHaveText(duration);
   }
 
+  async assertDateIsNotEditableInEditMode() {
+    await expect(this.editableStartTimeInput).toBeVisible();
+    const dateInputIsEditable = await this.editableStartTimeInput.evaluate(
+      (input: HTMLInputElement) => !input.readOnly && !input.disabled,
+    );
+    expect(dateInputIsEditable).toBeFalsy();
+  }
+
+  async assertDefaultListingDurationNotEditableWhenListingExists(
+    selectedDuration: string,
+  ) {
+    await expect(this.defaultListingDurationCombobox).toBeVisible();
+    await expect(this.defaultListingDurationSelectedValue).toHaveText(
+      selectedDuration,
+    );
+    await expect(this.defaultListingDurationCombobox).toHaveAttribute(
+      "tabindex",
+      "-1",
+    );
+    await expect(this.defaultListingDurationCombobox).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    await expect(
+      this.page.locator("#defListingDuration_listbox"),
+    ).not.toBeVisible();
+  }
+
   async fillInternalComment(comment: string) {
     await expect(this.internalCommentsTextBox).toBeVisible();
     await this.internalCommentsTextBox.click();

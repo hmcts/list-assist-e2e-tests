@@ -30,7 +30,7 @@ test.describe("New hearing session UI - check create session @new-ui @regression
     });
   });
 
-  test("List session with basketed case using new UI", async ({
+  test("List session and edit session with basketed case using new UI @this", async ({
     page,
     loginPage,
     sessionBookingPage,
@@ -191,10 +191,88 @@ test.describe("New hearing session UI - check create session @new-ui @regression
       );
     });
 
+    // await test.step("Navigate back to hearing schedule", async () => {
+    //   await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+    // });
+
     await test.step("Confirm listing has been created", async () => {
       await expect(
         hearingSchedulePage.confirmListingReleasedStatus,
       ).toBeVisible();
+    });
+
+    await test.step("Open hearing schedule and set advanced filters", async () => {
+      await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+      await expect(hearingSchedulePage.header).toBeVisible();
+      await sessionBookingPage.updateAdvancedFilterConfig(
+        undefined,
+        undefined,
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01,
+      );
+
+      await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+    });
+
+    await test.step("Click on the newly created session", async () => {
+      await hearingSchedulePage.confirmListingReleasedStatus.click();
+    });
+
+    await test.step("Click on CASE_NAME in the expanded session", async () => {
+      await hearingSchedulePage
+        .getListingByCaseName(process.env.CASE_NAME as string)
+        .click();
+    });
+
+    await test.step("Click Edit Session in the summary box", async () => {
+      await hearingSchedulePage.goToSessionDetailsButton.click();
+    });
+
+    await test.step("Confirm Session Booking heading is present", async () => {
+      await expect(sessionBookingPage.heading).toBeVisible();
+    });
+
+    await test.step("Validate Session Booking Details section is visible in edit mode", async () => {
+      await expect(
+        newUiSessionBookingPage.sessionBookingDetailsHeading,
+      ).toBeVisible();
+      await newUiSessionBookingPage.assertSessionBookingDetailsUiElementsVisible();
+    });
+
+    await test.step("Validate Date field is not editable in edit mode", async () => {
+      await newUiSessionBookingPage.assertDateIsNotEditableInEditMode();
+    });
+
+    await test.step("Validate Default Listing Duration is not editable when a listing exists", async () => {
+      await newUiSessionBookingPage.assertDefaultListingDurationNotEditableWhenListingExists(
+        newUiSessionBookingPage.CONSTANTS.DEFAULT_LISTING_DURATION_ONE_HOUR,
+      );
+    });
+
+    const editedInternalComment = `EDIT-${newUiSessionBookingPage.CONSTANTS.INTERNAL_COMMENT_PREFIX}${process.env.CASE_NAME as string}`;
+    const editedExternalComment = `EDIT-${newUiSessionBookingPage.CONSTANTS.EXTERNAL_COMMENT_PREFIX}${process.env.CASE_NAME as string}`;
+
+    await test.step("Update internal comment with EDIT- prefix", async () => {
+      await newUiSessionBookingPage.fillInternalComment(editedInternalComment);
+    });
+
+    await test.step("Update external comment with EDIT- prefix", async () => {
+      await newUiSessionBookingPage.fillExternalComment(editedExternalComment);
+    });
+
+    await test.step("Press Save on edited session", async () => {
+      await newUiSessionBookingPage.clickSaveSessionBooking();
+    });
+
+    await test.step("Wait for Hearing Session page and verify updated internal comment in table", async () => {
+      await expect(hearingSchedulePage.header).toBeVisible();
+      await hearingSchedulePage.waitForLoad();
+      await expect(hearingSchedulePage.table).toBeVisible();
+      await expect(hearingSchedulePage.table).toContainText(
+        editedInternalComment,
+      );
     });
   });
 });
