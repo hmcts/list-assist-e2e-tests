@@ -1,6 +1,6 @@
 import { test, expect } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
-import { clearDownSchedule } from "../../utils/reporting.utils.js";
+import { clearDownSchedule } from "../../utils/cleardown.utils.js";
 import { LoginPage } from "../../page-objects/pages/login.po.js";
 import { HomePage } from "../../page-objects/pages/home.po.js";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.js";

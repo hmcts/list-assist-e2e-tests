@@ -8,7 +8,7 @@ import {
 } from "../../page-objects/pages/index.js";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.js";
 import { config } from "../../utils/index.js";
-import { clearDownSchedule } from "../../utils/reporting.utils.js";
+import { clearDownSchedule } from "../../utils/cleardown.utils.js";
 
 test.describe("Case listing and reporting @case-listing-and-reporting", () => {
   test.describe.configure({ mode: "serial" });

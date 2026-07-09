@@ -5,7 +5,7 @@ import {
   CaseDetailsPage,
   HearingSchedulePage,
 } from "../../page-objects/pages";
-import { clearDownSchedule } from "../../utils/reporting.utils.js";
+import { clearDownSchedule } from "../../utils/cleardown.utils.js";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po";
 import { config } from "../../utils";
 

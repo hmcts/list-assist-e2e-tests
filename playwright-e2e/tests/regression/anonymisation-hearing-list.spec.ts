@@ -12,7 +12,7 @@ import {
 } from "../../page-objects/pages/index.ts";
 import { SessionBookingPage } from "../../page-objects/pages/hearings/session-booking.po.ts";
 import { AddNewCasePage } from "../../page-objects/pages/cases/add-new-case.po.ts";
-import { clearDownSchedule } from "../../utils/reporting.utils.ts";
+import { clearDownSchedule } from "../../utils/cleardown.utils.ts";
 
 test.beforeEach(
   async ({
