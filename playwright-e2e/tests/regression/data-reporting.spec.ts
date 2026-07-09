@@ -1,9 +1,7 @@
 import { test, expect } from "../../fixtures.js";
 import { config } from "../../utils/index.js";
-import {
-  clearDownSchedule,
-  runAutomationBookingQueueJob,
-} from "../../utils/reporting.utils.js";
+import { clearDownSchedule } from "../../utils/cleardown.utils.js";
+import { runAutomationBookingQueueJob } from "../../utils/reporting.utils.js";
 
 test.describe("Data Reporting And Export @data-reporting @regression", () => {
   test.describe.configure({ mode: "serial" });

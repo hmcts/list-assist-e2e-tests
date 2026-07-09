@@ -1,6 +1,6 @@
 import { test, expect } from "../../fixtures.ts";
 import { config } from "../../utils/index.ts";
-import { clearDownScheduleFromSessionSummary } from "../../utils/reporting.utils.ts";
+import { clearDownScheduleFromSessionSummary } from "../../utils/cleardown.utils.ts";
 
 test.describe("New hearing session UI - check create session @new-ui @regression", () => {
   test.describe.configure({ mode: "serial" });
