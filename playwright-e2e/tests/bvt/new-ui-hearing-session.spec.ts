@@ -191,10 +191,6 @@ test.describe("New hearing session UI - check create session @new-ui @regression
       );
     });
 
-    // await test.step("Navigate back to hearing schedule", async () => {
-    //   await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-    // });
-
     await test.step("Confirm listing has been created", async () => {
       await expect(
         hearingSchedulePage.confirmListingReleasedStatus,
