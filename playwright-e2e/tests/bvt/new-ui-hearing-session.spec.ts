@@ -237,6 +237,31 @@ test.describe("New hearing session UI - check create session @new-ui @regression
       await newUiSessionBookingPage.assertSessionBookingDetailsUiElementsVisible();
     });
 
+    await test.step("Open Session Overview and verify panel member and time", async () => {
+      const viewSessionOverviewControl = page
+        .locator(
+          'button:has-text("View Session Overview"), a:has-text("View Session Overview"), [role="button"]:has-text("View Session Overview")',
+        )
+        .first();
+
+      await expect(viewSessionOverviewControl).toBeVisible();
+      await viewSessionOverviewControl.click();
+
+      const sessionOverviewPopup = page
+        .locator('[role="dialog"]:visible, .modal.show:visible')
+        .first();
+
+      await expect(sessionOverviewPopup).toContainText("AMANDA FOSTER");
+      await expect(sessionOverviewPopup).toContainText("10:00-11:00");
+
+      const closeButton = sessionOverviewPopup.getByRole("button", {
+        name: "Close Session Overview",
+      });
+
+      await expect(closeButton).toBeVisible();
+      await closeButton.click();
+    });
+
     await test.step("Validate Date field is not editable in edit mode", async () => {
       await newUiSessionBookingPage.assertDateIsNotEditableInEditMode();
     });
