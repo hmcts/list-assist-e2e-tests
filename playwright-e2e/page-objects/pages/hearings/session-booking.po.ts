@@ -42,6 +42,7 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC:
       "Haverfordwest County and Family Court",
     CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01: "Haverfordwest Courtroom 01",
+    CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04: "Haverfordwest Courtroom 04",
     CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
     CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: "4",
     CASE_LISTING_SESSION_DURATION_1_00: "60",
@@ -198,6 +199,7 @@ export class SessionBookingPage extends Base {
 
   readonly jurisdictionDropdown = this.page.locator("select#jsCode");
   readonly sessionTypeDropdown = this.page.locator("select#sessionType");
+  readonly addBreakButton = this.page.locator("#breakButtonId");
 
   readonly internalCommentsTextBox = this.page.locator(
     "#venueBooking\\.venueBookingDesc",

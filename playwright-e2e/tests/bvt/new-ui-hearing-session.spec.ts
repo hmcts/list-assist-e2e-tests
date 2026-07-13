@@ -4,6 +4,17 @@ import { clearDownScheduleFromSessionSummary } from "../../utils/cleardown.utils
 
 test.describe("New hearing session UI - check create session @new-ui @regression", () => {
   test.describe.configure({ mode: "serial" });
+  test.beforeEach(
+    async ({
+
+             page,
+             loginPage,
+
+           }) => {
+      await page.goto(config.urls.baseUrl);
+      await loginPage.login("ROBERT_SULLIVAN");
+      },
+  );
 
   test("Create session - ensure all UI elements are visible", async ({
     loginPage,
@@ -18,7 +29,6 @@ test.describe("New hearing session UI - check create session @new-ui @regression
         hearingSchedulePage,
         sessionBookingPage,
         dataUtils,
-        "ROBERT_SULLIVAN",
         newUiSessionBookingPage.CONSTANTS
           .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
         newUiSessionBookingPage.CONSTANTS
@@ -31,8 +41,6 @@ test.describe("New hearing session UI - check create session @new-ui @regression
   });
 
   test("List session with basketed case using new UI", async ({
-    page,
-    loginPage,
     sessionBookingPage,
     hearingSchedulePage,
     dataUtils,
@@ -42,10 +50,6 @@ test.describe("New hearing session UI - check create session @new-ui @regression
     caseDetailsPage,
     newUiSessionBookingPage,
   }) => {
-    await test.step("Open app and login as AUTO_ROBERT_SULLIVAN", async () => {
-      await page.goto(config.urls.baseUrl);
-      await loginPage.login("ROBERT_SULLIVAN");
-    });
 
     await test.step("Clean down schedule for Haverfordwest County and Family, Haverfordwest Courtroom 1", async () => {
       await clearDownScheduleFromSessionSummary(
