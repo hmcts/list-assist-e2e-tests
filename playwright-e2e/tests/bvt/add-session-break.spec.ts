@@ -2,7 +2,7 @@ import { test, expect } from "../../fixtures.ts";
 import { config } from "../../utils/index.ts";
 import { clearDownScheduleFromSessionSummary } from "../../utils/cleardown.utils.ts";
 
-test.describe("Session Booking - add session break @session-break @bvt", () => {
+test.describe("Session Booking - add session break @session-break @bvt @mcp", () => {
   test("Create session and click Add Break", async ({
     page,
     loginPage,
@@ -47,15 +47,39 @@ test.describe("Session Booking - add session break @session-break @bvt", () => {
       );
     });
 
-    await test.step("On session booking screen click Add break", async () => {
+    await test.step("Assert 'Add Break' button is present", async () => {
       await expect(sessionBookingPage.addBreakButton).toBeVisible();
-      await sessionBookingPage.addBreakButton.click();
-      // await sessionBookingPage.selectSessionBreakTimes("12:00", "13:00");
-      // await sessionBookingPage.clickBookSelectedBreak();
     });
 
-    await test.step.skip("Assert session break is added in Breaks table", async () => {
-      //await sessionBookingPage.assertBreakRowVisible("12:00", "13:00");
+    await test.step("Click 'Add Break' and assert popup headed 'Venue Booking Break' is present", async () => {
+      const breakPopup = await sessionBookingPage.openBreakPopup();
+      await expect(
+        breakPopup.getByRole("heading", { name: "Venue Booking Break" }),
+      ).toBeVisible();
+
+      await test.step("Select Start Time '12:00' and End Time '13:00'", async () => {
+        await sessionBookingPage.selectBreakStartTime(breakPopup, "12:00");
+        await sessionBookingPage.selectBreakEndTime(breakPopup, "13:00");
+      });
+
+      await test.step("Click 'Book Selected'", async () => {
+        await sessionBookingPage.clickBookSelected(breakPopup);
+      });
+    });
+
+    await test.step("Assert break with Start Time 12:00 and End Time 13:00 is visible in Breaks section", async () => {
+      await sessionBookingPage.assertBreakRowVisible("12:00", "13:00");
+    });
+
+    await test.step("Select Hearing Duration '1:00'", async () => {
+      await sessionBookingPage.selectListingDuration(
+        sessionBookingPage.CONSTANTS.CASE_LISTING_SESSION_DURATION_1_00,
+      );
+    });
+
+    await test.step("Click Save", async () => {
+      await sessionBookingPage.saveButton.click();
+      await hearingSchedulePage.waitForLoad();
     });
   });
 });
