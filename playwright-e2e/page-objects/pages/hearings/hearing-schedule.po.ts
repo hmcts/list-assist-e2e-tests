@@ -746,58 +746,6 @@ export class HearingSchedulePage extends Base {
 
       await caseNumberAndScheduleLink.click();
 
-      const editSessionButton = this.page
-        .locator(
-          'button:has-text("Edit Session"), input[type="button"][value="Edit Session"], a:has-text("Edit Session")',
-        )
-        .first();
-      const hasSessionBreak = await this.page
-        .getByText("Session Break", { exact: false })
-        .first()
-        .isVisible()
-        .catch(() => false);
-
-      if (hasSessionBreak) {
-        await this.page
-          .getByText("Session Break", { exact: false })
-          .first()
-          .click();
-        await expect(editSessionButton).toBeVisible();
-        await editSessionButton.click();
-
-        await expect
-          .poll(
-            async () => {
-              return await this.sessionBookingPage.heading.isVisible();
-            },
-            {
-              intervals: [2_000],
-              timeout: 10_000,
-            },
-          )
-          .toBeTruthy();
-
-        await this.sessionBookingPage.waitForLoad();
-
-        const isDeleteVisible = await this.deleteSessionInSessionDetailsButton
-          .isVisible()
-          .catch(() => false);
-
-        if (isDeleteVisible) {
-          await this.deleteSessionInSessionDetailsButton.click();
-          await this.page.locator("#cancellationCode").click();
-          await this.page
-            .locator("#cancellationCode")
-            .selectOption(cancellationCode);
-          await this.page.getByRole("button", { name: "Yes" }).click();
-        }
-
-        await expect(this.deleteSessionButton).toBeVisible();
-        await this.deleteSessionButton.click();
-        await expect(this.header).toBeVisible();
-        return;
-      }
-
       await this.selectListingOnSessionCheckbox.check();
       await this.cancelListingsForSelectedButton.click();
       await this.cancelRescheduleReasonDropdown.selectOption(cancellationCode);
