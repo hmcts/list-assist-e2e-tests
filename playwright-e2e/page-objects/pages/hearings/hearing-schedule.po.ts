@@ -129,6 +129,14 @@ export class HearingSchedulePage extends Base {
   readonly cancelListingsForSelectedButton = this.page.getByRole("button", {
     name: /Cancel Listings for Selected/i,
   });
+  readonly editSessionButton = this.page
+    .locator(
+      'button:has-text("Edit Session"), input[type="button"][value="Edit Session"], a:has-text("Edit Session")',
+    )
+    .first();
+  readonly sessionBreakEntry = this.page
+    .getByText("Session Break", { exact: false })
+    .first();
   readonly confirmationCanxAdv = this.page.locator(
     'div.modal-content#\\__BVID__53___BV_modal_content_:has(.header-title:has-text("Confirmation"))',
   );
@@ -746,24 +754,14 @@ export class HearingSchedulePage extends Base {
 
       await caseNumberAndScheduleLink.click();
 
-      const editSessionButton = this.page
-        .locator(
-          'button:has-text("Edit Session"), input[type="button"][value="Edit Session"], a:has-text("Edit Session")',
-        )
-        .first();
-      const hasSessionBreak = await this.page
-        .getByText("Session Break", { exact: false })
-        .first()
+      const hasSessionBreak = await this.sessionBreakEntry
         .isVisible()
         .catch(() => false);
 
       if (hasSessionBreak) {
-        await this.page
-          .getByText("Session Break", { exact: false })
-          .first()
-          .click();
-        await expect(editSessionButton).toBeVisible();
-        await editSessionButton.click();
+        await this.sessionBreakEntry.click();
+        await expect(this.editSessionButton).toBeVisible();
+        await this.editSessionButton.click();
 
         await expect
           .poll(
