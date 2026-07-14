@@ -2,7 +2,21 @@ import { test, expect } from "../../fixtures.ts";
 import { config } from "../../utils/index.ts";
 import { clearDownScheduleFromSessionSummary } from "../../utils/cleardown.utils.ts";
 
-test.describe("Session Booking - add session break @session-break @bvt @mcp", () => {
+test.describe("Session Booking - add session break @session-break @bvt", () => {
+
+  test.afterEach(
+      async ({ hearingSchedulePage,
+               sessionBookingPage,
+               dataUtils }) => {
+        await hearingSchedulePage.deleteSessionWithoutListing(
+            sessionBookingPage.CONSTANTS
+                .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04,
+            dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+        );
+      },
+  );
+
+
   test("Create session and click Add Break", async ({
     page,
     loginPage,
@@ -81,5 +95,24 @@ test.describe("Session Booking - add session break @session-break @bvt @mcp", ()
       await sessionBookingPage.saveButton.click();
       await hearingSchedulePage.waitForLoad();
     });
-  });
+
+
+    await test.step("Assert that session break appear on Hearing Schedule", async () => {
+
+   await expect(
+  hearingSchedulePage.getSessionBreakLocator("12:00", "13:00"),
+  ).toBeVisible();
+
+ });
+
+//  await test.step("clear down the session", async () => {
+//
+// await hearingSchedulePage.deleteSessionWithoutListing(
+//   sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04,
+//   dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+// );
+//
+//  });
+
+});
 });
