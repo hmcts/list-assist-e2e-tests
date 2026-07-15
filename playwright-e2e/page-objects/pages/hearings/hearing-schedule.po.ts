@@ -270,10 +270,12 @@ export class HearingSchedulePage extends Base {
   }
 
   getSessionBreakLocator(startTime: string, endTime: string): Locator {
-  return this.page.locator('div[tabindex="0"]', {
-    hasText: new RegExp(`${startTime}-${endTime}\\s+Session Break`, "i"),
-  }).first();
-}
+    return this.page
+      .locator('div[tabindex="0"]', {
+        hasText: new RegExp(`${startTime}-${endTime}\\s+Session Break`, "i"),
+      })
+      .first();
+  }
 
   constructor(page: Page) {
     super(page);
@@ -765,14 +767,13 @@ export class HearingSchedulePage extends Base {
     }
   }
 
-async deleteSessionWithoutListing(room: string, date: string): Promise<void> {
-  const scheduleButton = this.page.locator(
-    `[id*="addBookingColor"][id*="${room}"][id*="${date}"]`,
-  );
-  await expect(scheduleButton.first()).toBeVisible();
-  await scheduleButton.first().click();
-  await this.goToSessionDetailsButton.click();
-  await this.deleteSessionButton.click();
-}
-
+  async deleteSessionWithoutListing(room: string, date: string): Promise<void> {
+    const scheduleButton = this.page.locator(
+      `[id*="addBookingColor"][id*="${room}"][id*="${date}"]`,
+    );
+    await expect(scheduleButton.first()).toBeVisible();
+    await scheduleButton.first().click();
+    await this.goToSessionDetailsButton.click();
+    await this.deleteSessionButton.click();
+  }
 }

@@ -42,7 +42,6 @@ test.describe("New hearing session UI - check create session @new-ui @regression
 
   test("List session and edit session with basketed case using new UI @this", async ({
     page,
-    loginPage,
     sessionBookingPage,
     hearingSchedulePage,
     dataUtils,
