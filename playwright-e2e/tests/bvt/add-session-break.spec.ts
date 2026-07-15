@@ -27,7 +27,10 @@ test.describe("Session Booking - add session break @session-break @bvt", () => {
   }) => {
     await test.step("Go to the base URL and log in as automation test user", async () => {
       await page.goto(config.urls.baseUrl);
-      await loginPage.login();
+      await loginPage.login("DAVID_HICKS");
+          //await loginPage.login();
+
+    
     });
 
     await test.step("Clear existing session", async () => {
@@ -104,15 +107,6 @@ test.describe("Session Booking - add session break @session-break @bvt", () => {
   ).toBeVisible();
 
  });
-
-//  await test.step("clear down the session", async () => {
-//
-// await hearingSchedulePage.deleteSessionWithoutListing(
-//   sessionBookingPage.CONSTANTS.CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04,
-//   dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-// );
-//
-//  });
 
 });
 });

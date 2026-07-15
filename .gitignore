@@ -19,3 +19,4 @@ node_modules/
 .sessions/
 .prettierignore
 .prettierrc
+.github/agents/*
