@@ -3,19 +3,24 @@ import { config } from "../../utils/index.ts";
 import { clearDownScheduleFromSessionSummary } from "../../utils/cleardown.utils.ts";
 
 test.describe("Session Booking - add session break @session-break @bvt", () => {
+  let sessionCreated = false;
+
+  test.beforeEach(() => {
+    sessionCreated = false;
+  });
 
   test.afterEach(
-      async ({ hearingSchedulePage,
-               sessionBookingPage,
-               dataUtils }) => {
-        await hearingSchedulePage.deleteSessionWithoutListing(
-            sessionBookingPage.CONSTANTS
-                .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04,
-            dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-        );
-      },
+    async ({ hearingSchedulePage, sessionBookingPage, dataUtils }) => {
+      if (!sessionCreated) {
+        return;
+      }
+      await hearingSchedulePage.deleteSessionWithoutListing(
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04,
+        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+      );
+    },
   );
-
 
   test("Create session and click Add Break", async ({
     page,
@@ -28,9 +33,6 @@ test.describe("Session Booking - add session break @session-break @bvt", () => {
     await test.step("Go to the base URL and log in as automation test user", async () => {
       await page.goto(config.urls.baseUrl);
       await loginPage.login("DAVID_HICKS");
-          //await loginPage.login();
-
-    
     });
 
     await test.step("Clear existing session", async () => {
@@ -62,6 +64,8 @@ test.describe("Session Booking - add session break @session-break @bvt", () => {
         0,
         0,
       );
+
+      sessionCreated = true;
     });
 
     await test.step("Assert 'Add Break' button is present", async () => {
@@ -99,14 +103,10 @@ test.describe("Session Booking - add session break @session-break @bvt", () => {
       await hearingSchedulePage.waitForLoad();
     });
 
-
     await test.step("Assert that session break appear on Hearing Schedule", async () => {
-
-   await expect(
-  hearingSchedulePage.getSessionBreakLocator("12:00", "13:00"),
-  ).toBeVisible();
-
- });
-
-});
+      await expect(
+        hearingSchedulePage.getSessionBreakLocator("12:00", "13:00"),
+      ).toBeVisible();
+    });
+  });
 });
