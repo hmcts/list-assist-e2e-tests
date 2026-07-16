@@ -4,43 +4,12 @@ import { clearDownScheduleFromSessionSummary } from "../../utils/cleardown.utils
 
 test.describe("New hearing session UI - check create session @new-ui @regression", () => {
   test.describe.configure({ mode: "serial" });
-  test.beforeEach(
-    async ({
-
-             page,
-             loginPage,
-
-           }) => {
-      await page.goto(config.urls.baseUrl);
-      await loginPage.login("ROBERT_SULLIVAN");
-      },
-  );
-
-  test("Create session - ensure all UI elements are visible", async ({
-    loginPage,
-    sessionBookingPage,
-    hearingSchedulePage,
-    dataUtils,
-    newUiSessionBookingPage,
-  }) => {
-    await test.step("Open app, filter schedule, and open Create Session. UI Validation", async () => {
-      await newUiSessionBookingPage.createSessionWithoutBasketedCase(
-        loginPage,
-        hearingSchedulePage,
-        sessionBookingPage,
-        dataUtils,
-        newUiSessionBookingPage.CONSTANTS
-          .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
-        newUiSessionBookingPage.CONSTANTS
-          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01,
-        0,
-        0,
-      );
-      await newUiSessionBookingPage.assertSessionBookingDetailsUiElementsVisible();
-    });
+  test.beforeEach(async ({ page, loginPage }) => {
+    await page.goto(config.urls.baseUrl);
+    await loginPage.login("ROBERT_SULLIVAN");
   });
 
-  test("List session and edit session with basketed case using new UI @this", async ({
+  test("List session and edit session with basketed case using new UI", async ({
     page,
     sessionBookingPage,
     hearingSchedulePage,
@@ -51,7 +20,6 @@ test.describe("New hearing session UI - check create session @new-ui @regression
     caseDetailsPage,
     newUiSessionBookingPage,
   }) => {
-
     await test.step("Clean down schedule for Haverfordwest County and Family, Haverfordwest Courtroom 1", async () => {
       await clearDownScheduleFromSessionSummary(
         sessionBookingPage,
@@ -299,6 +267,109 @@ test.describe("New hearing session UI - check create session @new-ui @regression
       await expect(hearingSchedulePage.table).toContainText(
         editedInternalComment,
       );
+    });
+  });
+
+  test("Create new session, confirm UI validation, and add session break @this", async ({
+    page,
+    sessionBookingPage,
+    hearingSchedulePage,
+    dataUtils,
+    newUiSessionBookingPage,
+  }) => {
+    await test.step("Create session without basketed case", async () => {
+      await newUiSessionBookingPage.createSessionWithoutBasketedCase(
+        hearingSchedulePage,
+        sessionBookingPage,
+        dataUtils,
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04,
+        0,
+        0,
+      );
+    });
+
+    await newUiSessionBookingPage.assertSessionBookingDetailsUiElementsVisible();
+
+    await test.step("Select default listing duration of 1:00", async () => {
+      await newUiSessionBookingPage.selectAndAssertDefaultListingDuration(
+        newUiSessionBookingPage.CONSTANTS.DEFAULT_LISTING_DURATION_ONE_HOUR,
+      );
+    });
+
+    await test.step("Assert Breaks section and Add Break button are visible", async () => {
+      await expect(newUiSessionBookingPage.breaksLabel).toBeVisible();
+      await expect(newUiSessionBookingPage.addBreakButton).toBeVisible();
+    });
+
+    await test.step("Click Add Break button", async () => {
+      await newUiSessionBookingPage.addBreakButton.click();
+      await page.waitForTimeout(1000);
+    });
+
+    await test.step("Select break start time using multiselect", async () => {
+      // Click to open dropdown
+      await newUiSessionBookingPage.breakStartTimeCombobox.click();
+      await page.waitForTimeout(1000);
+
+      // Look for options in the start time listbox and find option with "12"
+      const count = await newUiSessionBookingPage.breakStartTimeOptions.count();
+
+      for (let i = 0; i < count; i++) {
+        const text = await newUiSessionBookingPage.breakStartTimeOptions
+          .nth(i)
+          .textContent();
+        if (text && text.includes("12")) {
+          await newUiSessionBookingPage.breakStartTimeOptions.nth(i).click();
+          break;
+        }
+      }
+    });
+
+    await test.step("Select break end time using multiselect", async () => {
+      // Click to open dropdown
+      await newUiSessionBookingPage.breakEndTimeCombobox.click();
+      await page.waitForTimeout(1000);
+
+      // Look for options in the end time listbox and find option with "13"
+      const count = await newUiSessionBookingPage.breakEndTimeOptions.count();
+
+      for (let i = 0; i < count; i++) {
+        const text = await newUiSessionBookingPage.breakEndTimeOptions
+          .nth(i)
+          .textContent();
+        if (text && text.includes("13")) {
+          await newUiSessionBookingPage.breakEndTimeOptions.nth(i).click();
+          break;
+        }
+      }
+    });
+
+    await test.step("Confirm/Save the break by clicking confirmation button", async () => {
+      // Target the "Create booking break" button specifically
+      await newUiSessionBookingPage.breakConfirmButton.click();
+      await page.waitForTimeout(1000);
+    });
+
+    await test.step("Assert Session Booking page reloaded and breaks table is visible", async () => {
+      await expect(
+        newUiSessionBookingPage.sessionBookingDetailsHeading,
+      ).toBeVisible();
+      await expect(
+        newUiSessionBookingPage.breaksStartTimeHeader.first(),
+      ).toBeVisible();
+      await expect(
+        newUiSessionBookingPage.breaksEndTimeHeader.first(),
+      ).toBeVisible();
+    });
+
+    await test.step("Verify break row with Start Time 12:00 and End Time 13:00 appears in breaks table", async () => {
+      // Get the break row by start time
+      const breakRow = newUiSessionBookingPage.getBreakRowByStartTime("12:00");
+      await expect(breakRow).toBeVisible();
+      await expect(breakRow).toContainText("13:00");
     });
   });
 });

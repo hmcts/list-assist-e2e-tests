@@ -6,6 +6,7 @@ export class NewUiSessionBookingPage extends Base {
     CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC:
       "Haverfordwest County and Family Court",
     CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01: "Haverfordwest Courtroom 01",
+    CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04: "Haverfordwest Courtroom 04",
     SESSION_STATUS_RELEASED: "Released",
     SESSION_TYPE_ADHOC_AS_DIRECTED: "Adhoc (as directed)",
     DEFAULT_LISTING_DURATION_ONE_HOUR: "01:00",
@@ -126,6 +127,22 @@ export class NewUiSessionBookingPage extends Base {
     "button",
     { name: "Add Break" },
   );
+  readonly breakStartTimeCombobox = this.page.locator(
+    '[aria-owns="start-time_listbox"]',
+  );
+  readonly breakEndTimeCombobox = this.page.locator(
+    '[aria-owns="end-time_listbox"]',
+  );
+  readonly breakStartTimeOptions = this.page.locator(
+    '#start-time_listbox [role="option"]',
+  );
+  readonly breakEndTimeOptions = this.page.locator(
+    '#end-time_listbox [role="option"]',
+  );
+  readonly breakConfirmButton = this.page.getByRole("button", {
+    name: /Create booking break with selected/i,
+  });
+  readonly breaksTable = this.sessionBookingDetailsSection.locator("table");
   readonly breaksStartTimeHeader = this.sessionBookingDetailsSection.getByRole(
     "columnheader",
     {
@@ -397,7 +414,6 @@ export class NewUiSessionBookingPage extends Base {
   }
 
   async createSessionWithoutBasketedCase(
-    loginPage,
     hearingSchedulePage,
     sessionBookingPage,
     dataUtils,
@@ -430,6 +446,14 @@ export class NewUiSessionBookingPage extends Base {
 
     await expect(sessionBookingPage.heading).toBeVisible();
     await expect(sessionBookingPage.heading).toHaveText("Session Booking");
+  }
+
+  getBreakRowByStartTime(startTime: string) {
+    return this.breaksTable
+      .filter({
+        has: this.page.locator(`text=${startTime}`),
+      })
+      .first();
   }
 
   constructor(page: Page) {
