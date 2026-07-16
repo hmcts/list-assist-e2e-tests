@@ -1,6 +1,5 @@
 import { expect, Page } from "@playwright/test";
 import { Base } from "../../base";
-import { config } from "../../../utils/index.ts";
 
 export class NewUiSessionBookingPage extends Base {
   readonly CONSTANTS = {
@@ -402,15 +401,11 @@ export class NewUiSessionBookingPage extends Base {
     hearingSchedulePage,
     sessionBookingPage,
     dataUtils,
-    user,
     locality,
     location,
     dateFrom,
     dateTo,
   ) {
-    await this.page.goto(config.urls.baseUrl);
-    await loginPage.login(user);
-
     await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
     await expect(hearingSchedulePage.header).toBeVisible();
     await sessionBookingPage.updateAdvancedFilterConfig(

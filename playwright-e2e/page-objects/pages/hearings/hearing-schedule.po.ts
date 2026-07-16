@@ -269,6 +269,14 @@ export class HearingSchedulePage extends Base {
       .first();
   }
 
+  getSessionBreakLocator(startTime: string, endTime: string): Locator {
+    return this.page
+      .locator('div[tabindex="0"]', {
+        hasText: new RegExp(`${startTime}-${endTime}\\s+Session Break`, "i"),
+      })
+      .first();
+  }
+
   constructor(page: Page) {
     super(page);
     this.sessionBookingPage = new SessionBookingPage(page);
@@ -757,5 +765,15 @@ export class HearingSchedulePage extends Base {
 
       await expect(this.header).toBeVisible();
     }
+  }
+
+  async deleteSessionWithoutListing(room: string, date: string): Promise<void> {
+    const scheduleButton = this.page.locator(
+      `[id*="addBookingColor"][id*="${room}"][id*="${date}"]`,
+    );
+    await expect(scheduleButton.first()).toBeVisible();
+    await scheduleButton.first().click();
+    await this.goToSessionDetailsButton.click();
+    await this.deleteSessionButton.click();
   }
 }

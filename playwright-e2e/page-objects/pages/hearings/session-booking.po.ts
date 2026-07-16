@@ -42,6 +42,7 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC:
       "Haverfordwest County and Family Court",
     CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01: "Haverfordwest Courtroom 01",
+    CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04: "Haverfordwest Courtroom 04",
     CASE_LISTING_SESSION_STATUS_TYPE_RELEASED: "5",
     CASE_LISTING_SESSION_STATUS_TYPE_APPROVED: "4",
     CASE_LISTING_SESSION_DURATION_1_00: "60",
@@ -198,6 +199,7 @@ export class SessionBookingPage extends Base {
 
   readonly jurisdictionDropdown = this.page.locator("select#jsCode");
   readonly sessionTypeDropdown = this.page.locator("select#sessionType");
+  readonly addBreakButton = this.page.locator("#breakButtonId");
 
   readonly internalCommentsTextBox = this.page.locator(
     "#venueBooking\\.venueBookingDesc",
@@ -460,5 +462,56 @@ export class SessionBookingPage extends Base {
 
     //apply filter
     await this.applyButton.click();
+  }
+
+  readonly breaksTable = this.page.locator("#breaksTableId");
+
+  async openBreakPopup(): Promise<Page> {
+    const popupPromise = this.page.waitForEvent("popup");
+    await this.addBreakButton.click();
+    const breakPopup = await popupPromise;
+    await breakPopup.waitForLoadState("domcontentloaded");
+    return breakPopup;
+  }
+
+  async selectBreakStartTime(breakPopupPage: Page, time: string) {
+    const toggle = breakPopupPage
+      .getByRole("combobox", { name: "Booking break start time list" })
+      .locator(".multiselect__select");
+    await toggle.click();
+    await breakPopupPage
+      .locator("#start-time_listbox")
+      .getByRole("option", { name: time, exact: true })
+      .click();
+  }
+
+  async selectBreakEndTime(breakPopupPage: Page, time: string) {
+    const toggle = breakPopupPage
+      .getByRole("combobox", { name: "Booking break end time list" })
+      .locator(".multiselect__select");
+    await toggle.click();
+    await breakPopupPage
+      .locator("#end-time_listbox")
+      .getByRole("option", { name: time, exact: true })
+      .click();
+  }
+
+  async clickBookSelected(breakPopupPage: Page) {
+    const closePromise = breakPopupPage.waitForEvent("close");
+    await breakPopupPage
+      .getByRole("button", {
+        name: "Create booking break with selected start time and end time",
+      })
+      .click();
+    await closePromise;
+  }
+
+  async assertBreakRowVisible(startTime: string, endTime: string) {
+    await expect(
+      this.breaksTable
+        .locator("tbody tr")
+        .filter({ has: this.page.getByText(startTime, { exact: true }) })
+        .filter({ has: this.page.getByText(endTime, { exact: true }) }),
+    ).toBeVisible();
   }
 }
