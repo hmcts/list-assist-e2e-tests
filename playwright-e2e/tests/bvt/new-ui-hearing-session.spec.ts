@@ -1,6 +1,7 @@
 import { test, expect } from "../../fixtures.ts";
 import { config } from "../../utils/index.ts";
 import { clearDownScheduleFromSessionSummary } from "../../utils/cleardown.utils.ts";
+import type { NewUiSessionBookingPage } from "../../page-objects/pages/hearings/new-ui-session-booking.po.ts";
 
 test.describe("New hearing session UI - check create session @new-ui @regression", () => {
   test.describe.configure({ mode: "serial" });
@@ -76,6 +77,8 @@ test.describe("New hearing session UI - check create session @new-ui @regression
         process.env.CASE_NAME as string,
       );
     });
+
+    await newUiSessionBookingPage.assertSessionBookingDetailsUiElementsVisible();
 
     await test.step("Assert start date field is present and populated", async () => {
       await expect(
@@ -299,77 +302,74 @@ test.describe("New hearing session UI - check create session @new-ui @regression
       );
     });
 
-    await test.step("Assert Breaks section and Add Break button are visible", async () => {
-      await expect(newUiSessionBookingPage.breaksLabel).toBeVisible();
-      await expect(newUiSessionBookingPage.addBreakButton).toBeVisible();
-    });
-
-    await test.step("Click Add Break button", async () => {
-      await newUiSessionBookingPage.addBreakButton.click();
-      await page.waitForTimeout(1000);
-    });
-
-    await test.step("Select break start time using multiselect", async () => {
-      // Click to open dropdown
-      await newUiSessionBookingPage.breakStartTimeCombobox.click();
-      await page.waitForTimeout(1000);
-
-      // Look for options in the start time listbox and find option with "12"
-      const count = await newUiSessionBookingPage.breakStartTimeOptions.count();
-
-      for (let i = 0; i < count; i++) {
-        const text = await newUiSessionBookingPage.breakStartTimeOptions
-          .nth(i)
-          .textContent();
-        if (text && text.includes("12")) {
-          await newUiSessionBookingPage.breakStartTimeOptions.nth(i).click();
-          break;
-        }
-      }
-    });
-
-    await test.step("Select break end time using multiselect", async () => {
-      // Click to open dropdown
-      await newUiSessionBookingPage.breakEndTimeCombobox.click();
-      await page.waitForTimeout(1000);
-
-      // Look for options in the end time listbox and find option with "13"
-      const count = await newUiSessionBookingPage.breakEndTimeOptions.count();
-
-      for (let i = 0; i < count; i++) {
-        const text = await newUiSessionBookingPage.breakEndTimeOptions
-          .nth(i)
-          .textContent();
-        if (text && text.includes("13")) {
-          await newUiSessionBookingPage.breakEndTimeOptions.nth(i).click();
-          break;
-        }
-      }
-    });
-
-    await test.step("Confirm/Save the break by clicking confirmation button", async () => {
-      // Target the "Create booking break" button specifically
-      await newUiSessionBookingPage.breakConfirmButton.click();
-      await page.waitForTimeout(1000);
-    });
-
-    await test.step("Assert Session Booking page reloaded and breaks table is visible", async () => {
-      await expect(
-        newUiSessionBookingPage.sessionBookingDetailsHeading,
-      ).toBeVisible();
-      await expect(
-        newUiSessionBookingPage.breaksStartTimeHeader.first(),
-      ).toBeVisible();
-      await expect(
-        newUiSessionBookingPage.breaksEndTimeHeader.first(),
-      ).toBeVisible();
-    });
-
-    await test.step("Verify break row with Start Time 12:00 and End Time 13:00 appears in breaks table", async () => {
-      // Get the break row by start time
-      const breakRow = newUiSessionBookingPage.getBreakRowByStartTime("12:00");
-      await expect(breakRow).toBeVisible();
-      await expect(breakRow).toContainText("13:00");
-    });
+    await runSessionBreakFlow(newUiSessionBookingPage);
   });
 });
+
+async function runSessionBreakFlow(
+  newUiSessionBookingPage: NewUiSessionBookingPage,
+): Promise<void> {
+  await test.step("Assert Breaks section and Add Break button are visible", async () => {
+    await expect(newUiSessionBookingPage.breaksLabel).toBeVisible();
+    await expect(newUiSessionBookingPage.addBreakButton).toBeVisible();
+  });
+
+  await test.step("Add first break 12:00 to 13:00", async () => {
+    await newUiSessionBookingPage.addBreakButton.click();
+    await newUiSessionBookingPage.setBreakTimes("12:00", "13:00");
+    await newUiSessionBookingPage.confirmBreakModal();
+  });
+
+  await test.step("Assert Session Booking page reloaded and breaks table is visible", async () => {
+    await expect(
+      newUiSessionBookingPage.sessionBookingDetailsHeading,
+    ).toBeVisible();
+    await expect(
+      newUiSessionBookingPage.breaksStartTimeHeader.first(),
+    ).toBeVisible();
+    await expect(
+      newUiSessionBookingPage.breaksEndTimeHeader.first(),
+    ).toBeVisible();
+  });
+
+  await test.step("Verify break row with Start Time 12:00 and End Time 13:00 appears in breaks table", async () => {
+    const breakRow = newUiSessionBookingPage.getBreakRowByStartTime("12:00");
+    await expect(breakRow).toBeVisible();
+    await expect(breakRow).toContainText("13:00");
+  });
+
+  await test.step("Add second break 14:00 to 15:00", async () => {
+    await newUiSessionBookingPage.addBreakButton.click();
+    await newUiSessionBookingPage.setBreakTimes("14:00", "15:00");
+    await newUiSessionBookingPage.confirmBreakModal();
+    await expect(
+      newUiSessionBookingPage.getBreakRow("14:00", "15:00"),
+    ).toBeVisible();
+  });
+
+  await test.step("Edit second break and assert modal is pre-populated", async () => {
+    await newUiSessionBookingPage.clickEditBreak("14:00", "15:00");
+    await newUiSessionBookingPage.assertBreakModalPrePopulated(
+      "14:00",
+      "15:00",
+    );
+  });
+
+  await test.step("Update edited break to 11:00 to 12:00 and confirm", async () => {
+    await newUiSessionBookingPage.setBreakTimes("11:00", "12:00");
+    await newUiSessionBookingPage.confirmBreakModal();
+  });
+
+  await test.step("Assert edited break is updated and old row is no longer shown", async () => {
+    await expect(
+      newUiSessionBookingPage.getBreakRow("11:00", "12:00"),
+    ).toBeVisible();
+    await expect(
+      newUiSessionBookingPage.getBreakRow("14:00", "15:00"),
+    ).not.toBeVisible();
+  });
+
+  await test.step("Assert breaks table remains sorted by start time", async () => {
+    await newUiSessionBookingPage.assertBreakStartTimesSortedAscending();
+  });
+}
