@@ -274,7 +274,6 @@ test.describe("New hearing session UI - check create session @new-ui @regression
   });
 
   test("Create new session, confirm UI validation, and add session break @this", async ({
-    page,
     sessionBookingPage,
     hearingSchedulePage,
     dataUtils,
