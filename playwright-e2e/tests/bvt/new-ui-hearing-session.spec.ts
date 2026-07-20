@@ -127,6 +127,8 @@ test.describe("New hearing session UI - check create session @new-ui @regression
       );
     });
 
+    await runSessionBreakFlow(newUiSessionBookingPage);
+
     await test.step("Fill internal comment with case name", async () => {
       await newUiSessionBookingPage.fillInternalComment(
         `${newUiSessionBookingPage.CONSTANTS.INTERNAL_COMMENT_PREFIX}${process.env.CASE_NAME as string}`,
