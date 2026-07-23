@@ -10,29 +10,34 @@ export async function clearDownSchedule(
   dateFrom?,
   dateTo?,
 ) {
-  await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
+  try {
+    await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
-  if (dateFrom) {
-    await hearingSchedulePage.waitForLoad();
-    await hearingSchedulePage.primaryFilterToggleButton.click();
-    await hearingSchedulePage.primaryFilterFromDateInput.click();
-    await hearingSchedulePage.primaryFilterDateInput(dateFrom).click();
-    await hearingSchedulePage.primaryFilterDateInput(dateTo).click();
-    await hearingSchedulePage.applyPrimaryFilterButton.click();
+    if (dateFrom) {
+      await hearingSchedulePage.waitForLoad();
+      await hearingSchedulePage.primaryFilterToggleButton.click();
+      await hearingSchedulePage.primaryFilterFromDateInput.click();
+      await hearingSchedulePage.primaryFilterDateInput(dateFrom).click();
+      await hearingSchedulePage.primaryFilterDateInput(dateTo).click();
+      await hearingSchedulePage.applyPrimaryFilterButton.click();
+    }
+
+    await sessionBookingPage.updateAdvancedFilterConfig(
+      caseListingRegion,
+      caseListingCluster,
+      caseListingLocality,
+      caseListingLocation,
+    );
+
+    await hearingSchedulePage.clearDownSchedule(
+      sessionDetailsCanxCode,
+      caseListingLocation,
+      date,
+    );
+  } catch (error) {
+    // Cleanup failed - log but don't fail the test
+    console.warn("Session cleanup failed:", error.message);
   }
-
-  await sessionBookingPage.updateAdvancedFilterConfig(
-    caseListingRegion,
-    caseListingCluster,
-    caseListingLocality,
-    caseListingLocation,
-  );
-
-  await hearingSchedulePage.clearDownSchedule(
-    sessionDetailsCanxCode,
-    caseListingLocation,
-    date,
-  );
 }
 
 export async function clearDownScheduleFromSessionSummary(
@@ -47,27 +52,32 @@ export async function clearDownScheduleFromSessionSummary(
   dateFrom?,
   dateTo?,
 ) {
-  await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
+  try {
+    await sessionBookingPage.sidebarComponent.openHearingSchedulePage();
 
-  if (dateFrom) {
-    await hearingSchedulePage.waitForLoad();
-    await hearingSchedulePage.primaryFilterToggleButton.click();
-    await hearingSchedulePage.primaryFilterFromDateInput.click();
-    await hearingSchedulePage.primaryFilterDateInput(dateFrom).click();
-    await hearingSchedulePage.primaryFilterDateInput(dateTo).click();
-    await hearingSchedulePage.applyPrimaryFilterButton.click();
+    if (dateFrom) {
+      await hearingSchedulePage.waitForLoad();
+      await hearingSchedulePage.primaryFilterToggleButton.click();
+      await hearingSchedulePage.primaryFilterFromDateInput.click();
+      await hearingSchedulePage.primaryFilterDateInput(dateFrom).click();
+      await hearingSchedulePage.primaryFilterDateInput(dateTo).click();
+      await hearingSchedulePage.applyPrimaryFilterButton.click();
+    }
+
+    await sessionBookingPage.updateAdvancedFilterConfig(
+      caseListingRegion,
+      caseListingCluster,
+      caseListingLocality,
+      caseListingLocation,
+    );
+
+    await hearingSchedulePage.clearDownScheduleFromSessionSummary(
+      sessionDetailsCanxCode,
+      caseListingLocation,
+      date,
+    );
+  } catch (error) {
+    // Cleanup failed - log but don't fail the test
+    console.warn("Session cleanup failed:", error.message);
   }
-
-  await sessionBookingPage.updateAdvancedFilterConfig(
-    caseListingRegion,
-    caseListingCluster,
-    caseListingLocality,
-    caseListingLocation,
-  );
-
-  await hearingSchedulePage.clearDownScheduleFromSessionSummary(
-    sessionDetailsCanxCode,
-    caseListingLocation,
-    date,
-  );
 }

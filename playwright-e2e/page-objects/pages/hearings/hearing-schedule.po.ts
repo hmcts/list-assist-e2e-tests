@@ -753,19 +753,17 @@ export class HearingSchedulePage extends Base {
         .toBeTruthy();
 
       await caseNumberAndScheduleLink.click();
-      await this.waitForLoad();
 
-      // Click Edit Session button
-      await this.goToSessionDetailsButton.click();
-      await this.waitForLoad();
+      await this.selectListingOnSessionCheckbox.check();
+      await this.cancelListingsForSelectedButton.click();
+      await this.cancelRescheduleReasonDropdown.selectOption(cancellationCode);
 
-      // Click Delete Session button
-      await this.deleteSessionButton.click();
+      //confirm cancellation
+      await this.page.getByRole("button", { name: "Yes" }).click();
+      //confirm deletion of all data within session
+      await this.page.getByRole("button", { name: "Yes" }).click();
 
-      // After delete, navigate back to hearing schedule page
-      await expect(this.sidebarComponent.sidebar).toBeVisible();
-      await this.sidebarComponent.openHearingSchedulePage();
-      await this.waitForLoad();
+      await expect(this.header).toBeVisible();
     }
   }
 

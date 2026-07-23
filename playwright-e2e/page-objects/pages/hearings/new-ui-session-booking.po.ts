@@ -7,9 +7,6 @@ export class NewUiSessionBookingPage extends Base {
       "Haverfordwest County and Family Court",
     CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01: "Haverfordwest Courtroom 01",
     CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04: "Haverfordwest Courtroom 04",
-    CASE_LISTING_LOCALITY_CARDIFF_CC_FC:
-      "Cardiff Civil and Family Justice Centre",
-    CASE_LISTING_LOCATION_CARDIFF_CRTRM_02: "Cardiff CJC Courtroom 02",
     SESSION_STATUS_RELEASED: "Released",
     SESSION_TYPE_ADHOC_AS_DIRECTED: "Adhoc (as directed)",
     DEFAULT_LISTING_DURATION_ONE_HOUR: "01:00",
@@ -186,13 +183,6 @@ export class NewUiSessionBookingPage extends Base {
   readonly externalCommentsTextBox = this.page.locator(
     "#venueBooking\\.externalComments",
   );
-  readonly sessionOverviewPopup = this.page
-    .locator('[role="dialog"]:visible, .modal.show:visible')
-    .first();
-  readonly closeSessionOverviewButton = this.sessionOverviewPopup.getByRole(
-    "button",
-    { name: "Close Session Overview" },
-  );
 
   startTimeOption(time: string) {
     return this.page
@@ -240,24 +230,10 @@ export class NewUiSessionBookingPage extends Base {
     await expect(this.localitySelectedValue).toHaveText(locality);
   }
 
-  async setLocality(locality: string) {
-    await expect(this.localityCombobox).toBeVisible();
-    await this.localityComboboxToggle.click();
-    await expect(this.localityOption(locality)).toBeVisible();
-    await this.localityOption(locality).click();
-  }
-
   async assertLocation(location: string) {
     await expect(this.locationCombobox).toBeVisible();
     await expect(this.locationSelectedValue).toBeVisible();
     await expect(this.locationSelectedValue).toHaveText(location);
-  }
-
-  async setLocation(location: string) {
-    await expect(this.locationCombobox).toBeVisible();
-    await this.locationComboboxToggle.click();
-    await expect(this.locationOption(location)).toBeVisible();
-    await this.locationOption(location).click();
   }
 
   async assertStartTime(time: string) {
@@ -266,24 +242,10 @@ export class NewUiSessionBookingPage extends Base {
     await expect(this.startTimeSelectedValue).toHaveText(time);
   }
 
-  async setStartTime(time: string) {
-    await expect(this.startTimeCombobox).toBeVisible();
-    await this.startTimeCombobox.click();
-    await expect(this.startTimeOption(time)).toBeVisible();
-    await this.startTimeOption(time).click();
-  }
-
   async assertEndTime(time: string) {
     await expect(this.endTimeCombobox).toBeVisible();
     await expect(this.endTimeSelectedValue).toBeVisible();
     await expect(this.endTimeSelectedValue).toHaveText(time);
-  }
-
-  async setEndTime(time: string) {
-    await expect(this.endTimeCombobox).toBeVisible();
-    await this.endTimeCombobox.click();
-    await expect(this.endTimeOption(time)).toBeVisible();
-    await this.endTimeOption(time).click();
   }
 
   async assertSessionStatus(status: string) {
@@ -389,18 +351,12 @@ export class NewUiSessionBookingPage extends Base {
   }
 
   async selectHearingTypeInListingPopup(hearingType: string) {
-    // Only select hearing type if popup is visible (it may not appear in all scenarios)
-    if (
-      await this.listingPopup.isVisible({ timeout: 3000 }).catch(() => false)
-    ) {
-      await this.listingPopupHearingTypeToggle.click();
-      await expect(
-        this.listingPopupHearingTypeOption(hearingType),
-      ).toBeVisible();
-      await this.listingPopupHearingTypeOption(hearingType).click();
-      await expect(this.listingPopupSaveButton).toBeVisible();
-      await this.listingPopupSaveButton.click();
-    }
+    await expect(this.listingPopup).toBeVisible();
+    await this.listingPopupHearingTypeToggle.click();
+    await expect(this.listingPopupHearingTypeOption(hearingType)).toBeVisible();
+    await this.listingPopupHearingTypeOption(hearingType).click();
+    await expect(this.listingPopupSaveButton).toBeVisible();
+    await this.listingPopupSaveButton.click();
   }
 
   readonly addPanelMemberButton = this.page.locator("#addPanelMemberId");
@@ -575,19 +531,6 @@ export class NewUiSessionBookingPage extends Base {
 
     expect(parsed.length).toBeGreaterThan(0);
     expect(parsed).toEqual([...parsed].sort((a, b) => a - b));
-  }
-
-  async setStartDate(dateValue: string) {
-    await expect(this.editableStartTimeInput).toBeVisible();
-    await this.editableStartTimeInput.click();
-    await this.editableStartTimeInput.fill(dateValue);
-    await this.editableStartTimeInput.press("Tab");
-    await this.page.keyboard.press("Escape");
-  }
-
-  async assertStartDateValue(dateValue: string) {
-    await expect(this.editableStartTimeInput).toBeVisible();
-    await expect(this.editableStartTimeInput).toHaveValue(dateValue);
   }
 
   constructor(page: Page) {
