@@ -1,6 +1,9 @@
 import { test, expect } from "../../fixtures.ts";
 import { config } from "../../utils/index.ts";
-import { clearDownScheduleFromSessionSummary } from "../../utils/cleardown.utils.ts";
+import {
+  clearDownSchedule,
+  clearDownScheduleFromSessionSummary,
+} from "../../utils/cleardown.utils.ts";
 import type { NewUiSessionBookingPage } from "../../page-objects/pages/hearings/new-ui-session-booking.po.ts";
 
 test.describe("New hearing session UI - check create session @new-ui @regression @this", () => {
@@ -9,6 +12,31 @@ test.describe("New hearing session UI - check create session @new-ui @regression
     await page.goto(config.urls.baseUrl);
     await loginPage.login("ROBERT_SULLIVAN");
   });
+
+  test.afterEach(
+    async ({
+      sessionBookingPage,
+      hearingSchedulePage,
+      dataUtils,
+      newUiSessionBookingPage,
+    }) => {
+      await clearDownScheduleFromSessionSummary(
+        sessionBookingPage,
+        hearingSchedulePage,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01,
+        sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      );
+    },
+  );
 
   test("List session and edit session with basketed case using new UI", async ({
     page,
@@ -22,7 +50,7 @@ test.describe("New hearing session UI - check create session @new-ui @regression
     newUiSessionBookingPage,
   }) => {
     await test.step("Clean down schedule for Haverfordwest County and Family, Haverfordwest Courtroom 1", async () => {
-      await clearDownScheduleFromSessionSummary(
+      await clearDownSchedule(
         sessionBookingPage,
         hearingSchedulePage,
         sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
