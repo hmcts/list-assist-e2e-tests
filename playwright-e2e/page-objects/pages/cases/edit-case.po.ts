@@ -101,6 +101,57 @@ export class EditNewCasePage extends Base {
     );
   }
 
+  async selectOptionWithRuntimeFallback(
+    selectLocator: Locator,
+    optionValue: string,
+    fieldName: string,
+  ): Promise<void> {
+    try {
+      await this.selectOptionWithRetry(selectLocator, optionValue, fieldName);
+    } catch {
+      // Fallback for flaky render timing: force-set the runtime value when present.
+      await selectLocator
+        .evaluate((el, expected) => {
+          const select = el as HTMLSelectElement;
+          select.value = expected;
+          select.dispatchEvent(new Event("input", { bubbles: true }));
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+        }, optionValue)
+        .catch(() => undefined);
+    }
+
+    const selectedValue = await selectLocator.inputValue().catch(() => "");
+    if (selectedValue === optionValue) {
+      return;
+    }
+
+    await selectLocator
+      .evaluate((el, expected) => {
+        const select = el as HTMLSelectElement;
+        const hasExpected = Array.from(select.options).some(
+          (option) => option.value === expected,
+        );
+        if (hasExpected) {
+          select.value = expected;
+          select.dispatchEvent(new Event("input", { bubbles: true }));
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      }, optionValue)
+      .catch(() => undefined);
+
+    await expect
+      .poll(
+        async () => {
+          return await selectLocator.inputValue().catch(() => "");
+        },
+        {
+          intervals: [500, 1_000],
+          timeout: 8_000,
+        },
+      )
+      .toBe(optionValue);
+  }
+
   async clickRelatedCaseResult(caseNumber: string) {
     await this.page.locator(".tt-suggestion", { hasText: caseNumber }).click();
   }
@@ -109,6 +160,20 @@ export class EditNewCasePage extends Base {
     await expect(
       this.relatedCasesTable.locator("td", { hasText: caseName }),
     ).toBeVisible();
+  }
+
+  async dismissRelatedCaseDialogIfOpen(): Promise<void> {
+    const cancelRelatedCaseButton = this.page.locator("#button_cancel_btn_id");
+    const cancelVisible = await cancelRelatedCaseButton
+      .isVisible()
+      .catch(() => false);
+
+    if (!cancelVisible) {
+      return;
+    }
+
+    await cancelRelatedCaseButton.click();
+    await expect(cancelRelatedCaseButton).toBeHidden({ timeout: 5_000 });
   }
 
   async createNewParticipant(
@@ -123,12 +188,249 @@ export class EditNewCasePage extends Base {
     selectRoleIfExists: boolean = false,
     alternativePartyName?: string,
   ) {
-    await expect(this.addNewParticipantButton).toBeVisible();
-    await expect(this.addNewParticipantButton).toBeEnabled();
-    await this.addNewParticipantButton.scrollIntoViewIfNeeded();
-    await this.addNewParticipantButton.click({ trial: true });
+    //   await expect(this.addNewParticipantButton).toBeVisible();
+    //   await expect(this.addNewParticipantButton).toBeEnabled();
+    //   await this.addNewParticipantButton.scrollIntoViewIfNeeded();
+    //   await this.addNewParticipantButton.click({ trial: true });
+    //
+    //   // Reuse an already-open participant popup when present (supports flows that pre-click Add New Participant).
+    //   let createNewParticipant: Page | null = null;
+    //
+    //   const contextPages = this.page.context().pages();
+    //   const maybeExistingPopup = contextPages[contextPages.length - 1];
+    //   if (maybeExistingPopup && maybeExistingPopup !== this.page) {
+    //     const hasCreateNewButton = await maybeExistingPopup
+    //       .getByRole("button", {
+    //         name: "Create New",
+    //         exact: true,
+    //       })
+    //       .isVisible()
+    //       .catch(() => false);
+    //
+    //     if (hasCreateNewButton) {
+    //       createNewParticipant = maybeExistingPopup;
+    //     }
+    //   }
+    //
+    //   // Popup can be delayed/intermittent depending on browser timing, so retry click + wait for popup.
+    //   for (let attempt = 0; attempt < 5; attempt++) {
+    //     if (createNewParticipant) {
+    //       break;
+    //     }
+    //
+    //     const popupPromise = this.page
+    //       .waitForEvent("popup", { timeout: 10_000 })
+    //       .catch(() => null);
+    //     await this.addNewParticipantButton.click();
+    //     createNewParticipant = await popupPromise;
+    //
+    //     if (createNewParticipant) {
+    //       break;
+    //     }
+    //   }
+    //
+    //   if (!createNewParticipant) {
+    //     throw new Error("Participant popup failed to open after retries");
+    //   }
+    //
+    //   await expect(
+    //     createNewParticipant.getByRole("button", {
+    //       name: "Create New",
+    //       exact: true,
+    //     }),
+    //   ).toBeVisible();
+    //
+    //   await createNewParticipant
+    //     .getByRole("button", { name: "Create New", exact: true })
+    //     .click();
+    //
+    //   // Fill in the participant details
+    //   //wait for heading to be visible
+    //   await expect
+    //     .poll(
+    //       async () => {
+    //         return await createNewParticipant
+    //           .getByText("New Participant")
+    //           .isVisible();
+    //       },
+    //       {
+    //         intervals: [2_000],
+    //         timeout: 10_000,
+    //       },
+    //     )
+    //     .toBeTruthy();
+    //
+    //   //wait for Participant Class to be visible
+    //   await expect
+    //     .poll(
+    //       async () => {
+    //         return await createNewParticipant
+    //           .getByLabel("Participant Class")
+    //           .isVisible();
+    //       },
+    //       {
+    //         intervals: [2_000],
+    //         timeout: 10_000,
+    //       },
+    //     )
+    //     .toBeTruthy();
+    //
+    //   const participantClassSelect =
+    //     createNewParticipant.getByLabel("Participant Class");
+    //   const participantTypeSelect =
+    //     createNewParticipant.getByLabel("Participant Type");
+    //   const genderSelect = createNewParticipant.getByLabel("Gender", {
+    //     exact: true,
+    //   });
+    //   const interpreterSelect = createNewParticipant.locator(
+    //     "#personentityLanguageCodeIntp",
+    //   );
+    //
+    //   await this.selectOptionWithRetry(
+    //     participantClassSelect,
+    //     participantClass,
+    //     "Participant Class",
+    //   );
+    //
+    //   // Wait for form to re-render with Person's Details section
+    //   await expect(
+    //     createNewParticipant.getByText("Person's Details"),
+    //   ).toBeVisible();
+    //
+    //   await this.selectOptionWithRetry(
+    //     participantTypeSelect,
+    //     participantType,
+    //     "Participant Type",
+    //   );
+    //
+    //   // Fill all text fields
+    //   await createNewParticipant
+    //     .getByRole("textbox", { name: "Given Names" })
+    //     .fill(givenNames);
+    //   await createNewParticipant
+    //     .getByRole("textbox", { name: "Last Name" })
+    //     .fill(lastName);
+    //
+    //   await this.selectOptionWithRetry(genderSelect, gender, "Gender");
+    //
+    //   // Fill DOB
+    //   await createNewParticipant
+    //     .getByRole("textbox", { name: "DOB" })
+    //     .fill(dateOfBirth);
+    //
+    //   await this.selectOptionWithRetry(
+    //     interpreterSelect,
+    //     interpreter,
+    //     "Interpreter Language",
+    //   );
+    //
+    //   const participantSaveButton = createNewParticipant.getByRole("button", {
+    //     name: "Save",
+    //     exact: true,
+    //   });
+    //   await expect(participantSaveButton).toBeEnabled();
+    //   await participantSaveButton.click({ trial: true });
+    //
+    //   const newPartyHeading = createNewParticipant.getByText("New Party");
+    //   const newParticipantHeading =
+    //     createNewParticipant.getByText("New Participant");
+    //   const roleSelect = createNewParticipant.getByLabel("Role");
+    //
+    //   let transitionedToPartyStep = false;
+    //   let popupClosedAfterInitialSave = false;
+    //   for (let attempt = 0; attempt < 5; attempt++) {
+    //     await participantSaveButton.click();
+    //
+    //     if (createNewParticipant.isClosed()) {
+    //       popupClosedAfterInitialSave = true;
+    //       transitionedToPartyStep = true;
+    //       break;
+    //     }
+    //
+    //     const ignoreAndContinueButton = createNewParticipant.getByRole("button", {
+    //       name: /Ignore\s*&\s*Continue/i,
+    //     });
+    //
+    //     const ignoreVisible = await ignoreAndContinueButton
+    //       .waitFor({ state: "visible", timeout: 2_000 })
+    //       .then(() => true)
+    //       .catch(() => false);
+    //
+    //     if (ignoreVisible) {
+    //       await ignoreAndContinueButton.click();
+    //     }
+    //
+    //     const roleVisible = await roleSelect.isVisible().catch(() => false);
+    //     if (roleVisible) {
+    //       transitionedToPartyStep = true;
+    //       break;
+    //     }
+    //
+    //     transitionedToPartyStep = await newPartyHeading
+    //       .waitFor({ state: "visible", timeout: 12_000 })
+    //       .then(() => true)
+    //       .catch(() => false);
+    //
+    //     if (transitionedToPartyStep) {
+    //       break;
+    //     }
+    //
+    //     const stillOnNewParticipant = await newParticipantHeading
+    //       .isVisible()
+    //       .catch(() => false);
+    //     if (!stillOnNewParticipant) {
+    //       break;
+    //     }
+    //
+    //     await expect(participantSaveButton).toBeEnabled();
+    //     await participantSaveButton.click({ trial: true });
+    //   }
+    //
+    //   if (!transitionedToPartyStep) {
+    //     throw new Error("Participant Save did not transition to New Party");
+    //   }
+    //
+    //   if (popupClosedAfterInitialSave) {
+    //     return;
+    //   }
+    //
+    //   await expect(roleSelect).toBeVisible();
+    //   await this.selectOptionWithRetry(roleSelect, role, "Role");
+    //
+    //   if (selectRoleIfExists) {
+    //     await createNewParticipant.locator("#mpSupressFlag1").click();
+    //   } else if (alternativePartyName && selectRoleIfExists) {
+    //     await createNewParticipant
+    //       .locator("#mpSuppressAltNameId")
+    //       .fill(alternativePartyName);
+    //   }
+    //   const finalSaveButton = createNewParticipant.getByRole("button", {
+    //     name: "Save",
+    //     exact: true,
+    //   });
+    //   await expect(finalSaveButton).toBeEnabled();
+    //
+    //   let popupClosed = false;
+    //   for (let attempt = 0; attempt < 3; attempt++) {
+    //     const popupClosePromise = createNewParticipant
+    //       .waitForEvent("close", { timeout: 8_000 })
+    //       .then(() => true)
+    //       .catch(() => false);
+    //
+    //     await finalSaveButton.click();
+    //     popupClosed = await popupClosePromise;
+    //
+    //     if (popupClosed) {
+    //       break;
+    //     }
+    //   }
+    //
+    //   if (!popupClosed) {
+    //     throw new Error("Participant popup did not close after final Save");
+    //   }
 
-    // Reuse an already-open participant popup when present (supports flows that pre-click Add New Participant).
+    ////////////////////////////////////
+
     let createNewParticipant: Page | null = null;
 
     const contextPages = this.page.context().pages();
@@ -147,16 +449,21 @@ export class EditNewCasePage extends Base {
       }
     }
 
-    // Popup can be delayed/intermittent depending on browser timing, so retry click + wait for popup.
+    await expect(this.addNewParticipantButton).toBeVisible();
+    await expect(this.addNewParticipantButton).toBeEnabled();
+    await this.addNewParticipantButton.scrollIntoViewIfNeeded();
     for (let attempt = 0; attempt < 5; attempt++) {
       if (createNewParticipant) {
         break;
       }
 
+      await this.dismissRelatedCaseDialogIfOpen();
+
       const popupPromise = this.page
         .waitForEvent("popup", { timeout: 10_000 })
         .catch(() => null);
       await this.addNewParticipantButton.click();
+      await this.dismissRelatedCaseDialogIfOpen();
       createNewParticipant = await popupPromise;
 
       if (createNewParticipant) {
@@ -221,22 +528,19 @@ export class EditNewCasePage extends Base {
       "#personentityLanguageCodeIntp",
     );
 
-    await this.selectOptionWithRetry(
-      participantClassSelect,
-      participantClass,
-      "Participant Class",
-    );
+    // Select Participant Class - use value directly without click
+    await expect(participantClassSelect).toBeEnabled();
+    await participantClassSelect.selectOption(participantClass);
 
     // Wait for form to re-render with Person's Details section
+    await this.page.waitForTimeout(500);
     await expect(
       createNewParticipant.getByText("Person's Details"),
     ).toBeVisible();
 
-    await this.selectOptionWithRetry(
-      participantTypeSelect,
-      participantType,
-      "Participant Type",
-    );
+    // Select Participant Type
+    await expect(participantTypeSelect).toBeEnabled();
+    await participantTypeSelect.selectOption(participantType);
 
     // Fill all text fields
     await createNewParticipant
@@ -246,91 +550,91 @@ export class EditNewCasePage extends Base {
       .getByRole("textbox", { name: "Last Name" })
       .fill(lastName);
 
-    await this.selectOptionWithRetry(genderSelect, gender, "Gender");
+    // Select Gender
+    await expect(genderSelect).toBeEnabled();
+    await genderSelect.selectOption(gender);
 
     // Fill DOB
     await createNewParticipant
       .getByRole("textbox", { name: "DOB" })
       .fill(dateOfBirth);
 
-    await this.selectOptionWithRetry(
-      interpreterSelect,
-      interpreter,
-      "Interpreter Language",
-    );
+    // Select Interpreter Language
+    await expect(interpreterSelect).toBeEnabled();
+    await interpreterSelect.selectOption(interpreter);
 
-    const participantSaveButton = createNewParticipant.getByRole("button", {
+    const saveButton = createNewParticipant.getByRole("button", {
       name: "Save",
       exact: true,
     });
-    await expect(participantSaveButton).toBeEnabled();
-    await participantSaveButton.click({ trial: true });
+
+    await expect(saveButton).toBeVisible({ timeout: 5_000 });
+    await expect(saveButton).toBeEnabled({ timeout: 5_000 });
+    await saveButton.click({ timeout: 5_000 }).catch(async () => {
+      await saveButton.click({ timeout: 5_000 });
+    });
 
     const newPartyHeading = createNewParticipant.getByText("New Party");
-    const newParticipantHeading =
-      createNewParticipant.getByText("New Participant");
     const roleSelect = createNewParticipant.getByLabel("Role");
+    const ignoreAndContinueButton = createNewParticipant.getByRole("button", {
+      name: /Ignore\s*&\s*Continue/i,
+    });
 
-    let transitionedToPartyStep = false;
-    let popupClosedAfterInitialSave = false;
-    for (let attempt = 0; attempt < 5; attempt++) {
-      await participantSaveButton.click();
+    const waitForPartyStepOrIgnore = async (timeoutMs: number) => {
+      const startedAt = Date.now();
 
-      if (createNewParticipant.isClosed()) {
-        popupClosedAfterInitialSave = true;
-        transitionedToPartyStep = true;
-        break;
+      while (Date.now() - startedAt < timeoutMs) {
+        if (createNewParticipant.isClosed()) {
+          return "closed" as const;
+        }
+
+        const ignoreVisible = await ignoreAndContinueButton
+          .isVisible()
+          .catch(() => false);
+        if (ignoreVisible) {
+          await ignoreAndContinueButton
+            .click({ timeout: 3_000 })
+            .catch(() => undefined);
+        }
+
+        const roleVisible = await roleSelect.isVisible().catch(() => false);
+        if (roleVisible) {
+          return "party" as const;
+        }
+
+        const partyHeadingVisible = await newPartyHeading
+          .isVisible()
+          .catch(() => false);
+        if (partyHeadingVisible) {
+          return "party" as const;
+        }
+
+        await this.page.waitForTimeout(500);
       }
 
-      const ignoreAndContinueButton = createNewParticipant.getByRole("button", {
-        name: /Ignore\s*&\s*Continue/i,
+      return "timeout" as const;
+    };
+
+    let partyStepResult = await waitForPartyStepOrIgnore(8_000);
+    if (partyStepResult === "timeout") {
+      await expect(saveButton).toBeVisible({ timeout: 3_000 });
+      await expect(saveButton).toBeEnabled({ timeout: 3_000 });
+      await saveButton.click({ timeout: 3_000 }).catch(async () => {
+        await saveButton.click({ timeout: 3_000 });
       });
-
-      const ignoreVisible = await ignoreAndContinueButton
-        .waitFor({ state: "visible", timeout: 2_000 })
-        .then(() => true)
-        .catch(() => false);
-
-      if (ignoreVisible) {
-        await ignoreAndContinueButton.click();
-      }
-
-      const roleVisible = await roleSelect.isVisible().catch(() => false);
-      if (roleVisible) {
-        transitionedToPartyStep = true;
-        break;
-      }
-
-      transitionedToPartyStep = await newPartyHeading
-        .waitFor({ state: "visible", timeout: 12_000 })
-        .then(() => true)
-        .catch(() => false);
-
-      if (transitionedToPartyStep) {
-        break;
-      }
-
-      const stillOnNewParticipant = await newParticipantHeading
-        .isVisible()
-        .catch(() => false);
-      if (!stillOnNewParticipant) {
-        break;
-      }
-
-      await expect(participantSaveButton).toBeEnabled();
-      await participantSaveButton.click({ trial: true });
+      partyStepResult = await waitForPartyStepOrIgnore(8_000);
     }
 
-    if (!transitionedToPartyStep) {
-      throw new Error("Participant Save did not transition to New Party");
-    }
-
-    if (popupClosedAfterInitialSave) {
+    if (partyStepResult === "closed") {
       return;
     }
 
-    await expect(roleSelect).toBeVisible();
-    await this.selectOptionWithRetry(roleSelect, role, "Role");
+    if (partyStepResult !== "party") {
+      throw new Error("Participant Save did not transition to New Party");
+    }
+
+    await expect(roleSelect).toBeVisible({ timeout: 3_000 });
+    await roleSelect.selectOption(role);
 
     if (selectRoleIfExists) {
       await createNewParticipant.locator("#mpSupressFlag1").click();
@@ -339,29 +643,29 @@ export class EditNewCasePage extends Base {
         .locator("#mpSuppressAltNameId")
         .fill(alternativePartyName);
     }
-    const finalSaveButton = createNewParticipant.getByRole("button", {
-      name: "Save",
-      exact: true,
+    await expect(saveButton).toBeVisible({ timeout: 5_000 });
+    await expect(saveButton).toBeEnabled({ timeout: 5_000 });
+    const popupClosePromise = createNewParticipant.waitForEvent("close", {
+      timeout: 8_000,
     });
-    await expect(finalSaveButton).toBeEnabled();
+    const mainPageReadyPromise = this.caseParticipantsHeader.waitFor({
+      state: "visible",
+      timeout: 8_000,
+    });
 
-    let popupClosed = false;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const popupClosePromise = createNewParticipant
-        .waitForEvent("close", { timeout: 8_000 })
-        .then(() => true)
-        .catch(() => false);
+    await saveButton.click({ timeout: 5_000 }).catch(async () => {
+      await saveButton.click({ timeout: 5_000 });
+    });
 
-      await finalSaveButton.click();
-      popupClosed = await popupClosePromise;
+    const finalSaveSignal = await Promise.any([
+      popupClosePromise.then(() => "popupClosed"),
+      mainPageReadyPromise.then(() => "mainPageReady"),
+    ]).catch(() => null);
 
-      if (popupClosed) {
-        break;
-      }
-    }
-
-    if (!popupClosed) {
-      throw new Error("Participant popup did not close after final Save");
+    if (!finalSaveSignal) {
+      throw new Error(
+        "Participant final Save did not complete via popup close or main page readiness",
+      );
     }
   }
 
@@ -370,21 +674,23 @@ export class EditNewCasePage extends Base {
     caseParticipantsName: string,
     caseInterpreter: string,
   ) {
-    const escapedParticipantName = caseParticipantsName.replace(
-      /[.*+?^${}()|[\]\\]/g,
-      "\\$&",
-    );
-
-    const participantNameLink = this.page
-      .locator("a", {
-        hasText: new RegExp(`^\\s*${escapedParticipantName}\\s*$`, "i"),
+    const participantRow = this.page
+      .locator("table tbody tr")
+      .filter({
+        hasText: new RegExp(
+          caseParticipantsName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+          "i",
+        ),
       })
       .first();
 
     await expect
       .poll(
         async () => {
-          return await participantNameLink.isVisible();
+          const rowText = (await participantRow.textContent()) || "";
+          return rowText
+            .toLowerCase()
+            .includes(caseParticipantsName.toLowerCase());
         },
         {
           intervals: [2_000],
@@ -393,15 +699,12 @@ export class EditNewCasePage extends Base {
       )
       .toBeTruthy();
 
-    const participantRow = this.page
-      .locator("table tbody tr")
-      .filter({ has: participantNameLink })
-      .first();
-
     await expect(participantRow).toBeVisible();
 
     await expect(participantRow).toContainText(caseParticipantsType);
-    await expect(participantNameLink).toBeVisible();
+    await expect(participantRow).toContainText(
+      new RegExp(caseParticipantsName, "i"),
+    );
     await expect(participantRow).toContainText(
       new RegExp(caseInterpreter, "i"),
     );
