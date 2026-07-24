@@ -236,9 +236,12 @@ export class AddNewCasePage extends Base {
     homePage: HomePage,
     hearingSchedulePage: HearingSchedulePage,
     caseData?: CaseData,
+    clearCaseCart: boolean = true,
   ): Promise<{ caseNumber: string; caseName: string }> {
     // Empties cart if there is anything present
-    await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+    if (clearCaseCart) {
+      await hearingSchedulePage.sidebarComponent.emptyCaseCart();
+    }
 
     // Navigate to Add New Case page
     await homePage.sidebarComponent.openAddNewCasePage();
