@@ -54,7 +54,6 @@ test.describe("Session Booking - add session break @session-break @bvt", () => {
 
     await test.step("Create new session", async () => {
       await newUiSessionBookingPage.createSessionWithoutBasketedCase(
-        loginPage,
         hearingSchedulePage,
         sessionBookingPage,
         dataUtils,

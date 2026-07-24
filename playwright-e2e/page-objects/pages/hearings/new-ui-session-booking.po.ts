@@ -6,6 +6,7 @@ export class NewUiSessionBookingPage extends Base {
     CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC:
       "Haverfordwest County and Family Court",
     CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01: "Haverfordwest Courtroom 01",
+    CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04: "Haverfordwest Courtroom 04",
     SESSION_STATUS_RELEASED: "Released",
     SESSION_TYPE_ADHOC_AS_DIRECTED: "Adhoc (as directed)",
     DEFAULT_LISTING_DURATION_ONE_HOUR: "01:00",
@@ -126,6 +127,31 @@ export class NewUiSessionBookingPage extends Base {
     "button",
     { name: "Add Break" },
   );
+  readonly breakStartTimeCombobox = this.page.locator(
+    '[aria-owns="start-time_listbox"]',
+  );
+  readonly breakStartTimeSelectedValue = this.breakStartTimeCombobox.locator(
+    ".multiselect__single",
+  );
+  readonly breakEndTimeCombobox = this.page.locator(
+    '[aria-owns="end-time_listbox"]',
+  );
+  readonly breakEndTimeSelectedValue = this.breakEndTimeCombobox.locator(
+    ".multiselect__single",
+  );
+  readonly breakStartTimeOptions = this.page.locator(
+    '#start-time_listbox [role="option"]',
+  );
+  readonly breakEndTimeOptions = this.page.locator(
+    '#end-time_listbox [role="option"]',
+  );
+  readonly breakConfirmButton = this.page.getByRole("button", {
+    name: /Create booking break with selected/i,
+  });
+  readonly venueBookingBreakHeading = this.page.getByRole("heading", {
+    name: "Venue Booking Break",
+  });
+  readonly breaksTable = this.sessionBookingDetailsSection.locator("table");
   readonly breaksStartTimeHeader = this.sessionBookingDetailsSection.getByRole(
     "columnheader",
     {
@@ -397,7 +423,6 @@ export class NewUiSessionBookingPage extends Base {
   }
 
   async createSessionWithoutBasketedCase(
-    loginPage,
     hearingSchedulePage,
     sessionBookingPage,
     dataUtils,
@@ -430,6 +455,82 @@ export class NewUiSessionBookingPage extends Base {
 
     await expect(sessionBookingPage.heading).toBeVisible();
     await expect(sessionBookingPage.heading).toHaveText("Session Booking");
+  }
+
+  getBreakRowByStartTime(startTime: string) {
+    return this.breaksTable
+      .filter({
+        has: this.page.locator(`text=${startTime}`),
+      })
+      .first();
+  }
+
+  getBreakRow(startTime: string, endTime: string) {
+    return this.breaksTable
+      .locator("tbody tr")
+      .filter({ has: this.page.getByText(startTime, { exact: true }) })
+      .filter({ has: this.page.getByText(endTime, { exact: true }) })
+      .first();
+  }
+
+  async selectBreakStartTime(time: string) {
+    await this.breakStartTimeCombobox.click();
+    await this.page
+      .locator("#start-time_listbox")
+      .getByRole("option", { name: time, exact: true })
+      .click();
+  }
+
+  async selectBreakEndTime(time: string) {
+    await this.breakEndTimeCombobox.click();
+    await this.page
+      .locator("#end-time_listbox")
+      .getByRole("option", { name: time, exact: true })
+      .click();
+  }
+
+  async setBreakTimes(startTime: string, endTime: string) {
+    await this.selectBreakStartTime(startTime);
+    await this.selectBreakEndTime(endTime);
+  }
+
+  async confirmBreakModal() {
+    await expect(this.breakConfirmButton).toBeVisible();
+    await this.breakConfirmButton.click();
+  }
+
+  async clickEditBreak(startTime: string, endTime: string) {
+    const row = this.getBreakRow(startTime, endTime);
+    await expect(row).toBeVisible();
+    await row
+      .locator(
+        'button:has-text("Edit"), a:has-text("Edit"), [role="button"]:has-text("Edit")',
+      )
+      .first()
+      .click();
+  }
+
+  async assertBreakModalPrePopulated(startTime: string, endTime: string) {
+    await expect(this.breakStartTimeCombobox).toBeVisible();
+    await expect(this.breakEndTimeCombobox).toBeVisible();
+    await expect(this.breakConfirmButton).toBeVisible();
+    await expect(this.breakStartTimeSelectedValue).toContainText(startTime);
+    await expect(this.breakEndTimeSelectedValue).toContainText(endTime);
+  }
+
+  async assertBreakStartTimesSortedAscending() {
+    const startTimeCells = this.breaksTable.locator("tbody tr td:nth-child(1)");
+    const startTimes = await startTimeCells.allTextContents();
+    const parsed = startTimes
+      .map((time) => time.trim())
+      .filter((time) => /^\d{2}:\d{2}$/.test(time))
+      .map((time) => {
+        const [hours, minutes] = time.split(":").map(Number);
+        return hours * 60 + minutes;
+      });
+
+    expect(parsed.length).toBeGreaterThan(0);
+    expect(parsed).toEqual([...parsed].sort((a, b) => a - b));
   }
 
   constructor(page: Page) {
