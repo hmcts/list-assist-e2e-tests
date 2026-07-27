@@ -30,6 +30,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
     dataUtils,
   }) => {
     const createdCases: Array<{ caseNumber: string; caseName: string }> = [];
+    const caseNameSuppression = dataUtils.generateRandomAlphabetical(10);
 
     const participantsByCase: CaseParticipantInput[] = [
       {
@@ -135,6 +136,8 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
       let createdCase: { caseNumber: string; caseName: string };
 
       await test.step(`Create Case ${caseIndex + 1}`, async () => {
+        const isCaseTwo = caseIndex === 1;
+
         createdCase = await addNewCasePage.addNewCase(
           homePage,
           hearingSchedulePage,
@@ -144,6 +147,9 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseType: addNewCasePage.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
             region: addNewCasePage.CONSTANTS.REGION_WALES,
             hearingCentre: addNewCasePage.CONSTANTS.HEARING_CENTRE_CARDIFF,
+            caseName: isCaseTwo
+              ? `CASE_2_WITH_SUPPRESSION_${crypto.randomUUID().slice(0, 8).toUpperCase()}`
+              : undefined,
           },
           false,
         );
@@ -157,6 +163,12 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
         await caseSearchPage.sidebarComponent.openCaseDetailsEditPage();
 
         await expect(editNewCasePage.caseParticipantsHeader).toBeVisible();
+
+        if (caseIndex === 1) {
+          await test.step("Add Case Name Suppression value for Case 2", async () => {
+            await editNewCasePage.setCaseNameSuppression(caseNameSuppression);
+          });
+        }
 
         const caseParticipants = [
           caseParticipantInput.participantOne,
