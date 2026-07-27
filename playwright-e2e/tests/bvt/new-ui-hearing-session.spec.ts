@@ -6,6 +6,7 @@ import {
 } from "../../utils/cleardown.utils.ts";
 
 test.describe("New hearing session UI - check create session @new-ui @regression @this", () => {
+test.describe("New hearing session UI - check create session @new-ui @regression @this", () => {
   test.describe.configure({ mode: "serial" });
   test.beforeEach(async ({ page, loginPage }) => {
     await page.goto(config.urls.baseUrl);
@@ -49,6 +50,7 @@ test.describe("New hearing session UI - check create session @new-ui @regression
     newUiSessionBookingPage,
   }) => {
     await test.step("Clean down schedule for Haverfordwest County and Family, Haverfordwest Courtroom 1", async () => {
+      await clearDownSchedule(
       await clearDownSchedule(
         sessionBookingPage,
         hearingSchedulePage,
@@ -347,3 +349,4 @@ test.describe("New hearing session UI - check create session @new-ui @regression
     await runSessionBreakFlow(newUiSessionBookingPage);
   });
 });
+})
