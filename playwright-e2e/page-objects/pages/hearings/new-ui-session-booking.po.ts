@@ -170,6 +170,17 @@ export class NewUiSessionBookingPage extends Base {
       name: "Actions",
     },
   );
+  readonly removeBreakButton = this.page.locator(
+    'button[id^="removeBreak1_rowIndex_"][aria-label="Remove"]',
+  );
+  readonly sessionBreakConfirmationDialogue = this.page.locator(
+    'div[role="document"].modal-content:has-text("Are you sure?"):has(.header-title:has-text("Confirmation")):has(button.btn.mr-2.mcms-btn-solid-danger:has(span.mcms-btn-label:text("Yes"))):has(button:has(span.mcms-btn-label:text("No")))',
+  );
+  readonly confirmationDialogueYesButton = this.sessionBreakConfirmationDialogue
+    .locator(
+      'button.btn.mr-2.mcms-btn-solid-danger:has(span.mcms-btn-label:text("Yes"))',
+    )
+    .first();
   readonly yesToggleOptions = this.sessionBookingDetailsSection.getByText(
     "Yes",
     { exact: true },
@@ -531,6 +542,17 @@ export class NewUiSessionBookingPage extends Base {
 
     expect(parsed.length).toBeGreaterThan(0);
     expect(parsed).toEqual([...parsed].sort((a, b) => a - b));
+  }
+
+  async clickRemoveBreak(startTime: string, endTime: string) {
+    const row = this.getBreakRow(startTime, endTime);
+    await expect(row).toBeVisible();
+    await row
+      .locator(
+        'button:has-text("Remove"), a:has-text("Remove"), [role="button"]:has-text("Remove")',
+      )
+      .first()
+      .click();
   }
 
   constructor(page: Page) {

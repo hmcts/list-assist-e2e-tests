@@ -1,16 +1,44 @@
 import { test, expect } from "../../fixtures.ts";
 import { config } from "../../utils/index.ts";
-import { clearDownScheduleFromSessionSummary } from "../../utils/cleardown.utils.ts";
+import {
+  clearDownSchedule,
+  clearDownScheduleFromSessionSummary,
+} from "../../utils/cleardown.utils.ts";
 import type { NewUiSessionBookingPage } from "../../page-objects/pages/hearings/new-ui-session-booking.po.ts";
 
-test.describe("New hearing session UI - check create session @new-ui @regression", () => {
+test.describe("New hearing session UI - check create session @new-ui @regression @this", () => {
   test.describe.configure({ mode: "serial" });
   test.beforeEach(async ({ page, loginPage }) => {
     await page.goto(config.urls.baseUrl);
     await loginPage.login("ROBERT_SULLIVAN");
   });
 
-  test("List session and edit session with basketed case using new UI", async ({
+  // test.afterEach(
+  //   async ({
+  //     sessionBookingPage,
+  //     hearingSchedulePage,
+  //     dataUtils,
+  //     newUiSessionBookingPage,
+  //   }) => {
+  //     await clearDownSchedule(
+  //       sessionBookingPage,
+  //       hearingSchedulePage,
+  //       sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+  //       sessionBookingPage.CONSTANTS
+  //         .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+  //       newUiSessionBookingPage.CONSTANTS
+  //         .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
+  //       newUiSessionBookingPage.CONSTANTS
+  //         .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04,
+  //       sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+  //       dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+  //       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+  //       dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+  //     );
+  //   },
+  // );
+
+  test("New hearing session UI validation - List session and edit session with basketed case using new UI", async ({
     page,
     sessionBookingPage,
     hearingSchedulePage,
@@ -22,7 +50,7 @@ test.describe("New hearing session UI - check create session @new-ui @regression
     newUiSessionBookingPage,
   }) => {
     await test.step("Clean down schedule for Haverfordwest County and Family, Haverfordwest Courtroom 1", async () => {
-      await clearDownScheduleFromSessionSummary(
+      await clearDownSchedule(
         sessionBookingPage,
         hearingSchedulePage,
         sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
@@ -45,8 +73,16 @@ test.describe("New hearing session UI - check create session @new-ui @regression
       await expect(caseSearchPage.sidebarComponent.cartButton).toBeEnabled();
     });
 
-    await test.step("Open hearing schedule and set advanced filters", async () => {
+    await test.step("Apply today's date filter", async () => {
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+      await expect(hearingSchedulePage.header).toBeVisible();
+      await hearingSchedulePage.applyPrimaryDateFilter(
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      );
+    });
+
+    await test.step("Open hearing schedule and set advanced filters", async () => {
       await expect(hearingSchedulePage.header).toBeVisible();
       await sessionBookingPage.updateAdvancedFilterConfig(
         undefined,
@@ -55,15 +91,6 @@ test.describe("New hearing session UI - check create session @new-ui @regression
           .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
         newUiSessionBookingPage.CONSTANTS
           .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01,
-      );
-    });
-
-    await test.step("Apply today's date filter", async () => {
-      await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
-      await expect(hearingSchedulePage.header).toBeVisible();
-      await hearingSchedulePage.applyPrimaryDateFilter(
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
       );
     });
 
@@ -275,12 +302,27 @@ test.describe("New hearing session UI - check create session @new-ui @regression
     });
   });
 
-  test("Create new session, confirm UI validation, and add session break @this", async ({
+  test("New hearing session UI validation - Create new session without basketed case, confirm UI validation", async ({
     sessionBookingPage,
     hearingSchedulePage,
     dataUtils,
     newUiSessionBookingPage,
   }) => {
+    await clearDownScheduleFromSessionSummary(
+      sessionBookingPage,
+      hearingSchedulePage,
+      sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+      sessionBookingPage.CONSTANTS
+        .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+      newUiSessionBookingPage.CONSTANTS
+        .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
+      newUiSessionBookingPage.CONSTANTS
+        .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01,
+      sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+      dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+    );
     await test.step("Create session without basketed case", async () => {
       await newUiSessionBookingPage.createSessionWithoutBasketedCase(
         hearingSchedulePage,
@@ -289,7 +331,7 @@ test.describe("New hearing session UI - check create session @new-ui @regression
         newUiSessionBookingPage.CONSTANTS
           .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
         newUiSessionBookingPage.CONSTANTS
-          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_04,
+          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01,
         0,
         0,
       );
@@ -337,6 +379,8 @@ async function runSessionBreakFlow(
     const breakRow = newUiSessionBookingPage.getBreakRowByStartTime("12:00");
     await expect(breakRow).toBeVisible();
     await expect(breakRow).toContainText("13:00");
+
+    await removeBreakAndConfirmYes(newUiSessionBookingPage);
   });
 
   await test.step("Add second break 14:00 to 15:00", async () => {
@@ -373,4 +417,25 @@ async function runSessionBreakFlow(
   await test.step("Assert breaks table remains sorted by start time", async () => {
     await newUiSessionBookingPage.assertBreakStartTimesSortedAscending();
   });
+
+  await test.step("Remove all breaks from the session", async () => {
+    await removeBreakAndConfirmYes(newUiSessionBookingPage);
+  });
+}
+
+async function removeBreakAndConfirmYes(
+  newUiSessionBookingPage: NewUiSessionBookingPage,
+): Promise<void> {
+  await newUiSessionBookingPage.removeBreakButton.first().click();
+  await expect(
+    newUiSessionBookingPage.sessionBreakConfirmationDialogue,
+  ).toBeVisible({
+    timeout: 5000,
+  });
+  await expect(
+    newUiSessionBookingPage.confirmationDialogueYesButton,
+  ).toBeVisible({
+    timeout: 5000,
+  });
+  await newUiSessionBookingPage.confirmationDialogueYesButton.click();
 }
