@@ -38,6 +38,12 @@ export default defineConfig({
       ...ProjectsConfig.chrome,
       timeout: 360_000,
       dependencies: ["setup"],
+  //     use: {
+  //   ...ProjectsConfig.chrome.use,
+  //   launchOptions: {
+  //     slowMo: 200,
+  //   },
+  // },
       testMatch: ["**/regression/**/*.spec.ts"],
     },
     {
