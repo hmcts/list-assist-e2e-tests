@@ -1,9 +1,6 @@
 import { test, expect } from "../../fixtures.ts";
 import { config, runSessionBreakFlow } from "../../utils/index.ts";
-import {
-  clearDownSchedule,
-  clearDownScheduleFromSessionSummary,
-} from "../../utils/cleardown.utils.ts";
+import { clearDownScheduleFromSessionSummary } from "../../utils/cleardown.utils.ts";
 
 test.describe("New hearing session UI - check create session @new-ui @regression @this", () => {
   test.describe("New hearing session UI - check create session @new-ui @regression @this", () => {
