@@ -25,7 +25,7 @@ test.describe("New hearing session UI - check create session @new-ui @regression
       newUiSessionBookingPage,
     }) => {
       await test.step("Clean down schedule for Haverfordwest County and Family, Haverfordwest Courtroom 1", async () => {
-        await clearDownSchedule(
+        await clearDownScheduleFromSessionSummary(
           sessionBookingPage,
           hearingSchedulePage,
           sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
