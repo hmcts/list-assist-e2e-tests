@@ -70,9 +70,8 @@ export async function runSessionBreakFlow(
     await newUiSessionBookingPage.assertBreakStartTimesSortedAscending();
   });
 
-  await test.step("Remove all breaks from the session", async () => {
-    await removeBreakAndConfirmYes(newUiSessionBookingPage);
-  });
+  //remove final break to clean up for next test
+  await removeBreakAndConfirmYes(newUiSessionBookingPage);
 }
 
 async function removeBreakAndConfirmYes(
