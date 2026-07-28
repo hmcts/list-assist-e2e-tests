@@ -92,6 +92,7 @@ export class AddNewCasePage extends Base {
     name: "Save Case",
     exact: true,
   });
+  readonly addToCartButton = this.page.locator("#header-bar-add-to-cart-icon");
 
   constructor(page: Page) {
     super(page);
@@ -265,6 +266,56 @@ export class AddNewCasePage extends Base {
 
     // Create the new case
     await this.addNewCaseWithMandatoryData(finalCaseData, caseNumber, caseName);
+
+    return { caseNumber, caseName };
+  }
+
+  /**
+   * Flexible method to create a new case with specified data
+   * Allows full control over case parameters
+   *
+   * @param homePage - HomePage instance for navigation
+   * @param hearingSchedulePage - HearingSchedulePage instance for cart operations
+   * @param caseData - Detailed case information object with custom values
+   * @param addToBasket - Optional flag to add case to basket after creation (default: false)
+   * @returns Object containing caseNumber and caseName
+   */
+  async addNewCaseWithSpecifiedData(
+    homePage: HomePage,
+    hearingSchedulePage: HearingSchedulePage,
+    caseData: CaseData,
+    addToBasket: boolean = false,
+  ): Promise<{ caseNumber: string; caseName: string }> {
+    // Navigate to Add New Case page
+    await homePage.sidebarComponent.openAddNewCasePage();
+
+    // Ensure Add New Case page is loaded before interacting with the form.
+    await expect(this.newCaseHeader).toHaveText("New Case");
+
+    // Use provided case data with fallback for auto-generation
+    const caseNumber =
+      caseData.hmctsCaseNumber ?? "HMCTS_CN_" + randomUUID().toUpperCase();
+    const caseName = caseData.caseName ?? "AUTO_" + randomUUID().toUpperCase();
+
+    // Merge provided data with defaults
+    const finalCaseData: CaseData = {
+      jurisdiction: caseData.jurisdiction || this.CONSTANTS.JURISDICTION_CIVIL,
+      service: caseData.service || this.CONSTANTS.SERVICE_DAMAGES,
+      caseType: caseData.caseType || this.CONSTANTS.CASE_TYPE_SMALL_CLAIMS,
+      region: caseData.region || this.CONSTANTS.REGION_WALES,
+      hearingCentre:
+        caseData.hearingCentre || this.CONSTANTS.HEARING_CENTRE_CARDIFF,
+    };
+
+    // Create the new case
+    await this.addNewCaseWithMandatoryData(finalCaseData, caseNumber, caseName);
+
+    // Add to basket if requested
+    if (addToBasket) {
+      if (await this.addToCartButton.isVisible()) {
+        await this.addToCartButton.click();
+      }
+    }
 
     return { caseNumber, caseName };
   }
