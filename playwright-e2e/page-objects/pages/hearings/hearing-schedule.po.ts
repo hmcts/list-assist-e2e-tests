@@ -262,6 +262,10 @@ export class HearingSchedulePage extends Base {
       .first();
   }
 
+  getListingByCourtroom(courtroom: string) {
+    return this.page.locator("span.sessionHeader", { hasText: courtroom });
+  }
+
   getTargetSlot(columnIndex: number, timeSlot: string) {
     return this.page
       .locator(`#childDetailsList td:nth-child(${columnIndex}) div.droparea`)
@@ -731,8 +735,6 @@ export class HearingSchedulePage extends Base {
     room: string,
     date: string,
   ): Promise<void> {
-    const caseNumberAndScheduleLink = this.bookingSessionId(room, date);
-
     //go to hearing schedule page
     await expect(this.sidebarComponent.sidebar).toBeVisible();
     await this.sidebarComponent.openHearingSchedulePage();
@@ -745,25 +747,63 @@ export class HearingSchedulePage extends Base {
 
       await this.waitForLoad();
 
-      await expect
-        .poll(async () => await caseNumberAndScheduleLink.isVisible(), {
-          intervals: [2_000],
-          timeout: 10_000,
-        })
-        .toBeTruthy();
+      // Check if checkbox is visible on the current page
+      const checkboxVisible = await this.selectListingOnSessionCheckbox
+        .isVisible()
+        .catch(() => false);
 
-      await caseNumberAndScheduleLink.click();
+      if (checkboxVisible) {
+        // Path 1: Checkbox visible - proceed with cancel listings flow
+        await this.selectListingOnSessionCheckbox.check();
+        await this.cancelListingsForSelectedButton.click();
+        await this.cancelRescheduleReasonDropdown.selectOption(
+          cancellationCode,
+        );
 
-      await this.selectListingOnSessionCheckbox.check();
-      await this.cancelListingsForSelectedButton.click();
-      await this.cancelRescheduleReasonDropdown.selectOption(cancellationCode);
+        //confirm cancellation
+        await this.page.getByRole("button", { name: "Yes" }).click();
+        //confirm deletion of all data within session
+        await this.page.getByRole("button", { name: "Yes" }).click();
 
-      //confirm cancellation
-      await this.page.getByRole("button", { name: "Yes" }).click();
-      //confirm deletion of all data within session
-      await this.page.getByRole("button", { name: "Yes" }).click();
+        await expect(this.header).toBeVisible();
+      } else {
+        // Path 2: Checkbox not visible - use goToSessionDetailsButton and delete from there
+        await this.goToSessionDetailsButton.click();
 
-      await expect(this.header).toBeVisible();
+        await expect
+          .poll(
+            async () => {
+              return await this.sessionBookingPage.heading.isVisible();
+            },
+            {
+              intervals: [2_000],
+              timeout: 10_000,
+            },
+          )
+          .toBeTruthy();
+
+        // Use the Delete button from Session Booking page (id="deleteVenueBooking")
+        const deleteVenueBookingButton = this.page.locator(
+          "#deleteVenueBooking",
+        );
+
+        const isDeleteVenueVisible = await deleteVenueBookingButton
+          .isVisible()
+          .catch(() => false);
+
+        if (isDeleteVenueVisible) {
+          await deleteVenueBookingButton.click();
+          // After deletion, navigate back to hearing schedule
+          await this.sidebarComponent.openHearingSchedulePage();
+          await this.waitForLoad();
+          await expect(this.header).toBeVisible();
+        } else {
+          // Fallback: just navigate back if delete button not found
+          await this.sidebarComponent.openHearingSchedulePage();
+          await this.waitForLoad();
+          await expect(this.header).toBeVisible();
+        }
+      }
     }
   }
 

@@ -16,6 +16,7 @@ test.describe("Case Creation - Add Multiple Cases with Report Data Update", () =
     editNewCasePage,
     dataUtils,
     sessionBookingPage,
+    newUiSessionBookingPage,
   }) => {
     await page.goto(config.urls.baseUrl);
     await loginPage.login("ROBERT_SULLIVAN");
@@ -75,6 +76,81 @@ test.describe("Case Creation - Add Multiple Cases with Report Data Update", () =
       sessionBookingPage,
       dataUtils,
     );
+
+    await test.step("click courtroom cell for filtered date and create session", async () => {
+      await hearingSchedulePage.bookingCell.first().click();
+      await expect(hearingSchedulePage.createSessionButton).toBeVisible();
+      await hearingSchedulePage.createSessionButton.click();
+    });
+
+    await test.step("configure session booking with duration 1:00 and Civil jurisdiction", async () => {
+      await newUiSessionBookingPage.selectAndAssertDefaultListingDuration(
+        "01:00",
+      );
+
+      const jurisdictionToggle =
+        newUiSessionBookingPage.jurisdictionCombobox.locator(
+          ".multiselect__select",
+        );
+      await jurisdictionToggle.click();
+      const civilOption =
+        newUiSessionBookingPage.jurisdictionCombobox.getByRole("option", {
+          name: "Civil",
+          exact: true,
+        });
+      await expect(civilOption).toBeVisible();
+      await civilOption.click();
+
+      await newUiSessionBookingPage.clickSaveSessionBooking();
+    });
+
+    await test.step("add first listing with Chambers Outcome and hearing channels", async () => {
+      await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+      await hearingSchedulePage.waitForLoad();
+
+      // Wait for the listings to load in the calendar view
+      await page.waitForSelector("#childDetailsList", {
+        state: "visible",
+        timeout: 30000,
+      });
+
+      // Get the first listing using the case name from the hearing schedule page object
+      const firstListing = hearingSchedulePage.getListingByCourtroom(
+        "Wrexham Courtroom 01",
+      );
+      await expect(firstListing).toBeVisible();
+      await firstListing.click();
+
+      const sessionBookingDetailsPopup = page.getByRole("dialog", {
+        name: "Session Booking Details Popup",
+      });
+      const firstCaseLinkInListSection = sessionBookingDetailsPopup
+        .getByRole("link")
+        .filter({ hasText: hmctsCaseNumberOne })
+        .first();
+      await expect(firstCaseLinkInListSection).toBeVisible();
+      await firstCaseLinkInListSection.click();
+
+      await expect(newUiSessionBookingPage.listingPopup).toBeVisible();
+
+      await newUiSessionBookingPage.selectHearingTypeInListingPopup(
+        "Chambers Outcome",
+      );
+    });
+
+    await test.step("add second listing with modal", async () => {
+      const sessionBookingDetailsPopup = page.getByRole("dialog", {
+        name: "Session Booking Details Popup",
+      });
+      const secondCaseLinkInListSection = sessionBookingDetailsPopup
+        .getByRole("link")
+        .filter({ hasText: hmctsCaseNumberTwo })
+        .first();
+      await expect(secondCaseLinkInListSection).toBeVisible();
+      await secondCaseLinkInListSection.click();
+
+      await expect(newUiSessionBookingPage.listingPopup).toBeVisible();
+    });
   });
 });
 
