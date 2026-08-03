@@ -190,10 +190,14 @@ test.describe("New hearing session UI - check create session @new-ui @regression
       await newUiSessionBookingPage.clickSaveSessionBooking();
     });
 
-    await test.step("Select hearing type as Chambers Outcome in listing popup, and Save", async () => {
+    await test.step("Select hearing type as Chambers Outcome in listing popup", async () => {
       await newUiSessionBookingPage.selectHearingTypeInListingPopup(
         newUiSessionBookingPage.CONSTANTS.HEARING_TYPE_CHAMBERS_OUTCOME,
       );
+    });
+
+     await test.step("Click Save Listing button", async () => {
+      await newUiSessionBookingPage.clickSaveListing();
     });
 
     await test.step("Confirm listing has been created", async () => {

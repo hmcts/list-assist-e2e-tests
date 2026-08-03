@@ -1,5 +1,6 @@
 import { expect, test } from "../../fixtures";
 import { config } from "../../utils";
+import { clearDownScheduleFromSessionSummary } from "../../utils/cleardown.utils.ts";
 
 type ParticipantInput = {
   firstName?: string;
@@ -28,8 +29,17 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
     caseDetailsPage,
     editNewCasePage,
     dataUtils,
+    newUiSessionBookingPage,
+    sessionBookingPage,
   }) => {
     const createdCases: Array<{ caseNumber: string; caseName: string }> = [];
+    const getCreatedCaseNumber = (caseIndex: number): string => {
+      const createdCase = createdCases[caseIndex];
+      if (!createdCase) {
+        throw new Error(`Expected created case at index ${caseIndex}`);
+      }
+      return createdCase.caseNumber;
+    };
     const caseNameSuppression = dataUtils.generateRandomAlphabetical(10);
 
     const participantsByCase: CaseParticipantInput[] = [
@@ -242,7 +252,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
 
     await test.step("Login", async () => {
       await page.goto(config.urls.baseUrl);
-      await loginPage.login("ISABELLA_WALKER");
+      await loginPage.login("ROBERT_SULLIVAN");
     });
 
     await test.step("Empty Case Basket", async () => {
@@ -261,6 +271,111 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
         "4",
       );
       expect(createdCases).toHaveLength(4);
+    });
+
+    await test.step("Clean down schedule for Haverfordwest County and Family, Haverfordwest Courtroom 5", async () => {
+      await clearDownScheduleFromSessionSummary(
+        sessionBookingPage,
+        hearingSchedulePage,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+        sessionBookingPage.CONSTANTS
+          .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_05,
+        sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+      );
+    });
+
+    await test.step("Open app, filter schedule, and open Create Session. UI Validation", async () => {
+      await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
+      await expect(hearingSchedulePage.header).toBeVisible();
+      await newUiSessionBookingPage.createSessionWithoutCase(
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_05,
+        sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
+        newUiSessionBookingPage.CONSTANTS.SESSION_JURISDICTION_CIVIL,
+      );
+    });
+
+    await test.step("open session summary", async () => {
+      await hearingSchedulePage.openSessionSummaryByLocation(
+        "10:00-16:00 - Haverfordwest Courtroom 05",
+      );
+    });
+
+    await test.step("list Case From Session Summary - Case 1", async () => {
+      await newUiSessionBookingPage.listCaseFromSessionSummary(
+        getCreatedCaseNumber(0),
+        newUiSessionBookingPage.CONSTANTS.HEARING_TYPE_CHAMBERS_OUTCOME,
+      );
+    });
+
+    await test.step("Confirm listing has been created", async () => {
+      await expect(
+        hearingSchedulePage.confirmListingReleasedStatus,
+      ).toBeVisible();
+    });
+
+    await test.step("open session summary", async () => {
+      await hearingSchedulePage.openSessionSummaryByLocation(
+        "10:00-16:00 - Haverfordwest Courtroom 05",
+      );
+    });
+
+    await test.step("list Case From Session Summary - Case 2", async () => {
+      await newUiSessionBookingPage.listCaseFromSessionSummary(
+        getCreatedCaseNumber(1),
+        newUiSessionBookingPage.CONSTANTS.HEARING_TYPE_CHAMBERS_OUTCOME,
+      );
+    });
+
+    await test.step("Confirm listing has been created", async () => {
+      await expect(
+        hearingSchedulePage.confirmListingReleasedStatus,
+      ).toBeVisible();
+    });
+
+    await test.step("open session summary", async () => {
+      await hearingSchedulePage.openSessionSummaryByLocation(
+        "10:00-16:00 - Haverfordwest Courtroom 05",
+      );
+    });
+
+    await test.step("list  Case From SessionSummary - Case 3", async () => {
+      await newUiSessionBookingPage.listCaseFromSessionSummary(
+        getCreatedCaseNumber(2),
+        newUiSessionBookingPage.CONSTANTS.HEARING_TYPE_CHAMBERS_OUTCOME,
+      );
+    });
+
+    await test.step("Confirm listing has been created", async () => {
+      await expect(
+        hearingSchedulePage.confirmListingReleasedStatus,
+      ).toBeVisible();
+    });
+
+    await test.step("open session summary", async () => {
+      await hearingSchedulePage.openSessionSummaryByLocation(
+        "10:00-16:00 - Haverfordwest Courtroom 05",
+      );
+    });
+
+    await test.step("listCaseFromSessionSummary - Case 4", async () => {
+      await newUiSessionBookingPage.listCaseFromSessionSummary(
+        getCreatedCaseNumber(3),
+        newUiSessionBookingPage.CONSTANTS.HEARING_TYPE_CHAMBERS_OUTCOME,
+      );
+    });
+
+    await test.step("Confirm listing has been created", async () => {
+      await expect(
+        hearingSchedulePage.confirmListingReleasedStatus,
+      ).toBeVisible();
     });
   });
 });

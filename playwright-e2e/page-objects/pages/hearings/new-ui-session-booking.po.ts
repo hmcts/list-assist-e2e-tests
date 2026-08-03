@@ -1,11 +1,23 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Page, Locator } from "@playwright/test";
 import { Base } from "../../base";
-
+interface TableRow {
+  roomName: string;
+  row: Locator;
+  columnOne: Locator;
+  columnTwo: Locator;
+  columnThree: Locator;
+  columnFour: Locator;
+  columnFive: Locator;
+}
 export class NewUiSessionBookingPage extends Base {
   readonly CONSTANTS = {
+    SESSION_JURISDICTION_CIVIL: "Civil",
     CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC:
       "Haverfordwest County and Family Court",
     CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_01: "Haverfordwest Courtroom 01",
+
+    CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_05: "Haverfordwest Courtroom 05",
+
     SESSION_STATUS_RELEASED: "Released",
     SESSION_TYPE_ADHOC_AS_DIRECTED: "Adhoc (as directed)",
     DEFAULT_LISTING_DURATION_ONE_HOUR: "01:00",
@@ -14,6 +26,10 @@ export class NewUiSessionBookingPage extends Base {
     PANEL_MEMBER_AMANDA_FOSTER: "FOSTER, AMANDA",
     HEARING_TYPE_CHAMBERS_OUTCOME: "Chambers Outcome",
   };
+  readonly table = this.page.locator("#membersOrRoomsTable");
+  readonly separatorValue = "--------------------------";
+  readonly scheduleSelector = 'div[booking="item"]';
+  readonly createSessionButton = this.page.locator("#createSession");
 
   readonly editableStartTimeInput = this.page.locator("#editableStartTime");
   readonly startTimeCombobox = this.page.getByRole("combobox", {
@@ -67,6 +83,12 @@ export class NewUiSessionBookingPage extends Base {
   readonly jurisdictionCombobox = this.page.getByRole("combobox", {
     name: "Jurisdiction list",
   });
+  readonly jurisdictionComboboxToggle = this.jurisdictionCombobox.locator(
+    ".multiselect__select",
+  );
+  readonly jurisdictionSelectedValue = this.jurisdictionCombobox.locator(
+    ".multiselect__single",
+  );
   readonly serviceCombobox = this.page.getByRole("combobox", {
     name: "Service list",
   });
@@ -191,6 +213,13 @@ export class NewUiSessionBookingPage extends Base {
     });
   }
 
+  jurisdictionOption(jurisdiction: string) {
+    return this.jurisdictionCombobox.getByRole("option", {
+      name: jurisdiction,
+      exact: true,
+    });
+  }
+
   defaultListingDurationOption(duration: string) {
     return this.defaultListingDurationCombobox.getByRole("option", {
       name: duration,
@@ -242,6 +271,14 @@ export class NewUiSessionBookingPage extends Base {
     await expect(this.defaultListingDurationOption(duration)).toBeVisible();
     await this.defaultListingDurationOption(duration).click();
     await expect(this.defaultListingDurationSelectedValue).toHaveText(duration);
+  }
+
+  async selectAndAssertSessionJurisdiction(jurisdiction: string) {
+    await expect(this.jurisdictionCombobox).toBeVisible();
+    await this.jurisdictionComboboxToggle.click();
+    await expect(this.jurisdictionOption(jurisdiction)).toBeVisible();
+    await this.jurisdictionOption(jurisdiction).click();
+    await expect(this.jurisdictionSelectedValue).toHaveText(jurisdiction);
   }
 
   async assertDateIsNotEditableInEditMode() {
@@ -329,8 +366,6 @@ export class NewUiSessionBookingPage extends Base {
     await this.listingPopupHearingTypeToggle.click();
     await expect(this.listingPopupHearingTypeOption(hearingType)).toBeVisible();
     await this.listingPopupHearingTypeOption(hearingType).click();
-    await expect(this.listingPopupSaveButton).toBeVisible();
-    await this.listingPopupSaveButton.click();
   }
 
   readonly addPanelMemberButton = this.page.locator("#addPanelMemberId");
@@ -394,6 +429,92 @@ export class NewUiSessionBookingPage extends Base {
   async clickSaveSessionBooking() {
     await expect(this.saveSessionBookingButton).toBeVisible();
     await this.saveSessionBookingButton.click();
+  }
+
+  async clickSaveListing() {
+    await expect(this.listingPopupSaveButton).toBeVisible();
+    await this.listingPopupSaveButton.click();
+  }
+
+  async listCaseFromSessionSummary(caseNumber: string, hearingType: string) {
+    const caseRow = this.page
+      .locator("#matterCartList a")
+      .filter({ hasText: caseNumber })
+      .first();
+
+    await expect(caseRow).toBeVisible();
+    await caseRow.click();
+    await this.selectHearingTypeInListingPopup(hearingType);
+    await this.clickSaveListing();
+  }
+
+  async waitForLoad(): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          return await this.table.isVisible();
+        },
+        {
+          intervals: [2_000],
+          timeout: 60_000,
+        },
+      )
+      .toBeTruthy();
+  }
+
+  async createSessionWithoutCase(
+    roomName: string,
+    column: string,
+    jurisdiction?: string,
+  ): Promise<void> {
+    await this.page.locator("#roomHS").click();
+    await this.page.waitForTimeout(1000);
+    await this.waitForLoad();
+    const table: TableRow[] = await this.mapTable();
+    const row = table.filter((row) => row.roomName === roomName)[0];
+    await expect(row[column].locator(`${this.scheduleSelector}`)).toBeVisible();
+    await row[column].locator(`${this.scheduleSelector}`).click();
+    await expect(this.createSessionButton).toBeVisible();
+    await this.createSessionButton.click();
+    if (jurisdiction) {
+      await this.selectAndAssertSessionJurisdiction(jurisdiction);
+    }
+    await this.selectAndAssertDefaultListingDuration(
+      this.CONSTANTS.DEFAULT_LISTING_DURATION_ONE_HOUR,
+    );
+    await this.clickSaveSessionBooking();
+    //await this.sessionBookingPage.waitForLoad();
+  }
+
+  async mapTable(): Promise<TableRow[]> {
+    const table: TableRow[] = [];
+    const rows = await this.table.locator("tbody > tr").all();
+
+    for (const row of rows) {
+      // Filter out expanded rows
+      const firstCell = (await row.locator("td").first().textContent())?.trim();
+      if (firstCell?.includes(this.separatorValue) || !firstCell) continue;
+
+      const roomName = await row
+        .locator("td")
+        .first()
+        .locator("b")
+        .textContent();
+      if (!roomName) {
+        throw new Error("Row or room not found");
+      }
+
+      table.push({
+        roomName: roomName,
+        row: row,
+        columnOne: row.locator("td").nth(1),
+        columnTwo: row.locator("td").nth(2),
+        columnThree: row.locator("td").nth(3),
+        columnFour: row.locator("td").nth(4),
+        columnFive: row.locator("td").nth(5),
+      });
+    }
+    return table;
   }
 
   async createSessionWithoutBasketedCase(
