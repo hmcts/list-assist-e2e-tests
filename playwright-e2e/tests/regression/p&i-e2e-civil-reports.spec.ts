@@ -31,6 +31,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
     dataUtils,
     newUiSessionBookingPage,
     sessionBookingPage,
+    automaticBookingDashboardPage,
   }) => {
     const createdCases: Array<{ caseNumber: string; caseName: string }> = [];
     const getCreatedCaseNumber = (caseIndex: number): string => {
@@ -39,6 +40,13 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
         throw new Error(`Expected created case at index ${caseIndex}`);
       }
       return createdCase.caseNumber;
+    };
+    const getCreatedCaseName = (caseIndex: number): string => {
+      const createdCase = createdCases[caseIndex];
+      if (!createdCase) {
+        throw new Error(`Expected created case at index ${caseIndex}`);
+      }
+      return createdCase.caseName;
     };
     const caseNameSuppression = dataUtils.generateRandomAlphabetical(10);
 
@@ -376,6 +384,72 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
       await expect(
         hearingSchedulePage.confirmListingReleasedStatus,
       ).toBeVisible();
+    });
+    await test.step("generate P&I preview report", async () => {
+      await homePage.sidebarComponent.openAutomaticBookingDashboard();
+      await expect(
+        automaticBookingDashboardPage.autoCreationTasksHeader,
+      ).toBeVisible();
+      await expect(
+        automaticBookingDashboardPage.publishExternalListsCreate,
+      ).toBeVisible();
+      await automaticBookingDashboardPage.publishExternalListsCreate.click();
+
+      await automaticBookingDashboardPage.populateCreatePublishExternalListsForm(
+        automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_REGION_WALES,
+        automaticBookingDashboardPage.CONSTANTS
+          .AUTO_CREATION_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
+        newUiSessionBookingPage.CONSTANTS
+          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_05,
+        automaticBookingDashboardPage.CONSTANTS
+          .AUTO_CREATION_JURISDICTION_CIVIL,
+        automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_SERVICE_DAMAGES,
+        automaticBookingDashboardPage.CONSTANTS
+          .AUTO_CREATION_DAILY_CIVIL_CAUSE_LIST_SSRS,
+        automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_VERSION_TYPE,
+      );
+    });
+
+    await test.step("Assert preview report", async () => {
+      await automaticBookingDashboardPage.assertPreviewReportValues(
+        "In The County Court and The Family Court at Haverfordwest",
+        "Penffynnon, Hawthorn Rise, Haverfordwest, SA61 2AX",
+        dataUtils.getFormattedDateForReportAssertionUsingDateStringWithDayName(),
+        "DAILY CIVIL CAUSE LIST",
+        "Haverfordwest Courtroom 05",
+        [
+          {
+            time: "10:00 AM",
+            caseId: getCreatedCaseNumber(0),
+            partyName: getCreatedCaseName(0),
+            hearingType: "Chambers Outcome",
+            duration: "1 hour",
+          },
+          {
+            time: "11:00 AM",
+            caseId: getCreatedCaseNumber(1),
+            partyName: caseNameSuppression,
+            hearingType: "Chambers Outcome",
+            duration: "1 hour",
+          },
+          {
+            time: "12:00 PM",
+            caseId: getCreatedCaseNumber(2),
+            partyName: getCreatedCaseName(2),
+            hearingType: "Chambers Outcome",
+            duration: "1 hour",
+          },
+          {
+            time: "1:00 PM",
+            caseId: getCreatedCaseNumber(3),
+            partyName: getCreatedCaseName(3),
+            hearingType: "Chambers Outcome",
+            duration: "1 hour",
+          },
+        ],
+      );
     });
   });
 });
