@@ -156,6 +156,8 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Regression UI Tests', grep: '@hearing-session-ui-test', path: 'tests/regression'],
     [name: 'JOH filtering tests', grep: '@joh-filtering', path: 'tests/regression'],
     [name: 'Multi day listing test', grep: '@multi-day', path: 'tests/regression'],
+    [name: 'P&I Civil report test', grep: '@p-and-i-civil-reports', path: 'tests/regression'],
+
   ]
 
   def regressionStages = regressionBrowsers.collectMany { browser ->
