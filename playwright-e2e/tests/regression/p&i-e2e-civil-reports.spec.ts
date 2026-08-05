@@ -260,7 +260,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
 
     await test.step("Login", async () => {
       await page.goto(config.urls.baseUrl);
-      await loginPage.login("ROBERT_SULLIVAN");
+      await loginPage.login("MARCUS_HUNTER");
     });
 
     await test.step("Empty Case Basket", async () => {
