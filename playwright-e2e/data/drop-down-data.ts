@@ -140,7 +140,6 @@ export const allLocalities = [
   "Exeter Tribunals - Keble House",
   "Field House Tribunal Hearing Centre",
   "Fleetwood Magistrates' Court",
-  "Fox Court Social Security and Child Support Tribunal",
   "Gateshead Law Courts",
   "Glasgow Tribunals Centre",
   "Gloucester Crown Court",
