@@ -32,6 +32,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
     newUiSessionBookingPage,
     sessionBookingPage,
     automaticBookingDashboardPage,
+      cath,
   }) => {
     const createdCases: Array<{ caseNumber: string; caseName: string }> = [];
     const getCreatedCaseNumber = (caseIndex: number): string => {
@@ -281,17 +282,17 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
       expect(createdCases).toHaveLength(4);
     });
 
-    await test.step("Clean down schedule for Haverfordwest County and Family, Haverfordwest Courtroom 5", async () => {
+    await test.step("Clean down schedule for Newport (South Wales) Courtroom 06", async () => {
       await clearDownScheduleFromSessionSummary(
         sessionBookingPage,
         hearingSchedulePage,
         sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
         sessionBookingPage.CONSTANTS
           .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-        newUiSessionBookingPage.CONSTANTS
-          .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
-        newUiSessionBookingPage.CONSTANTS
-          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_05,
+          sessionBookingPage.CONSTANTS
+              .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+          sessionBookingPage.CONSTANTS
+              .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_COURTROOM_06,
         sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
         dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
         dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
@@ -303,8 +304,8 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
       await expect(hearingSchedulePage.header).toBeVisible();
       await newUiSessionBookingPage.createSessionWithoutCase(
-        newUiSessionBookingPage.CONSTANTS
-          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_05,
+          sessionBookingPage.CONSTANTS
+              .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_COURTROOM_06,
         sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
         newUiSessionBookingPage.CONSTANTS.SESSION_JURISDICTION_CIVIL,
       );
@@ -312,7 +313,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
 
     await test.step("open session summary", async () => {
       await hearingSchedulePage.openSessionSummaryByLocation(
-        "10:00-16:00 - Haverfordwest Courtroom 05",
+        "10:00-16:00 - Newport (South Wales) Courtroom 06",
       );
     });
 
@@ -331,7 +332,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
 
     await test.step("open session summary", async () => {
       await hearingSchedulePage.openSessionSummaryByLocation(
-        "10:00-16:00 - Haverfordwest Courtroom 05",
+        "10:00-16:00 - Newport (South Wales) Courtroom 06",
       );
     });
 
@@ -350,7 +351,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
 
     await test.step("open session summary", async () => {
       await hearingSchedulePage.openSessionSummaryByLocation(
-        "10:00-16:00 - Haverfordwest Courtroom 05",
+        "10:00-16:00 - Newport (South Wales) Courtroom 06",
       );
     });
 
@@ -369,7 +370,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
 
     await test.step("open session summary", async () => {
       await hearingSchedulePage.openSessionSummaryByLocation(
-        "10:00-16:00 - Haverfordwest Courtroom 05",
+        "10:00-16:00 - Newport (South Wales) Courtroom 06",
       );
     });
 
@@ -399,10 +400,11 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
         automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_REGION_WALES,
         automaticBookingDashboardPage.CONSTANTS
           .AUTO_CREATION_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-        newUiSessionBookingPage.CONSTANTS
-          .CASE_LISTING_LOCALITY_HAVERFORDWEST_CC_FC,
-        newUiSessionBookingPage.CONSTANTS
-          .CASE_LISTING_LOCATION_HAVERFORDWEST_CRTRM_05,
+          sessionBookingPage.CONSTANTS
+              .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+          sessionBookingPage.CONSTANTS
+              .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_COURTROOM_06,
+
         automaticBookingDashboardPage.CONSTANTS
           .AUTO_CREATION_JURISDICTION_CIVIL,
         automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_SERVICE_DAMAGES,
@@ -414,11 +416,11 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
 
     await test.step("Assert preview report", async () => {
       await automaticBookingDashboardPage.assertPreviewReportValues(
-        "In The County Court and The Family Court at Haverfordwest",
-        "Penffynnon, Hawthorn Rise, Haverfordwest, SA61 2AX",
+        "In The County Court and The Family Court at Newport (Gwent)",
+        "Clarence House, Clarence Place, Newport, NP19 7AA",
         dataUtils.getFormattedDateForReportAssertionUsingDateStringWithDayName(),
         "DAILY CIVIL CAUSE LIST",
-        "Haverfordwest Courtroom 05",
+        "Newport (South Wales) Courtroom 06",
         [
           {
             time: "10:00 AM",
@@ -450,6 +452,112 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
           },
         ],
       );
+
     });
+
+    await test.step("check report is queued with no error", async () => {
+
+      let jobRun = "false";
+
+      //assert publish button is now visible
+      //click publish button, dismissing any duplicate confirmation dialog
+      await automaticBookingDashboardPage.clickPublishAndDismissConfirmation();
+      //wait for 'Previous Publish External List header' to be visible
+      await automaticBookingDashboardPage.waitForPublishExternalListRunsToBeVisible();
+      //checks that report is queued
+      await automaticBookingDashboardPage.assertPreviousPublishExternalListRunsTable(
+          jobRun,
+          // automaticBookingDashboardPage.CONSTANTS
+          //     .AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+
+          sessionBookingPage.CONSTANTS
+              .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+
+
+          dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+          dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+      );
+      //closes the publishing external list popup
+      await automaticBookingDashboardPage.closePublishExternalListButton.click();
+
+      //run scheduled jobs
+      //open scheduled jobs page
+      await automaticBookingDashboardPage.sidebarComponent.openScheduledJobsPage();
+      //run the job
+      await automaticBookingDashboardPage.clickRunForAutomaticBookingQueueJob(
+          automaticBookingDashboardPage.CONSTANTS
+              .SCHEDULE_JOBS_AUTOMATIC_BOOKING_QUEUE_JOB,
+      );
+      jobRun = "true";
+
+      //checks that report has now been removed from queue
+      await automaticBookingDashboardPage.sidebarComponent.openAutomaticBookingDashboard();
+      await automaticBookingDashboardPage.publishExternalListsView.click();
+      //wait for 'Previous Publish External List header' to be visible
+      await automaticBookingDashboardPage.waitForPublishExternalListRunsToBeVisible();
+      await automaticBookingDashboardPage.assertPreviousPublishExternalListRunsTable(
+          jobRun,
+          sessionBookingPage.CONSTANTS
+              .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+
+          dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+          dataUtils.generateDateInYyyyMmDdWithHypenSeparators(1),
+      );
+
+  });
+
+    await test.step("Assert PIP Civil English report", async () => {
+
+      //check for report via CATH UI
+      const cathUrl = await cath.cathUrlConstruction(
+          cath.CONSTANTS.CATH_TEST_URL,
+          cath.CONSTANTS.LOCATION_ID_NEWPORT_SOUTH_WALES_CC_FC,
+      );
+
+      const reportName = `${cath.CONSTANTS.LIST_CIVIL_DAILY_CAUSE_LIST} ${dataUtils.getFormattedDateInFormatDDMonthYYYY()} - English (Saesneg)`;
+
+      await cath.assertCivilPipReportValues(
+          cathUrl,
+          reportName,
+          "Newport (South Wales) County Court and Family Court",
+          "Clarence House, Clarence Place, Newport",
+          "Newport (South Wales) Courtroom 06",
+          [
+            {
+              time: "10am",
+              caseId: getCreatedCaseNumber(0),
+              caseName: getCreatedCaseName(0),
+              caseType: "Small Claims",
+              hearingType: "Chambers Outcome",
+              duration: "1 hour",
+            },
+            {
+              time: "11am",
+              caseId: getCreatedCaseNumber(1),
+              caseName: caseNameSuppression,
+              caseType: "Small Claims",
+              hearingType: "Chambers Outcome",
+              duration: "1 hour",
+            },
+            {
+              time: "12pm",
+              caseId: getCreatedCaseNumber(2),
+              caseName: getCreatedCaseName(2),
+              caseType: "Small Claims",
+              hearingType: "Chambers Outcome",
+              duration: "1 hour",
+            },
+            {
+              time: "1pm",
+              caseId: getCreatedCaseNumber(3),
+              caseName: getCreatedCaseName(3),
+              caseType: "Small Claims",
+              hearingType: "Chambers Outcome",
+              duration: "1 hour",
+            },
+          ],
+      );
+    });
+
   });
 });

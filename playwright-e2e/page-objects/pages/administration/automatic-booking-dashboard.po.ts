@@ -246,9 +246,6 @@ export class AutomaticBookingDashboardPage extends Base {
     await this.selectListName(listType);
     await this.selectVersionType(versionType);
     await this.includeUnallocatedSessionsCheckbox.click();
-
-    await expect(this.previewButton).toBeVisible();
-    await this.previewButton.click();
   }
 
   async selectRegionFilter(region: string) {
@@ -416,12 +413,14 @@ export class AutomaticBookingDashboardPage extends Base {
     listType: string,
     location: string,
   ) {
-    const reportPopup = await this.page.waitForEvent("popup");
-    //await this.previewButton.click();
-    const report = reportPopup;
+    const [report] = await Promise.all([
+      this.page.waitForEvent("popup"),
+      this.previewButton.click(),
+    ]);
     await expect(report.getByText(listType)).toBeVisible();
     await expect(report.getByText(formattedDate)).toBeVisible();
     await expect(report.getByText(location)).toBeVisible();
+    return report;
   }
 
   async clickPublishAndDismissConfirmation() {
@@ -560,16 +559,9 @@ export class AutomaticBookingDashboardPage extends Base {
     location: string,
     expectedRows: ExpectedReportRow[],
   ) {
-    const reportPopup = await this.page.waitForEvent("popup");
-    await reportPopup.waitForLoadState("domcontentloaded");
-    const report = reportPopup;
 
-    // Report heading details
-    await expect(report.getByText(listType, { exact: true })).toBeVisible();
-    await expect(
-      report.getByText(formattedDate, { exact: true }),
-    ).toBeVisible();
-    await expect(report.getByText(location, { exact: true })).toBeVisible();
+    const report = await this.assertPreviewReport(formattedDate,listType, location);
+
     await expect(report.getByText(siteName, { exact: true })).toBeVisible();
     await expect(report.getByText(courtAddress, { exact: true })).toBeVisible();
 
