@@ -120,7 +120,7 @@ export class HearingSchedulePage extends Base {
   );
 
   readonly selectAllListingsCheckbox = this.page.locator(
-      "#selectAllToCancelListing",
+    "#selectAllToCancelListing",
   );
   readonly selectListingOnSessionCheckbox = this.page.getByRole("checkbox", {
     name: "Select Listing on Session",
@@ -729,52 +729,10 @@ export class HearingSchedulePage extends Base {
     await this.page.locator("#moveAssistResultModal-modal-1").click();
   }
 
-  // async clearDownScheduleFromSessionSummary(
-  //   cancellationCode: string,
-  //   room: string,
-  //   date: string,
-  // ): Promise<void> {
-  //   const caseNumberAndScheduleLink = this.bookingSessionId(room, date);
-  //
-  //   //go to hearing schedule page
-  //   await expect(this.sidebarComponent.sidebar).toBeVisible();
-  //   await this.sidebarComponent.openHearingSchedulePage();
-  //
-  //   //schedule hearing
-  //   await this.waitForLoad();
-  //
-  //   if (await this.releasedStatusCheck.first().isVisible()) {
-  //     await this.releasedStatusCheck.first().click();
-  //
-  //     await this.waitForLoad();
-  //
-  //     await expect
-  //       .poll(async () => await caseNumberAndScheduleLink.isVisible(), {
-  //         intervals: [2_000],
-  //         timeout: 10_000,
-  //       })
-  //       .toBeTruthy();
-  //
-  //     await caseNumberAndScheduleLink.click();
-  //     await this.selectAllListingsCheckbox.check();
-  //
-  //     //await this.selectListingOnSessionCheckbox.check();
-  //     await this.cancelListingsForSelectedButton.click();
-  //     await this.cancelRescheduleReasonDropdown.selectOption(cancellationCode);
-  //
-  //     //confirm cancellation
-  //     await this.page.getByRole("button", { name: "Yes" }).click();
-  //     //confirm deletion of all data within session
-  //     await this.page.getByRole("button", { name: "Yes" }).click();
-  //
-  //     await expect(this.header).toBeVisible();
-  //   }
-  // }
-
   async clearDownScheduleFromSessionSummary(
-      cancellationCode: string,
-      room: string,
-      date: string,
+    cancellationCode: string,
+    room: string,
+    date: string,
   ): Promise<void> {
     const caseNumberAndScheduleLink = this.bookingSessionId(room, date);
     //go to hearing schedule page
@@ -790,31 +748,117 @@ export class HearingSchedulePage extends Base {
       await this.waitForLoad();
 
       await expect
-            .poll(async () => await caseNumberAndScheduleLink.isVisible(), {
-              intervals: [2_000],
-              timeout: 10_000,
-            })
-            .toBeTruthy();
+        .poll(async () => await caseNumberAndScheduleLink.isVisible(), {
+          intervals: [2_000],
+          timeout: 10_000,
+        })
+        .toBeTruthy();
 
-          await caseNumberAndScheduleLink.click();
+      await caseNumberAndScheduleLink.click();
 
-      // Check if checkbox is visible on the current page
-      const checkboxVisible = await this.selectAllListingsCheckbox
-          .isVisible()
-          .catch(() => false);
+      // Wait for listing-cancel controls before deciding flow.
+      // Without this wait, fast runs can fall through to session deletion path too early.
+      const checkboxVisible = await this.waitForElementVisible(
+        this.selectAllListingsCheckbox,
+        10_000,
+        250,
+      );
 
       if (checkboxVisible) {
         // Path 1: Checkbox visible - proceed with cancel listings flow
-        await this.selectAllListingsCheckbox.check();
+        await expect(this.selectAllListingsCheckbox).toBeVisible();
+        await expect(this.selectAllListingsCheckbox).toBeEnabled();
+        await this.selectAllListingsCheckbox.check({ force: true });
+        await expect(this.selectAllListingsCheckbox).toBeChecked();
+
+        await expect(this.cancelListingsForSelectedButton).toBeVisible();
+        await expect(this.cancelListingsForSelectedButton).toBeEnabled();
         await this.cancelListingsForSelectedButton.click();
-        await this.cancelRescheduleReasonDropdown.selectOption(
-            cancellationCode,
+
+        const cancelReasonSelect = this.page.locator("select#cancelReason");
+        const reasonDropdownVisible = await this.waitForElementVisible(
+          this.cancelRescheduleReasonDropdown,
+          10_000,
+          250,
         );
 
-        //confirm cancellation
-        await this.page.getByRole("button", {name: "Yes"}).click();
-        //confirm deletion of all data within session
-        await this.page.getByRole("button", {name: "Yes"}).click();
+        if (reasonDropdownVisible) {
+          await this.cancelRescheduleReasonDropdown.selectOption(
+            cancellationCode,
+          );
+        } else {
+          const fallbackReasonSelectVisible = await this.waitForElementVisible(
+            cancelReasonSelect,
+            2_000,
+            250,
+          );
+
+          if (fallbackReasonSelectVisible) {
+            await cancelReasonSelect.first().selectOption(cancellationCode);
+          }
+        }
+
+        // The role-based dropdown can be detached quickly as the confirm dialog renders.
+        // Wait until either confirmation is ready or the fallback select has the expected value.
+        await expect
+          .poll(
+            async () => {
+              const confirmReady = await this.page
+                .getByRole("button", { name: "Yes", exact: true })
+                .first()
+                .isVisible()
+                .catch(() => false);
+
+              if (confirmReady) {
+                return true;
+              }
+
+              const selectedReason = await cancelReasonSelect
+                .first()
+                .inputValue()
+                .catch(() => "");
+
+              return selectedReason === cancellationCode;
+            },
+            {
+              intervals: [250],
+              timeout: 10_000,
+            },
+          )
+          .toBeTruthy();
+
+        // Confirm cancellation first, then wait for next confirm before clicking again.
+        const firstYesButton = this.page
+          .getByRole("button", { name: "Yes", exact: true })
+          .first();
+        await expect(firstYesButton).toBeVisible({ timeout: 10_000 });
+        const firstYesHandle = await firstYesButton.elementHandle();
+        if (!firstYesHandle) {
+          throw new Error("Expected first confirmation Yes button to exist");
+        }
+        await firstYesButton.click();
+
+        await expect
+          .poll(
+            async () => {
+              try {
+                return await firstYesHandle.isVisible();
+              } catch {
+                return false;
+              }
+            },
+            {
+              intervals: [250],
+              timeout: 10_000,
+            },
+          )
+          .toBeFalsy();
+
+        const secondYesButton = this.page
+          .getByRole("button", { name: "Yes", exact: true })
+          .first();
+        await expect(secondYesButton).toBeVisible({ timeout: 10_000 });
+        await secondYesButton.click();
 
         await expect(this.header).toBeVisible();
       } else {
@@ -822,53 +866,29 @@ export class HearingSchedulePage extends Base {
         await this.goToSessionDetailsButton.click();
 
         await expect
-            .poll(
-                async () => {
-                  return await this.sessionBookingPage.heading.isVisible();
-                },
-                {
-                  intervals: [2_000],
-                  timeout: 10_000,
-                },
-            )
-            .toBeTruthy();
+          .poll(
+            async () => {
+              return await this.sessionBookingPage.heading.isVisible();
+            },
+            {
+              intervals: [2_000],
+              timeout: 10_000,
+            },
+          )
+          .toBeTruthy();
 
         // Use the Delete button from Session Booking page (id="deleteVenueBooking")
         const deleteVenueBookingButton = this.page.locator(
-            "#deleteVenueBooking",
+          "#deleteVenueBooking",
         );
 
         await deleteVenueBookingButton.click();
-
-        // const isDeleteVenueVisible = await deleteVenueBookingButton
-        //     .isVisible()
-        //     .catch(() => false);
-        //
-        // if (isDeleteVenueVisible) {
-        //   await deleteVenueBookingButton.click();
-        //   // After deletion, navigate back to hearing schedule
-        //   await this.sidebarComponent.openHearingSchedulePage();
-          await this.waitForLoad();
-          await expect(this.header).toBeVisible();
-        // } else {
-        //   // Fallback: just navigate back if delete button not found
-        //   await this.sidebarComponent.openHearingSchedulePage();
-        //   await this.waitForLoad();
-        //   await expect(this.header).toBeVisible();
-        // }
+        await this.waitForLoad();
+        await expect(this.header).toBeVisible();
+        
       }
     }
   }
-
-
-
-
-
-
-
-
-
-
 
   async deleteSessionWithoutListing(room: string, date: string): Promise<void> {
     const scheduleButton = this.page.locator(
@@ -882,15 +902,14 @@ export class HearingSchedulePage extends Base {
 
   async openSessionSummaryByLocation(locationName: string): Promise<void> {
     const sessionHeaderButton = this.page.locator(
-        "div.droparea span.sessionHeader",
-        {
-          hasText: locationName,
-        },
+      "div.droparea span.sessionHeader",
+      {
+        hasText: locationName,
+      },
     );
 
     await expect(sessionHeaderButton.first()).toBeVisible();
     await sessionHeaderButton.first().click();
     await this.waitForLoad();
   }
-
 }
