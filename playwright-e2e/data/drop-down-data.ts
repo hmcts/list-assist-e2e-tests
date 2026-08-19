@@ -282,7 +282,6 @@ export const allLocalities = [
   "Stafford Combined Court",
   "Staines Magistrates and County Court",
   "Stevenage Magistrates' Court",
-  "Stirling Tribunal Hearing Centre",
   "Stockport Magistrates' and County Court",
   "Stoke on Trent Combined Court",
   "Stratford Magistrates' Court",
