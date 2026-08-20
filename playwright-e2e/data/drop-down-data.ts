@@ -119,7 +119,6 @@ export const allLocalities = [
   "Crewe Magistrates & County Court",
   "Croydon Combined Court",
   "Croydon Magistrates' Court",
-  "Croydon Nightingale Court",
   "Darlington County Court and Family Court",
   "Darlington Magistrates' Court",
   "Dartford County Court and Family Court",
