@@ -1,6 +1,15 @@
 import { Page, expect } from "@playwright/test";
 import { Base } from "../base";
 
+export type ExpectedCathListRows = {
+  time: string;
+  caseId: string;
+  caseName: string;
+  caseType: string;
+  hearingType: string;
+  duration: string;
+};
+
 export class Cath extends Base {
   readonly CONSTANTS = {
     CATH_TEST_URL:
@@ -9,6 +18,7 @@ export class Cath extends Base {
     LIST_JURISDICTION_CIVIL_AND_FAMILY: "Civil and Family",
     LIST_TYPE_DAILY_CAUSE_LIST: "Daily Cause List",
     LIST_TYPE_CIVIL_CAUSE_LIST: "Civil Cause List",
+    LIST_CIVIL_DAILY_CAUSE_LIST: "Civil Daily Cause List",
   };
 
   readonly summaryGovUkHeading = this.page.locator("h1.govuk-heading-l", {
@@ -38,7 +48,8 @@ export class Cath extends Base {
     duration: string,
     applicantPetitioner: string,
     respondent: string,
-  ) {
+  )
+  {
     //go to url
     await this.page.goto(cathUrl);
 
@@ -94,6 +105,79 @@ export class Cath extends Base {
       await expect(firstRowCells.nth(i)).toHaveText(expected[i].value);
     }
   }
+
+
+  async assertCivilPipReportValues(
+      cathUrl: string,
+      reportName: string,
+      siteName: string,
+      courtAddress: string,
+      location: string,
+      expectedRows: ExpectedCathListRows[],
+  ) {
+
+    //go to url
+    await this.page.goto(cathUrl);
+
+    //check heading is correct
+    await expect(this.summaryGovUkHeading).toBeVisible();
+
+    //check hyperlink with correct report name is visible and click it
+    await expect(this.reportLink.filter({ hasText: reportName })).toBeVisible();
+    await this.reportLink.filter({ hasText: reportName }).click();
+
+    //check that the court name is displayed on the report page
+
+    await expect(this.page.getByText(siteName, { exact: true })).toBeVisible();
+    await expect(
+        this.page.getByText(courtAddress, { exact: true }),
+    ).toBeVisible();
+
+    await expect(
+        this.page.getByText(location, { exact: true }),
+    ).toBeVisible();
+
+    const reportTable = this.page.locator("table.govuk-table").filter({
+      has: this.page.getByRole("columnheader", {
+        name: /Case ID/,
+      }),
+    });
+
+    await expect(reportTable).toHaveCount(1);
+    await expect(reportTable).toBeVisible();
+
+    const headerCells = reportTable.locator("thead th");
+
+    await expect(headerCells).toHaveCount(7);
+    await expect(headerCells.nth(0)).toContainText("Time");
+    await expect(headerCells.nth(1)).toContainText("Case ID");
+    await expect(headerCells.nth(2)).toContainText("Case name");
+    await expect(headerCells.nth(3)).toContainText("Case type");
+    await expect(headerCells.nth(4)).toContainText("Hearing type");
+    await expect(headerCells.nth(5)).toContainText("Location");
+    await expect(headerCells.nth(6)).toContainText("Duration");
+
+    const dataRows = reportTable.locator("tbody tr");
+
+    await expect(dataRows).toHaveCount(expectedRows.length);
+
+    for (let index = 0; index < expectedRows.length; index++) {
+      const expectedRow = expectedRows[index];
+      const cells = dataRows.nth(index).locator("td");
+
+      await expect(cells).toHaveCount(7);
+
+      await expect(cells.nth(0)).toContainText(expectedRow.time);
+      await expect(cells.nth(1)).toContainText(expectedRow.caseId);
+      await expect(cells.nth(2)).toContainText(expectedRow.caseName);
+      await expect(cells.nth(3)).toContainText(expectedRow.caseType);
+      await expect(cells.nth(4)).toContainText(expectedRow.hearingType);
+      await expect(cells.nth(5)).toHaveText(/^\s*$/);
+      await expect(cells.nth(6)).toContainText(expectedRow.duration);
+    }
+  }
+
+
 
   buildDailyCauseListArray(
     time: string,

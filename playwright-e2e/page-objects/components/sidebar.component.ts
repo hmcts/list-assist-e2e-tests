@@ -188,8 +188,6 @@ export class SidebarComponent {
   }
 
   async openCaseDetailsEditPage() {
-    // TODO: Replace implicit wait
-    await this.page.waitForTimeout(3_000);
     await expect
       .poll(
         async () => {
@@ -203,8 +201,26 @@ export class SidebarComponent {
       )
       .toBeTruthy();
 
-    await this.currentCaseSubMenu.click();
+    await expect
+      .poll(
+        async () => {
+          await this.currentCaseSubMenu.click();
+          return await this.currentCaseDetailsEdit.isVisible();
+        },
+        {
+          intervals: [1_000],
+          timeout: 15_000,
+        },
+      )
+      .toBeTruthy();
+
+    await expect(this.currentCaseDetailsEdit).toBeVisible();
     await this.currentCaseDetailsEdit.click();
+
+    // Wait for Edit Case action area to become ready before any participant interaction.
+    const addParticipantButton = this.page.locator("#add_new_party_btn_id");
+    await expect(addParticipantButton).toBeVisible({ timeout: 30_000 });
+    await expect(addParticipantButton).toBeEnabled({ timeout: 30_000 });
   }
 
   async openAddNewParticipantPage() {

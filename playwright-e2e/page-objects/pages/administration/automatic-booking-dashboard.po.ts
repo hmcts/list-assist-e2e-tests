@@ -3,6 +3,15 @@ import { Base } from "../../base";
 import { DataUtils } from "../../../utils/data.utils";
 import { DateTime } from "luxon";
 
+type ExpectedReportRow = {
+  time: string;
+  caseId: string;
+  partyName: string;
+  hearingType: string;
+  hearingPlatform?: string;
+  duration: string;
+};
+
 export class AutomaticBookingDashboardPage extends Base {
   readonly CONSTANTS = {
     AUTO_CREATION_TASK_HEADER_TEXT: "Auto Creation Tasks",
@@ -28,6 +37,7 @@ export class AutomaticBookingDashboardPage extends Base {
     CLUSTER_FILTER_LIST_BUTTON: "Cluster filter list with 0",
     JURISDICTION_FILTER_LIST_BUTTON: "Jurisdictions filter list",
     LOCALITIES_FILTER_LIST_BUTTON: "Localities filter list with 0",
+    LOCATION_FILTER_LIST_BUTTON: "Location filter list with 13",
     SERVICE_FILTER_LIST_BUTTON: "Service filter list with 0",
     SELECT_AN_ITEM_BUTTON_TEXT: "Select an item",
     CLOSE_LISTBOX_NAME: "Close listbox",
@@ -35,11 +45,14 @@ export class AutomaticBookingDashboardPage extends Base {
     AUTO_CREATION_DAILY_MIXED_CAUSE_LIST_SSRS:
       "Daily Mixed Cause List Publish (SSRS)",
 
+    AUTO_CREATION_DAILY_CIVIL_CAUSE_LIST_SSRS:
+      "Daily Civil Cause List Publish (SSRS)",
     LIST_OF_VERSION_TYPES_LABEL: "List of Version Types",
     AUTO_CREATION_VERSION_TYPE: "FINAL",
     CIVIL_AND_FAMILY_DAILY_CAUSE_LIST: "CIVIL AND FAMILY DAILY CAUSE LIST",
 
     LOCATION_LEICESTER_COUNTY_COURTROOM_07: "Leicester County Courtroom 07",
+    LOCATION_HAVERFORDWEST_COURTROOM_05: "Haverfordwest Courtroom 05",
     LOCALITY_LEICESTER_COMBINED_COURT: "Leicester Combined Court",
     JURISDICTION_FAMILY: "Family",
     SERVICE_LABEL: "Service",
@@ -91,6 +104,23 @@ export class AutomaticBookingDashboardPage extends Base {
   readonly localitiesFilterOption = this.page.locator(
     "#publishExternalLists_Creation_Localities_listbox > div > .multiselect__options-container > .multiselect__options-checkmark",
   );
+
+  //location
+
+  readonly locationFilterGroup = this.page.getByRole("group", {
+    name: /Location filter list/i,
+  });
+
+  readonly locationFilterListboxButton = this.locationFilterGroup.getByRole(
+    "button",
+    {
+      name: "Open listbox",
+    },
+  );
+
+  readonly locationFilterListbox = this.page.getByRole("listbox", {
+    name: "Location list",
+  });
 
   //jurisdictions
   readonly jurisdictionsFilterListbox = this.page
@@ -201,6 +231,7 @@ export class AutomaticBookingDashboardPage extends Base {
     region: string,
     cluster: string,
     locality: string,
+    location: string,
     jurisdiction: string,
     service: string,
     listType: string,
@@ -209,14 +240,12 @@ export class AutomaticBookingDashboardPage extends Base {
     await this.selectRegionFilter(region);
     await this.selectClusterFilter(cluster);
     await this.selectLocalitiesFilter(locality);
+    await this.selectLocationFilter(location);
     await this.selectJurisdiction(jurisdiction);
     await this.selectServiceFilter(service);
     await this.selectListName(listType);
     await this.selectVersionType(versionType);
     await this.includeUnallocatedSessionsCheckbox.click();
-
-    await expect(this.previewButton).toBeVisible();
-    await this.previewButton.click();
   }
 
   async selectRegionFilter(region: string) {
@@ -265,6 +294,51 @@ export class AutomaticBookingDashboardPage extends Base {
 
     await this.page.getByText(locality).click();
     await this.closeListboxButton.click();
+  }
+
+  async selectLocationFilter(location: string) {
+    await expect(this.locationFilterListboxButton).toBeVisible();
+    const selectAllOption = this.locationFilterListbox
+      .locator("li")
+      .filter({ hasText: "Select All" })
+      .first();
+
+    await expect
+      .poll(
+        async () => {
+          const selectAllVisible = await selectAllOption
+            .isVisible()
+            .catch(() => false);
+          if (selectAllVisible) {
+            return true;
+          }
+
+          await this.locationFilterListboxButton.click();
+
+          return await selectAllOption.isVisible().catch(() => false);
+        },
+        {
+          intervals: [500],
+          timeout: 30_000,
+        },
+      )
+      .toBeTruthy();
+
+    await expect(selectAllOption).toBeVisible();
+
+    // Toggle Select All to clear all preselected locations, then select one target location.
+    await selectAllOption.click();
+
+    const locationOption = this.locationFilterListbox
+      .locator("li")
+      .filter({ hasText: location })
+      .last();
+
+    await expect(locationOption).toBeVisible({
+      timeout: 15_000,
+    });
+
+    await locationOption.click();
   }
 
   async selectJurisdiction(jurisdiction: string) {
@@ -339,12 +413,14 @@ export class AutomaticBookingDashboardPage extends Base {
     listType: string,
     location: string,
   ) {
-    const reportPopup = await this.page.waitForEvent("popup");
-    //await this.previewButton.click();
-    const report = reportPopup;
+    const [report] = await Promise.all([
+      this.page.waitForEvent("popup"),
+      this.previewButton.click(),
+    ]);
     await expect(report.getByText(listType)).toBeVisible();
     await expect(report.getByText(formattedDate)).toBeVisible();
     await expect(report.getByText(location)).toBeVisible();
+    return report;
   }
 
   async clickPublishAndDismissConfirmation() {
@@ -472,6 +548,63 @@ export class AutomaticBookingDashboardPage extends Base {
           );
         }
       }
+    }
+  }
+
+  async assertPreviewReportValues(
+    siteName: string,
+    courtAddress: string,
+    formattedDate: string,
+    listType: string,
+    location: string,
+    expectedRows: ExpectedReportRow[],
+  ) {
+
+    const report = await this.assertPreviewReport(formattedDate,listType, location);
+
+    await expect(report.getByText(siteName, { exact: true })).toBeVisible();
+    await expect(report.getByText(courtAddress, { exact: true })).toBeVisible();
+
+    const reportTable = report.locator('table[cols="8"]').filter({
+      has: report.getByText("Case ID", { exact: true }),
+    });
+
+    await expect(reportTable).toHaveCount(1);
+    await expect(reportTable).toBeVisible();
+
+    const headerRow = reportTable.locator("tr").filter({
+      has: report.getByText("Case ID", { exact: true }),
+    });
+
+    await expect(headerRow).toHaveCount(1);
+
+    const headerCells = headerRow.locator("td:not(:first-child)");
+
+    await expect(headerCells).toHaveCount(6);
+    await expect(headerCells.nth(0)).toContainText("Time");
+    await expect(headerCells.nth(1)).toContainText("Case ID");
+    await expect(headerCells.nth(2)).toContainText("Name of parties involved");
+    await expect(headerCells.nth(3)).toContainText("Hearing Type");
+    await expect(headerCells.nth(4)).toContainText(/Hearing\s*Platform/);
+    await expect(headerCells.nth(5)).toContainText("Duration");
+
+    const dataRows = reportTable.locator("tr").filter({
+      hasText: /\d{1,2}:\d{2}\s(?:AM|PM)/,
+    });
+
+    await expect(dataRows).toHaveCount(expectedRows.length);
+
+    for (let index = 0; index < expectedRows.length; index++) {
+      const expectedRow = expectedRows[index];
+      const cells = dataRows.nth(index).locator("td:not(:first-child)");
+
+      await expect(cells).toHaveCount(6);
+      await expect(cells.nth(0)).toContainText(expectedRow.time);
+      await expect(cells.nth(1)).toContainText(expectedRow.caseId);
+      await expect(cells.nth(2)).toContainText(expectedRow.partyName);
+      await expect(cells.nth(3)).toContainText(expectedRow.hearingType);
+      await expect(cells.nth(4)).toHaveText(/^\s*$/);
+      await expect(cells.nth(5)).toContainText(expectedRow.duration);
     }
   }
 }

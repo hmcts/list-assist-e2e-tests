@@ -223,8 +223,8 @@ test.describe("Case listing and reporting @case-listing-and-reporting", () => {
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_REGION_WALES,
       automaticBookingDashboardPage.CONSTANTS
         .AUTO_CREATION_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-      automaticBookingDashboardPage.CONSTANTS
-        .AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+        automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+        automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_JURISDICTION_CIVIL,
       automaticBookingDashboardPage.CONSTANTS.AUTO_CREATION_SERVICE_DAMAGES,
       automaticBookingDashboardPage.CONSTANTS

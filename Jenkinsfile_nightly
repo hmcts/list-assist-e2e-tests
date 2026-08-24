@@ -100,7 +100,9 @@ def secrets = [
     secret('user-amanda-foster', 'USER_AMANDA_FOSTER'),
     secret('password-amanda-foster', 'PASSWORD_AMANDA_FOSTER'),
     secret('user-david-hicks', 'USER_DAVID_HICKS'),
-    secret('password-david-hicks', 'PASSWORD_DAVID_HICKS')
+    secret('password-david-hicks', 'PASSWORD_DAVID_HICKS'),
+    secret('user-marcus-hunter', 'USER_MARCUS_HUNTER'),
+    secret('password-marcus-hunter', 'PASSWORD_MARCUS_HUNTER'),
 
   ]
 ]
@@ -154,6 +156,8 @@ withNightlyPipeline(type, product, component, 600) {
     [name: 'Regression UI Tests', grep: '@hearing-session-ui-test', path: 'tests/regression'],
     [name: 'JOH filtering tests', grep: '@joh-filtering', path: 'tests/regression'],
     [name: 'Multi day listing test', grep: '@multi-day', path: 'tests/regression'],
+    [name: 'P&I Civil report test', grep: '@p-and-i-civil-reports', path: 'tests/regression'],
+
   ]
 
   def regressionStages = regressionBrowsers.collectMany { browser ->

@@ -30,6 +30,8 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_LOCALITY_WREXHAM_COUNTY_FC: "Wrexham County and Family Court",
     CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_CHMBRS_1:
       "Newport (South Wales) Chambers 01",
+    CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_COURTROOM_06:
+      "Newport (South Wales) Courtroom 06",
     CASE_LISTING_LOCATION_WREXHAM_CRTRM_01: "Wrexham Courtroom 01",
     CASE_LISTING_LOCATION_DARLINGTON_CRTRM_1: "Darlington County Courtroom 01",
     CASE_LISTING_JURISDICTION_FAMILY_CODE_AB: "AB",
