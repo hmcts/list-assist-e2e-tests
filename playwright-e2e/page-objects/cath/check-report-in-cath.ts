@@ -7,6 +7,7 @@ export type ExpectedCathListRows = {
   caseName: string;
   caseType: string;
   hearingType: string;
+  location?: string;
   duration: string;
 };
 
@@ -48,8 +49,7 @@ export class Cath extends Base {
     duration: string,
     applicantPetitioner: string,
     respondent: string,
-  )
-  {
+  ) {
     //go to url
     await this.page.goto(cathUrl);
 
@@ -106,16 +106,14 @@ export class Cath extends Base {
     }
   }
 
-
   async assertCivilPipReportValues(
-      cathUrl: string,
-      reportName: string,
-      siteName: string,
-      courtAddress: string,
-      location: string,
-      expectedRows: ExpectedCathListRows[],
+    cathUrl: string,
+    reportName: string,
+    siteName: string,
+    courtAddress: string,
+    location: string,
+    expectedRows: ExpectedCathListRows[],
   ) {
-
     //go to url
     await this.page.goto(cathUrl);
 
@@ -130,12 +128,10 @@ export class Cath extends Base {
 
     await expect(this.page.getByText(siteName, { exact: true })).toBeVisible();
     await expect(
-        this.page.getByText(courtAddress, { exact: true }),
+      this.page.getByText(courtAddress, { exact: true }),
     ).toBeVisible();
 
-    await expect(
-        this.page.getByText(location, { exact: true }),
-    ).toBeVisible();
+    await expect(this.page.getByText(location, { exact: true })).toBeVisible();
 
     const reportTable = this.page.locator("table.govuk-table").filter({
       has: this.page.getByRole("columnheader", {
@@ -172,12 +168,14 @@ export class Cath extends Base {
       await expect(cells.nth(2)).toContainText(expectedRow.caseName);
       await expect(cells.nth(3)).toContainText(expectedRow.caseType);
       await expect(cells.nth(4)).toContainText(expectedRow.hearingType);
-      await expect(cells.nth(5)).toHaveText(/^\s*$/);
+      if (expectedRow.location) {
+        await expect(cells.nth(5)).toContainText(expectedRow.location);
+      } else {
+        await expect(cells.nth(5)).toHaveText(/^\s*$/);
+      }
       await expect(cells.nth(6)).toContainText(expectedRow.duration);
     }
   }
-
-
 
   buildDailyCauseListArray(
     time: string,

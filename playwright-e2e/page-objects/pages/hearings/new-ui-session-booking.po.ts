@@ -25,6 +25,10 @@ export class NewUiSessionBookingPage extends Base {
     EXTERNAL_COMMENT_PREFIX: "EXTERNAL COMMENT ",
     PANEL_MEMBER_AMANDA_FOSTER: "FOSTER, AMANDA",
     HEARING_TYPE_CHAMBERS_OUTCOME: "Chambers Outcome",
+    CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON: "Generic Decision 3",
+    SESSION_HEARING_CHANNEL_IN_PERSON: "In Person (child)",
+    SESSION_HEARING_CHANNEL_TELEPHONE: "Telephone - Other",
+    SESSION_HEARING_CHANNEL_VIDEO: "Video - CVP",
   };
   readonly table = this.page.locator("#membersOrRoomsTable");
   readonly separatorValue = "--------------------------";
@@ -179,6 +183,13 @@ export class NewUiSessionBookingPage extends Base {
   readonly externalCommentsTextBox = this.page.locator(
     "#venueBooking\\.externalComments",
   );
+  readonly hearingChannelFilterGroup = this.page
+    .getByRole("group", { name: /filter list with/i })
+    .first();
+  readonly hearingChannelOpenListboxButton =
+    this.hearingChannelFilterGroup.getByRole("button", {
+      name: "Open listbox",
+    });
 
   startTimeOption(time: string) {
     return this.page
@@ -279,6 +290,30 @@ export class NewUiSessionBookingPage extends Base {
     await expect(this.jurisdictionOption(jurisdiction)).toBeVisible();
     await this.jurisdictionOption(jurisdiction).click();
     await expect(this.jurisdictionSelectedValue).toHaveText(jurisdiction);
+  }
+
+  sessionHearingChannelOption(hearingChannel: string) {
+    return this.page.getByRole("option", {
+      name: hearingChannel,
+      exact: true,
+    });
+  }
+
+  async selectSessionHearingChannels(...hearingChannels: string[]) {
+    if (hearingChannels.length < 1 || hearingChannels.length > 3) {
+      throw new Error(
+        `Expected 1 to 3 hearing channels, received ${hearingChannels.length}`,
+      );
+    }
+
+    await expect(this.hearingChannelOpenListboxButton).toBeVisible();
+    for (const hearingChannel of hearingChannels) {
+      await this.hearingChannelOpenListboxButton.click();
+      await expect(
+        this.sessionHearingChannelOption(hearingChannel),
+      ).toBeVisible();
+      await this.sessionHearingChannelOption(hearingChannel).click();
+    }
   }
 
   async assertDateIsNotEditableInEditMode() {
@@ -436,6 +471,19 @@ export class NewUiSessionBookingPage extends Base {
     await this.listingPopupSaveButton.click();
   }
 
+  async handleListingValidationPopup(
+    validationPopup: import("@playwright/test").Page,
+    overrideReason: string,
+  ) {
+    await validationPopup.waitForLoadState("domcontentloaded");
+    await validationPopup
+      .getByRole("combobox", { name: "Reason to override rule/s *" })
+      .selectOption({ label: overrideReason });
+    await validationPopup
+      .getByRole("button", { name: "SAVE & CONTINUE LISTING" })
+      .click();
+  }
+
   async listCaseFromSessionSummary(caseNumber: string, hearingType: string) {
     const caseRow = this.page
       .locator("#matterCartList a")
@@ -443,7 +491,21 @@ export class NewUiSessionBookingPage extends Base {
       .first();
 
     await expect(caseRow).toBeVisible();
+
+    const validationPopupPromise = this.page
+      .waitForEvent("popup", { timeout: 4_000 })
+      .catch(() => null);
+
     await caseRow.click();
+
+    const validationPopup = await validationPopupPromise;
+    if (validationPopup) {
+      await this.handleListingValidationPopup(
+        validationPopup,
+        this.CONSTANTS.CASE_LISTING_VALIDATION_POPUP_OVERRIDE_REASON,
+      );
+    }
+
     await this.selectHearingTypeInListingPopup(hearingType);
     await this.clickSaveListing();
   }
@@ -466,6 +528,7 @@ export class NewUiSessionBookingPage extends Base {
     roomName: string,
     column: string,
     jurisdiction?: string,
+    hearingChannels?: string[],
   ): Promise<void> {
     await this.page.locator("#roomHS").click();
     await this.page.waitForTimeout(1000);
@@ -482,6 +545,9 @@ export class NewUiSessionBookingPage extends Base {
     await this.selectAndAssertDefaultListingDuration(
       this.CONSTANTS.DEFAULT_LISTING_DURATION_ONE_HOUR,
     );
+    if (hearingChannels && hearingChannels.length > 0) {
+      await this.selectSessionHearingChannels(...hearingChannels);
+    }
     await this.clickSaveSessionBooking();
     //await this.sessionBookingPage.waitForLoad();
   }

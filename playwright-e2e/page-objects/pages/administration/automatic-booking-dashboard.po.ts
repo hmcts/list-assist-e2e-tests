@@ -559,8 +559,11 @@ export class AutomaticBookingDashboardPage extends Base {
     location: string,
     expectedRows: ExpectedReportRow[],
   ) {
-
-    const report = await this.assertPreviewReport(formattedDate,listType, location);
+    const report = await this.assertPreviewReport(
+      formattedDate,
+      listType,
+      location,
+    );
 
     await expect(report.getByText(siteName, { exact: true })).toBeVisible();
     await expect(report.getByText(courtAddress, { exact: true })).toBeVisible();
@@ -603,7 +606,11 @@ export class AutomaticBookingDashboardPage extends Base {
       await expect(cells.nth(1)).toContainText(expectedRow.caseId);
       await expect(cells.nth(2)).toContainText(expectedRow.partyName);
       await expect(cells.nth(3)).toContainText(expectedRow.hearingType);
-      await expect(cells.nth(4)).toHaveText(/^\s*$/);
+      if (expectedRow.hearingPlatform) {
+        await expect(cells.nth(4)).toContainText(expectedRow.hearingPlatform);
+      } else {
+        await expect(cells.nth(4)).toHaveText(/^\s*$/);
+      }
       await expect(cells.nth(5)).toContainText(expectedRow.duration);
     }
   }

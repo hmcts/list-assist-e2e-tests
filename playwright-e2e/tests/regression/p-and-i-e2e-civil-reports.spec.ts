@@ -133,6 +133,12 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
       },
     ];
 
+    const hearingChannelsForListedCases = [
+      newUiSessionBookingPage.CONSTANTS.SESSION_HEARING_CHANNEL_IN_PERSON,
+      newUiSessionBookingPage.CONSTANTS.SESSION_HEARING_CHANNEL_TELEPHONE,
+      newUiSessionBookingPage.CONSTANTS.SESSION_HEARING_CHANNEL_VIDEO,
+    ];
+
     const resolveParticipantClass = (participantType: string) => {
       if (participantType === "IND") {
         return editNewCasePage.CONSTANTS.PARTICIPANT_CLASS_PERSON;
@@ -293,7 +299,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
       await hearingSchedulePage.sidebarComponent.emptyCaseCart();
     });
 
-    for (const [
+     for (const [
       caseIndex,
       caseParticipantInput,
     ] of participantsByCase.entries()) {
@@ -307,23 +313,26 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
       expect(createdCases).toHaveLength(4);
     });
 
-    await test.step("Clean down schedule for Newport (South Wales) Courtroom 06", async () => {
-      await clearDownScheduleFromSessionSummary(
-        sessionBookingPage,
-        hearingSchedulePage,
-        sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
-        sessionBookingPage.CONSTANTS
-          .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
-        sessionBookingPage.CONSTANTS
-          .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
-        sessionBookingPage.CONSTANTS
-          .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_COURTROOM_06,
-        sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
-        dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-        dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
-      );
-    });
+    await test.step(
+      "Clean down schedule for Newport (South Wales) Courtroom 06",
+      async () => {
+        await clearDownScheduleFromSessionSummary(
+          sessionBookingPage,
+          hearingSchedulePage,
+          sessionBookingPage.CONSTANTS.CASE_LISTING_REGION_WALES,
+          sessionBookingPage.CONSTANTS
+            .CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS,
+          sessionBookingPage.CONSTANTS
+            .CASE_LISTING_LOCALITY_NEWPORT_SOUTH_WALES_CC_FC,
+          sessionBookingPage.CONSTANTS
+            .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_COURTROOM_06,
+          sessionBookingPage.CONSTANTS.SESSION_DETAILS_CANCELLATION_CODE_CANCEL,
+          dataUtils.generateDateInDdMmYyyyWithHypenSeparators(0),
+          dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+          dataUtils.generateDateInYyyyMmDdWithHypenSeparators(0),
+        );
+      },
+    );
 
     await test.step("Open app, filter schedule, and open Create Session. UI Validation", async () => {
       await hearingSchedulePage.sidebarComponent.openHearingSchedulePage();
@@ -333,6 +342,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
           .CASE_LISTING_LOCATION_NEWPORT_SOUTH_WALES_COURTROOM_06,
         sessionBookingPage.CONSTANTS.CASE_LISTING_COLUMN_ONE,
         newUiSessionBookingPage.CONSTANTS.SESSION_JURISDICTION_CIVIL,
+        hearingChannelsForListedCases,
       );
     });
 
@@ -380,6 +390,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseId: getCreatedCaseNumber(0),
             partyName: getCreatedCaseName(0),
             hearingType: "Chambers Outcome",
+            hearingPlatform: "In Person (child), Telephone - Other, Video - CVP",
             duration: "1 hour",
           },
           {
@@ -387,6 +398,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseId: getCreatedCaseNumber(1),
             partyName: caseNameSuppression,
             hearingType: "Chambers Outcome",
+            hearingPlatform: "In Person (child), Telephone - Other, Video - CVP",
             duration: "1 hour",
           },
           {
@@ -394,6 +406,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseId: getCreatedCaseNumber(2),
             partyName: getCreatedCaseName(2),
             hearingType: "Chambers Outcome",
+            hearingPlatform: "In Person (child), Telephone - Other, Video - CVP",
             duration: "1 hour",
           },
           {
@@ -401,6 +414,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseId: getCreatedCaseNumber(3),
             partyName: getCreatedCaseName(3),
             hearingType: "Chambers Outcome",
+            hearingPlatform: "In Person (child), Telephone - Other, Video - CVP",
             duration: "1 hour",
           },
         ],
@@ -477,6 +491,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseName: getCreatedCaseName(0),
             caseType: "Small Claims",
             hearingType: "Chambers Outcome",
+            location: "Telephone - Other, Video - CVP, In Person (child)",
             duration: "1 hour",
           },
           {
@@ -485,6 +500,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseName: caseNameSuppression,
             caseType: "Small Claims",
             hearingType: "Chambers Outcome",
+            location: "Telephone - Other, Video - CVP, In Person (child)",
             duration: "1 hour",
           },
           {
@@ -493,6 +509,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseName: getCreatedCaseName(2),
             caseType: "Small Claims",
             hearingType: "Chambers Outcome",
+            location: "Telephone - Other, Video - CVP, In Person (child)",
             duration: "1 hour",
           },
           {
@@ -501,6 +518,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseName: getCreatedCaseName(3),
             caseType: "Small Claims",
             hearingType: "Chambers Outcome",
+            location: "Telephone - Other, Video - CVP, In Person (child)",
             duration: "1 hour",
           },
         ],
