@@ -52,6 +52,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
 
     const listCaseAndAssertRemovedFromSessionBasket = async (
       caseIndex: number,
+      hearingChannels?: string[],
     ) => {
       const caseNumber = getCreatedCaseNumber(caseIndex);
 
@@ -65,6 +66,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
         await newUiSessionBookingPage.listCaseFromSessionSummary(
           caseNumber,
           newUiSessionBookingPage.CONSTANTS.HEARING_TYPE_CHAMBERS_OUTCOME,
+          hearingChannels,
         );
       });
 
@@ -131,6 +133,13 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
           role: "DEFE",
         },
       },
+    ];
+
+    const hearingChannelsByCase: Array<string[] | undefined> = [
+      ["In Person"],
+      ["In Person", "Video"],
+      ["In Person", "Video", "Telephone"],
+      undefined,
     ];
 
     const resolveParticipantClass = (participantType: string) => {
@@ -337,7 +346,10 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
     });
 
     for (const caseIndex of [0, 1, 2, 3]) {
-      await listCaseAndAssertRemovedFromSessionBasket(caseIndex);
+      await listCaseAndAssertRemovedFromSessionBasket(
+        caseIndex,
+        hearingChannelsByCase[caseIndex],
+      );
     }
     await test.step("generate P&I preview report", async () => {
       await homePage.sidebarComponent.openAutomaticBookingDashboard();
