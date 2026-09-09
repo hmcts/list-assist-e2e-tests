@@ -392,6 +392,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseId: getCreatedCaseNumber(0),
             partyName: getCreatedCaseName(0),
             hearingType: "Chambers Outcome",
+            hearingPlatform: ["In Person"],
             duration: "1 hour",
           },
           {
@@ -399,6 +400,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseId: getCreatedCaseNumber(1),
             partyName: caseNameSuppression,
             hearingType: "Chambers Outcome",
+            hearingPlatform: ["In Person", "Video"],
             duration: "1 hour",
           },
           {
@@ -406,6 +408,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseId: getCreatedCaseNumber(2),
             partyName: getCreatedCaseName(2),
             hearingType: "Chambers Outcome",
+            hearingPlatform: ["In Person", "Video", "Telephone"],
             duration: "1 hour",
           },
           {
@@ -413,6 +416,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseId: getCreatedCaseNumber(3),
             partyName: getCreatedCaseName(3),
             hearingType: "Chambers Outcome",
+            hearingPlatform: "",
             duration: "1 hour",
           },
         ],
@@ -489,6 +493,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseName: getCreatedCaseName(0),
             caseType: "Small Claims",
             hearingType: "Chambers Outcome",
+            hearingPlatform: ["In Person"],
             duration: "1 hour",
           },
           {
@@ -497,6 +502,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseName: caseNameSuppression,
             caseType: "Small Claims",
             hearingType: "Chambers Outcome",
+            hearingPlatform: ["In Person", "Video"],
             duration: "1 hour",
           },
           {
@@ -505,6 +511,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseName: getCreatedCaseName(2),
             caseType: "Small Claims",
             hearingType: "Chambers Outcome",
+            hearingPlatform: ["In Person", "Video", "Telephone"],
             duration: "1 hour",
           },
           {
@@ -513,6 +520,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseName: getCreatedCaseName(3),
             caseType: "Small Claims",
             hearingType: "Chambers Outcome",
+            hearingPlatform: [],
             duration: "1 hour",
           },
         ],

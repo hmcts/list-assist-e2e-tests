@@ -8,7 +8,7 @@ type ExpectedReportRow = {
   caseId: string;
   partyName: string;
   hearingType: string;
-  hearingPlatform?: string;
+  hearingPlatform?: string | string[];
   duration: string;
 };
 
@@ -225,6 +225,48 @@ export class AutomaticBookingDashboardPage extends Base {
 
   constructor(page: Page) {
     super(page);
+  }
+
+  private normalizeHearingPlatformToken(value: string): string {
+    const normalized = value.replace(/\s+/g, " ").trim().toLowerCase();
+
+    if (normalized.includes("on the papers")) {
+      return "on the papers";
+    }
+
+    if (normalized.includes("in person")) {
+      return "in person";
+    }
+
+    if (normalized.includes("video")) {
+      return "video";
+    }
+
+    if (normalized.includes("telephone")) {
+      return "telephone";
+    }
+
+    return normalized;
+  }
+
+  private extractHearingPlatformTokens(value: string): string[] {
+    return value
+      .split(/[\n,]/)
+      .map((token) => token.trim())
+      .filter((token) => token.length > 0)
+      .map((token) => this.normalizeHearingPlatformToken(token));
+  }
+
+  private expectedHearingPlatformTokens(
+    hearingPlatform: string | string[],
+  ): string[] {
+    if (Array.isArray(hearingPlatform)) {
+      return hearingPlatform.map((token) =>
+        this.normalizeHearingPlatformToken(token),
+      );
+    }
+
+    return this.extractHearingPlatformTokens(hearingPlatform);
   }
 
   async populateCreatePublishExternalListsForm(
@@ -559,8 +601,11 @@ export class AutomaticBookingDashboardPage extends Base {
     location: string,
     expectedRows: ExpectedReportRow[],
   ) {
-
-    const report = await this.assertPreviewReport(formattedDate,listType, location);
+    const report = await this.assertPreviewReport(
+      formattedDate,
+      listType,
+      location,
+    );
 
     await expect(report.getByText(siteName, { exact: true })).toBeVisible();
     await expect(report.getByText(courtAddress, { exact: true })).toBeVisible();
@@ -603,7 +648,17 @@ export class AutomaticBookingDashboardPage extends Base {
       await expect(cells.nth(1)).toContainText(expectedRow.caseId);
       await expect(cells.nth(2)).toContainText(expectedRow.partyName);
       await expect(cells.nth(3)).toContainText(expectedRow.hearingType);
-      await expect(cells.nth(4)).toHaveText(/^\s*$/);
+      if (expectedRow.hearingPlatform !== undefined) {
+        const actualHearingPlatformText = await cells.nth(4).innerText();
+        const actualTokens = this.extractHearingPlatformTokens(
+          actualHearingPlatformText,
+        ).sort();
+        const expectedTokens = this.expectedHearingPlatformTokens(
+          expectedRow.hearingPlatform,
+        ).sort();
+
+        expect(actualTokens).toEqual(expectedTokens);
+      }
       await expect(cells.nth(5)).toContainText(expectedRow.duration);
     }
   }
