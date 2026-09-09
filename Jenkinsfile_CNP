@@ -141,6 +141,7 @@ withNightlyPipeline(type, product, component, 600) {
 
   def regressionBrowsers = ['chrome']
   def regressionConfigs = [
+    [name: 'Add Participant tests', grep: '@add-participant', path: 'tests/bvt'],
     [name: 'Data Reporting Test', grep: '@data-reporting', path: 'tests/regression'],
     [name: 'Anonymisation tests', grep: '@anonymisation', skipCreateCase: true, path: 'tests/regression'],
     [name: 'Regression UI Tests', grep: '@hearing-session-ui-test', path: 'tests/regression'],
@@ -163,7 +164,7 @@ withNightlyPipeline(type, product, component, 600) {
     stage('BVT Tests') {
       catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
         withEnv(["BLOB_REPORT_DIR=blob-reports/bvt"]) {
-          yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --workers=${params.FUNCTIONAL_TESTS_WORKERS ?: '6'}")
+          yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --grep-invert @add-participant --workers=${params.FUNCTIONAL_TESTS_WORKERS ?: '6'}")
         }
       }
     }
