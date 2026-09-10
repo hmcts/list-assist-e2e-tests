@@ -181,6 +181,7 @@ export class EditNewCasePage extends Base {
   }
 
   async findCreateParticipantPopupPage(): Promise<Page | null> {
+    // Look across all open tabs/popups and return the participant popup if it is already visible.
     const contextPages = this.page.context().pages();
 
     for (let i = contextPages.length - 1; i >= 0; i--) {
@@ -206,12 +207,14 @@ export class EditNewCasePage extends Base {
   }
 
   async openCreateParticipantPopup(): Promise<Page> {
+    // Reuse an existing popup when one is already open to avoid duplicate windows.
     let createNewParticipant = await this.findCreateParticipantPopupPage();
 
     await expect(this.addNewParticipantButton).toBeVisible();
     await expect(this.addNewParticipantButton).toBeEnabled();
     await this.addNewParticipantButton.scrollIntoViewIfNeeded();
 
+    // Retry opening the popup because UI timing can be slower in CI environments.
     for (let attempt = 0; attempt < 5; attempt++) {
       if (createNewParticipant) {
         break;
@@ -221,6 +224,7 @@ export class EditNewCasePage extends Base {
       await this.addNewParticipantButton.click();
       await this.dismissRelatedCaseDialogIfOpen();
 
+      // Poll briefly for the popup to render and expose the Create New button.
       for (let poll = 0; poll < 20; poll++) {
         createNewParticipant = await this.findCreateParticipantPopupPage();
         if (createNewParticipant) {
@@ -239,6 +243,7 @@ export class EditNewCasePage extends Base {
       throw new Error("Participant popup failed to open after retries");
     }
 
+    // Ensure actions target the popup, not the parent tab.
     await createNewParticipant.bringToFront();
     await createNewParticipant.waitForLoadState("domcontentloaded");
 
@@ -258,6 +263,7 @@ export class EditNewCasePage extends Base {
     alternativePartyName?: string,
     organisationName?: string,
   ) {
+    // Open (or reuse) the participant popup before interacting with its form controls.
     const createNewParticipant = await this.openCreateParticipantPopup();
 
     await expect(
