@@ -180,6 +180,31 @@ export class EditNewCasePage extends Base {
     await expect(cancelRelatedCaseButton).toBeHidden({ timeout: 5_000 });
   }
 
+  async findCreateParticipantPopupPage(): Promise<Page | null> {
+    const contextPages = this.page.context().pages();
+
+    for (let i = contextPages.length - 1; i >= 0; i--) {
+      const candidatePage = contextPages[i];
+
+      if (candidatePage === this.page || candidatePage.isClosed()) {
+        continue;
+      }
+
+      const createNewButton = candidatePage
+        .getByRole("button", {
+          name: "Create New",
+          exact: true,
+        })
+        .first();
+
+      if (await createNewButton.isVisible()) {
+        return candidatePage;
+      }
+    }
+
+    return null;
+  }
+
   async createNewParticipant(
     participantClass: string,
     participantType: string,
@@ -193,40 +218,29 @@ export class EditNewCasePage extends Base {
     alternativePartyName?: string,
     organisationName?: string,
   ) {
-    let createNewParticipant: Page | null = null;
-
-    const contextPages = this.page.context().pages();
-    const maybeExistingPopup = contextPages[contextPages.length - 1];
-    if (maybeExistingPopup && maybeExistingPopup !== this.page) {
-      const hasCreateNewButton = await maybeExistingPopup
-        .getByRole("button", {
-          name: "Create New",
-          exact: true,
-        })
-        .isVisible()
-        .catch(() => false);
-
-      if (hasCreateNewButton) {
-        createNewParticipant = maybeExistingPopup;
-      }
-    }
+    let createNewParticipant = await this.findCreateParticipantPopupPage();
 
     await expect(this.addNewParticipantButton).toBeVisible();
     await expect(this.addNewParticipantButton).toBeEnabled();
     await this.addNewParticipantButton.scrollIntoViewIfNeeded();
+
     for (let attempt = 0; attempt < 5; attempt++) {
       if (createNewParticipant) {
         break;
       }
 
       await this.dismissRelatedCaseDialogIfOpen();
-
-      const popupPromise = this.page
-        .waitForEvent("popup", { timeout: 10_000 })
-        .catch(() => null);
       await this.addNewParticipantButton.click();
       await this.dismissRelatedCaseDialogIfOpen();
-      createNewParticipant = await popupPromise;
+
+      for (let poll = 0; poll < 20; poll++) {
+        createNewParticipant = await this.findCreateParticipantPopupPage();
+        if (createNewParticipant) {
+          break;
+        }
+
+        await this.page.waitForTimeout(250);
+      }
 
       if (createNewParticipant) {
         break;
@@ -236,6 +250,9 @@ export class EditNewCasePage extends Base {
     if (!createNewParticipant) {
       throw new Error("Participant popup failed to open after retries");
     }
+
+    await createNewParticipant.bringToFront();
+    await createNewParticipant.waitForLoadState("domcontentloaded");
 
     await expect(
       createNewParticipant.getByRole("button", {
