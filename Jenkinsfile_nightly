@@ -28,7 +28,7 @@ properties([
   ])
 ])
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.7.1")
 
 def type = "nodejs"
 def product = "snl-automation"
@@ -138,7 +138,17 @@ withNightlyPipeline(type, product, component, 600) {
     stage('BVT Tests') {
       catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
         withEnv(["BLOB_REPORT_DIR=blob-reports/bvt"]) {
-          yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --workers=${params.FUNCTIONAL_TESTS_WORKERS ?: '6'}")
+          yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --grep-invert @add-participant --workers=${params.FUNCTIONAL_TESTS_WORKERS ?: '6'}")
+        }
+      }
+    }
+  }
+
+  def runAddParticipantStage = {
+    stage('Add Participant Tests') {
+      catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+        withEnv(["BLOB_REPORT_DIR=blob-reports/add-participant"]) {
+          yarnBuilder.yarn("playwright test tests/bvt --project=bvt-chrome --grep @add-participant --workers=${params.FUNCTIONAL_TESTS_WORKERS ?: '6'}")
         }
       }
     }
@@ -256,6 +266,7 @@ withNightlyPipeline(type, product, component, 600) {
       currentBuild.description = "Suite: ${testSuiteToRun}"
       if (testSuiteToRun == 'bvt') {
         runBvtStage()
+        runAddParticipantStage()
         runAnonNightlyRegressionStage()
       }
       if (testSuiteToRun == 'regression') {
@@ -263,6 +274,7 @@ withNightlyPipeline(type, product, component, 600) {
       }
       if (testSuiteToRun == 'bvt_and_regression') {
         runBvtStage()
+        runAddParticipantStage()
         runRegressionStages(regressionStages)
         runSmokeTestStages(smokeTestStages)
       }
