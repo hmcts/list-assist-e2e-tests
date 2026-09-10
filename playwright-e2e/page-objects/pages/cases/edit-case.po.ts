@@ -205,19 +205,7 @@ export class EditNewCasePage extends Base {
     return null;
   }
 
-  async createNewParticipant(
-    participantClass: string,
-    participantType: string,
-    givenNames: string,
-    lastName: string,
-    gender: string,
-    dateOfBirth: string,
-    interpreter: string,
-    role: string,
-    selectRoleIfExists: boolean = false,
-    alternativePartyName?: string,
-    organisationName?: string,
-  ) {
+  async openCreateParticipantPopup(): Promise<Page> {
     let createNewParticipant = await this.findCreateParticipantPopupPage();
 
     await expect(this.addNewParticipantButton).toBeVisible();
@@ -253,6 +241,24 @@ export class EditNewCasePage extends Base {
 
     await createNewParticipant.bringToFront();
     await createNewParticipant.waitForLoadState("domcontentloaded");
+
+    return createNewParticipant;
+  }
+
+  async createNewParticipant(
+    participantClass: string,
+    participantType: string,
+    givenNames: string,
+    lastName: string,
+    gender: string,
+    dateOfBirth: string,
+    interpreter: string,
+    role: string,
+    selectRoleIfExists: boolean = false,
+    alternativePartyName?: string,
+    organisationName?: string,
+  ) {
+    const createNewParticipant = await this.openCreateParticipantPopup();
 
     await expect(
       createNewParticipant.getByRole("button", {
