@@ -352,6 +352,27 @@ export class NewUiSessionBookingPage extends Base {
   );
   readonly listingPopupHearingTypeToggle =
     this.listingPopupHearingTypeCombobox.locator(".multiselect__select");
+  readonly listingPopupHearingChannelCombobox = this.listingPopup.getByRole(
+    "combobox",
+    { name: "Listing Detail - Hearing Channel" },
+  );
+  readonly listingPopupHearingChannelWrapper = this.listingPopup.locator(
+    '[aria-owns="hearingMethods_listbox"]',
+  );
+  readonly listingPopupHearingChannelInput = this.page
+    .locator(
+      'input[aria-label="Listing Detail - Hearing Channel"]:visible, input[aria-controls="hearingMethods_listbox"]:visible',
+    )
+    .first();
+  readonly listingPopupHearingChannelToggle = this.listingPopup
+    .locator(
+      '[aria-owns="hearingMethods_listbox"] [aria-label="Open listbox"], [aria-owns="hearingMethods_listbox"] span[title="Toggle"], [aria-owns="hearingMethods_listbox"] .multiselect__custom-select, [aria-owns="hearingMethods_listbox"] .multiselect__select, [aria-owns="hearingMethods_listbox"] button',
+    )
+    .first();
+  readonly listingPopupHearingChannelListbox = this.page.getByRole("listbox", {
+    name: "Listing Detail - Hearing Channel list",
+    exact: true,
+  });
   readonly listingPopupSaveButton =
     this.listingPopup.locator("#saveListingBtn");
 
@@ -361,11 +382,65 @@ export class NewUiSessionBookingPage extends Base {
       .getByRole("option", { name: hearingType, exact: true });
   }
 
+  listingPopupHearingChannelOption(hearingChannel: string) {
+    return this.listingPopupHearingChannelListbox
+      .getByRole("option")
+      .filter({ hasText: hearingChannel })
+      .first();
+  }
+
+  resolveListingPopupHearingChannel(hearingChannel: string) {
+    const normalizedChannel = hearingChannel.trim().toLowerCase();
+
+    if (normalizedChannel === "in person") {
+      return "In Person (child)";
+    }
+
+    if (normalizedChannel === "video") {
+      return "Video - CVP";
+    }
+
+    if (normalizedChannel === "telephone") {
+      return "Telephone - Other";
+    }
+
+    return hearingChannel;
+  }
+
   async selectHearingTypeInListingPopup(hearingType: string) {
     await expect(this.listingPopup).toBeVisible();
     await this.listingPopupHearingTypeToggle.click();
     await expect(this.listingPopupHearingTypeOption(hearingType)).toBeVisible();
     await this.listingPopupHearingTypeOption(hearingType).click();
+  }
+
+  async selectHearingChannelsInListingPopup(hearingChannels: string[]) {
+    await expect(this.listingPopup).toBeVisible();
+    await expect(this.listingPopupHearingChannelWrapper).toBeVisible();
+
+    for (const hearingChannel of hearingChannels) {
+      const resolvedHearingChannel =
+        this.resolveListingPopupHearingChannel(hearingChannel);
+
+      const hearingChannelInputIsVisible =
+        (await this.listingPopupHearingChannelInput.count()) > 0 &&
+        (await this.listingPopupHearingChannelInput.isVisible());
+
+      if (hearingChannelInputIsVisible) {
+        await this.listingPopupHearingChannelInput.click();
+      } else {
+        await expect(this.listingPopupHearingChannelToggle).toBeVisible();
+        await this.listingPopupHearingChannelToggle.click();
+      }
+
+      await expect(this.listingPopupHearingChannelListbox).toBeVisible();
+      await expect(
+        this.listingPopupHearingChannelOption(resolvedHearingChannel),
+      ).toBeVisible();
+      await this.listingPopupHearingChannelOption(
+        resolvedHearingChannel,
+      ).click();
+    }
   }
 
   readonly addPanelMemberButton = this.page.locator("#addPanelMemberId");
@@ -436,7 +511,11 @@ export class NewUiSessionBookingPage extends Base {
     await this.listingPopupSaveButton.click();
   }
 
-  async listCaseFromSessionSummary(caseNumber: string, hearingType: string) {
+  async listCaseFromSessionSummary(
+    caseNumber: string,
+    hearingType: string,
+    hearingChannels?: string[],
+  ) {
     const caseRow = this.page
       .locator("#matterCartList a")
       .filter({ hasText: caseNumber })
@@ -445,6 +524,9 @@ export class NewUiSessionBookingPage extends Base {
     await expect(caseRow).toBeVisible();
     await caseRow.click();
     await this.selectHearingTypeInListingPopup(hearingType);
+    if (hearingChannels && hearingChannels.length > 0) {
+      await this.selectHearingChannelsInListingPopup(hearingChannels);
+    }
     await this.clickSaveListing();
   }
 

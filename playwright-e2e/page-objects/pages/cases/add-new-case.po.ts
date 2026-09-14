@@ -147,8 +147,7 @@ export class AddNewCasePage extends Base {
 
   async assertCaseNewFieldIsNotPresent() {
     const isUnexpectedCaseNewFieldPresent =
-      (await this.caseNewFieldLabel.count()) > 0 ||
-      (await this.caseNewFieldInput.count()) > 0;
+      (await this.caseNewFieldLabel.count()) > 0 || (await this.caseNewFieldInput.count()) > 0;
 
     if (isUnexpectedCaseNewFieldPresent) {
       throw new Error(

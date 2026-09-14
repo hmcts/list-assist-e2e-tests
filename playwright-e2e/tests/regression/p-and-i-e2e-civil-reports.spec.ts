@@ -52,6 +52,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
 
     const listCaseAndAssertRemovedFromSessionBasket = async (
       caseIndex: number,
+      hearingChannels?: string[],
     ) => {
       const caseNumber = getCreatedCaseNumber(caseIndex);
 
@@ -65,6 +66,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
         await newUiSessionBookingPage.listCaseFromSessionSummary(
           caseNumber,
           newUiSessionBookingPage.CONSTANTS.HEARING_TYPE_CHAMBERS_OUTCOME,
+          hearingChannels,
         );
       });
 
@@ -131,6 +133,13 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
           role: "DEFE",
         },
       },
+    ];
+
+    const hearingChannelsByCase: Array<string[] | undefined> = [
+      ["In Person"],
+      ["In Person", "Video"],
+      ["In Person", "Video", "Telephone"],
+      undefined,
     ];
 
     const resolveParticipantClass = (participantType: string) => {
@@ -337,7 +346,10 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
     });
 
     for (const caseIndex of [0, 1, 2, 3]) {
-      await listCaseAndAssertRemovedFromSessionBasket(caseIndex);
+      await listCaseAndAssertRemovedFromSessionBasket(
+        caseIndex,
+        hearingChannelsByCase[caseIndex],
+      );
     }
     await test.step("generate P&I preview report", async () => {
       await homePage.sidebarComponent.openAutomaticBookingDashboard();
@@ -380,6 +392,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseId: getCreatedCaseNumber(0),
             partyName: getCreatedCaseName(0),
             hearingType: "Chambers Outcome",
+            hearingPlatform: ["In Person"],
             duration: "1 hour",
           },
           {
@@ -387,6 +400,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseId: getCreatedCaseNumber(1),
             partyName: caseNameSuppression,
             hearingType: "Chambers Outcome",
+            hearingPlatform: ["In Person", "Video"],
             duration: "1 hour",
           },
           {
@@ -394,6 +408,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseId: getCreatedCaseNumber(2),
             partyName: getCreatedCaseName(2),
             hearingType: "Chambers Outcome",
+            hearingPlatform: ["In Person", "Video", "Telephone"],
             duration: "1 hour",
           },
           {
@@ -401,6 +416,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseId: getCreatedCaseNumber(3),
             partyName: getCreatedCaseName(3),
             hearingType: "Chambers Outcome",
+            hearingPlatform: "",
             duration: "1 hour",
           },
         ],
@@ -477,6 +493,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseName: getCreatedCaseName(0),
             caseType: "Small Claims",
             hearingType: "Chambers Outcome",
+            hearingPlatform: ["In Person"],
             duration: "1 hour",
           },
           {
@@ -485,6 +502,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseName: caseNameSuppression,
             caseType: "Small Claims",
             hearingType: "Chambers Outcome",
+            hearingPlatform: ["In Person", "Video"],
             duration: "1 hour",
           },
           {
@@ -493,6 +511,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseName: getCreatedCaseName(2),
             caseType: "Small Claims",
             hearingType: "Chambers Outcome",
+            hearingPlatform: ["In Person", "Video", "Telephone"],
             duration: "1 hour",
           },
           {
@@ -501,6 +520,7 @@ test.describe("P&I Civil Reports Regression - Stage 1 @p-and-i-civil-reports", (
             caseName: getCreatedCaseName(3),
             caseType: "Small Claims",
             hearingType: "Chambers Outcome",
+            hearingPlatform: [],
             duration: "1 hour",
           },
         ],
