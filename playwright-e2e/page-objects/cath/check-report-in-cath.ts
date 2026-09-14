@@ -1,5 +1,6 @@
 import { Page, expect } from "@playwright/test";
 import { Base } from "../base";
+import { HearingPlatformUtils } from "../../utils/hearing-channel.utils.ts";
 
 export type ExpectedCathListRows = {
   time: string;
@@ -29,48 +30,6 @@ export class Cath extends Base {
 
   constructor(page: Page) {
     super(page);
-  }
-
-  private normalizeHearingPlatformToken(value: string): string {
-    const normalized = value.replace(/\s+/g, " ").trim().toLowerCase();
-
-    if (normalized.includes("on the papers")) {
-      return "on the papers";
-    }
-
-    if (normalized.includes("in person")) {
-      return "in person";
-    }
-
-    if (normalized.includes("video")) {
-      return "video";
-    }
-
-    if (normalized.includes("telephone")) {
-      return "telephone";
-    }
-
-    return normalized;
-  }
-
-  private extractHearingPlatformTokens(value: string): string[] {
-    return value
-      .split(/[\n,]/)
-      .map((token) => token.trim())
-      .filter((token) => token.length > 0)
-      .map((token) => this.normalizeHearingPlatformToken(token));
-  }
-
-  private expectedHearingPlatformTokens(
-    hearingPlatform: string | string[],
-  ): string[] {
-    if (Array.isArray(hearingPlatform)) {
-      return hearingPlatform.map((token) =>
-        this.normalizeHearingPlatformToken(token),
-      );
-    }
-
-    return this.extractHearingPlatformTokens(hearingPlatform);
   }
 
   async cathUrlConstruction(url: string, locationId: string) {
@@ -211,15 +170,15 @@ export class Cath extends Base {
       await expect(cells.nth(3)).toContainText(expectedRow.caseType);
       await expect(cells.nth(4)).toContainText(expectedRow.hearingType);
       if (expectedRow.hearingPlatform !== undefined) {
-        const actualHearingPlatformText = await cells.nth(5).innerText();
-        const actualTokens = this.extractHearingPlatformTokens(
-          actualHearingPlatformText,
-        ).sort();
-        const expectedTokens = this.expectedHearingPlatformTokens(
-          expectedRow.hearingPlatform,
-        ).sort();
+        if (expectedRow.hearingPlatform !== undefined) {
+          const actualHearingPlatform = await cells.nth(5).innerText();
 
-        expect(actualTokens).toEqual(expectedTokens);
+          HearingPlatformUtils.assertHearingPlatform(
+              actualHearingPlatform,
+              expectedRow.hearingPlatform,
+          );
+        }
+
       }
       await expect(cells.nth(6)).toContainText(expectedRow.duration);
     }
