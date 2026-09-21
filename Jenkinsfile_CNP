@@ -32,7 +32,7 @@ properties([
   ])
 ])
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.8.0")
 
 def type = "nodejs"
 def product = "snl-automation"
@@ -154,7 +154,7 @@ withNightlyPipeline(type, product, component, 600) {
     regressionConfigs.collect { cfg ->
       [
         name: "${cfg.name}",
-        command: "playwright test ${cfg.path} --project=${browser} --grep ${cfg.grep}"
+        command: "playwright test ${cfg.path} --project=${cfg.project ?: browser} --grep ${cfg.grep}"
       ]
     }
   }

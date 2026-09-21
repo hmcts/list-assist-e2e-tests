@@ -2,13 +2,14 @@ import { expect, Page } from "@playwright/test";
 import { Base } from "../../base";
 import { DataUtils } from "../../../utils/data.utils";
 import { DateTime } from "luxon";
+import { HearingPlatformUtils } from "../../../utils/hearing-channel.utils";
 
 type ExpectedReportRow = {
   time: string;
   caseId: string;
   partyName: string;
   hearingType: string;
-  hearingPlatform?: string;
+  hearingPlatform?: string | string[];
   duration: string;
 };
 
@@ -559,8 +560,11 @@ export class AutomaticBookingDashboardPage extends Base {
     location: string,
     expectedRows: ExpectedReportRow[],
   ) {
-
-    const report = await this.assertPreviewReport(formattedDate,listType, location);
+    const report = await this.assertPreviewReport(
+      formattedDate,
+      listType,
+      location,
+    );
 
     await expect(report.getByText(siteName, { exact: true })).toBeVisible();
     await expect(report.getByText(courtAddress, { exact: true })).toBeVisible();
@@ -603,7 +607,16 @@ export class AutomaticBookingDashboardPage extends Base {
       await expect(cells.nth(1)).toContainText(expectedRow.caseId);
       await expect(cells.nth(2)).toContainText(expectedRow.partyName);
       await expect(cells.nth(3)).toContainText(expectedRow.hearingType);
-      await expect(cells.nth(4)).toHaveText(/^\s*$/);
+      if (expectedRow.hearingPlatform !== undefined) {
+
+        const actualHearingPlatform = await cells.nth(4).innerText();
+
+        HearingPlatformUtils.assertHearingPlatform(
+            actualHearingPlatform,
+            expectedRow.hearingPlatform,
+        );
+
+      }
       await expect(cells.nth(5)).toContainText(expectedRow.duration);
     }
   }
