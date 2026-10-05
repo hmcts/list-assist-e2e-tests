@@ -42,7 +42,7 @@
     "test:tabletwebkit": "yarn playwright test tests/ --project=tabletwebkit --grep-invert='(@a11y)|(@performance)'",
     "test:a11y": "yarn playwright test tests/ --grep @a11y --project=chrome"
   },
-  "packageManager": "yarn@4.18.0",
+  "packageManager": "yarn@4.18.1",
   "resolutions": {
     "@playwright/test": "1.63.0",
     "playwright": "1.63.0",
