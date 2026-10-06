@@ -10,7 +10,7 @@ export class SessionBookingPage extends Base {
     CASE_LISTING_CLUSTER_WALES_CIVIL_FAMILY_TRIBUNALS:
       "Wales Civil, Family and Tribunals",
     CASE_LISTING_CLUSTER_MIDLANDS_LEICESTERSHIRE_RUTLAND_LINCOLNSHIRE_NORTH:
-      "Leicestershire, Rutland, Lincolnshire and North",
+      "Leicestershire, Rutland, Lincs and Northants",
     CASE_LISTING_CLUSTER_CLEVELAND_DURHAM_TEES_VALLEY:
       "Cleveland, Durham and Northumbria Group",
 
