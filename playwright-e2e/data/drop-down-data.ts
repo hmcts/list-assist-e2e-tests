@@ -333,7 +333,6 @@ export const allLocalities = [
 
 export const allLocations = [
   "Cardiff SSCS - Hearing Room 01",
-  "Chambers 1",
   "Court 1",
   "Court 2",
   "Court 3",
